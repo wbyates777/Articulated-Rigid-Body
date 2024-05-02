@@ -21,6 +21,7 @@
 #include <vector>
 #include <array>
 #include <iostream>
+#include <algorithm>
 
 #include <cmath>
 #include <cassert>
