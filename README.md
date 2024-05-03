@@ -43,9 +43,6 @@
  This code depends on the 3D GLM types and functions: glm::dvec3, glm::dmat3, glm::dquat,
  glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::toMat3(q).
  
- This code runs a bit faster (around 10%) than RBDL on simple test cases without instrinsics.
- This is due to the omission of the custom joint code, and removing some redundant calculations and unnecessary copying.
-
  It should be relatively straightforward to convert back to Eigen3 (although see 
  the note on Eigen3 and GLM differences), or  replace GLM with some other simple
  linear algebra library.
