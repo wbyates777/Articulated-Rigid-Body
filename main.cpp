@@ -152,7 +152,47 @@ example2( void )
 }
 
 
+// Example 3 -- clarify interface
+void
+single_body( void ) 
+{
+   
+    // note spatial vectors - (angular,linear) - a force or velocity
+    BModel* model = new BModel;
 
+    model->gravity( BVector3(0.0, -9.81, 0.0) );
+    //model->gravity( BVector3(0.0, 0.0, 0.0) );
+  
+    // set up single body -- i.e. a spaceship 
+    // floating base only used for first body in model.
+    BBody spaceship = BBody(10.0,  BZERO_3, BVector3(1.0, 1.0, 1.0));
+    BJoint joint = BJoint( BFloatingBase );
+    unsigned int spaceshipId = model->addBody(0, arb::Xtrans(BZERO_3), joint, spaceship);
+    
+    // control
+    std::vector<BScalar> Q(model->qsize(), 0.0);       // initial position (lin,ang) - 3 lin, 4 ang (represented as quat)
+    std::vector<BScalar> QDot(model->qdotsize(), 0.0); // initial velocities (lin,ang)  - 3 lin, 3 ang
+
+    std::vector<BScalar> Tau(model->qdotsize(), 0.0);  // apply forces
+    Tau[0] = 0.0;    // linear force XAXIS;
+    Tau[1] = -10.0;  // linear force YAXIS;
+    Tau[2] = 0.0;    // linear force ZAXIS;
+    
+    Tau[3] = 0.0;    // angular force around XAXIS;
+    Tau[4] = 0.0;    // angular force around YAXIS;
+    Tau[5] = 0.0;    // angular force aroundZAXIS;
+    
+    std::vector<BScalar> QDDot(model->qdotsize(), 0.0);
+    
+    BDynamics dyn;
+    dyn.forward(*model, Q, QDot, Tau, QDDot); // QDDot is output
+    
+    std::cout << "linear acceleration (" << QDDot[0] << ", " << QDDot[1] << ", " << QDDot[2] << std::endl;
+    std::cout << "angular acceleration (" << QDDot[3] << ", " << QDDot[4] << ", " << QDDot[5] << std::endl;
+   
+    delete model;
+
+}
 int 
 main()
 {
@@ -168,5 +208,6 @@ main()
     // you should notice slight differences in the last decimal places
     example2();
     
- 
+    // Example 3 -- clarify interface
+    single_body();
 }
