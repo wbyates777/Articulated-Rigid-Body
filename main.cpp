@@ -190,9 +190,51 @@ single_body( void )
     std::cout << "linear acceleration (" << QDDot[0] << ", " << QDDot[1] << ", " << QDDot[2] << std::endl;
     std::cout << "angular acceleration (" << QDDot[3] << ", " << QDDot[4] << ", " << QDDot[5] << std::endl;
    
+    std::cout  << std::endl;
+    
     delete model;
 
 }
+
+void
+newton_euler( void ) 
+// https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+// https://en.wikipedia.org/wiki/Newton–Euler_equations
+// Featherstone, Section 2.14, eqn 2.71, page 36.
+{
+    // note spatial vectors - (angular, linear) - a force or velocity
+ 
+    //
+    // set up single body - a sphere -  
+    //
+    double mass = 100.0, radius = 0.5;
+    BVector3 rotational_intertia = BVector3((2.0/5.0) * mass * (radius * radius)); 
+    BVector3 com = BVector3(0.0); // centre of mass
+    BBody sphere = BBody(10.0,  com, rotational_intertia);
+    
+    std::cout << "Sphere of mass " << mass << " and radius " << radius << std::endl;
+    std::cout << "Rotational inertia \n" << sphere.inertia() << std::endl;
+    std::cout  << std::endl;
+    
+    BSpatialInertia I(sphere);
+    std::cout << "Spatial inertia \n" << I.toMatrix() << std::endl;
+    
+    
+    //
+    // Newton-Euler
+    //
+    BSpatialVector acc(0.0);
+    BSpatialVector vel(0.0);
+    acc[4] = -9.81; // gravity
+
+    BSpatialVector force = I * acc + arb::crossf(vel, I * vel);
+    
+    std::cout  << "\n\nSpatial force " << std::endl;
+    std::cout  << force << std::endl;
+    std::cout  << std::endl;
+}
+
+
 int 
 main()
 {
@@ -209,5 +251,8 @@ main()
     example2();
     
     // Example 3 -- clarify interface
+    newton_euler();
+    
+    // Example 4 -- clarify interface
     single_body();
 }
