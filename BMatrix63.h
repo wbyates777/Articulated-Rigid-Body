@@ -243,7 +243,7 @@ public:
     size_t 
     cols( void ) const { return 6; }
 
-    std::array<std::array<BScalar, 6>, 3>
+    std::array<std::array<BScalar, 6>, 3>&
     data( void ) { return m_data; }
     
     const std::array<std::array<BScalar, 6>, 3>&
