@@ -367,7 +367,7 @@ BJoint::getQuat(const std::vector<BScalar> &q) const
 {
     assert(m_jtype == BJointType::BSpherical);
     
-    return BQuat(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2], q[m_widx]);
+    return BQuat(q[m_widx], q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]);
 }
 
 void 
