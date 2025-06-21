@@ -8,6 +8,14 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
+ Spatial Vector (see Featherstone, RBDA).
+ 
+ Represents a 6D spatial vector, Could be a motion vector $m \in M^6$ 
+ or a force vector $f \in F^6$.
+ 
+ Colloquially, a spatial velocity vector is called a 'twist', 
+ while a spatial force vector is called a 'wrench'.
+ 
 */
 
 
@@ -31,7 +39,7 @@ public:
     explicit BSpatialVector( const std::vector<BScalar> &d ) { assert(d.size() == 6); set(d); }
     explicit BSpatialVector( const std::vector<std::vector<BScalar>> &d ) { assert(d.size() == 1 && d[0].size() == 6); set(d[0]); }
     BSpatialVector( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ): m_data({s0, s1, s2, s3, s4, s5}) {}
-    explicit BSpatialVector( const BVector3 &h, const BVector3 &t ): m_data({h[0], h[1], h[2], t[0], t[1], t[2]}) {}
+    BSpatialVector( const BVector3 &h, const BVector3 &t ): m_data({h[0], h[1], h[2], t[0], t[1], t[2]}) {}
     ~BSpatialVector( void )=default;
     
     void
@@ -59,13 +67,13 @@ public:
         m_data[3] = t[0]; m_data[4] = t[1]; m_data[5] = t[2];
     }
     
-    // angular - a force or velocity
+    // angular
     const BVector3
-    head( void ) const { return BVector3(m_data[0], m_data[1], m_data[2]); }
-    
-    // linear - a force or velocity
+    ang( void ) const { return BVector3(m_data[0], m_data[1], m_data[2]); }
+
+    // linear
     const BVector3
-    tail( void ) const { return BVector3(m_data[3], m_data[4], m_data[5]); }
+    lin( void ) const { return BVector3(m_data[3], m_data[4], m_data[5]); }
     
     BScalar&
     operator[]( int i ) { return m_data[i]; }
@@ -73,8 +81,8 @@ public:
     const BScalar
     operator[]( int i ) const { return m_data[i]; }
 
-    size_t 
-    size( void ) const { return 6; }
+    static size_t 
+    size( void ) { return 6; }
     
     std::array<BScalar, 6>&
     data( void ) { return m_data; }
@@ -82,52 +90,19 @@ public:
     const std::array<BScalar, 6>&
     data( void ) const { return m_data; }
     
-
-    const BSpatialVector
-    operator+( const BSpatialVector &v ) const
-    {
-        return BSpatialVector(m_data[0] + v[0], m_data[1] + v[1], m_data[2] + v[2], m_data[3] + v[3], m_data[4] + v[4], m_data[5] + v[5]);
-    }
-    
-    const BSpatialVector
-    operator-( const BSpatialVector &v ) const
-    {
-        return BSpatialVector(m_data[0] - v[0], m_data[1] - v[1], m_data[2] - v[2], m_data[3] - v[3], m_data[4] - v[4], m_data[5] - v[5]);
-    }
     
     const BSpatialVector
     operator-( void ) const
     {
-        return BSpatialVector(-m_data[0], -m_data[1], -m_data[2], -m_data[3], -m_data[4], -m_data[5]);
+        return BSpatialVector(-m_data[0], -m_data[1], -m_data[2], 
+                              -m_data[3], -m_data[4], -m_data[5]);
     }
-    
+  
     const BSpatialVector
     operator/( BScalar s ) const
     {
-        return BSpatialVector(m_data[0] / s, m_data[1] / s, m_data[2] / s, m_data[3] / s, m_data[4] / s, m_data[5] / s);
-    }
-    
-    const BSpatialVector
-    operator*( BScalar s ) const
-    { 
-        return BSpatialVector(m_data[0] * s, m_data[1] * s,  m_data[2] * s, m_data[3] * s, m_data[4] * s, m_data[5] * s); 
-    }
-    
-    
-    const BSpatialVector&
-    operator-=( const BSpatialVector &v )
-    {
-        m_data[0] -= v[0]; m_data[1] -= v[1]; m_data[2] -= v[2];
-        m_data[3] -= v[3]; m_data[4] -= v[4]; m_data[5] -= v[5];
-        return *this;
-    }
-    
-    const BSpatialVector&
-    operator+=( const BSpatialVector &v )
-    {
-        m_data[0] += v[0]; m_data[1] += v[1]; m_data[2] += v[2];
-        m_data[3] += v[3]; m_data[4] += v[4]; m_data[5] += v[5];
-        return *this;
+        return BSpatialVector(m_data[0] / s, m_data[1] / s, m_data[2] / s, 
+                              m_data[3] / s, m_data[4] / s, m_data[5] / s);
     }
     
     const BSpatialVector&
@@ -138,6 +113,13 @@ public:
         return *this;
     }
     
+    const BSpatialVector
+    operator*( BScalar s ) const
+    { 
+        return BSpatialVector(m_data[0] * s, m_data[1] * s, m_data[2] * s, 
+                              m_data[3] * s, m_data[4] * s, m_data[5] * s); 
+    }
+    
     const BSpatialVector&
     operator*=( BScalar s )
     {
@@ -145,7 +127,36 @@ public:
         m_data[3] *= s; m_data[4] *= s; m_data[5] *= s;
         return *this;
     }
-
+    
+    const BSpatialVector
+    operator+( const BSpatialVector &v ) const
+    {
+        return BSpatialVector(m_data[0] + v[0], m_data[1] + v[1], m_data[2] + v[2], 
+                              m_data[3] + v[3], m_data[4] + v[4], m_data[5] + v[5]);
+    }
+    
+    const BSpatialVector&
+    operator+=( const BSpatialVector &v )
+    {
+        m_data[0] += v[0]; m_data[1] += v[1]; m_data[2] += v[2];
+        m_data[3] += v[3]; m_data[4] += v[4]; m_data[5] += v[5];
+        return *this;
+    }
+    
+    const BSpatialVector
+    operator-( const BSpatialVector &v ) const
+    {
+        return BSpatialVector(m_data[0] - v[0], m_data[1] - v[1], m_data[2] - v[2], 
+                              m_data[3] - v[3], m_data[4] - v[4], m_data[5] - v[5]);
+    }
+    
+    const BSpatialVector&
+    operator-=( const BSpatialVector &v )
+    {
+        m_data[0] -= v[0]; m_data[1] -= v[1]; m_data[2] -= v[2];
+        m_data[3] -= v[3]; m_data[4] -= v[4]; m_data[5] -= v[5];
+        return *this;
+    }
 
     bool 
     operator==( const BSpatialVector& v ) const { return (m_data == v.m_data); }
@@ -158,70 +169,40 @@ private:
     std::array<BScalar, 6> m_data;
 };
 
-inline const BSpatialVector 
-operator*( BScalar s, const BSpatialVector &v ) 
 // scalar multiplication
-{ 
-    return v * s; 
-} 
+inline const BSpatialVector 
+operator*( BScalar s, const BSpatialVector &v ) { return v * s; } 
 
+namespace arb
+{
 
+    inline bool 
+    isnan(const BVector3 &v) { return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]); }
+
+    // spatial dot product
+    inline BScalar 
+    dot(const BSpatialVector &v1, const BSpatialVector &v2)
+    {
+        return glm::dot(v1.ang(), v2.ang()) + glm::dot(v1.lin(), v2.lin());
+        //return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]) 
+        //        + (v1[3] * v2[3]) + (v1[4] * v2[4]) + (v1[5] * v2[5]);
+    }
+};
 
 inline std::ostream&
-operator<<( std::ostream& ostr, const BSpatialVector& v )
+operator<<( std::ostream &ostr, const BSpatialVector &v )
 {
     ostr << v[0] << ' ' << v[1] << ' ' << v[2] << ' ' << v[3] << ' ' << v[4] << ' ' << v[5] << ' ';
     return ostr;
 }
 
 inline std::istream& 
-operator>>( std::istream& istr, BSpatialVector& v )
+operator>>( std::istream &istr, BSpatialVector &v )
 {
     istr >> v[0] >> v[1] >> v[2] >> v[3] >> v[4] >> v[5];
     return istr;
 }
 
-//
-// Articulated Rigid Body
-//
-
-namespace arb
-{
-    // spatial cross products (RBDA, Section 2.9)
-
-    // motion
-    inline const BSpatialVector 
-    crossm(const BSpatialVector &v1, const BSpatialVector &v2) 
-    {
-        return BSpatialVector( -v1[2] * v2[1] + v1[1] * v2[2],
-                                v1[2] * v2[0] - v1[0] * v2[2],
-                               -v1[1] * v2[0] + v1[0] * v2[1],
-                               -v1[5] * v2[1] + v1[4] * v2[2] - v1[2] * v2[4] + v1[1] * v2[5],
-                                v1[5] * v2[0] - v1[3] * v2[2] + v1[2] * v2[3] - v1[0] * v2[5],
-                               -v1[4] * v2[0] + v1[3] * v2[1] - v1[1] * v2[3] + v1[0] * v2[4] );
-    }
-
-    // force
-    inline const BSpatialVector 
-    crossf(const BSpatialVector &v1, const BSpatialVector &v2) 
-    {
-        return BSpatialVector( -v1[2] * v2[1] + v1[1] * v2[2] - v1[5] * v2[4] + v1[4] * v2[5],
-                                v1[2] * v2[0] - v1[0] * v2[2] + v1[5] * v2[3] - v1[3] * v2[5],
-                               -v1[1] * v2[0] + v1[0] * v2[1] - v1[4] * v2[3] + v1[3] * v2[4],
-                               -v1[2] * v2[4] + v1[1] * v2[5],
-                                v1[2] * v2[3] - v1[0] * v2[5],
-                               -v1[1] * v2[3] + v1[0] * v2[4] );
-    }
-
-    // spatial dot product 
-    inline const BScalar 
-    dot(const BSpatialVector &v1, const BSpatialVector &v2)
-    {
-        return glm::dot(v1.head(), v2.head()) + glm::dot(v1.tail(), v2.tail());
-        //return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]) + (v1[3] * v2[3]) + (v1[4] * v2[4]) + (v1[5] * v2[5]);
-    }
-
-}
 
 
 

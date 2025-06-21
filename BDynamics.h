@@ -55,73 +55,68 @@
 #endif
 
 
+struct BModelState 
+{
+    // joint parameters
+    std::vector<BScalar> q;     // positions
+    std::vector<BScalar> qdot;  // velocities
+    std::vector<BScalar> qddot; // accelerations
+    std::vector<BScalar> tau;   // forces
+};
+
+typedef  std::vector<BSpatialVector> BExtForce;
+
 class BDynamics
 {
     
 public:
     
-    BDynamics( void );
+    BDynamics( int expected_dof = 3 );
     ~BDynamics( void )=default;
     
     
     /** \brief Computes forward dynamics with the Articulated Body algorithm (ABA)
      *
-     * This function computes the generalized accelerations from given
+     * This function computes the generalized accelerations $a$ from given
      * generalized states, velocities and forces:
      *   \f$ \ddot{q} = M(q)^{-1} ( -N(q, \dot{q}) + \tau)\f$
      * It does this by using the recursive Articulated Body Algorithm that runs
      * in \f$O(n_{dof})\f$ with \f$n_{dof}\f$ being the number of joints.
      *
-     * \param model rigid body model
-     * \param q     state vector of the internal joints
-     * \param qdot  velocity vector of the internal joints
-     * \param tau   actuations of the internal joints
-     * \param qddot accelerations of the internal joints (output)
-     * \param f_ext External forces acting on the body in base coordinates (optional, defaults to empty)
+     * \param m      rigid body model
+     * \param qstate state  of the internal joints (positions, velocities, accelerations)
+     * \param f_ext  External forces acting on the body in base coordinates (optional, defaults to empty)
      */
-    void 
-    forward( BModel &model,
-            const std::vector<BScalar> &q,
-            const std::vector<BScalar> &qdot,
-            const std::vector<BScalar> &tau,
-            std::vector<BScalar>       &qddot, // output 
-            const std::vector<BSpatialVector> &f_ext = std::vector<BSpatialVector>() ); 
+    void
+    forward( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce() ); 
     
     
     /** \brief Computes inverse dynamics with the recursive Newton-Euler algorithm (RNEA)
      *
-     * This function computes the generalized forces from given generalized
+     * This function computes the generalized forces $\tau$ from given generalized
      * states, velocities, and accelerations:
      *   \f$ \tau = M(q) \ddot{q} + N(q, \dot{q}, f_\textit{ext}) \f$
      *
-     * \param model rigid body model
-     * \param q     state vector of the internal joints
-     * \param qdot  velocity vector of the internal joints
-     * \param qddot accelerations of the internals joints
-     * \param tau   actuations of the internal joints (output)
-     * \param f_ext External forces acting on the body in base coordinates (optional, defaults to empty)
+     * \param m      rigid body model
+     * \param qstate state  of the internal joints (positions, velocities, accelerations)
+     * \param f_ext  External forces acting on the body in base coordinates (optional, defaults to empty)
      */
-    void 
-    inverse( BModel &model, 
-            const std::vector<BScalar> &q,
-            const std::vector<BScalar> &qdot,
-            const std::vector<BScalar> &qddot,
-            std::vector<BScalar> &tau, // output 
-            const std::vector<BSpatialVector> &f_ext = std::vector<BSpatialVector>());
+    void  
+    inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce());
     
+
 private:
     
     // the function implemented here is $m = a * b^T$
-    inline const BSpatialMatrix
-    mulT( const BSpatialVector& a, const BSpatialVector& b ) const;
+    static inline const BSpatialMatrix
+    vvmult( const BSpatialVector& a, const BSpatialVector& b );
     
     // temporary variables U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
     std::vector<BSpatialVector> m_U; // $U_i = I_i^A  S_i$ 
     std::vector<BScalar> m_d;        // $d_i = S_i^T U_i$
     std::vector<BScalar> m_u;        // $u_i = \tau_i − S_i^T p_i^A$
-    // velocity-dependent spatial acceleration term $c_i$ (see RBDA, equation 7.35)
-    std::vector<BSpatialVector> m_c; // $c_i = c_J + v_i \cross v_J$
-    
+   
+
     // temporary variables for joints with 3 degrees of freedom
     std::vector<BMatrix63> m_dof3_U;
     std::vector<BMatrix3>  m_dof3_Dinv;

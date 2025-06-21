@@ -186,43 +186,6 @@
 #include "BSpatialTransform.h"
 #endif
 
-enum BJointType 
-{
-  BUndefined = 0,
- 
-  BPrismatic,   ///< Sliding joint
-  
-  BRevolute,    ///<  Hinge joint
-  BRevoluteX,
-  BRevoluteY,
-  BRevoluteZ,
-    
-  // Spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
-  BSpherical, ///< 3 DoF joint using Quaternions for joint positional variables and angular velocity for joint velocity variables.
-  BEulerZYX,  ///< 3 DoF joint that uses Euler ZYX convention (faster than emulated multi DoF joints).
-  BEulerXYZ,  ///< 3 DoF joint that uses Euler XYZ convention (faster than emulated multi DoF joints).
-  BEulerYXZ,  ///< 3 DoF joint that uses Euler YXZ convention (faster than emulated multi DoF joints).
-  BEulerZXY,  ///< 3 DoF joint that uses Euler ZXY convention (faster than emulated multi DoF joints).
-  BTranslationXYZ,
-  
-  BFloatingBase, ///< A 6-DoF joint for floating-base (or freeflyer) systems.
-  
-  BFixed,        ///< Fixed joint which causes the inertial properties to be merged with the parent body.
-  
-  BHelical,      ///< A 1-DoF 'screw' joint with both rotational and translational motion.
-  
-  B1DoF,
-  B2DoF, ///< Emulated 2 DoF joint.
-  B3DoF, ///< Emulated 3 DoF joint.
-  B4DoF, ///< Emulated 4 DoF joint.
-  B5DoF, ///< Emulated 5 DoF joint.
-  B6DoF, ///< Emulated 6 DoF joint.
-    ///<
-  
-    
- // BCustom,
-  BMaxJoint    
-};
 
 
 
@@ -230,10 +193,53 @@ class BJoint
 {
     
 public:
+   
+    
+    enum BJointType 
+    {
+      BUNDEFINED = 0,
+     
+      // values here are important - do not change
+      B1DoF = 1,
+      B2DoF = 2, ///< Emulated 2 DoF joint.
+      B3DoF = 3, ///< Emulated 3 DoF joint.
+      B4DoF = 4, ///< Emulated 4 DoF joint.
+      B5DoF = 5, ///< Emulated 5 DoF joint.
+      B6DoF = 6, ///< Emulated 6 DoF joint.
+      //
+        
+      BPrismatic,   ///< Sliding joint
+      
+      BRevolute,    ///<  Hinge joint
+      BRevoluteX,
+      BRevoluteY,
+      BRevoluteZ,
+        
+      // Spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
+      BSpherical, ///< 3 DoF joint using Quaternions for joint positional variables and angular velocity for joint velocity variables.
+      BEulerZYX,  ///< 3 DoF joint that uses Euler ZYX convention (faster than emulated multi DoF joints).
+      BEulerXYZ,  ///< 3 DoF joint that uses Euler XYZ convention (faster than emulated multi DoF joints).
+      BEulerYXZ,  ///< 3 DoF joint that uses Euler YXZ convention (faster than emulated multi DoF joints).
+      BEulerZXY,  ///< 3 DoF joint that uses Euler ZXY convention (faster than emulated multi DoF joints).
+      BTranslationXYZ,
+      
+      BFloatingBase, ///< A 6-DoF joint for floating-base (or freeflyer) systems.  It is internally modeled by a JointTypeTranslationXYZ and a JointTypeSpherical joint. It is recommended to only use this joint for the very first body added to the model.
+      
+      BFixed,        ///< Fixed joint which causes the inertial properties to be merged with the parent body.
+      
+      BHelical,      ///< A 1-DoF 'screw' joint with both rotational and translational motion.
+      
+  
+        ///<
+      
+        
+     // BCustom,
+      BMAXJOINT    
+    };
     
     BJoint( void )=default;
-    
-    BJoint( BJointType type );
+
+    BJoint( BJointType joint_type );
     
     // only joint_type BRevolute or BPrismatic; joint_axis is axis of rotation or translation
     BJoint( BJointType joint_type, const BVector3 &joint_axis);
@@ -269,7 +275,13 @@ public:
     ~BJoint( void )=default;
     
     void
-    init( void );
+    clear( void );
+    
+    void
+    setId( BJointId jid ) { m_id = jid; }
+    
+    BJointId
+    getId( void ) const { return m_id; }
     
     int
     DoFCount( void ) const { return (int) m_jointAxes.size(); }
@@ -281,6 +293,7 @@ public:
     void
     jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot );
     
+
     // the spatial axis i of the joint
     const BSpatialVector&
     axis( int i ) const { return m_jointAxes[i]; }
@@ -294,39 +307,28 @@ public:
     const BSpatialTransform& 
     X_lambda( void ) const { return m_X_lambda; }
    
-    // the action of the joint - typically a function of the joint's type m_jtype and state $q$     
+    // the action of the joint - typically a function of the joint's type m_jtype and state $q = (pos,vel,acc,tau)$     
     // $X_J = (E,r)$ (see RBDA, Table 4.1)
     const BSpatialTransform& 
     X_J( void ) const { return m_X_J; } 
     
-    // transformation from the parent body frame $\lambda(i)$ to the origin of the joint frame  
-    // locating transform for the joint (see RBDA, Section 4.2)
+    // transformation from the parent body $\lambda(i)$ to the origin 
+    // of the joint frame in body $i$ (see RBDA, Section 4.2, page 73). 
+    // $X_T$ locates the joint's coordinate frame origin in body $i$.
+    // Set by BModel::addBody(). 
     const BSpatialTransform& 
     X_T( void ) const { return m_X_T; }
     
-    // set by BModel::addBody
     void 
     X_T( const BSpatialTransform &b )  { m_X_T = b; }
     
     
     // a joint's motion subspace $S$ (see RBDA, Table 4.1) - depends on type of joint 
     // when DoF=1 $S$=SpatialVector, DoF=3 $S$=Matrix63, DoF=6 $S$=SpatialMatrix
-    const BMotionSpace& 
+    const BJointSpace& 
     S( void ) const { return m_S; }
 
-    void
-    setMotionSpace( const BMotionSpace &m ) { m_S = m; }
-    
-    inline void
-    setMotionSpace( const BSpatialVector &v );
-    
-    void
-    setMotionSpace( const BMatrix63 &m );
-  
-    void
-    setMotionSpace( const BSpatialMatrix &m );
-    
-    
+
     // joint spatial velocity $v_J$ (see RBDA, Section 4.4)
     const BSpatialVector&
     v_J( void ) const { return m_v_J; } 
@@ -352,52 +354,73 @@ public:
     void
     dof3_windex( int w ) { m_widx = w; }
     
-    //friend std::ostream&
-    //operator<<( std::ostream& ostr, const BJoint &j );
+    bool 
+    operator==( const BJoint &v ) const { return (m_id == v.m_id); }
+    
+    bool 
+    operator!=( const BJoint &v ) const { return (m_id != v.m_id); }
+    
+   
+    static std::string 
+    toString( BJointType jt );
     
 private:
     
-    bool 
-    validate_spatial_axis( BSpatialVector &axis ) const;
+    void
+    setJointSpace( const BJointSpace &m ) { m_S = m; }
+    
+    inline void
+    setJointSpace( const BSpatialVector &v );
+    
+    void
+    setJointSpace( const BMatrix63 &m );
+  
+    void
+    setJointSpace( const BSpatialMatrix &m );
+    
+    static bool 
+    validate_spatial_axis( const BSpatialVector &axis );
     
     void
     setJoint( const std::vector<BSpatialVector> &axes );
     
+    BJointId     m_id;
 
     int          m_qidx;
     int          m_widx; // if joint is spherical - index of quaternion $w$ variable
     BJointType   m_jtype; 
 
-         
+  
+    // $s^X_p$ = rot(E) xlt(r) - rotation(E) * translate(r)
     BSpatialTransform m_X_lambda;  // ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
     BSpatialTransform m_X_J;       // see RBDA Section 4.4 and Table 4.1
-    BSpatialTransform m_X_T;       // $X_T$ locates a joint in the tree (see RBDA, Section 4.2)
+    BSpatialTransform m_X_T;       // $X_T$ transform from parent frame to joint position (see RBDA, Section 4.2)
     
     // joint state variables - joint spatial velocity and spatial acceleration (see RBDA, Section 4.4)
     BSpatialVector    m_v_J;     
     BSpatialVector    m_c_J;       
    
     // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)
-    BMotionSpace   m_S; 
+    BJointSpace       m_S; 
 
     // spatial axes of the joint; 1 for each degree of freedom
     std::vector<BSpatialVector> m_jointAxes;
     
-    // motion subspace constants
+    // motion subspace constants -- note type here is std::vector not std::array
     static const std::vector<std::vector<BScalar>> m_ZERO_6x3;
     static const std::vector<std::vector<BScalar>> m_ZERO_1x6;
     static const std::vector<std::vector<BScalar>> m_ZERO_6x6;
 };
 
 inline std::ostream&
-operator<<( std::ostream& ostr, const BJoint &j )
+operator<<( std::ostream &ostr, const BJoint &j )
 {
     ostr << j.X_lambda() << '\n';
     ostr << j.X_T() << '\n';
     ostr << j.X_J() << '\n';
     ostr << j.v_J() << '\n';
     ostr << j.c_J() << '\n';
-    ostr << j.S() << '\n';
+    ostr << j.S()   << '\n';
     ostr << j.DoFCount() << '\n';
     
     for (int i = 0; i < j.DoFCount(); ++i)
@@ -407,6 +430,11 @@ operator<<( std::ostream& ostr, const BJoint &j )
     return ostr;
 }
 
+
+
+
 #endif
+
+
 
 

@@ -17,8 +17,8 @@
 
 
 
-#ifndef __BSPATIALVECTOR_H__
-#include "BSpatialVector.h"
+#ifndef __BSPATIALMATRIX_H__
+#include "BSpatialMatrix.h"
 #endif
 
 
@@ -30,7 +30,7 @@ public:
     BMatrix63( void )=default;
     explicit BMatrix63( BScalar s ) { set(s); }
     
-    BMatrix63( const std::array<std::array<BScalar, 3>, 6>& d): m_data(d) {}
+    BMatrix63( const std::array<std::array<BScalar, 3>, 6> &d): m_data(d) {}
     
     explicit BMatrix63( const std::vector<std::vector<BScalar>> &d ) 
     {
@@ -38,11 +38,11 @@ public:
         set(d);
     }
     BMatrix63( BScalar m00, BScalar m01, BScalar m02, 
-              BScalar m10, BScalar m11, BScalar m12, 
-              BScalar m20, BScalar m21, BScalar m22, 
-              BScalar m30, BScalar m31, BScalar m32, 
-              BScalar m40, BScalar m41, BScalar m42, 
-              BScalar m50, BScalar m51, BScalar m52 ) 
+               BScalar m10, BScalar m11, BScalar m12, 
+               BScalar m20, BScalar m21, BScalar m22, 
+               BScalar m30, BScalar m31, BScalar m32, 
+               BScalar m40, BScalar m41, BScalar m42, 
+               BScalar m50, BScalar m51, BScalar m52 ) 
     { 
         set(m00, m01, m02,
             m10, m11, m12,
@@ -73,11 +73,11 @@ public:
     
     void 
     set( BScalar m00, BScalar m01, BScalar m02, 
-        BScalar m10, BScalar m11, BScalar m12, 
-        BScalar m20, BScalar m21, BScalar m22, 
-        BScalar m30, BScalar m31, BScalar m32, 
-        BScalar m40, BScalar m41, BScalar m42, 
-        BScalar m50, BScalar m51, BScalar m52 )
+         BScalar m10, BScalar m11, BScalar m12, 
+         BScalar m20, BScalar m21, BScalar m22, 
+         BScalar m30, BScalar m31, BScalar m32, 
+         BScalar m40, BScalar m41, BScalar m42, 
+         BScalar m50, BScalar m51, BScalar m52 )
     {
         m_data[0][0] = m00; m_data[0][1] = m01; m_data[0][2] = m02;
         m_data[1][0] = m10; m_data[1][1] = m11; m_data[1][2] = m12;
@@ -93,11 +93,11 @@ public:
     const std::array<BScalar, 3>&
     operator[]( int i ) const { return m_data[i]; }
     
-    size_t 
-    rows( void ) const { return 6; }
+    static size_t 
+    rows( void ) { return 6; }
     
-    size_t 
-    cols( void ) const { return 3; }
+    static size_t 
+    cols( void ) { return 3; }
     
     std::array<std::array<BScalar, 3>, 6>&
     data( void ) { return m_data; }
@@ -135,23 +135,35 @@ public:
         return retVal; 
     }
 
+    const BMatrix63&
+    operator*=( BScalar s )
+    {
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j] *= s;
+        return *this;    
+    }
 
+    bool 
+    operator==( const BMatrix63 &v ) const { return (m_data == v.m_data); }
+    
+    bool 
+    operator!=( const BMatrix63 &v ) const { return (m_data != v.m_data); }
+
+    
 private:
     
     std::array<std::array<BScalar, 3>, 6> m_data;
 
 };
 
-
-inline const BMatrix63 
-operator*( BScalar s, const BMatrix63 &v ) 
 // scalar multiplication
-{ 
-    return v * s; 
-}
+inline const BMatrix63 
+operator*( BScalar s, const BMatrix63 &v ) { return v * s; }
+
 
 inline std::ostream&
-operator<<( std::ostream& ostr, const BMatrix63& m )
+operator<<( std::ostream &ostr, const BMatrix63 &m )
 {
     ostr << m[0][0] << ' ' << m[0][1] << ' ' << m[0][2] << '\n'
          << m[1][0] << ' ' << m[1][1] << ' ' << m[1][2] << '\n'
@@ -163,7 +175,7 @@ operator<<( std::ostream& ostr, const BMatrix63& m )
 }
 
 inline std::istream& 
-operator>>( std::istream& istr, BMatrix63& m )
+operator>>( std::istream &istr, BMatrix63 &m )
 {
     istr >> m[0][0] >> m[0][1] >> m[0][2] 
          >> m[1][0] >> m[1][1] >> m[1][2] 
@@ -187,7 +199,7 @@ public:
 
     BMatrix36( void )=default;
     explicit BMatrix36( BScalar s ) { set(s); }
-    BMatrix36( const std::array<std::array<BScalar, 6>, 3>& d ): m_data(d) {}
+    BMatrix36( const std::array<std::array<BScalar, 6>, 3> &d ): m_data(d) {}
     
     explicit BMatrix36( const std::vector<std::vector<BScalar>> &d )
     {
@@ -237,11 +249,11 @@ public:
     const std::array<BScalar, 6>&
     operator[]( int i ) const { return m_data[i]; }
     
-    size_t 
-    rows( void ) const { return 3; }
+    static size_t 
+    rows( void ) { return 3; }
     
-    size_t 
-    cols( void ) const { return 6; }
+    static size_t 
+    cols( void ) { return 6; }
 
     std::array<std::array<BScalar, 6>, 3>&
     data( void ) { return m_data; }
@@ -280,20 +292,54 @@ public:
         return retVal; 
     }
 
+    const BMatrix36&
+    operator*=( BScalar s )
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 6; ++j )
+                m_data[i][j] *= s;
+        return *this;    
+    }
+    
+    bool 
+    operator==( const BMatrix36 &v ) const { return (m_data == v.m_data); }
+    
+    bool 
+    operator!=( const BMatrix36 &v ) const { return (m_data != v.m_data); }
+    
 private:
     
     std::array<std::array<BScalar, 6>, 3> m_data;
 };
 
-inline const BMatrix36 
-operator*( BScalar s, const BMatrix36 &m ) 
 // scalar multiplication
-{ 
-    return m * s; 
+inline const BMatrix36 
+operator*( BScalar s, const BMatrix36 &m ) { return m * s; }
+
+inline const BSpatialMatrix 
+operator*( const BMatrix63 &m1, const BMatrix36 &m2 )  
+{
+    BSpatialMatrix retVal(0.0);
+    for ( int i = 0; i < 6; ++i )
+        for ( int j = 0; j < 6; ++j )
+            for ( int k = 0; k < 3; ++k )
+                retVal[i][j] += m1[i][k] * m2[k][j];
+    return retVal;
+}
+
+inline const BMatrix63 //  move this out of this class
+operator*( const BSpatialMatrix &m1, const BMatrix63 &m2 ) 
+{    
+    BMatrix63 retVal(0.0);
+    for ( int i = 0; i < 6; ++i ) 
+        for ( int j = 0; j < 3; ++j )
+            for ( int k = 0; k < 6; ++k ) 
+                retVal[i][j] += m1[i][k] * m2[k][j];
+    return retVal;
 }
 
 inline std::ostream&
-operator<<( std::ostream& ostr, const BMatrix36& m )
+operator<<( std::ostream &ostr, const BMatrix36 &m )
 {
     ostr << m[0][0] << ' ' << m[0][1] << ' ' << m[0][2] << ' ' << m[0][3] << ' ' << m[0][4] << ' ' << m[0][5] << '\n'
          << m[1][0] << ' ' << m[1][1] << ' ' << m[1][2] << ' ' << m[1][3] << ' ' << m[1][4] << ' ' << m[1][5] << '\n'
@@ -302,7 +348,7 @@ operator<<( std::ostream& ostr, const BMatrix36& m )
 }
 
 inline std::istream& 
-operator>>( std::istream& istr, BMatrix36& m )
+operator>>( std::istream &istr, BMatrix36 &m )
 {
     istr >> m[0][0] >> m[0][1] >> m[0][2] >> m[0][3] >> m[0][4] >> m[0][5]
          >> m[1][0] >> m[1][1] >> m[1][2] >> m[1][3] >> m[1][4] >> m[1][5]

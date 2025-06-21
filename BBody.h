@@ -10,16 +10,21 @@
 
  Describes all properties of a single body
  
- A BBody contains information about mass, the location of its center of
- mass, and the ineria tensor at the center of mass. This class is
- designed to use the given information and transform it such that it can
- directly be used by the spatial algebra.
  
- gyration_radii used to set the main diagonal of inertia tensor 
+ Gyration radii used to set the main diagonal of inertia tensor 
  see https://en.wikipedia.org/wiki/List_of_moments_of_inertia
- also see https://en.wikipedia.org/wiki/Radius_of_gyration
+
  
- Observe body i (Bi) is in A_i but joint i (J_i) is not
+
+ Example 1.
+ 
+ double mass = 99.0;   // kg
+ double radius = 0.25; // m
+ BVector3 gyration_radii = BVector3((2.0 / 5.0) * mass * (radius * radius));
+ BVector3 com = BVector3(0.0); // centre of mass in body coordinates
+ 
+ BBody sphere = BBody(mass,  com, gyration_radii);
+ 
  
 */
 
@@ -40,64 +45,154 @@ class BBody
 {
     
 public:
-    
+
     BBody( void )=default; 
     
+    // construct a body from mass, center of mass (com) and radii of gyration
+    // gyration radii used to set the main diagonal of inertia tensor 
     BBody( BScalar mass,
            const BVector3 &com,
-           const BVector3 &gyration_radii, 
-           bool isVirtual = false );
+           const BVector3 &gyration_radii = B_ONE_3,
+           bool isVirtual = false) : m_id(0), 
+                                     m_vel(B_ZERO_6), 
+                                     m_acc(B_ZERO_6),
+                                     m_c(B_ZERO_6),
+                                     m_I(0.0, B_ZERO_3, B_ZERO_3x3),
+                                     m_X_base(B_IDENTITY_3x3, B_ZERO_3), 
+                                     m_isVirtual(isVirtual)
+    {
+        BMatrix3 inertia_com = BMatrix3( gyration_radii[0], 0.0, 0.0,
+                             0.0, gyration_radii[1], 0.0,
+                             0.0, 0.0, gyration_radii[2] );
+        
+        m_I.setInertiaCom(mass, com, inertia_com);
+    }
 
+    // construct a body from mass, center of mass (com) and inertia $I_c$
+    // $I_c$ is defined with respect to the centre of mass $com$ 
+    // if $c = com$ is non-zero then $I_c$ will be translated to position $-com$ - the origin of the rigid body.
     BBody( BScalar mass,
            const BVector3 &com,
-           const BMatrix3 &inertia_C,
-           bool isVirtual = false );
+           const BMatrix3 &inertia_com,
+           bool isVirtual = false) : m_id(0), 
+                                     m_vel(B_ZERO_6), 
+                                     m_acc(B_ZERO_6), 
+                                     m_c(B_ZERO_6),
+                                     m_I(0.0, B_ZERO_3, B_ZERO_3x3),
+                                     m_X_base(B_IDENTITY_3x3, B_ZERO_3), 
+                                     m_isVirtual(isVirtual) 
+    {
+        m_I.setInertiaCom(mass, com, inertia_com);
+    }
+    
+   /* explicit BBody( const BSpatialInertia &I, bool isVirtual = false ) : m_id(0), 
+                                                                m_X_base(B_IDENTITY_3x3, B_ZERO_3), 
+                                                                m_I(I),
+                                                                m_vel(B_ZERO_6), 
+                                                                m_acc(B_ZERO_6), 
+                                                                m_isVirtual(isVirtual) {}*/
     
     ~BBody( void )=default;
     
     void
-    init( void );
-    
+    clear( void )
+    {
+        //m_id     = 0;
+        m_vel = m_acc = m_c = B_ZERO_6;
+        m_I.clear();
+        m_X_base.clear(); 
+        m_isVirtual = false;
+    }
+
     void
-    set( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_C, bool isVirtual = false );
+    setId( BBodyId bid ) { m_id = bid; }
+    
+    BBodyId
+    getId( void ) const { return m_id; }
+    
+    
+    
+    //
+    void 
+    setBody( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_com, bool isVirtual = false )
+    {
+        m_vel = m_acc = m_c = B_ZERO_6; 
+        m_I.setInertiaCom(mass, com, inertia_com);
+        m_X_base.clear();
+        m_isVirtual = isVirtual;
+    }
     
     void 
-    mass( BScalar m ) { m_mass = m; }
+    mass( BScalar m ) { m_I.setMass(m); }
     
     BScalar 
-    mass( void ) const { return m_mass; }
+    mass( void ) const { return m_I.mass(); }
 
-    // com - centre of mass
+    // centre of mass in body coordinates
     void
-    com( const BVector3& c ) { m_com = c; }
+    com( const BVector3 &c ) { m_I.setCom(c); }
     
-    const BVector3& 
-    com( void ) const { return m_com; }
+    const BVector3 
+    com( void ) const { return  m_I.com(); }
     
+    // first moment of mass 
+    const BVector3 
+    h( void ) const { return m_I.h(); }
+    
+    // set the inertia at the centre of mass $com$ (which may be non-zero)
     void 
-    inertia( const BMatrix3& I ) { m_inertia = I; }
+    inertiaCom( const BMatrix3 &I ) { m_I.setInertiaCom(I); }
+
+    // get the inertia at the centre of mass $com$ (which may be non-zero)
+    const BMatrix3 //used in Fixed body constructor
+    inertiaCom( void ) const { return m_I.inertiaCom();  }
     
+    // get the inertia at the the origin of this body's coordinate frame
     const BMatrix3& 
-    inertia( void ) const { return m_inertia; } 
+    inertia( void ) const { return m_I.inertia();  } 
     
-    bool
-    isVirtual( void ) const { return m_isVirtual; }
+
+    // spatial interia of body at the origin $I_i$ (see RBDA, Section 7.1) 
+    const BSpatialInertia&
+    I( void ) const { return m_I; }
+
+    void  
+    I( const BSpatialInertia &si ) { m_I = si; }
     
-    // transformation from the base to this body's reference frame - set dynamically
+    
+    // X is a transform from this frame to other body frame
+    // transform other body inertia into this frame and add
+    void 
+    join( const BSpatialTransform &X, const BBody &other_body )
+    {
+        if (other_body.mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
+            return;
+        
+        assert(m_I.mass() + other_body.mass() != 0.0);
+        m_I += arb::inverse(X).apply(other_body.I()); 
+    }
+
+    // X is a transform from this frame to other body frame
+    // transform other body inertia into this frame and subtract
+    void 
+    separate( const BSpatialTransform &X, const BBody &other_body )
+    {
+        if (other_body.mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
+            return;
+        
+        assert(m_I.mass() + other_body.mass() != 0.0);
+        m_I -= arb::inverse(X).apply(other_body.I()); 
+    }
+    
+    // transformation from the base to this body's $B_i$ coordinate frame $F^i$ - set in  BDynmaics::forward()
     const BSpatialTransform& 
     X_base( void ) const { return m_X_base; }
     
     void
     X_base( const BSpatialTransform &b )  { m_X_base = b; }
     
-    void 
-    join( const BSpatialTransform &transform, const BBody &other_body );
     
-    void 
-    separate( const BSpatialTransform &transform, const BBody &other_body );
-    
-    
-    // spatial velocity $v_i$ of body $i (see RBDA, Section 7.3, equation 7.34)
+    // spatial velocity $v_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.34)
     const BSpatialVector&
     v( void ) const { return m_vel; } 
 
@@ -108,7 +203,7 @@ public:
     v( const BSpatialVector &sv ) { m_vel = sv; } 
     
     
-    // spatial acceleration $a_i$ of body $i$ (see RBDA, Section 7.3, equation 7.31)
+    // spatial acceleration $a_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.31)
     const BSpatialVector&
     a( void ) const { return m_acc; } 
    
@@ -119,16 +214,20 @@ public:
     a( const BSpatialVector &sv ) { m_acc = sv; } 
     
     
-    // spatial interia of body $I_i$ (see RBDA, Section 7.1) 
-    const BSpatialInertia& 
-    I( void ) const { return m_I; }
+    // velocity-dependent spatial acceleration term $c_i$ (see RBDA, Section 7.3, equation 7.35)
+    // $c_i = c_J + v_i \cross v_J$
+    const BSpatialVector&
+    c( void ) const { return m_c; } 
+   
+    BSpatialVector&
+    c( void ) { return m_c; } 
     
-    void  
-    I( const BSpatialInertia& i ) { m_I = i; }
-
+    void
+    c( const BSpatialVector &sv ) { m_c = sv; } 
+    
     
     // internal forces on the body (used only BDynamics::inverse())
-    // $f_i$ the net force acting on body $i$ (see RBDA, equation 5.9)
+    // $f_i$ the net force acting on body $B_i$ (see RBDA, equation 5.9)
     const BSpatialVector& 
     f( void ) const { return m_f; }
     
@@ -138,61 +237,51 @@ public:
     void  
     f( const BSpatialVector& v ) { m_f = v; }
    
+    bool
+    isVirtual( void ) const { return m_isVirtual; }
     
-    //  friend std::ostream&
-    //  operator<<( std::ostream& ostr, const BBody &b );
+    
+    bool 
+    operator==( const BBody &v ) const { return (m_id == v.m_id); }
+    
+    bool 
+    operator!=( const BBody &v ) const { return (m_id != v.m_id); }
     
 private:
 
-    /**
-     * @brief inertiaToBodyFrame transform the inertia of initial_body to the frame of a target_body
-     * This is done in 3 steps:
-     *  1. Transform the inertia from the initial body origin to it's COM
-     *  2. Rotate the inertia of the given transform
-     *  3. Transform inertia of initial_body of the given transform
-     * @param transform the transformation from tje target body to the initial body 
-     * @return the inertia of initial body transformed
-     */
-    const BMatrix3 
-    inertiaToBodyFrame(const BSpatialTransform &transform, const BBody &initial_body) const;
+    BBodyId m_id;
     
-    inline const BMatrix3 
-    parallelAxis( const BMatrix3 &inertia, BScalar mass, const BVector3 &com ) const;
-
-    // transformation from the base to this body's reference frame - set dynamically
-    BSpatialTransform m_X_base;
-
-    BSpatialInertia m_I;    // spatial inertia of the body 
+    // these values are in body frame coordinates
+    
     BSpatialVector  m_vel;  // spatial velocity of the body
     BSpatialVector  m_acc;  // spatial acceleration of the body
+    BSpatialVector  m_c;    // spatial velocity-dependent acceleration term
 
-    BSpatialVector m_f;     // internal forces on the body (used only BDynamics::inverse())
+    BSpatialVector  m_f;    // internal forces on the body (used only BDynamics::inverse())
 
+    BSpatialInertia m_I;    // spatial inertia at origin of the body (mass, com, rotational inertia)
+   
+    // transformation from the base frame $F^0$ to this body's coordinate frame $F^i$ - set dynamically
+    // the position of this body at any particular time
+    BSpatialTransform m_X_base;
     
-    BMatrix3 m_inertia;  // inertia matrix at the center of mass 
-    BVector3 m_com;      // position of the center of mass in body coordinates
-    
-    BScalar  m_mass;
-
     bool m_isVirtual;
 };
 
+// add operator >> as friend
 
 inline std::ostream&
-operator<<( std::ostream& ostr, const BBody &b )
+operator<<( std::ostream &ostr, const BBody &b )
 {
+    ostr << b.getId() << '\n';
     ostr << b.X_base() << '\n';
-
+    ostr << b.I() << '\n';
     ostr << b.v() << '\n';
     ostr << b.a() << '\n';
+    ostr << b.c() << '\n';
     
-    ostr << b.inertia() << '\n';
-    ostr << b.com() << '\n';
-    ostr << b.mass() << '\n';
-
     return ostr;
 }
-
 
 
 

@@ -37,40 +37,44 @@
 
 typedef double                BScalar;
 
-typedef unsigned int          BJointID;
-typedef unsigned int          BBodyID;
+typedef unsigned int          BJointId;
+typedef unsigned int          BBodyId;
 
 typedef glm::tvec3<BScalar>   BVector3; 
 typedef glm::tmat3x3<BScalar> BMatrix3; 
 typedef glm::tquat<BScalar>   BQuat;
 
-typedef std::vector<std::vector<BScalar>> BMotionSpace;
+typedef std::vector<std::vector<BScalar>> BJointSpace;
+
 
 //
 // vector and matrix constants
 //
 
+
 #ifdef GLM_FORCE_INTRINSICS
-    const BVector3 BXAXIS(1.0, 0.0, 0.0);
-    const BVector3 BYAXIS(0.0, 1.0, 0.0);
-    const BVector3 BZAXIS(0.0, 0.0, 1.0); 
+    const BVector3 B_XAXIS(1.0, 0.0, 0.0);
+    const BVector3 B_YAXIS(0.0, 1.0, 0.0);
+    const BVector3 B_ZAXIS(0.0, 0.0, 1.0); 
 
-    const BVector3 BZERO_3(0.0);
-    const BMatrix3 BIDENTITY_3x3(1.0);
-    const BMatrix3 BZERO_3x3(0.0);   
+    const BVector3 B_ZERO_3(0.0);
+    const BVector3 B_ONE_3(1.0);
+    const BMatrix3 B_IDENTITY_3x3(1.0);
+    const BMatrix3 B_ZERO_3x3(0.0);   
 #else
-    constexpr BVector3 BXAXIS(1.0, 0.0, 0.0);
-    constexpr BVector3 BYAXIS(0.0, 1.0, 0.0);
-    constexpr BVector3 BZAXIS(0.0, 0.0, 1.0); 
+    constexpr BVector3 B_XAXIS(1.0, 0.0, 0.0);
+    constexpr BVector3 B_YAXIS(0.0, 1.0, 0.0);
+    constexpr BVector3 B_ZAXIS(0.0, 0.0, 1.0); 
 
-    constexpr BVector3 BZERO_3(0.0);
-    constexpr BMatrix3 BIDENTITY_3x3(1.0);
-    constexpr BMatrix3 BZERO_3x3(0.0);   
+    constexpr BVector3 B_ZERO_3(0.0);
+    constexpr BVector3 B_ONE_3(1.0);
+    constexpr BMatrix3 B_IDENTITY_3x3(1.0);
+    constexpr BMatrix3 B_ZERO_3x3(0.0);   
 #endif
 
-constexpr std::array<BScalar, 6> BZERO_6 = {0.0};              // BSpatialVector
+constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0};              // BSpatialVector
 
-constexpr std::array<std::array<BScalar, 6>, 6> BIDENTITY_6x6  // BSpatialMatrix
+constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BSpatialMatrix
 {
     1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
@@ -80,7 +84,7 @@ constexpr std::array<std::array<BScalar, 6>, 6> BIDENTITY_6x6  // BSpatialMatrix
     0.0, 0.0, 0.0, 0.0, 0.0, 1.0
 };
 
-constexpr std::array<std::array<BScalar, 6>, 6> BZERO_6x6     // BSpatialMatrix
+constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6     // BSpatialMatrix
 {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -90,14 +94,14 @@ constexpr std::array<std::array<BScalar, 6>, 6> BZERO_6x6     // BSpatialMatrix
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
 
-constexpr std::array<std::array<BScalar, 6>, 3> BZERO_3x6
+constexpr std::array<std::array<BScalar, 6>, 3> B_ZERO_3x6
 {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
 
-constexpr std::array<std::array<BScalar, 3>, 6> BZERO_6x3
+constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
 {
     0.0, 0.0, 0.0, 
     0.0, 0.0, 0.0,
@@ -107,11 +111,14 @@ constexpr std::array<std::array<BScalar, 3>, 6> BZERO_6x3
     0.0, 0.0, 0.0
 };
 
+
+
 //
-// my glm template stream operators
+// my glm template stream operators -- customise spatial algebra output
 //
 
-namespace glm {
+namespace  glm 
+{
 
     template<typename T> inline std::ostream&
     operator<<( std::ostream &ostr, const  glm::tvec3<T> &v )
@@ -188,7 +195,7 @@ operator<<( std::ostream &ostr, const std::vector<T> &v )
 {
     ostr << v.size() << '\n';
     int count = 0;
-    auto print = [&ostr, &count](const T& val) { ostr << val << (((++count % 10) == 0) ? '\n' : ' '); };
+    auto print = [&ostr, &count](const T& val) { ostr << val << (!(++count % 10) ? '\n' : ' '); };
     std::for_each(v.begin(), v.end(), print);
     return ostr;
 }

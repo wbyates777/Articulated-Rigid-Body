@@ -34,12 +34,25 @@ class BFixedBody
 {
 public:
     
-
     BFixedBody( void )=default;
-    BFixedBody( const BBody &body ):  m_mass(body.mass()), m_com(body.com()), m_inertia(body.inertia()), m_movableParent(0), m_parentTransform(BIDENTITY_3x3, BZERO_3), m_baseTransform(BIDENTITY_3x3, BZERO_3) {} 
+    BFixedBody( const BBody &body ):  m_id(0), m_mass(body.mass()), m_com(body.com()), m_inertia_com(body.inertiaCom()), m_movableParentId(0), m_parentTransform(B_IDENTITY_3x3, B_ZERO_3), m_baseTransform(B_IDENTITY_3x3, B_ZERO_3) {} 
     ~BFixedBody( void )=default;
+    //
+    
+    // add clear()
+    
+  //  BMatrix3
+  //  orient( void )   // untested
+    //  an orthonormal 3x3 matrix that rotates vectors from base coordinates
+    //  to body coordinates.
+  //  {
+           // BSpatialTransform baseTrans = m_parentTrans * m_body[m_movableParent].X_base();
+           // return baseTrans.E();
+
+  //  }
     
     
+    //
     
     void 
     mass( BScalar m ) { m_mass = m; }
@@ -55,13 +68,13 @@ public:
     com( void ) const { return m_com; }
     
     void 
-    inertia( const BMatrix3& I ) { m_inertia = I; }
+    inertiaCom( const BMatrix3& I ) { m_inertia_com = I; }
     
     const BMatrix3& 
-    inertia( void ) const { return m_inertia; } 
+    inertiaCom( void ) const { return m_inertia_com; } 
     
     BBody 
-    toBody( void ) const { return BBody(m_mass, m_com, m_inertia); }
+    toBody( void ) const { return BBody(m_mass, m_com, m_inertia_com); }
     
     
     const BSpatialTransform& 
@@ -77,24 +90,39 @@ public:
     baseTrans( const BSpatialTransform& bt ) { m_baseTransform = bt; }
     
     
-    BBodyID
-    movableParent( void ) const { return m_movableParent; }
+    BBodyId
+    movableParent( void ) const { return m_movableParentId; }
     
     void
-    movableParent( BBodyID bid ) { m_movableParent = bid; }
+    movableParent( BBodyId bid ) { m_movableParentId = bid; }
     
- 
+    bool 
+    operator==( const BFixedBody& v ) const { return (m_id == v.m_id); }
+    
+    bool 
+    operator!=( const BFixedBody& v ) const { return (m_id != v.m_id); }
+    
+    void
+    setId( BBodyId bid ) { m_id = bid; }
+    
+    BBodyId
+    getId( void ) const { return m_id; }
+    
 private: 
 
+    BBodyId m_id;
+    
+    
     BScalar  m_mass;
     BVector3 m_com;      // position of the center of mass in body coordinates
-    BMatrix3 m_inertia;  // inertia matrix at the center of mass 
+    BMatrix3 m_inertia_com;  // inertia matrix at the center of mass 
  
     // bid of the movable body that this fixed body is attached to.
-    BBodyID m_movableParent;
+    BBodyId m_movableParentId;
     // transforms spatial quantities expressed for the parent to the fixed body.
-    BSpatialTransform m_parentTransform;
-    BSpatialTransform m_baseTransform;
+    
+    BSpatialTransform m_parentTransform; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
+    BSpatialTransform m_baseTransform; // m_X_base - transformation from the base  to this body's coordinate
 };
 
 
