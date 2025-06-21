@@ -16,7 +16,7 @@
  - the articulated-body algorithm (ABA) and  
  - the recursive Newton-Euler algorithm (RNEA).
 
- Both of these algorithms arepresented in:
+ Both of these algorithms are presented in:
 
  "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008 (see https://royfeatherstone.org). 
 
@@ -32,9 +32,9 @@
  These algorithms are described and implememted using _spatial algebra_. 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
- Linear and angular velocities or acceleration are
- combined to form  spatial _motion vectors_, while forces and moments are combined
- to form  spatial _force vectors_.
+ Linear and angular velocities or accelerations are
+ combined to form  _spatial motion_ vectors, while forces and moments are combined
+ to form  _spatial force_ vectors.
  Spatial algebra significantly reduces  the number of computational operations 
  required when  compared with standard 3D vector approaches (see RBDA, Section 1.2). 
 
@@ -54,7 +54,7 @@
  This code depends on the 3D GLM types and functions: glm::dvec3, glm::dmat3, glm::dquat,
  glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::toMat3(q).
  
- It should be relatively straightforward to convert back to Eigen3 (although see 
+ It is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3 and GLM differences), or  replace GLM with some other simple
  linear algebra library.
 
