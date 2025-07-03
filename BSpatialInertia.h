@@ -25,7 +25,7 @@
  1) when com = B_ZERO_3, inertia() and inertiaCom() are identical as 
     arb::cross(m_com) and arb::cross(-m_com) are zero.
  2) BVector3(m_mass) == (B_IDENTITY_3x3 * m_mass)
- 3) arb::cross(-m_h) == arb::transpose(arb::cross(m_h))
+ 3) arb::cross(-m_h) == arb::transpose(arb::cross(m_h)) - see table 2.1, page 22,
  4) arb::cross(m_h) ==  m_mass * arb::cross(m_com)
  5) arb::cross(m_h) * arb::cross(-m_h) != m_mass * arb::cross(m_com) * arb::cross(-m_com)
 
@@ -92,7 +92,7 @@ public:
     // RBDA, Section 2.13, eqn 2.63, page 33.
     // called from BBody::BBody(); this was RBDL function createFromMassComInertiaC(Body) 
     void 
-    setInertiaCom( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_com  )
+    setInertia( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_com  )
     {
         m_mass = mass;  // note mass can be 0 
         m_h    = com * m_mass;
@@ -100,13 +100,13 @@ public:
     }
 
     void
-    setMass( BScalar mass ) { setInertiaCom(mass, com(), inertiaCom()); }
+    setMass( BScalar mass ) { setInertia(mass, com(), inertiaCom()); }
 
     void
-    setCom(const BVector3 &com ) { setInertiaCom(m_mass, com, inertiaCom()); }
+    setCom(const BVector3 &com ) { setInertia(m_mass, com, inertiaCom()); }
     
     void
-    setInertiaCom( const BMatrix3 &inertia_com ) { setInertiaCom(m_mass, com(), inertia_com); }
+    setInertia( const BMatrix3 &inertia_com ) { setInertia(m_mass, com(), inertia_com); }
  
     // RBDA, Section 2.13, eqn 2.63, page 33.
     operator BSpatialMatrix( void ) const 
@@ -220,16 +220,16 @@ private:
     static inline const BMatrix3 
     crosst( const BVector3 &v ) 
     {
-        const BScalar v00 =  v[0] *  v[0];
-        const BScalar v11 =  v[1] *  v[1];
-        const BScalar v22 =  v[2] *  v[2];
-        const BScalar v01 = -v[0] *  v[1];
-        const BScalar v02 =  v[0] * -v[2];
-        const BScalar v12 = -v[1] *  v[2];
+        const BScalar xx =  v[0] *  v[0];
+        const BScalar yy =  v[1] *  v[1];
+        const BScalar zz =  v[2] *  v[2];
+        const BScalar xy = -v[0] *  v[1];
+        const BScalar xz =  v[0] * -v[2];
+        const BScalar yz = -v[1] *  v[2];
         
-        return BMatrix3( v22 + v11,    v01,      v02,
-                            v01,    v22 + v00,   v12,
-                            v02,       v12,   v11 + v00 );
+        return BMatrix3( zz + yy,    xy,      xz,
+                            xy,    zz + xx,   yz,
+                            xz,      yz,    yy + xx );
     }
     
     BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
@@ -240,12 +240,11 @@ private:
 
 namespace arb
 {
-    // does not always work - especially when com non-zero 
-    // you should generally avoid taking the inverse of the spatial inertia matrix
-    // use the ABA to calculate accelerations
+    // you should generally try to avoid taking the inverse of a spatial matrix
+    // for articulated rigid bodies use the ABA to calculate accelerations
     inline const BSpatialMatrix 
     inverse( const BSpatialInertia &I ) 
-    // RBDA, Section 2.15, eqn 2.74,  page 36
+    // Schur complement - analytical inverse, see RBDA, Section 2.15, eqn 2.74,  page 36
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 iI(glm::inverse(I.inertiaCom()));

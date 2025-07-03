@@ -65,7 +65,7 @@ public:
                              0.0, gyration_radii[1], 0.0,
                              0.0, 0.0, gyration_radii[2] );
         
-        m_I.setInertiaCom(mass, com, inertia_com);
+        m_I.setInertia(mass, com, inertia_com);
     }
 
     // construct a body from mass, center of mass (com) and inertia $I_c$
@@ -82,7 +82,7 @@ public:
                                      m_X_base(B_IDENTITY_3x3, B_ZERO_3), 
                                      m_isVirtual(isVirtual) 
     {
-        m_I.setInertiaCom(mass, com, inertia_com);
+        m_I.setInertia(mass, com, inertia_com);
     }
     
    /* explicit BBody( const BSpatialInertia &I, bool isVirtual = false ) : m_id(0), 
@@ -117,7 +117,7 @@ public:
     setBody( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_com, bool isVirtual = false )
     {
         m_vel = m_acc = m_c = B_ZERO_6; 
-        m_I.setInertiaCom(mass, com, inertia_com);
+        m_I.setInertia(mass, com, inertia_com);
         m_X_base.clear();
         m_isVirtual = isVirtual;
     }
@@ -141,7 +141,7 @@ public:
     
     // set the inertia at the centre of mass $com$ (which may be non-zero)
     void 
-    inertiaCom( const BMatrix3 &I ) { m_I.setInertiaCom(I); }
+    inertiaCom( const BMatrix3 &I ) { m_I.setInertia(I); }
 
     // get the inertia at the centre of mass $com$ (which may be non-zero)
     const BMatrix3 //used in Fixed body constructor
