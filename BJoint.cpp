@@ -377,8 +377,15 @@ BQuat
 BJoint::getQuat(const std::vector<BScalar> &q) const
 {
     assert(m_jtype == BJointType::BSpherical);
+ 
+    BQuat quat;
     
-    return BQuat(q[m_widx], q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]);
+    quat.w = q[m_widx];
+    quat.x = q[m_qidx];
+    quat.y = q[m_qidx+1];
+    quat.z = q[m_qidx+2];
+    
+    return quat;
 }
 
 void 
@@ -386,10 +393,10 @@ BJoint::SetQuat(const BQuat &quat, std::vector<BScalar> &q) const
 {
     assert(m_jtype == BJointType::BSpherical);
 
-    q[m_qidx]     = quat[1];
-    q[m_qidx + 1] = quat[2];
-    q[m_qidx + 2] = quat[3];
-    q[m_widx]     = quat[0];
+    q[m_widx]   = quat.w;
+    q[m_qidx]   = quat.x;
+    q[m_qidx+1] = quat.y;
+    q[m_qidx+2] = quat.z;
 }
 
 void
