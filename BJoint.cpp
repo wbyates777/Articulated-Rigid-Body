@@ -91,9 +91,9 @@ BJoint::BJoint(BJointType joint_type) : m_id(0),
     else if (m_jtype == BJointType::BTranslationXYZ) 
     {
         m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_XAXIS, B_ZERO_3);
-        m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
-        m_jointAxes[2] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_jointAxes[0] = BSpatialVector(B_ZERO_3, B_XAXIS);
+        m_jointAxes[1] = BSpatialVector(B_ZERO_3, B_YAXIS);
+        m_jointAxes[2] = BSpatialVector(B_ZERO_3, B_ZAXIS);
     } 
     else if (m_jtype >= BJointType::B1DoF && m_jtype <= BJointType::B6DoF) 
     {
