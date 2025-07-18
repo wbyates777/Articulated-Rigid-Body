@@ -39,20 +39,7 @@ public:
     ~BFixedBody( void )=default;
     //
     
-    // add clear()
-    
-  //  BMatrix3
-  //  orient( void )   // untested
-    //  an orthonormal 3x3 matrix that rotates vectors from base coordinates
-    //  to body coordinates.
-  //  {
-           // BSpatialTransform baseTrans = m_parentTrans * m_body[m_movableParent].X_base();
-           // return baseTrans.E();
 
-  //  }
-    
-    
-    //
     
     void 
     mass( BScalar m ) { m_mass = m; }
