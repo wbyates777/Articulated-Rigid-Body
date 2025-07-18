@@ -257,7 +257,7 @@ public:
     const BSpatialVector 
     operator*( const BSpatialVector &v ) const 
     {    
-        BSpatialVector retVal(0.0);
+        BSpatialVector retVal(B_ZERO_6);
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 6; ++j )
                 retVal[i] += m_data[i][j] * v[j];
@@ -267,7 +267,7 @@ public:
     const BSpatialMatrix 
     operator*( const BSpatialMatrix &m ) const
     {   
-        BSpatialMatrix retVal(0.0);
+        BSpatialMatrix retVal(B_ZERO_6x6);
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 6; ++j )
                 for ( int k = 0; k < 6; ++k )
