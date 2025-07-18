@@ -154,7 +154,7 @@ BModel::getJointFrame( BBodyId bid ) const
     {
         while (m_body[parent_id].isVirtual()) 
         {
-            BBodyId child_id = parent_id;
+            child_id = parent_id;
             parent_id = m_lambda[child_id];
         }
         return m_joint[child_id].X_T();
