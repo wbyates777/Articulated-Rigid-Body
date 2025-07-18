@@ -148,10 +148,10 @@ BModel::getJointFrame( BBodyId bid ) const
         return fixedBody(bid).parentTrans();
  
     BBodyId parent_id = m_lambda[bid];
+    BBodyId child_id = bid;
     
     if (m_body[parent_id].isVirtual()) 
     {
-        BBodyId child_id = bid;
         while (m_body[parent_id].isVirtual()) 
         {
             BBodyId child_id = parent_id;
@@ -186,14 +186,95 @@ BModel::setJointFrame( BBodyId bid, const BSpatialTransform &transform )
             child_id = parent_id;
             parent_id = m_lambda[child_id];
         }
-        m_joint[child_id].X_T( transform );
     } 
-    else if (bid > 0) 
-    {
-        m_joint[bid].X_T( transform );
-    }
+
+    m_joint[bid].X_T( transform );
 }
 
+
+BVector3
+BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
+// returns the base coordinates of a position given in body coordinates.
+// see kinematics.cc - CalcBodyToBaseCoordinates
+{
+    BVector3 pos;
+    
+    if (isFixedBodyId(bid))
+    {
+        BBodyId fbody_id = bid - m_fbd;
+        BBodyId parent_id = m_fixed[fbody_id].movableParent();
+        
+        const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
+        BMatrix3 fixed_rot         = glm::transpose(X_parent.E());
+        const BVector3 &fixed_pos  = X_parent.r();
+        
+        const BSpatialTransform &X_base = m_body[parent_id].X_base();
+        BMatrix3 parent_rot        = glm::transpose(X_base.E());
+        const BVector3 &parent_pos = X_base.r();
+        
+        pos = parent_pos + (parent_rot * (fixed_pos + (fixed_rot * body_pos)));
+    }
+    else
+    {
+        const BSpatialTransform &X_base = m_body[bid].X_base();
+        pos = X_base.r() + glm::transpose(X_base.E()) * body_pos;
+    }
+ 
+    return pos;
+}
+
+
+BVector3
+BModel::toBodyPos( BBodyId bid, const BVector3 &base_pos ) const
+{
+    BVector3 pos;
+    
+    if (isFixedBodyId(bid)) 
+    {
+        BBodyId fbody_id = bid - m_fbd;
+        BBodyId parent_id = m_fixed[fbody_id].movableParent();
+        
+        const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
+        BMatrix3 fixed_rotation = X_parent.E();
+        const BVector3 &fixed_position = X_parent.r();
+        
+        const BSpatialTransform &X_base = m_body[parent_id].X_base();
+        BMatrix3 parent_rotation = X_base.E();
+        const BVector3 &parent_position = X_base.r();
+        
+        pos = (fixed_rotation  * ( -fixed_position - parent_rotation * (parent_position - base_pos)));
+    }
+    else
+    {
+        const BSpatialTransform &X_base = m_body[bid].X_base();
+        pos = X_base.E() * (base_pos - X_base.r());
+    }
+    
+    return pos;
+}
+
+BMatrix3
+BModel::orient(const BBodyId bid)  const 
+//  an orthonormal 3x3 matrix that rotates vectors from base to body coordinates.
+{
+    BMatrix3 rot; 
+    
+    if (isFixedBodyId(bid)) 
+    {
+        BBodyId fbody_id = bid - m_fbd;
+        BBodyId parent_id    = m_fixed[fbody_id].movableParent();
+        BSpatialTransform baseTrans = m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base();
+        
+        //  m_fixed[fbody_id].baseTrans( m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base() );
+        rot = baseTrans.E();
+    }
+    else
+    {
+        rot = m_body[bid].X_base().E();
+    }
+    
+    return rot;
+}
 void
 BModel::addName(  BBodyId bid, const std::string &body_name )
 {
@@ -393,18 +474,27 @@ BModel::addBody( BBodyId parent_id,
     m_dof_count += joint.DoFCount();
     
     // update the w components of the quaternions. They are stored at the end of the q vector
-    int multdof3_joint_counter = 0;
+    int multdof3 = 0;
     for (int i = 1; i < m_joint.size(); ++i) 
     {
         if (m_joint[i].jtype() == BJoint::BSpherical) 
         {
-            m_joint[i].dof3_windex( m_dof_count + multdof3_joint_counter );
-            multdof3_joint_counter++;
+            m_joint[i].dof3_windex( m_dof_count + multdof3 );
+            multdof3++;
         }
     }
     
-    q_size = m_dof_count + multdof3_joint_counter;
+    q_size = m_dof_count + multdof3;
     qdot_size += joint.DoFCount();
+    
+    // update X_base - assume initial joint position is 'closed'
+    m_joint[bid].jcalc();  
+    
+    const BSpatialTransform &X_lambda = m_joint[bid].X_lambda(); 
+    
+    if (m_lambda[bid] != 0)
+        m_body[bid].X_base( X_lambda * m_body[m_lambda[bid]].X_base() );
+    else m_body[bid].X_base( X_lambda );
     
     // dynamic variables
     m_IA.push_back(B_ZERO_6x6);

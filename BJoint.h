@@ -293,6 +293,13 @@ public:
     void
     jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot );
     
+    // assume this joint is 'closed' i.e. position and velocity, q and qdot are zero 
+    void
+    jcalc( void )
+    {
+        const std::vector<BScalar> zero(std::max(m_qidx + 3, m_widx + 1), 0.0); 
+        jcalc(zero, zero);
+    }
 
     // the spatial axis i of the joint
     const BSpatialVector&

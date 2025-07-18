@@ -128,6 +128,18 @@ public:
     // joint frame transformtion, i.e. the second argument to BModel::addBody()
     BSpatialTransform 
     getJointFrame( BBodyId bid ) const;
+    
+    // return base coordinates of body_pos where body_pos is expressed in body $bid$ coordinates 
+    BVector3
+    toBasePos( BBodyId bid, const BVector3 &body_pos = B_ZERO_3 ) const;
+    
+    // return body $bid$ coordinates of base_pos where base_pos is expressed in base coordinates 
+    BVector3 
+    toBodyPos( BBodyId bid,  const BVector3 &base_pos ) const;
+
+    // return orientation of body $bid$
+    BMatrix3 
+    orient( BBodyId bid ) const;
     //
     
     // size of the $\mathbf{q}$-vector.
