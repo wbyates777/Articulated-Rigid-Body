@@ -117,7 +117,7 @@ public:
     const BMatrix63 
     operator*( const BMatrix3 &m ) const
     {
-        BMatrix63 retVal(0.0);
+        BMatrix63 retVal(B_ZERO_6x3);
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 3; ++j ) 
                 for ( int k = 0; k < 3; ++k )
@@ -264,7 +264,7 @@ public:
     const BVector3
     operator*( const BSpatialVector &v ) const 
     {
-        BVector3 retVal(0.0);
+        BVector3 retVal(B_ZERO_3);
         for ( int i = 0; i < 3; ++i )
             for ( int j = 0; j < 6; ++j )
                 retVal[i] += m_data[i][j] * v[j];
@@ -274,7 +274,7 @@ public:
     const BMatrix3 
     operator*( const BMatrix63 &m ) const  
     {
-        BMatrix3 retVal(0.0);
+        BMatrix3 retVal(B_ZERO_3x3);
         for ( int i = 0; i < 3; ++i )
             for ( int j = 0; j < 3; ++j )
                 for ( int k = 0; k < 6; ++k )
@@ -319,7 +319,7 @@ operator*( BScalar s, const BMatrix36 &m ) { return m * s; }
 inline const BSpatialMatrix 
 operator*( const BMatrix63 &m1, const BMatrix36 &m2 )  
 {
-    BSpatialMatrix retVal(0.0);
+    BSpatialMatrix retVal(B_ZERO_6x6);
     for ( int i = 0; i < 6; ++i )
         for ( int j = 0; j < 6; ++j )
             for ( int k = 0; k < 3; ++k )
@@ -330,7 +330,7 @@ operator*( const BMatrix63 &m1, const BMatrix36 &m2 )
 inline const BMatrix63 //  move this out of this class
 operator*( const BSpatialMatrix &m1, const BMatrix63 &m2 ) 
 {    
-    BMatrix63 retVal(0.0);
+    BMatrix63 retVal(B_ZERO_6x3);
     for ( int i = 0; i < 6; ++i ) 
         for ( int j = 0; j < 3; ++j )
             for ( int k = 0; k < 6; ++k ) 
