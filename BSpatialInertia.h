@@ -18,6 +18,8 @@
  1) the first moment  - h = com * mass (where com is centre of mass), and
  2) the second moment - inertia I.
 
+ $h$ is the magnitude and direction of the body’s linear momentum (see RBDA, Section 2.12, page 31).
+ 
  Inertia is represented as 3D rotational inertia, and 6D spatial inertia.
  
  Note:
