@@ -20,7 +20,7 @@
 //#define GLM_FORCE_INTRINSICS
 
 #include <glm/glm.hpp>
-
+#include <glm/gtx/euler_angles.hpp>
 
 #ifndef __BDYNAMICS_H__
 #include "BDynamics.h"
@@ -153,7 +153,7 @@ example2( void )
 }
 
 
-// Example 3 -- clarify interface
+// Example 3 
 void
 single_body( void ) 
 {
@@ -193,41 +193,79 @@ single_body( void )
 }
 
 void
+print( double T, const BSpatialVector &mv )
+{
+    const double M_2PI = M_PI + M_PI;
+    
+    std::cout << T << ") ";
+    
+    BVector3 pos = mv.lin();
+    std::cout << " pos( " <<  pos.x << ", " <<  pos.y << ", " <<  pos.z  << " )";
+    std::cout << " - ";
+    
+    BVector3 ang = mv.ang();
+  
+    ang.x = std::remainder(ang.x, M_2PI);
+    ang.y = std::remainder(ang.y, M_2PI);
+    ang.z = std::remainder(ang.z, M_2PI);
+    ang  = glm::degrees(ang);
+    
+    std::cout << "orient( " <<  ang.x << "°, " <<  ang.y << "°, " <<  ang.z << "° )" << std::endl;
+}
+
+void
 newton_euler( void ) 
+// Spatial algebra test
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
 // https://en.wikipedia.org/wiki/Newton–Euler_equations
-// Featherstone, Section 2.14, eqn 2.71, page 36.
 {
-    // note spatial vectors - (angular, linear) - a force or velocity
- 
+
     //
     // set up single body - a sphere -  
     //
-    double mass = 100.0, radius = 0.5;
-    BVector3 rotational_intertia = BVector3((2.0/5.0) * mass * (radius * radius)); 
+    double mass = 100.0, imass = 1.0 / mass, radius = 0.5;
+    double diag = ((2.0/5.0) * mass * (radius * radius)); 
     BVector3 com = BVector3(0.0); // centre of mass
-    BBody sphere = BBody(10.0,  com, rotational_intertia);
-    
-    std::cout << "Sphere of mass " << mass << " and radius " << radius << std::endl;
-    std::cout << "Rotational inertia \n" << sphere.inertia() << std::endl;
-    std::cout  << std::endl;
-    
-    BSpatialInertia I = sphere.I();
-    std::cout << "Spatial inertia \n" << (BSpatialMatrix) I << std::endl;
-    
-    
-    //
-    // Newton-Euler
-    //
-    BSpatialVector acc(0.0);
-    BSpatialVector vel(0.0);
-    acc[4] = -9.81; // gravity
 
-    BSpatialVector force = I * acc + arb::crossf(vel, I * vel);
+    BSpatialInertia I = BSpatialInertia(mass, com,  BMatrix3(diag));
+    BSpatialMatrix invI = arb::inverse(I);
     
-    std::cout  << "\n\nSpatial force " << std::endl;
-    std::cout  << force << std::endl;
-    std::cout  << std::endl;
+    BSpatialVector force = B_ZERO_6;
+    BSpatialVector pos   = B_ZERO_6;
+    BSpatialVector vel   = B_ZERO_6;
+    BSpatialVector acc   = B_ZERO_6;
+    
+    // set some initial position
+    pos.lin( BVector3(20.0, 50.0, 3.0) );
+    
+    // apply some force
+    force[1] = 1.0;   // ang
+    force[5] = 100.0; // lin
+    
+    // over time
+    double dt = 0.1;
+    double T = 0.0;
+    int Iters = 100;
+    
+    for (int t = 0; t < Iters; ++t)
+    {
+        if (!(t % 10))
+            print( T, pos );
+
+        //
+        // see Featherstone, Section 2.14, page 35.
+        //
+        acc = invI * (force - arb::crossf(vel, I * vel)); 
+        vel += acc * dt;
+        pos += vel * dt;
+        //
+        //
+        
+        T += dt;
+        
+        if (t == 10) // switch off force after t = 10 time steps
+            force = B_ZERO_6;
+    }
 }
 
 
@@ -246,9 +284,9 @@ main()
     // you should notice slight differences in the last decimal places
     example2();
     
-    // Example 3 -- clarify interface
+    // Example 3 
     newton_euler();
     
-    // Example 4 -- clarify interface
+    // Example 4 
     single_body();
 }
