@@ -153,7 +153,13 @@ public:
         //                       ETf[1],
         //                       ETf[2]);
     }
+
+    const BVector3 
+    apply( const BVector3 &p ) const { return m_E * (p - m_r); }
     
+    const BVector3 
+    applyTranspose( const BVector3 &p ) const { return m_r + (glm::transpose(m_E) * p); }
+
     const  BSpatialInertia 
     apply( const BSpatialInertia &I ) const
     // returns  X^* I X^{-1}
