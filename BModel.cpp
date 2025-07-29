@@ -205,19 +205,21 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
         BBodyId parent_id = m_fixed[fbody_id].movableParent();
         
         const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
-        BMatrix3 fixed_rot         = glm::transpose(X_parent.E());
+        const BMatrix3 &fixed_rot  = glm::transpose(X_parent.E());
         const BVector3 &fixed_pos  = X_parent.r();
         
         const BSpatialTransform &X_base = m_body[parent_id].X_base();
-        BMatrix3 parent_rot        = glm::transpose(X_base.E());
+        const BMatrix3 &parent_rot = glm::transpose(X_base.E());
         const BVector3 &parent_pos = X_base.r();
         
         pos = parent_pos + (parent_rot * (fixed_pos + (fixed_rot * body_pos)));
+        // pos = (X_base * X_parent).applyTranspose(body_pos);
     }
     else
     {
-        const BSpatialTransform &X_base = m_body[bid].X_base();
-        pos = X_base.r() + glm::transpose(X_base.E()) * body_pos;
+        pos = m_body[bid].X_base().applyTranspose(body_pos);
+        //const BSpatialTransform &X_base = m_body[bid].X_base();
+        //pos = X_base.r() + glm::transpose(X_base.E()) * body_pos;
     }
  
     return pos;
@@ -235,19 +237,21 @@ BModel::toBodyPos( BBodyId bid, const BVector3 &base_pos ) const
         BBodyId parent_id = m_fixed[fbody_id].movableParent();
         
         const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
-        BMatrix3 fixed_rotation = X_parent.E();
-        const BVector3 &fixed_position = X_parent.r();
+        const BMatrix3 &fixed_rot = X_parent.E();
+        const BVector3 &fixed_pos = X_parent.r();
         
         const BSpatialTransform &X_base = m_body[parent_id].X_base();
-        BMatrix3 parent_rotation = X_base.E();
-        const BVector3 &parent_position = X_base.r();
+        const BMatrix3 &parent_rot = X_base.E();
+        const BVector3 &parent_pos = X_base.r();
         
-        pos = (fixed_rotation  * ( -fixed_position - parent_rotation * (parent_position - base_pos)));
+        pos = (fixed_rot  * (-fixed_pos - parent_rot * (parent_pos - base_pos)));
+        // pos = (X_base * X_parent).apply(base_pos);
     }
     else
     {
-        const BSpatialTransform &X_base = m_body[bid].X_base();
-        pos = X_base.E() * (base_pos - X_base.r());
+        pos = m_body[bid].X_base().apply(base_pos);
+        //const BSpatialTransform &X_base = m_body[bid].X_base();
+        //pos = X_base.E() * (base_pos - X_base.r());
     }
     
     return pos;
