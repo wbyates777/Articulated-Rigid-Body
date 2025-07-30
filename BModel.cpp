@@ -205,11 +205,11 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
         BBodyId parent_id = m_fixed[fbody_id].movableParent();
         
         const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
-        const BMatrix3 &fixed_rot  = glm::transpose(X_parent.E());
+        const BMatrix3 fixed_rot  = glm::transpose(X_parent.E());
         const BVector3 &fixed_pos  = X_parent.r();
         
         const BSpatialTransform &X_base = m_body[parent_id].X_base();
-        const BMatrix3 &parent_rot = glm::transpose(X_base.E());
+        const BMatrix3 parent_rot = glm::transpose(X_base.E());
         const BVector3 &parent_pos = X_base.r();
         
         pos = parent_pos + (parent_rot * (fixed_pos + (fixed_rot * body_pos)));
