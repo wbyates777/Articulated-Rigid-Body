@@ -35,16 +35,18 @@
  Linear and angular velocities or accelerations are
  combined to form  _spatial motion_ vectors, while forces and moments are combined
  to form  _spatial force_ vectors.
- Spatial algebra significantly reduces  the number of computational operations 
- required when  compared with standard 3D vector approaches (see RBDA, Section 1.2). 
+ Spatial algebra significantly reduces the
+"volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
 
  The implementations presented here, are intended for use in computer games, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
- We intentionally use similar variable names and the same object structure and hierarchy. 
+ For an alternative implementation see the RBDyn library (https://github.com/jrl-umi3218/RBDyn/tree/master).
+ We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
  Some variables have been moved to their appropriate classes and accessor methods 
- have been added throughout. This improves encapsulation and readability.
+ have been added throughout. This improves encapsulation and readability, and facillitates comparison testing.
+ 
 
- RBDL employs the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
+ RBDL and RBDyn employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
  This code does not depend on Eigen3, and instead relies on the lighter-weight GLM library 
  for simple 3D-linear algebra types and operations (see https://github.com/g-truc/glm). 
