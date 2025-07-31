@@ -40,7 +40,7 @@
 
  The implementations presented here, are intended for use in computer games, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
- For an alternative implementation see the RBDyn library (https://github.com/jrl-umi3218/RBDyn/tree/master).
+ Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn).
  We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
  Some variables have been moved to their appropriate classes and accessor methods 
  have been added throughout. This improves encapsulation and readability, and facillitates comparison testing.
