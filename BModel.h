@@ -141,6 +141,18 @@ public:
     BMatrix3 
     orient( BBodyId bid ) const;
     //
+
+    // total mass of body $bid$ and subtree i.e. all children bodies
+    BScalar
+    mass( BBodyId bid ) const; 
+    
+    // centre of mass of body $bid$ and subtree i.e. all children bodies
+    BVector3 
+    com( BBodyId bid ) const; 
+    
+    // inertia of body $bid$ and subtree i.e. all children bodies
+    BInertia 
+    inertia( BBodyId bid ) const;
     
     // size of the $\mathbf{q}$-vector.
     int  
