@@ -34,6 +34,8 @@
 #ifndef __BMODEL_H__
 #define __BMODEL_H__
 
+#include <set>
+
 #ifndef __BFIXEDBODY_H__
 #include "BFixedBody.h" 
 #endif
@@ -151,7 +153,7 @@ public:
     com( BBodyId bid ) const; 
     
     // inertia of body $bid$ and subtree i.e. all children bodies
-    BInertia 
+    BSpatialInertia 
     inertia( BBodyId bid ) const;
     
     // size of the $\mathbf{q}$-vector.
