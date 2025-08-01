@@ -31,7 +31,7 @@ class BSpatialMatrix
 public:
 
     BSpatialMatrix( void )=default;
-    BSpatialMatrix( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
+    constexpr BSpatialMatrix( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
     
     explicit BSpatialMatrix( BScalar s ){ set(s); }
     explicit BSpatialMatrix( const std::vector<std::vector<BScalar>> &d ) 
