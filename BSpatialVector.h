@@ -34,7 +34,7 @@ class BSpatialVector
 public:
     
     BSpatialVector( void )=default;
-    BSpatialVector( const std::array<BScalar, 6> &d ): m_data(d) {}
+    constexpr BSpatialVector( const std::array<BScalar, 6> &d ): m_data(d) {}
     explicit BSpatialVector( BScalar s ): m_data({s, s, s, s, s, s}) {}
     explicit BSpatialVector( const std::vector<BScalar> &d ) { assert(d.size() == 6); set(d); }
     explicit BSpatialVector( const std::vector<std::vector<BScalar>> &d ) { assert(d.size() == 1 && d[0].size() == 6); set(d[0]); }
