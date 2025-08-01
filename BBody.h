@@ -169,7 +169,7 @@ public:
             return;
         
         assert(m_I.mass() + other_body.mass() != 0.0);
-        m_I += arb::inverse(X).apply(other_body.I()); 
+        m_I += X.applyTranspose(other_body.I()); 
     }
 
     // X is a transform from this frame to other body frame
@@ -181,7 +181,7 @@ public:
             return;
         
         assert(m_I.mass() + other_body.mass() != 0.0);
-        m_I -= arb::inverse(X).apply(other_body.I()); 
+        m_I -= X.applyTranspose(other_body.I()); 
     }
     
     // transformation from the base to this body's $B_i$ coordinate frame $F^i$ - set in  BDynmaics::forward()
