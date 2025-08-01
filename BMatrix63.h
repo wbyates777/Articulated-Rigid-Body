@@ -30,7 +30,7 @@ public:
     BMatrix63( void )=default;
     explicit BMatrix63( BScalar s ) { set(s); }
     
-    BMatrix63( const std::array<std::array<BScalar, 3>, 6> &d): m_data(d) {}
+    constexpr BMatrix63( const std::array<std::array<BScalar, 3>, 6> &d): m_data(d) {}
     
     explicit BMatrix63( const std::vector<std::vector<BScalar>> &d ) 
     {
@@ -199,7 +199,7 @@ public:
 
     BMatrix36( void )=default;
     explicit BMatrix36( BScalar s ) { set(s); }
-    BMatrix36( const std::array<std::array<BScalar, 6>, 3> &d ): m_data(d) {}
+    constexpr BMatrix36( const std::array<std::array<BScalar, 6>, 3> &d ): m_data(d) {}
     
     explicit BMatrix36( const std::vector<std::vector<BScalar>> &d )
     {
