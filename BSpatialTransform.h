@@ -218,7 +218,11 @@ private:
 };
 
  
+#ifndef GLM_FORCE_INTRINSICS
 constexpr BSpatialTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
+#else
+const BSpatialTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
+#endif
 
 
 inline std::ostream&
