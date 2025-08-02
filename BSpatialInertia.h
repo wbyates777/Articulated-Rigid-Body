@@ -258,7 +258,11 @@ namespace arb
 
 };
 
+#ifndef GLM_FORCE_INTRINSICS
 constexpr BSpatialInertia B_ZERO_INERTIA(0.0, B_ZERO_3, B_ZERO_3x3);
+#else
+const BSpatialInertia B_ZERO_INERTIA(0.0, B_ZERO_3, B_ZERO_3x3);
+#endif
 
 // scalar multiplication
 inline const BSpatialInertia 
