@@ -34,8 +34,6 @@
 #ifndef __BMODEL_H__
 #define __BMODEL_H__
 
-#include <set>
-
 #ifndef __BFIXEDBODY_H__
 #include "BFixedBody.h" 
 #endif
@@ -53,6 +51,9 @@ public:
     BModel( int expected_dof = 1 );
     ~BModel( void )=default;
 
+    void 
+    init( void );
+    
     void 
     clear( void );
 
@@ -77,8 +78,6 @@ public:
     const BFixedBody&
     fixedBody( BBodyId bid ) const { return m_fixed[bid - m_fbd]; }
    
-
-    
     size_t
     bodies( void ) const { return m_body.size(); }     // $N_B$
         
@@ -123,11 +122,11 @@ public:
     setParameters( BBodyId bid, BScalar mass, const BMatrix3 &inertia, const BVector3 &com );
     //
     
-    // set the joint frame transformtion, i.e. the second argument to  BModel::addBody()
+    // set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()
     void 
     setJointFrame( BBodyId bid, const BSpatialTransform &transform );
     
-    // joint frame transformtion, i.e. the second argument to BModel::addBody()
+    // joint frame transformtion, i.e. X_T, the second argument to BModel::addBody()
     BSpatialTransform 
     getJointFrame( BBodyId bid ) const;
     
@@ -144,25 +143,25 @@ public:
     orient( BBodyId bid ) const;
     //
 
-    // total mass of body $bid$ and subtree i.e. all children bodies
+    // total mass of body $bid$ and all children bodies (subtree)
     BScalar
     mass( BBodyId bid ) const; 
     
-    // centre of mass of body $bid$ and subtree i.e. all children bodies
+    // centre of mass of body $bid$ and all children bodies  (subtree)
     BVector3 
     com( BBodyId bid ) const; 
     
-    // inertia of body $bid$ and subtree i.e. all children bodies
+    // inertia of body $bid$ and all children bodies  (subtree)
     BSpatialInertia 
     inertia( BBodyId bid ) const;
     
     // size of the $\mathbf{q}$-vector.
     int  
-    qsize( void ) const { return q_size; }
+    qsize( void ) const { return m_q_size; }
     
     // size of the ($\mathbf{\dot{q}}, \mathbf{\ddot{q}}$, and $\mathbf{\tau}$-vector.
     int  
-    qdotsize( void ) const { return qdot_size; }
+    qdotsize( void ) const { return m_qdot_size; }
     
     // total of degrees of freedom for these articulated bodies
     int  
@@ -193,7 +192,6 @@ public:
     BSpatialVector& 
     pA( int i ) { return m_pA[i]; }
 
-    
 
     
     bool 
@@ -244,13 +242,16 @@ private:
                           const std::string &body_name = "" );
     
     void
+    calcDoF( void );
+    
+    void
     addName( BBodyId bid, const std::string &body_name );
     
     // number of degrees of freedoms of the model
     // general (joint) state (q), velocity (qdot), acceleration (qddot)
     int m_dof_count; 
-    int q_size; 
-    int qdot_size;
+    int m_q_size; 
+    int m_qdot_size;
     
     BBodyId m_fbd;                    // fixed_body_discriminator
 

@@ -57,8 +57,9 @@ public:
                                      m_vel(B_ZERO_6), 
                                      m_acc(B_ZERO_6),
                                      m_c(B_ZERO_6),
-                                     m_I(0.0, B_ZERO_3, B_ZERO_3x3),
-                                     m_X_base(B_IDENTITY_3x3, B_ZERO_3), 
+                                     m_f(B_ZERO_6),
+                                     m_I(B_ZERO_INERTIA),
+                                     m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual)
     {
         BMatrix3 inertia_com = BMatrix3( gyration_radii[0], 0.0, 0.0,
@@ -78,18 +79,21 @@ public:
                                      m_vel(B_ZERO_6), 
                                      m_acc(B_ZERO_6), 
                                      m_c(B_ZERO_6),
-                                     m_I(0.0, B_ZERO_3, B_ZERO_3x3),
-                                     m_X_base(B_IDENTITY_3x3, B_ZERO_3), 
+                                     m_f(B_ZERO_6),
+                                     m_I(B_ZERO_INERTIA),
+                                     m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual) 
     {
         m_I.setInertia(mass, com, inertia_com);
     }
     
    /* explicit BBody( const BSpatialInertia &I, bool isVirtual = false ) : m_id(0), 
-                                                                m_X_base(B_IDENTITY_3x3, B_ZERO_3), 
+                                                                m_X_base(B_IDENTITY_TRANS), 
                                                                 m_I(I),
                                                                 m_vel(B_ZERO_6), 
                                                                 m_acc(B_ZERO_6), 
+                                                                m_c(B_ZERO_6),
+                                                                m_f(B_ZERO_6),
                                                                 m_isVirtual(isVirtual) {}*/
     
     ~BBody( void )=default;
@@ -97,8 +101,7 @@ public:
     void
     clear( void )
     {
-        //m_id     = 0;
-        m_vel = m_acc = m_c = B_ZERO_6;
+        m_vel = m_acc = m_c = m_f = B_ZERO_6;
         m_I.clear();
         m_X_base.clear(); 
         m_isVirtual = false;
@@ -111,12 +114,10 @@ public:
     getId( void ) const { return m_id; }
     
     
-    
-    //
     void 
     setBody( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_com, bool isVirtual = false )
     {
-        m_vel = m_acc = m_c = B_ZERO_6; 
+        m_vel = m_acc = m_c = m_f = B_ZERO_6; 
         m_I.setInertia(mass, com, inertia_com);
         m_X_base.clear();
         m_isVirtual = isVirtual;
@@ -135,7 +136,7 @@ public:
     const BVector3 
     com( void ) const { return  m_I.com(); }
     
-    // first moment of mass 
+    //  magnitude and direction of linear momentum; first moment of mass 
     const BVector3 
     h( void ) const { return m_I.h(); }
     
@@ -256,7 +257,6 @@ private:
     BSpatialVector  m_vel;  // spatial velocity of the body
     BSpatialVector  m_acc;  // spatial acceleration of the body
     BSpatialVector  m_c;    // spatial velocity-dependent acceleration term
-
     BSpatialVector  m_f;    // internal forces on the body (used only BDynamics::inverse())
 
     BSpatialInertia m_I;    // spatial inertia at origin of the body (mass, com, rotational inertia)

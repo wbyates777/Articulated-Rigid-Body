@@ -197,44 +197,44 @@ public:
     
     enum BJointType 
     {
-      BUNDEFINED = 0,
+      UNDEFINED = 0,
      
       // values here are important - do not change
-      B1DoF = 1,
-      B2DoF = 2, ///< Emulated 2 DoF joint.
-      B3DoF = 3, ///< Emulated 3 DoF joint.
-      B4DoF = 4, ///< Emulated 4 DoF joint.
-      B5DoF = 5, ///< Emulated 5 DoF joint.
-      B6DoF = 6, ///< Emulated 6 DoF joint.
+      J1DoF = 1,
+      J2DoF = 2, ///< Emulated 2 DoF joint.
+      J3DoF = 3, ///< Emulated 3 DoF joint.
+      J4DoF = 4, ///< Emulated 4 DoF joint.
+      J5DoF = 5, ///< Emulated 5 DoF joint.
+      J6DoF = 6, ///< Emulated 6 DoF joint.
       //
         
-      BPrismatic,   ///< Sliding joint
+      Prismatic,   ///< Sliding joint
       
-      BRevolute,    ///<  Hinge joint
-      BRevoluteX,
-      BRevoluteY,
-      BRevoluteZ,
+      Revolute,    ///<  Hinge joint
+      RevoluteX,
+      RevoluteY,
+      RevoluteZ,
         
       // Spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
-      BSpherical, ///< 3 DoF joint using Quaternions for joint positional variables and angular velocity for joint velocity variables.
-      BEulerZYX,  ///< 3 DoF joint that uses Euler ZYX convention (faster than emulated multi DoF joints).
-      BEulerXYZ,  ///< 3 DoF joint that uses Euler XYZ convention (faster than emulated multi DoF joints).
-      BEulerYXZ,  ///< 3 DoF joint that uses Euler YXZ convention (faster than emulated multi DoF joints).
-      BEulerZXY,  ///< 3 DoF joint that uses Euler ZXY convention (faster than emulated multi DoF joints).
-      BTranslationXYZ,
+      Spherical, ///< 3 DoF joint using Quaternions for joint positional variables and angular velocity for joint velocity variables.
+      EulerZYX,  ///< 3 DoF joint that uses Euler ZYX convention (faster than emulated multi DoF joints).
+      EulerXYZ,  ///< 3 DoF joint that uses Euler XYZ convention (faster than emulated multi DoF joints).
+      EulerYXZ,  ///< 3 DoF joint that uses Euler YXZ convention (faster than emulated multi DoF joints).
+      EulerZXY,  ///< 3 DoF joint that uses Euler ZXY convention (faster than emulated multi DoF joints).
+      TranslationXYZ,
       
-      BFloatingBase, ///< A 6-DoF joint for floating-base (or freeflyer) systems.  It is internally modeled by a JointTypeTranslationXYZ and a JointTypeSpherical joint. It is recommended to only use this joint for the very first body added to the model.
+      FloatingBase, ///< A 6-DoF joint for floating-base (or freeflyer) systems.  It is internally modeled by a JointTypeTranslationXYZ and a JointTypeSpherical joint. It is recommended to only use this joint for the very first body added to the model.
       
-      BFixed,        ///< Fixed joint which causes the inertial properties to be merged with the parent body.
+      Fixed,        ///< Fixed joint which causes the inertial properties to be merged with the parent body.
       
-      BHelical,      ///< A 1-DoF 'screw' joint with both rotational and translational motion.
+      Helical,      ///< A 1-DoF 'screw' joint with both rotational and translational motion.
       
   
         ///<
       
         
-     // BCustom,
-      BMAXJOINT    
+     // Custom,
+      MAXJOINT    
     };
     
     BJoint( void )=default;
@@ -359,7 +359,7 @@ public:
     SetQuat( const BQuat &quat, std::vector<BScalar> &q ) const;
 
     void
-    dof3_windex( int w ) { m_widx = w; }
+    windex( int w ) { m_widx = w; }
     
     bool 
     operator==( const BJoint &v ) const { return (m_id == v.m_id); }

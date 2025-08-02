@@ -35,11 +35,15 @@ class BFixedBody
 public:
     
     BFixedBody( void )=default;
-    BFixedBody( const BBody &body ):  m_id(0), m_mass(body.mass()), m_com(body.com()), m_inertia_com(body.inertiaCom()), m_movableParentId(0), m_parentTransform(B_IDENTITY_3x3, B_ZERO_3), m_baseTransform(B_IDENTITY_3x3, B_ZERO_3) {} 
+    BFixedBody( const BBody &body ):  m_id(0), m_mass(body.mass()), m_com(body.com()), m_inertia_com(body.inertiaCom()), m_movableParentId(0), m_parentTransform(B_IDENTITY_TRANS), m_baseTransform(B_IDENTITY_TRANS) {} 
     ~BFixedBody( void )=default;
     //
     
-
+    void
+    setId( BBodyId bid ) { m_id = bid; }
+    
+    BBodyId
+    getId( void ) const { return m_id; }
     
     void 
     mass( BScalar m ) { m_mass = m; }
@@ -49,7 +53,7 @@ public:
 
     // com - centre of mass
     void
-    com( const BVector3& c ) { m_com = c; }
+    com( const BVector3 &c ) { m_com = c; }
     
     const BVector3& 
     com( void ) const { return m_com; }
@@ -60,6 +64,12 @@ public:
     const BMatrix3& 
     inertiaCom( void ) const { return m_inertia_com; } 
     
+    void 
+    setBody( BScalar m, const BVector3 &c, const BMatrix3 &I ) 
+    { 
+        m_mass = m;  m_com = c; m_inertia_com = I;
+    }
+    
     BBody 
     toBody( void ) const { return BBody(m_mass, m_com, m_inertia_com); }
     
@@ -68,13 +78,13 @@ public:
     parentTrans( void ) const { return m_parentTransform; }
     
     void 
-    parentTrans( const BSpatialTransform& pt )  { m_parentTransform = pt; }
+    parentTrans( const BSpatialTransform &pt )  { m_parentTransform = pt; }
     
     const BSpatialTransform& 
     baseTrans( void ) const { return m_baseTransform; }
     
     void 
-    baseTrans( const BSpatialTransform& bt ) { m_baseTransform = bt; }
+    baseTrans( const BSpatialTransform &bt ) { m_baseTransform = bt; }
     
     
     BBodyId
@@ -84,16 +94,11 @@ public:
     movableParent( BBodyId bid ) { m_movableParentId = bid; }
     
     bool 
-    operator==( const BFixedBody& v ) const { return (m_id == v.m_id); }
+    operator==( const BFixedBody &v ) const { return (m_id == v.m_id); }
     
     bool 
-    operator!=( const BFixedBody& v ) const { return (m_id != v.m_id); }
+    operator!=( const BFixedBody &v ) const { return (m_id != v.m_id); }
     
-    void
-    setId( BBodyId bid ) { m_id = bid; }
-    
-    BBodyId
-    getId( void ) const { return m_id; }
     
 private: 
 

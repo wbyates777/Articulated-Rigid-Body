@@ -16,9 +16,11 @@
 #endif
 
 
-BModel::BModel( int expected_dof ) :  m_dof_count(0), q_size(0), qdot_size(0), m_gravity(B_ZERO_3)
-{
+#include <set>
 
+
+BModel::BModel( int expected_dof ) :  m_dof_count(0), m_q_size(0), m_qdot_size(0), m_gravity(B_ZERO_3)
+{
     m_IA.reserve(expected_dof);
     m_pA.reserve(expected_dof);
     m_joint.reserve(expected_dof);
@@ -26,43 +28,49 @@ BModel::BModel( int expected_dof ) :  m_dof_count(0), q_size(0), qdot_size(0), m
     m_lambda.reserve(expected_dof);
     m_fixed.reserve(expected_dof);
     
-    //
-    // structural information
-    //
+    m_fbd = std::numeric_limits<BBodyId>::max() / 2;
     
-    // root joint
-    m_joint.push_back(BJoint());
-    m_joint.back().clear();
+    init();
+}
+
+void 
+BModel::clear( void )
+{
+    m_dof_count = m_q_size = m_qdot_size = 0; 
+    m_gravity = B_ZERO_3;
     
-    // root body
-    m_body.push_back(BBody());
-    m_body.back().clear();
-       
-    // parent
+    m_lambda.clear();
+    m_body.clear();
+    m_joint.clear();
+    m_fixed.clear(); 
+    
+    m_IA.clear(); 
+    m_pA.clear(); 
+    
+    m_bodyNameMap.clear();
+    
+    init();
+}
+
+void 
+BModel::init( void )
+// setup and initialise
+{
     m_lambda.push_back(0);
+    
+    m_body.resize(1);
+    m_body[0].clear();
+       
+    m_joint.resize(1);
+    m_joint[0].clear();
     
     m_bodyNameMap["ROOT"] = 0;
     
     // dynamic variables
     m_IA.push_back(B_IDENTITY_6x6);
     m_pA.push_back(B_ZERO_6);
-    
-    m_fbd = std::numeric_limits<BBodyId>::max() / 2;
 }
 
-void 
-BModel::clear( void )
-{
-    m_dof_count = q_size = qdot_size = 0; 
-    m_gravity = B_ZERO_3;
-    m_lambda.clear();
-    m_joint.clear();
-    m_body.clear();
-    m_fixed.clear();  
-    m_IA.clear(); 
-    m_pA.clear(); 
-    m_bodyNameMap.clear();
-}
 
 bool 
 BModel::isBodyId( BBodyId bid ) const
@@ -326,7 +334,7 @@ BModel::inertia( BBodyId bid ) const
     if (isFixedBodyId(bid)) 
         bid = m_fixed[bid - m_fbd].movableParent();
     
-    BSpatialInertia I(0.0, B_ZERO_3, B_ZERO_3x3);
+    BSpatialInertia I(B_ZERO_INERTIA);
  
     std::set<BBodyId> children = {bid};
     for (int i = 1; i < m_lambda.size(); ++i)
@@ -406,12 +414,12 @@ BModel::addFloatingBaseJoint( BBodyId parent_id,
 
     null_parent = addBody(parent_id,
                           joint_frame,
-                          BJoint::BTranslationXYZ,
+                          BJoint::TranslationXYZ,
                           null_body);
     
     return addBody(null_parent,
-                   BSpatialTransform(B_IDENTITY_3x3, B_ZERO_3),
-                   BJoint::BSpherical,
+                   BSpatialTransform(B_IDENTITY_TRANS),
+                   BJoint::Spherical,
                    body,
                    body_name);
 }
@@ -426,7 +434,7 @@ BModel::addMultiDofJoint( BBodyId parent_id,
     // Here we emulate multi DoF joints by simply adding nullbodies. This
     // allows us to use fixed size elements for S,v,a, etc. which is very
     // fast in Eigen.
-    assert (joint.jtype() >= BJoint::B1DoF && joint.jtype() <= BJoint::B6DoF);
+    assert (joint.jtype() >= BJoint::J1DoF && joint.jtype() <= BJoint::J6DoF);
     
     int joint_count =  joint.jtype(); // 1-6
     
@@ -441,22 +449,22 @@ BModel::addMultiDofJoint( BBodyId parent_id,
     {
         single_dof_joint = BJoint(joint.axis(j));
         
-        if (single_dof_joint.jtype() == BJoint::B1DoF) 
+        if (single_dof_joint.jtype() == BJoint::J1DoF) 
         {
             const BVector3 &rot = joint.axis(j).ang();
             const BVector3 &trans = joint.axis(j).lin();
 
             if (rot == B_ZERO_3) 
-                single_dof_joint = BJoint(BJoint::BPrismatic, trans);
+                single_dof_joint = BJoint(BJoint::Prismatic, trans);
             else if (trans == B_ZERO_3) 
-                single_dof_joint = BJoint(BJoint::BRevolute, rot);
+                single_dof_joint = BJoint(BJoint::Revolute, rot);
         }
         
         // the first joint has to be transformed by joint_frame, all the
         // others must have a null transformation
         if (j == 0) 
             joint_frame_transf = joint_frame;
-        else joint_frame_transf = BSpatialTransform(B_IDENTITY_3x3, B_ZERO_3);
+        else joint_frame_transf = BSpatialTransform(B_IDENTITY_TRANS);
 
         if (j < joint_count - 1)
         {
@@ -485,23 +493,24 @@ BModel::addBody( BBodyId parent_id,
                  const BBody  &body,
                  const std::string &body_name )
 {
+    assert(m_body.size() < m_fbd);
     assert(m_lambda.size() > 0);
-    assert(joint.jtype() != BJoint::BUNDEFINED);
+    assert(joint.jtype() != BJoint::UNDEFINED);
     
-    if (joint.jtype() == BJoint::BFixed) 
+    if (joint.jtype() == BJoint::Fixed) 
         return addFixedJoint( parent_id, joint_frame, joint, body, body_name );
     
-    if (joint.jtype() == BJoint::BFloatingBase) 
+    if (joint.jtype() == BJoint::FloatingBase) 
         return addFloatingBaseJoint(parent_id, joint_frame, joint, body, body_name);
     
-    if ((joint.jtype() >= BJoint::B1DoF) && (joint.jtype() <= BJoint::B6DoF)) 
+    if ((joint.jtype() >= BJoint::J1DoF) && (joint.jtype() <= BJoint::J6DoF)) 
         return addMultiDofJoint( parent_id, joint_frame, joint, body, body_name );
     
     
     // If we add the body to a fixed body we have to make sure that we
     // actually add it to its movable parent.
     BBodyId movable_parent_id = parent_id;
-    BSpatialTransform movable_parent_transform(B_IDENTITY_3x3, B_ZERO_3);
+    BSpatialTransform movable_parent_transform(B_IDENTITY_TRANS);
     
     if (isFixedBodyId(parent_id)) 
     {
@@ -516,8 +525,7 @@ BModel::addBody( BBodyId parent_id,
     //
     // BBody 
     //
-    int bid = (int) m_body.size();
-    assert(m_body.size() < m_fbd);
+    BBodyId bid = (int) m_body.size();
     m_body.push_back(body);
     m_body.back().setId( bid );
     addName(bid, body_name);
@@ -532,31 +540,15 @@ BModel::addBody( BBodyId parent_id,
     // we have to invert the transformation as it is later always used from the child bodies perspective.
     m_joint.back().X_T( joint_frame * movable_parent_transform );
     
-    // counts and sizes
-    m_dof_count += joint.DoFCount();
-    
-    // update the w components of the quaternions. They are stored at the end of the q vector
-    int multdof3 = 0;
-    for (int i = 1; i < m_joint.size(); ++i) 
-    {
-        if (m_joint[i].jtype() == BJoint::BSpherical) 
-        {
-            m_joint[i].dof3_windex( m_dof_count + multdof3 );
-            multdof3++;
-        }
-    }
-    
-    q_size = m_dof_count + multdof3;
-    qdot_size += joint.DoFCount();
-    
-    // update X_base - assume initial joint position is 'closed'
+    // set body transform X_base - base to body frame origin - assume initial joint position is 'closed'
     m_joint[bid].jcalc();  
-    
     const BSpatialTransform &X_lambda = m_joint[bid].X_lambda(); 
-    
     if (m_lambda[bid] != 0)
         m_body[bid].X_base( X_lambda * m_body[m_lambda[bid]].X_base() );
     else m_body[bid].X_base( X_lambda );
+    
+    // calculate DoF-count, w-indexes, and q-sizes
+    calcDoF();
     
     // dynamic variables
     m_IA.push_back(B_ZERO_6x6);
@@ -565,6 +557,27 @@ BModel::addBody( BBodyId parent_id,
     return bid; 
 }
 
+void
+BModel::calcDoF( void )
+// joint parameter space - calculate Degrees-of-Freedom count, w-indexes, and q-sizes
+{
+    m_dof_count = 0;
+    for (int i = 1; i < m_joint.size(); ++i) 
+        m_dof_count += m_joint[i].DoFCount();
+        
+    int multdof3 = 0;
+    for (int i = 1; i < m_joint.size(); ++i) 
+    {
+        if (m_joint[i].jtype() == BJoint::Spherical) 
+        {
+            // update the w-components of quaternion - they are stored at end of q-vector
+            m_joint[i].windex( m_dof_count + multdof3 );
+            multdof3++;
+        }
+    }
+    m_q_size    = m_dof_count + multdof3;
+    m_qdot_size = m_dof_count;
+}
 
 
 void 
@@ -572,11 +585,6 @@ BModel::setMass(BBodyId bid, BScalar mass)
 {
     if (isFixedBodyId(bid))
     {
-        // The inertial parameters of the fixed body have already been merged in the parent body,
-        // in order to update correctly the parent body we need to first
-        // remove the inertial effects of the fixed body from his parent body
-        // Then update the fixed body inertia
-        // Finally, merge it again in the parent body
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
         fbody.mass( mass );
@@ -594,11 +602,6 @@ BModel::setInertia(BBodyId bid, const BMatrix3 &inertia)
 {
     if (isFixedBodyId(bid))
     {
-        // The inertial parameters of the fixed body have already been merged in the parent body,
-        // in order to update correctly the parent body we need to first
-        // remove the inertial effects of the fixed body from his parent body
-        // Then update the fixed body inertia
-        // Finally, merge it again in the parent body
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
         fbody.inertiaCom( inertia );
@@ -616,11 +619,6 @@ BModel::setCom(BBodyId bid, const BVector3 &com)
 {
     if (isFixedBodyId(bid))
     {
-        // The inertial parameters of the fixed body have already been merged in the parent body,
-        // in order to update correctly the parent body we need to first
-        // remove the inertial effects of the fixed body from his parent body
-        // Then update the fixed body inertia
-        // Finally, merge it again in the parent body
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
         fbody.com( com );
@@ -638,18 +636,9 @@ BModel::setParameters( BBodyId bid, BScalar mass, const BMatrix3 &inertia, const
 {
     if (isFixedBodyId(bid))
     {
-        // The inertial parameters of the fixed body have already been merged in the parent body,
-        // in order to update correctly the parent body we need to first
-        // remove the inertial effects of the fixed body from his parent body
-        // Then update the fixed body inertia
-        // Finally, merge it again in the parent body
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.mass( mass );
-        fbody.inertiaCom( inertia );
-        fbody.com( com );
-        
-        //fbody.setBody( mass, com, inertia );
+        fbody.setBody( mass, com, inertia );
         
         m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
     }

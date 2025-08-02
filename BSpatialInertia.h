@@ -32,12 +32,10 @@
  5) arb::cross(m_h) * arb::cross(-m_h) != m_mass * arb::cross(m_com) * arb::cross(-m_com)
 
  
- 
  https://en.wikipedia.org/wiki/Moment_(physics)
  
  https://en.wikipedia.org/wiki/List_of_moments_of_inertia
  
-
  TODO: separate 3D stuff into BMass(mass,h,I^3) and I^6 stuff BSpatialInertia
  
 */
@@ -64,7 +62,7 @@ public:
     BSpatialInertia( void )=default;
 
     // the moments of mass; zero, one, and two - note mass can be 0
-    BSpatialInertia( BScalar mass, const BVector3 &h, const BMatrix3 &inertia ): m_mass(mass), m_h(h), m_I(inertia) {}
+    constexpr BSpatialInertia( BScalar mass, const BVector3 &h, const BMatrix3 &inertia ): m_mass(mass), m_h(h), m_I(inertia) {}
 
     BSpatialInertia( const BSpatialMatrix &I ) { setInertia(I); }     
     
@@ -124,7 +122,7 @@ public:
     const BVector3
     com( void ) const { assert(m_mass != 0); return  m_h / m_mass; }
         
-    // first moment of mass 
+    // magnitude and direction of linear momentum; first moment of mass 
     const BVector3
     h( void ) const {  return m_h; }
     
@@ -235,7 +233,7 @@ private:
     }
     
     BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
-    BVector3 m_h;    // first moment of mass is h = m_com * m_mass
+    BVector3 m_h;    // magnitude and direction of linear momentum h = m_com * m_mass; first moment of mass 
     BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0); second moment of mass 
     
 };
@@ -250,15 +248,17 @@ namespace arb
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 iI(glm::inverse(I.inertiaCom()));
-        const BMatrix3 im(1.0 / I.mass());
+        const BMatrix3 iM(1.0 / I.mass());
         const BVector3 com(I.com());
         
-        return BSpatialMatrix( iI, iI * arb::cross(-com),  
-                               arb::cross(com) * iI,  im + arb::cross(com) * iI * arb::cross(-com));
+        return BSpatialMatrix(          iI,                    iI * arb::cross(-com),  
+                               arb::cross(com) * iI,  iM + arb::cross(com) * iI * arb::cross(-com));
         
     } 
 
 };
+
+constexpr BSpatialInertia B_ZERO_INERTIA(0.0, B_ZERO_3, B_ZERO_3x3);
 
 // scalar multiplication
 inline const BSpatialInertia 

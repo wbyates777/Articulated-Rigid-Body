@@ -61,8 +61,8 @@ public:
     BSpatialTransform( void )=default;
     
     // BSpatialTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans);
-    explicit BSpatialTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
-    explicit BSpatialTransform( const BVector3 &trans ): m_E(B_ZERO_3x3), m_r(trans) {}
+    constexpr explicit BSpatialTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
+    constexpr explicit BSpatialTransform( const BVector3 &trans ): m_E(B_ZERO_3x3), m_r(trans) {}
     
     ~BSpatialTransform( void )=default;
     
@@ -154,6 +154,7 @@ public:
         //                       ETf[2]);
     }
 
+    // transform 3D point p to/from coordinate frame 
     const BVector3 
     apply( const BVector3 &p ) const { return m_E * (p - m_r); }
     
@@ -186,7 +187,7 @@ public:
     {
         const BMatrix3 ET = glm::transpose(m_E);
         const BVector3 ETrxf = ET * (f_sp.ang() - glm::cross(m_r, f_sp.lin()));
-        const BVector3 aux    = ET * f_sp.lin();
+        const BVector3 aux = ET * f_sp.lin();
         return BSpatialVector( ETrxf, aux );
     }
     
@@ -215,6 +216,9 @@ private:
     BMatrix3 m_E; // rotation - note the transpose of a rotation is also its inverse
     BVector3 m_r; // translation - inverse translation is -m_r
 };
+
+ 
+constexpr BSpatialTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
 
 
 inline std::ostream&

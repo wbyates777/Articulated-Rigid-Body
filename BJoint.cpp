@@ -32,77 +32,77 @@ BJoint::BJoint(BJointType joint_type) : m_id(0),
                                         m_qidx(0),
                                         m_widx(0),
                                         m_jtype(joint_type),
-                                        m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                        m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                        m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                        m_X_lambda(B_IDENTITY_TRANS),
+                                        m_X_J(B_IDENTITY_TRANS),
+                                        m_X_T(B_IDENTITY_TRANS),
                                         m_v_J(B_ZERO_6),
                                         m_c_J(B_ZERO_6),
                                         m_S(m_ZERO_1x6),
                                         m_jointAxes(1)
 {
     
-    if (m_jtype == BJointType::BRevoluteX) 
+    if (m_jtype == BJointType::RevoluteX) 
     {
         m_jointAxes[0] = BSpatialVector(B_XAXIS, B_ZERO_3);
     } 
-    else if (m_jtype == BJointType::BRevoluteY) 
+    else if (m_jtype == BJointType::RevoluteY) 
     {
         m_jointAxes[0] = BSpatialVector(B_YAXIS, B_ZERO_3);
     } 
-    else if (m_jtype == BJointType::BRevoluteZ) 
+    else if (m_jtype == BJointType::RevoluteZ) 
     {
         m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
     } 
-    else if (m_jtype == BJointType::BSpherical) 
-    {
-        m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
-        m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
-        m_jointAxes[2] = BSpatialVector(B_XAXIS, B_ZERO_3);
-    } 
-    else if (m_jtype == BJointType::BEulerZYX) 
+    else if (m_jtype == BJointType::Spherical) 
     {
         m_jointAxes.resize(3);
         m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
         m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
         m_jointAxes[2] = BSpatialVector(B_XAXIS, B_ZERO_3);
     } 
-    else if (m_jtype == BJointType::BEulerXYZ) 
+    else if (m_jtype == BJointType::EulerZYX) 
+    {
+        m_jointAxes.resize(3);
+        m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
+        m_jointAxes[2] = BSpatialVector(B_XAXIS, B_ZERO_3);
+    } 
+    else if (m_jtype == BJointType::EulerXYZ) 
     {
         m_jointAxes.resize(3);
         m_jointAxes[0] = BSpatialVector(B_XAXIS, B_ZERO_3);
         m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
         m_jointAxes[2] = BSpatialVector(B_ZAXIS, B_ZERO_3);
     } 
-    else if (m_jtype == BJointType::BEulerYXZ) 
+    else if (m_jtype == BJointType::EulerYXZ) 
     {
         m_jointAxes.resize(3);
         m_jointAxes[0] = BSpatialVector(B_YAXIS, B_ZERO_3);
         m_jointAxes[1] = BSpatialVector(B_XAXIS, B_ZERO_3);
         m_jointAxes[2] = BSpatialVector(B_ZAXIS, B_ZERO_3);
     } 
-    else if (m_jtype == BJointType::BEulerZXY) 
+    else if (m_jtype == BJointType::EulerZXY) 
     {
         m_jointAxes.resize(3);
         m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
         m_jointAxes[1] = BSpatialVector(B_XAXIS, B_ZERO_3);
         m_jointAxes[2] = BSpatialVector(B_YAXIS, B_ZERO_3);
     } 
-    else if (m_jtype == BJointType::BTranslationXYZ) 
+    else if (m_jtype == BJointType::TranslationXYZ) 
     {
         m_jointAxes.resize(3);
         m_jointAxes[0] = BSpatialVector(B_ZERO_3, B_XAXIS);
         m_jointAxes[1] = BSpatialVector(B_ZERO_3, B_YAXIS);
         m_jointAxes[2] = BSpatialVector(B_ZERO_3, B_ZAXIS);
     } 
-    else if (m_jtype >= BJointType::B1DoF && m_jtype <= BJointType::B6DoF) 
+    else if (m_jtype >= BJointType::J1DoF && m_jtype <= BJointType::J6DoF) 
     {
         // create a joint and allocate memory for it.
-        int DoF_count = joint_type - B1DoF + 1; 
+        int DoF_count = joint_type - J1DoF + 1; 
         m_jointAxes.resize(DoF_count, B_ZERO_6); 
         std::cout << "Warning: zero vector " << m_jointAxes[0] << std::endl;
     }  
-    else if (m_jtype != BJointType::BFixed && m_jtype != BJointType::BFloatingBase) 
+    else if (m_jtype != BJointType::Fixed && m_jtype != BJointType::FloatingBase) 
     {
         std::cout << "Error: Invalid use of Joint constructor Joint(BJointType type). Only allowed when type == BFixed or BSpherical." << std::endl;
         exit(EXIT_FAILURE);
@@ -121,24 +121,24 @@ BJoint::BJoint( BJointType joint_type, const BVector3 &joint_axis ) : m_id(0),
                                                                       m_qidx(0),
                                                                       m_widx(0),
                                                                       m_jtype(joint_type),
-                                                                      m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                                                      m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                                                      m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                                                      m_X_lambda(B_IDENTITY_TRANS),
+                                                                      m_X_J(B_IDENTITY_TRANS),
+                                                                      m_X_T(B_IDENTITY_TRANS),
                                                                       m_v_J(B_ZERO_6),
                                                                       m_c_J(B_ZERO_6),
                                                                       m_S(m_ZERO_1x6),
                                                                       m_jointAxes(1)
 {
     // Only rotation around the Z-axis
-    assert( joint_type == BJointType::BRevolute || joint_type == BJointType::BPrismatic );
+    assert( joint_type == BJointType::Revolute || joint_type == BJointType::Prismatic );
     
-    if (m_jtype == BJointType::BRevolute) 
+    if (m_jtype == BJointType::Revolute) 
     {
         // make sure we have a unit axis
         // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
         m_jointAxes[0].set( joint_axis, B_ZERO_3  );
     } 
-    else if (m_jtype == BJointType::BPrismatic) 
+    else if (m_jtype == BJointType::Prismatic) 
     {
         // make sure we have a unit axis
         // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
@@ -162,10 +162,10 @@ BJoint::BJoint( BJointType joint_type, const BVector3 &joint_axis ) : m_id(0),
 BJoint::BJoint( const BSpatialVector &axis_0 ): m_id(0),
                                                 m_qidx(0),
                                                 m_widx(0),
-                                                m_jtype(BJointType::BUNDEFINED),
-                                                m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                                m_jtype(BJointType::UNDEFINED),
+                                                m_X_lambda(B_IDENTITY_TRANS),
+                                                m_X_J(B_IDENTITY_TRANS),
+                                                m_X_T(B_IDENTITY_TRANS),
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
@@ -177,23 +177,23 @@ BJoint::BJoint( const BSpatialVector &axis_0 ): m_id(0),
     // TODO: this has to be properly determined AND test case. Try Matt's dot product idea
     if (axis_0 == BSpatialVector(B_XAXIS, B_ZERO_3)) 
     {
-        m_jtype = BJointType::BRevoluteX;
+        m_jtype = BJointType::RevoluteX;
     } 
     else if (axis_0 == BSpatialVector(B_YAXIS, B_ZERO_3)) 
     {
-        m_jtype = BJointType::BRevoluteY;
+        m_jtype = BJointType::RevoluteY;
     } 
     else if (axis_0 == BSpatialVector(B_ZAXIS, B_ZERO_3)) 
     {
-        m_jtype = BJointType::BRevoluteZ;
+        m_jtype = BJointType::RevoluteZ;
     } 
     else if (axis_0.ang() == B_ZERO_3) 
     {
-        m_jtype = BJointType::BPrismatic;
+        m_jtype = BJointType::Prismatic;
     } 
     else 
     {
-        m_jtype = BJointType::BHelical;
+        m_jtype = BJointType::Helical;
     }
     
     validate_spatial_axis(m_jointAxes[0]);  
@@ -203,10 +203,10 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                 const BSpatialVector &axis_1) : m_id(0),
                                                 m_qidx(0),
                                                 m_widx(0),
-                                                m_jtype(BJointType::BUNDEFINED),
-                                                m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                                m_jtype(BJointType::UNDEFINED),
+                                                m_X_lambda(B_IDENTITY_TRANS),
+                                                m_X_J(B_IDENTITY_TRANS),
+                                                m_X_T(B_IDENTITY_TRANS),
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
@@ -220,10 +220,10 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                 const BSpatialVector &axis_2 ): m_id(0), 
                                                 m_qidx(0),
                                                 m_widx(0),
-                                                m_jtype(BJointType::BUNDEFINED),
-                                                m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                                m_jtype(BJointType::UNDEFINED),
+                                                m_X_lambda(B_IDENTITY_TRANS),
+                                                m_X_J(B_IDENTITY_TRANS),
+                                                m_X_T(B_IDENTITY_TRANS),
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
@@ -238,10 +238,10 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                 const BSpatialVector &axis_3 ): m_id(0),
                                                 m_qidx(0),
                                                 m_widx(0),
-                                                m_jtype(BJointType::BUNDEFINED),
-                                                m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                                m_jtype(BJointType::UNDEFINED),
+                                                m_X_lambda(B_IDENTITY_TRANS),
+                                                m_X_J(B_IDENTITY_TRANS),
+                                                m_X_T(B_IDENTITY_TRANS),
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
@@ -257,10 +257,10 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                 const BSpatialVector &axis_4 ): m_id(0),
                                                 m_qidx(0),
                                                 m_widx(0),
-                                                m_jtype(BJointType::BUNDEFINED),
-                                                m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                                m_jtype(BJointType::UNDEFINED),
+                                                m_X_lambda(B_IDENTITY_TRANS),
+                                                m_X_J(B_IDENTITY_TRANS),
+                                                m_X_T(B_IDENTITY_TRANS),
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
@@ -277,10 +277,10 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                 const BSpatialVector &axis_5 ): m_id(0),
                                                 m_qidx(0),
                                                 m_widx(0),
-                                                m_jtype(BJointType::BUNDEFINED),
-                                                m_X_lambda(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_J(B_IDENTITY_3x3, B_ZERO_3),
-                                                m_X_T(B_IDENTITY_3x3, B_ZERO_3),
+                                                m_jtype(BJointType::UNDEFINED),
+                                                m_X_lambda(B_IDENTITY_TRANS),
+                                                m_X_J(B_IDENTITY_TRANS),
+                                                m_X_T(B_IDENTITY_TRANS),
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
@@ -300,11 +300,11 @@ BJoint::setJoint( const std::vector<BSpatialVector> &axes )
     // emulated 2-6 DoF joint.
     switch (DoF_count)
     {
-        case 2 : m_jtype = BJointType::B2DoF; break;
-        case 3 : m_jtype = BJointType::B3DoF; break; 
-        case 4 : m_jtype = BJointType::B4DoF; break; 
-        case 5 : m_jtype = BJointType::B5DoF; break; 
-        case 6 : m_jtype = BJointType::B6DoF; break; 
+        case 2 : m_jtype = BJointType::J2DoF; break;
+        case 3 : m_jtype = BJointType::J3DoF; break; 
+        case 4 : m_jtype = BJointType::J4DoF; break; 
+        case 5 : m_jtype = BJointType::J5DoF; break; 
+        case 6 : m_jtype = BJointType::J6DoF; break; 
         default: exit(EXIT_FAILURE); break;
     }
 
@@ -362,7 +362,7 @@ BJoint::clear( void )
 {
     m_qidx = 0;
     m_widx = 0;
-    m_jtype = BJointType::BUNDEFINED;
+    m_jtype = BJointType::UNDEFINED;
     m_X_lambda.clear();
     m_X_J.clear();
     m_X_T.clear();
@@ -376,7 +376,7 @@ BJoint::clear( void )
 BQuat
 BJoint::getQuat(const std::vector<BScalar> &q) const
 {
-    assert(m_jtype == BJointType::BSpherical);
+    assert(m_jtype == BJointType::Spherical);
  
     BQuat quat;
     
@@ -391,7 +391,7 @@ BJoint::getQuat(const std::vector<BScalar> &q) const
 void 
 BJoint::SetQuat(const BQuat &quat, std::vector<BScalar> &q) const
 {
-    assert(m_jtype == BJointType::BSpherical);
+    assert(m_jtype == BJointType::Spherical);
 
     q[m_widx]   = quat.w;
     q[m_qidx]   = quat.x;
@@ -440,7 +440,7 @@ void
 BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot ) 
 // calculate  $\[ X_lambda, X_J, S_i, v_J, c_J \] = jcalc(jtype(i), q, qdot, i)$ 
 {
-    if (m_jtype == BJointType::BRevoluteX)  // 1 DoF 
+    if (m_jtype == BJointType::RevoluteX)  // 1 DoF 
     {
         BScalar s = std::sin(q[m_qidx]);
         BScalar c = std::cos(q[m_qidx]);
@@ -455,7 +455,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         m_v_J[0] = qdot[m_qidx];
     } 
-    else if (m_jtype == BJointType::BRevoluteY) // 1 DoF 
+    else if (m_jtype == BJointType::RevoluteY) // 1 DoF 
     {
         BScalar s = std::sin(q[m_qidx]);
         BScalar c = std::cos(q[m_qidx]);
@@ -470,7 +470,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         m_v_J[1] = qdot[m_qidx];
     } 
-    else if (m_jtype == BJointType::BRevoluteZ) // 1 DoF
+    else if (m_jtype == BJointType::RevoluteZ) // 1 DoF
     {
         BScalar s = std::sin(q[m_qidx]);
         BScalar c = std::cos(q[m_qidx]);
@@ -484,7 +484,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_X_lambda.r( m_X_T.r() );
         m_v_J[2] = qdot[m_qidx];
     } 
-    else if (m_jtype == BJointType::BRevolute) // 1 DoF
+    else if (m_jtype == BJointType::Revolute) // 1 DoF
     {
         m_X_J = arb::Xrot(q[m_qidx], m_jointAxes[0].ang());
    
@@ -494,7 +494,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_v_J = MS * qdot[m_qidx]; 
         m_X_lambda = m_X_J * m_X_T;
     }
-    else if (m_jtype == BJointType::BPrismatic) // 1 DoF
+    else if (m_jtype == BJointType::Prismatic) // 1 DoF
     {
         m_X_J = arb::Xtrans(m_jointAxes[0].lin() * q[m_qidx]);
 
@@ -504,7 +504,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_v_J = MS * qdot[m_qidx]; 
         m_X_lambda = m_X_J * m_X_T;
     } 
-    else if (m_jtype == BJointType::BHelical) // 1 DoF
+    else if (m_jtype == BJointType::Helical) // 1 DoF
     {
         BVector3 ang(m_jointAxes[0].ang());
         BVector3 lin(m_jointAxes[0].lin());
@@ -527,7 +527,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
 
         setJointSpace(MS);
     } 
-    else if (m_jtype == BJointType::BSpherical) // 3 DoF
+    else if (m_jtype == BJointType::Spherical) // 3 DoF
     {
         m_X_J = BSpatialTransform(glm::toMat3(getQuat(q)));
         m_v_J = BSpatialVector( BVector3(qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2]), B_ZERO_3 );
@@ -540,7 +540,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_S[1][1] = 1.0;
         m_S[2][2] = 1.0;
     } 
-    else if (m_jtype == BJointType::BEulerZYX)  // 3 DoF
+    else if (m_jtype == BJointType::EulerZYX)  // 3 DoF
     {
         BScalar q0 = q[m_qidx];
         BScalar q1 = q[m_qidx + 1];
@@ -582,7 +582,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         m_X_lambda = m_X_J * m_X_T;
     } 
-    else if (m_jtype == BJointType::BEulerXYZ) // 3 DoF
+    else if (m_jtype == BJointType::EulerXYZ) // 3 DoF
     {
         BScalar q0 = q[m_qidx];
         BScalar q1 = q[m_qidx + 1];
@@ -624,7 +624,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         m_X_lambda = m_X_J * m_X_T;
     } 
-    else if (m_jtype == BJointType::BEulerYXZ) // 3 DoF
+    else if (m_jtype == BJointType::EulerYXZ) // 3 DoF
     {
         BScalar q0 = q[m_qidx];
         BScalar q1 = q[m_qidx + 1];
@@ -666,7 +666,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         m_X_lambda = m_X_J * m_X_T;
     } 
-    else if (m_jtype == BJointType::BEulerZXY) // 3 DoF 
+    else if (m_jtype == BJointType::EulerZXY) // 3 DoF 
     {
         BScalar q0 = q[m_qidx];
         BScalar q1 = q[m_qidx + 1];
@@ -706,7 +706,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
                   (-s1 * c2 * qdot1 - c1 * s2 * qdot2) * qdot0 + c2 * qdot2 * qdot1,
                   0.0, 0.0, 0.0);
     } 
-    else if (m_jtype == BJointType::BTranslationXYZ)  // 3 DoF
+    else if (m_jtype == BJointType::TranslationXYZ)  // 3 DoF
     {
         m_S = m_ZERO_6x3;
         BMatrix63 MS(B_ZERO_6x3);
@@ -735,32 +735,32 @@ BJoint::toString( BJointType jt )
 {
     switch (jt)
     {
-        case BJointType::BUNDEFINED:      return "Undefined"; break;
+        case BJointType::UNDEFINED:      return "Undefined"; break;
             
-        case BJointType::BPrismatic:      return "Prismatic"; break;
-        case BJointType::BRevolute:       return "Revolute"; break;
-        case BJointType::BRevoluteX:      return "RevoluteX"; break;
-        case BJointType::BRevoluteY:      return "RevoluteY"; break;
-        case BJointType::BRevoluteZ:      return "RevoluteZ"; break;
+        case BJointType::Prismatic:      return "Prismatic"; break;
+        case BJointType::Revolute:       return "Revolute"; break;
+        case BJointType::RevoluteX:      return "RevoluteX"; break;
+        case BJointType::RevoluteY:      return "RevoluteY"; break;
+        case BJointType::RevoluteZ:      return "RevoluteZ"; break;
  
-        case BJointType::BSpherical:      return "Spherical"; break;
-        case BJointType::BEulerZYX:       return "EulerZYX"; break;
-        case BJointType::BEulerXYZ:       return "EulerXYZ"; break;
-        case BJointType::BEulerYXZ:       return "EulerYXZ"; break;
-        case BJointType::BEulerZXY:       return "EulerZXY"; break;
-        case BJointType::BTranslationXYZ: return "TranslationXYZ"; break;
+        case BJointType::Spherical:      return "Spherical"; break;
+        case BJointType::EulerZYX:       return "EulerZYX"; break;
+        case BJointType::EulerXYZ:       return "EulerXYZ"; break;
+        case BJointType::EulerYXZ:       return "EulerYXZ"; break;
+        case BJointType::EulerZXY:       return "EulerZXY"; break;
+        case BJointType::TranslationXYZ: return "TranslationXYZ"; break;
             
-        case BJointType::B1DoF:           return "1DoF"; break;
-        case BJointType::B2DoF:           return "2DoF"; break;
-        case BJointType::B3DoF:           return "3DoF"; break;
-        case BJointType::B4DoF:           return "4DoF"; break;
-        case BJointType::B5DoF:           return "5DoF"; break;
-        case BJointType::B6DoF:           return "6DoF"; break;
+        case BJointType::J1DoF:           return "1DoF"; break;
+        case BJointType::J2DoF:           return "2DoF"; break;
+        case BJointType::J3DoF:           return "3DoF"; break;
+        case BJointType::J4DoF:           return "4DoF"; break;
+        case BJointType::J5DoF:           return "5DoF"; break;
+        case BJointType::J6DoF:           return "6DoF"; break;
             
-        case BJointType::BFloatingBase:   return "FloatingBase"; break;
-        case BJointType::BFixed:          return "Fixed"; break;
-        case BJointType::BHelical:        return "Helical"; break;
-        case BJointType::BMAXJOINT:       return "MaxJoint"; break;
+        case BJointType::FloatingBase:   return "FloatingBase"; break;
+        case BJointType::Fixed:          return "Fixed"; break;
+        case BJointType::Helical:        return "Helical"; break;
+        case BJointType::MAXJOINT:       return "MaxJoint"; break;
   
         default: exit(EXIT_FAILURE); break;
     }
