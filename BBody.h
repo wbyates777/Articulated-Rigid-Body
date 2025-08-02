@@ -181,7 +181,7 @@ public:
         if (other_body.mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
             return;
         
-        assert(m_I.mass() + other_body.mass() != 0.0);
+        assert(m_I.mass() - other_body.mass() != 0.0);
         m_I -= X.applyTranspose(other_body.I()); 
     }
     
