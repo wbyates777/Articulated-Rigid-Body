@@ -8,39 +8,36 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
+ Spatial or Plücker Transforms (see Featherstone, RBDA, Section 2.8, page 20, and Appendix A3, page 245).
  
- Spatial Transforms (see Featherstone, RBDA, Section 2.8, page 20).
- 
- Tranform $X$ from coordinate frame $A$ to coordinate frame $B$ denoted
- $$ B^X_A : A \rightarrow B $$
+ Consider a tranform $X$ that maps points from a coordinate frame $A$ to coordinate a frame $B$ 
+ $$ B^X_A : A \rightarrow B. $$
  The inverse $X^{-1}$ is defined by
- $$ B^{X^{-1}}_A = A^X_B$$ 
+ $$ B^{X^{-1}}_A = A^X_B. $$ 
 
- We need diﬀerent coordinate transformation matrices for motions and forces. 
+ We require diﬀerent coordinate transformation matrices for motions and forces. 
  For motion vectors $v \in M^6$, 
  $$ B^{X}_A : A \rightarrow B $$
- For force vectors $v \in F^6$, the 'star' version must be used 
+ For force vectors $v \in F^6$, the 'star' version of the transform must be used 
  $$ B^{X^*}_A : A \rightarrow B $$
  If the matrix $X$ performs a coordinate transformation on motion vectors, and $X^*$ performs the same
  transformation on force vectors, then the two are related by $X^* = X^{-T}$ 
  (see Featherstone, RBDA, Section 2.6, eqn 2.13, page 18).
 
  This class employs a compact representation of spatial transformations.
- Instead of using a 6x6 matrix, the class only stores a 3x3
- rotation matrix $E$ and a 3D translation vector $r$ to represent a spatial 
- transformation. It also provides some efficient matrix operations such as matrix 
- concatenation and transformation of spatial vectors.
+ Instead of using a full 6x6 matrix, the class only stores a 3x3  rotation matrix $E$
+ and a 3D translation vector $r$ to represent a spatial transformation. 
+ It also provides some efficient matrix operations such as matrix concatenation 
+ and transformation of spatial vectors.
  
  
  Notes:
  
  1) All angles in radians
- 2) BMatrix3 E is a rotation  - the transpose of a rotation is also its inverse
- 3) BVector3 r is a translation - inverse translation is -r
+ 2) SMatrix3 E is a rotation  - the transpose of a rotation is also its inverse
+ 3) SVector3 r is a translation - inverse translation is -r
  
  https://en.wikipedia.org/wiki/Rotation_matrix
-
- 
 */
 
 
@@ -62,7 +59,7 @@ public:
     
     // BSpatialTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans);
     constexpr explicit BSpatialTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
-    constexpr explicit BSpatialTransform( const BVector3 &trans ): m_E(B_ZERO_3x3), m_r(trans) {}
+    constexpr explicit BSpatialTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
     
     ~BSpatialTransform( void )=default;
     
