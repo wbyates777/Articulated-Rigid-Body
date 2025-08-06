@@ -80,7 +80,7 @@ public:
                 m_data[i][j] = d[i][j];
     }
     
-    void 
+    constexpr void 
     set( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
          BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
          BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25,
