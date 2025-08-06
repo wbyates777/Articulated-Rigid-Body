@@ -63,7 +63,7 @@ public:
     ~BSpatialMatrix( void )=default;
 
 
-    void
+    constexpr void
     set( BScalar s ) 
     {
         for ( int i = 0; i < 6; ++i )
