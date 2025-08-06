@@ -35,10 +35,10 @@ public:
     
     BSpatialVector( void )=default;
     constexpr BSpatialVector( const std::array<BScalar, 6> &d ): m_data(d) {}
-    explicit BSpatialVector( BScalar s ): m_data({s, s, s, s, s, s}) {}
+    constexpr explicit BSpatialVector( BScalar s ): m_data({s, s, s, s, s, s}) {}
     explicit BSpatialVector( const std::vector<BScalar> &d ) { assert(d.size() == 6); set(d); }
     explicit BSpatialVector( const std::vector<std::vector<BScalar>> &d ) { assert(d.size() == 1 && d[0].size() == 6); set(d[0]); }
-    BSpatialVector( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ): m_data({s0, s1, s2, s3, s4, s5}) {}
+    constexpr BSpatialVector( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ): m_data({s0, s1, s2, s3, s4, s5}) {}
     BSpatialVector( const BVector3 &h, const BVector3 &t ): m_data({h[0], h[1], h[2], t[0], t[1], t[2]}) {}
     ~BSpatialVector( void )=default;
     
