@@ -75,13 +75,19 @@ public:
     // rotation, preserves coordinate frame origin
     const BMatrix3&
     E( void ) const { return m_E; }
-    
+
+    BMatrix3&
+    E( void ) { return m_E; }
+
     void
     E( const BMatrix3 &m ) { m_E = m; }
     
     // translation, moves coordinate frame origin
     const BVector3&
     r( void ) const { return m_r; }
+
+    BVector3&
+    r( void ) { return m_r; }
     
     void
     r( const BVector3 &v ) { m_r = v; }
