@@ -389,7 +389,7 @@ BJoint::getQuat(const std::vector<BScalar> &q) const
 }
 
 void 
-BJoint::SetQuat(const BQuat &quat, std::vector<BScalar> &q) const
+BJoint::setQuat(const BQuat &quat, std::vector<BScalar> &q) const
 {
     assert(m_jtype == BJointType::Spherical);
 
