@@ -356,7 +356,7 @@ public:
     getQuat( const std::vector<BScalar> &q ) const;
     
     void 
-    SetQuat( const BQuat &quat, std::vector<BScalar> &q ) const;
+    setQuat( const BQuat &quat, std::vector<BScalar> &q ) const;
 
     void
     windex( int w ) { m_widx = w; }
