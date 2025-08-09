@@ -142,7 +142,7 @@ public:
         BMatrix3 retVal;
         for ( int i = 0; i < 3; ++i )
             for ( int j = 3; j < 6; ++j )
-                retVal[i][j] = m_data[i][j];
+                retVal[i][j-3] = m_data[i][j];
         return retVal; 
     }
     
@@ -152,7 +152,7 @@ public:
         BMatrix3 retVal;
         for ( int i = 3; i < 6; ++i )
             for ( int j = 0; j < 3; ++j )
-                retVal[i][j] = m_data[i][j];
+                retVal[i-3][j] = m_data[i][j];
         return retVal; 
     }
     
@@ -162,7 +162,7 @@ public:
         BMatrix3 retVal;
         for ( int i = 3; i < 6; ++i )
             for ( int j = 3; j < 6; ++j )
-                retVal[i][j] = m_data[i][j];
+                retVal[i-3][j-3] = m_data[i][j];
         return retVal; 
     }
 
