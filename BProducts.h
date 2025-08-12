@@ -1,8 +1,8 @@
 /* BProducts 11/06/2025
 
- $$$$$$$$$$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$$$
  $   BProducts.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
