@@ -1,7 +1,7 @@
-/* BCrossProducts 11/06/2025
+/* BProducts 11/06/2025
 
  $$$$$$$$$$$$$$$$$$$$$$$$
- $   BCrossProducts.h   $
+ $   BProducts.h   $
  $$$$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
@@ -9,10 +9,9 @@
  History:
 
  
- Spatial Cross Products (see Featherstone, RBDA, Section 2.9, page 23). 
-
+ Spatial Cross Products (see Featherstone, RBDA, Section 2.9, page 23),
+ and any other product operators in one handy file. 
  
- All cross product operators in one handy file - 
  These get used a lot -- good candidate for SIMD optimisation
 
 */
