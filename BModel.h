@@ -42,6 +42,11 @@
 #include "BJoint.h"
 #endif
 
+#ifndef __BABINERTIA_H__
+#include "BABInertia.h"
+#endif
+
+
 class BModel
 {
 
@@ -152,7 +157,7 @@ public:
     com( BBodyId bid ) const; 
     
     // inertia of body $bid$ and all children bodies  (subtree)
-    BSpatialInertia 
+    BRBInertia 
     inertia( BBodyId bid ) const;
     
     // size of the $\mathbf{q}$-vector.
@@ -178,20 +183,19 @@ public:
     // dynamic variables
     //
 
-    // IA and pA are the articulated-body inertia $I_i^A$ and bias forces $p_i^A$ for a body $Bi$ in $A_i$.
-    const BSpatialMatrix& 
+    // IA are the articulated-body inertia $I_i^A$ for a body $Bi$ in $A_i$.
+    const BABInertia&      // const BSpatialMatrix&
     IA( int i ) const { return m_IA[i]; }
     
-    BSpatialMatrix& 
+    BABInertia&      //  BSpatialMatrix&
     IA( int i ) { return m_IA[i]; }
     
-
+    // pA are the bias forces $p_i^A$ for a body $Bi$ in $A_i$.
     const BSpatialVector& 
     pA( int i ) const { return m_pA[i]; }
     
     BSpatialVector& 
     pA( int i ) { return m_pA[i]; }
-
 
     
     bool 
@@ -264,7 +268,8 @@ private:
     std::vector<BBody>      m_body;
     std::vector<BFixedBody> m_fixed;  //  bodies attached via a fixed joint
 
-    std::vector<BSpatialMatrix> m_IA; // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
+    std::vector<BABInertia> m_IA; // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
+    //std::vector<BSpatialMatrix> m_IA; // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
     std::vector<BSpatialVector> m_pA; // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
     
     // human readable names for the bodies

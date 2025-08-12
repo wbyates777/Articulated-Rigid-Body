@@ -67,7 +67,7 @@ BModel::init( void )
     m_bodyNameMap["ROOT"] = 0;
     
     // dynamic variables
-    m_IA.push_back(B_IDENTITY_6x6);
+    m_IA.push_back(B_ZERO_ABI);
     m_pA.push_back(B_ZERO_6);
 }
 
@@ -328,13 +328,13 @@ BModel::com( BBodyId bid ) const
     return m_body[bid].X_base().apply(sum / mass) ;
 }
 
-BSpatialInertia  
+BRBInertia  
 BModel::inertia( BBodyId bid ) const
 {
     if (isFixedBodyId(bid)) 
         bid = m_fixed[bid - m_fbd].movableParent();
     
-    BSpatialInertia I(B_ZERO_INERTIA);
+    BRBInertia I(B_ZERO_RBI);
  
     std::set<BBodyId> children = {bid};
     for (int i = 1; i < m_lambda.size(); ++i)
@@ -551,7 +551,7 @@ BModel::addBody( BBodyId parent_id,
     calcDoF();
     
     // dynamic variables
-    m_IA.push_back(B_ZERO_6x6);
+    m_IA.push_back(B_ZERO_ABI);
     m_pA.push_back(B_ZERO_6);
 
     return bid; 

@@ -87,23 +87,6 @@
 #endif
 
 
-const BSpatialMatrix
-BDynamics::vvmult( const BSpatialVector& a, const BSpatialVector& b )
-// original code using Eigen3 is 
-//      model.U[i] * (model.U[i] / model.d[i]).transpose())
-// where 
-//      a = model.U[i] is column vector, and 
-//      b^T = (model.U[i] / model.d[i]).transpose() is a row vector
-{ 
-    return BSpatialMatrix(a[0] * b[0], a[0] * b[1], a[0] * b[2],  a[0] * b[3], a[0] * b[4], a[0] * b[5], 
-                          a[1] * b[0], a[1] * b[1], a[1] * b[2],  a[1] * b[3], a[1] * b[4], a[1] * b[5], 
-                          a[2] * b[0], a[2] * b[1], a[2] * b[2],  a[2] * b[3], a[2] * b[4], a[2] * b[5], 
-                          
-                          a[3] * b[0], a[3] * b[1], a[3] * b[2],  a[3] * b[3], a[3] * b[4], a[3] * b[5], 
-                          a[4] * b[0], a[4] * b[1], a[4] * b[2],  a[4] * b[3], a[4] * b[4], a[4] * b[5], 
-                          a[5] * b[0], a[5] * b[1], a[5] * b[2],  a[5] * b[3], a[5] * b[4], a[5] * b[5]);
-}
-
 
 
 BDynamics::BDynamics( int expected_dof ): m_U(),
@@ -176,7 +159,9 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
 
         m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
         m.body(i).c()  = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
-        m.IA(i) = m.body(i).I(); // initialise articulated inertia
+        // initialise articulated inertia
+        m.IA(i) = BABInertia(BMatrix3(m.body(i).mass()) , arb::cross(m.body(i).h()), m.body(i).inertia()); 
+        //m.IA(i) = m.body(i).I(); 
         m.pA(i) = arb::crossf( m.body(i).v(), m.body(i).I() * m.body(i).v() );
         
         if (!f_ext.empty() && f_ext[i] != B_ZERO_6) 
@@ -215,10 +200,11 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             if (lambda != 0) 
             {
                 BScalar Dinv = 1.0 / m_d[i];
-                BSpatialMatrix Ia(m.IA(i) - vvmult(m_U[i], (m_U[i] * Dinv))); 
-                BSpatialVector pa(m.pA(i) + (Ia * m.body(i).c()) + (m_U[i] * (m_u[i] * Dinv)));
-                
-                m.IA(lambda) += arb::transpose(X_lambda) * Ia * X_lambda;
+                BABInertia Ia = m.IA(i) - BABInertia(m_U[i], (m_U[i] * Dinv)); 
+                m.IA(lambda) += X_lambda.applyTranspose(Ia); 
+                //BSpatialMatrix Ia(m.IA(i) - arb::outer(m_U[i], (m_U[i] * Dinv))); 
+                //m.IA(lambda) += arb::transpose(X_lambda) * Ia * X_lambda;
+                BSpatialVector pa(m.pA(i) + (Ia * m.body(i).c()) + (m_U[i] * (m_u[i] * Dinv))); 
                 m.pA(lambda) += X_lambda.applyTranspose(pa);
             }
         } 
@@ -235,10 +221,12 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             if (lambda != 0) 
             {
                 BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
-                BSpatialMatrix Ia( m.IA(i) - UDinv_tmp * arb::transpose(m_dof3_U[i]));
-                BSpatialVector pa(m.pA(i) + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
                 
-                m.IA(lambda) += arb::transpose(X_lambda) * Ia * X_lambda;
+                BABInertia Ia = m.IA(i) - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
+                m.IA(lambda) += X_lambda.applyTranspose(Ia); 
+                //BSpatialMatrix Ia( m.IA(i) - UDinv_tmp * arb::transpose(m_dof3_U[i]));
+                //m.IA(lambda) += arb::transpose(X_lambda) * Ia * X_lambda;
+                BSpatialVector pa(m.pA(i) + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
                 m.pA(lambda) += X_lambda.applyTranspose(pa);
             }
         } 

@@ -107,10 +107,7 @@ public:
 
 private:
     
-    // the function implemented here is $m = a * b^T$
-    static inline const BSpatialMatrix
-    vvmult( const BSpatialVector& a, const BSpatialVector& b );
-    
+
     // temporary variables U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
     std::vector<BSpatialVector> m_U; // $U_i = I_i^A  S_i$ 
     std::vector<BScalar> m_d;        // $d_i = S_i^T U_i$

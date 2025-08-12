@@ -36,8 +36,8 @@
 #include "BSpatialTransform.h"
 #endif
 
-#ifndef __BSPATIALINERTIA_H__
-#include "BSpatialInertia.h"
+#ifndef __BRBINERTIA_H__
+#include "BRBInertia.h"
 #endif
 
 
@@ -58,7 +58,7 @@ public:
                                      m_acc(B_ZERO_6),
                                      m_c(B_ZERO_6),
                                      m_f(B_ZERO_6),
-                                     m_I(B_ZERO_INERTIA),
+                                     m_I(B_ZERO_RBI),
                                      m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual)
     {
@@ -80,14 +80,14 @@ public:
                                      m_acc(B_ZERO_6), 
                                      m_c(B_ZERO_6),
                                      m_f(B_ZERO_6),
-                                     m_I(B_ZERO_INERTIA),
+                                     m_I(B_ZERO_RBI),
                                      m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual) 
     {
         m_I.setInertia(mass, com, inertia_com);
     }
     
-   /* explicit BBody( const BSpatialInertia &I, bool isVirtual = false ) : m_id(0), 
+   /* explicit BBody( const BRBInertia &I, bool isVirtual = false ) : m_id(0), 
                                                                 m_X_base(B_IDENTITY_TRANS), 
                                                                 m_I(I),
                                                                 m_vel(B_ZERO_6), 
@@ -154,11 +154,11 @@ public:
     
 
     // spatial interia of body at the origin $I_i$ (see RBDA, Section 7.1) 
-    const BSpatialInertia&
+    const BRBInertia&
     I( void ) const { return m_I; }
 
     void  
-    I( const BSpatialInertia &si ) { m_I = si; }
+    I( const BRBInertia &si ) { m_I = si; }
     
     
     // X is a transform from this frame to other body frame
@@ -259,7 +259,7 @@ private:
     BSpatialVector  m_c;    // spatial velocity-dependent acceleration term
     BSpatialVector  m_f;    // internal forces on the body (used only BDynamics::inverse())
 
-    BSpatialInertia m_I;    // spatial inertia at origin of the body (mass, com, rotational inertia)
+    BRBInertia m_I;    // spatial inertia at origin of the body (mass, com, rotational inertia)
    
     // transformation from the base frame $F^0$ to this body's coordinate frame $F^i$ - set dynamically
     // the position of this body at any particular time

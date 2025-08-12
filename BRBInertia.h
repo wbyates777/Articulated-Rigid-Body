@@ -1,7 +1,7 @@
-/* BSpatialInertia 20/02/2024
+/* BRBInertia 20/02/2024
 
  $$$$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialInertia.h   $
+ $   BRBInertia.h   $
  $$$$$$$$$$$$$$$$$$$$$$$$$
  
  by W.B. Yates
@@ -36,37 +36,34 @@
  
  https://en.wikipedia.org/wiki/List_of_moments_of_inertia
  
- TODO: separate 3D stuff into BMass(mass,h,I^3) and I^6 stuff BSpatialInertia
+ TODO: separate 3D stuff into BMass(mass,h,I^3) and I^6 stuff BRBInertia
  
 */
 
 
-#ifndef __BSPATIALINERTIA_H__
-#define __BSPATIALINERTIA_H__
+#ifndef __BRBINERTIA_H__
+#define __BRBINERTIA_H__
 
 
 #ifndef __BSPATIALMATRIX_H__
 #include "BSpatialMatrix.h"
 #endif
 
-#ifndef __BCROSSPRODUCTS_H__
-#include "BCrossProducts.h"
+#ifndef __BPRODUCTS_H__
+#include "BProducts.h"
 #endif
 
 
-class BSpatialInertia
+class BRBInertia
 {
 
 public:
 
-    BSpatialInertia( void )=default;
-
+    BRBInertia( void )=default;
     // the moments of mass; zero, one, and two - note mass can be 0
-    constexpr BSpatialInertia( BScalar mass, const BVector3 &h, const BMatrix3 &inertia ): m_mass(mass), m_h(h), m_I(inertia) {}
-
-    BSpatialInertia( const BSpatialMatrix &I ) { setInertia(I); }     
-    
-    ~BSpatialInertia( void )=default;
+    constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &inertia ): m_mass(mass), m_h(h), m_I(inertia) {}
+    BRBInertia( const BSpatialMatrix &I ) { setInertia(I); }     
+    ~BRBInertia( void )=default;
     
     void
     clear( void ) {  m_mass = 0.0; m_h = B_ZERO_3; m_I = B_ZERO_3x3; }
@@ -96,7 +93,7 @@ public:
     {
         m_mass = mass;  // note mass can be 0 
         m_h    = com * m_mass;
-        m_I    = inertia_com + m_mass * crosst(com); 
+        m_I    = inertia_com + m_mass * arb::crosst(com); 
     }
 
     void
@@ -121,6 +118,9 @@ public:
     // centre of mass in body coordinates
     const BVector3
     com( void ) const { assert(m_mass != 0); return  m_h / m_mass; }
+    
+   // const BVector3 // some virtual bodies have mass 0
+   // com( void ) const { return (m_mass) ? (m_h / m_mass) : B_ZERO_3; }
         
     // magnitude and direction of linear momentum; first moment of mass 
     const BVector3
@@ -132,7 +132,7 @@ public:
     
     // rotational inertia at com; second moment of mass
     const BMatrix3 
-    inertiaCom( void ) const { return m_I - m_mass * crosst(com()); } 
+    inertiaCom( void ) const { return m_I - m_mass * arb::crosst(com()); } 
  
  
     const BMatrix3&
@@ -148,39 +148,39 @@ public:
     botRight( void ) const  { return BMatrix3(m_mass); }
     
 
-    const BSpatialInertia
-    operator-( void ) const { return BSpatialInertia(-m_mass, -m_h, -m_I); }
+    const BRBInertia
+    operator-( void ) const { return BRBInertia(-m_mass, -m_h, -m_I); }
     
-    const BSpatialInertia 
-    operator+( const BSpatialInertia &rhs ) const
+    const BRBInertia 
+    operator+( const BRBInertia &rhs ) const
     {
-        return BSpatialInertia( m_mass + rhs.m_mass, m_h + rhs.m_h, m_I + rhs.m_I );
+        return BRBInertia( m_mass + rhs.m_mass, m_h + rhs.m_h, m_I + rhs.m_I );
     }
     
-    const BSpatialInertia 
-    operator-( const BSpatialInertia &rhs ) const
+    const BRBInertia 
+    operator-( const BRBInertia &rhs ) const
     {
-        return BSpatialInertia( m_mass - rhs.m_mass, m_h - rhs.m_h, m_I - rhs.m_I );
+        return BRBInertia( m_mass - rhs.m_mass, m_h - rhs.m_h, m_I - rhs.m_I );
     }
     
-    const BSpatialInertia&
-    operator+=( const BSpatialInertia &rhs )
+    const BRBInertia&
+    operator+=( const BRBInertia &rhs )
     {
         m_mass += rhs.m_mass; m_h += rhs.m_h; m_I += rhs.m_I;
         return *this; 
     }
     
-    const BSpatialInertia& 
-    operator-=( const BSpatialInertia &rhs )
+    const BRBInertia& 
+    operator-=( const BRBInertia &rhs )
     {
         m_mass -= rhs.m_mass; m_h -= rhs.m_h; m_I -= rhs.m_I;
         return *this; 
     }
     
-    const BSpatialInertia
-    operator*( BScalar s ) const { return  BSpatialInertia( s * m_mass, s * m_h, s * m_I ); }
+    const BRBInertia
+    operator*( BScalar s ) const { return  BRBInertia( s * m_mass, s * m_h, s * m_I ); }
     
-    const BSpatialInertia&
+    const BRBInertia&
     operator*=( const BScalar s )
     {
         m_mass *= s; m_h *= s; m_I *= s;
@@ -197,41 +197,26 @@ public:
     
     
     bool 
-    operator==( const BSpatialInertia &v ) const 
+    operator==( const BRBInertia &v ) const 
     { 
         return (m_mass == v.m_mass) && (m_h == v.m_h) && (m_I == v.m_I);
     }
     
     bool 
-    operator!=( const BSpatialInertia &v ) const 
+    operator!=( const BRBInertia &v ) const 
     { 
         return (m_mass != v.m_mass) || (m_h != v.m_h) || (m_I != v.m_I);
     }
     
     friend std::ostream&
-    operator<<( std::ostream &ostr, const BSpatialInertia &m );
+    operator<<( std::ostream &ostr, const BRBInertia &m );
     
     friend std::istream& 
-    operator>>( std::istream &istr, BSpatialInertia &m );
+    operator>>( std::istream &istr, BRBInertia &m );
     
 private:
 
-    // return arb::cross(v) * arb::cross(-v)
-    static inline const BMatrix3 
-    crosst( const BVector3 &v ) 
-    {
-        const BScalar xx =  v[0] *  v[0];
-        const BScalar yy =  v[1] *  v[1];
-        const BScalar zz =  v[2] *  v[2];
-        const BScalar xy = -v[0] *  v[1];
-        const BScalar xz =  v[0] * -v[2];
-        const BScalar yz = -v[1] *  v[2];
-        
-        return BMatrix3( zz + yy,    xy,      xz,
-                            xy,    zz + xx,   yz,
-                            xz,      yz,    yy + xx );
-    }
-    
+
     BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
     BVector3 m_h;    // magnitude and direction of linear momentum h = m_com * m_mass; first moment of mass 
     BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0); second moment of mass 
@@ -243,7 +228,7 @@ namespace arb
     // you should generally try to avoid taking the inverse of a spatial matrix
     // for articulated rigid bodies use the ABA to calculate accelerations
     inline const BSpatialMatrix 
-    inverse( const BSpatialInertia &I ) 
+    inverse( const BRBInertia &I ) 
     // Schur complement - analytical inverse, see RBDA, Section 2.15, eqn 2.74,  page 36
     {  
         assert(I.mass() != 0.0);
@@ -259,17 +244,17 @@ namespace arb
 };
 
 #ifndef GLM_FORCE_INTRINSICS
-constexpr BSpatialInertia B_ZERO_INERTIA(0.0, B_ZERO_3, B_ZERO_3x3);
+constexpr BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 #else
-const BSpatialInertia B_ZERO_INERTIA(0.0, B_ZERO_3, B_ZERO_3x3);
+const BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 #endif
 
 // scalar multiplication
-inline const BSpatialInertia 
-operator*( BScalar s, const BSpatialInertia &m ) { return m * s; }
+inline const BRBInertia 
+operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 
 inline std::ostream&
-operator<<( std::ostream &ostr, const BSpatialInertia &m )
+operator<<( std::ostream &ostr, const BRBInertia &m )
 {
     ostr << m.m_mass << '\n' << m.m_h << '\n'  << m.m_I << ' ';
     return ostr;
@@ -277,7 +262,7 @@ operator<<( std::ostream &ostr, const BSpatialInertia &m )
 
 
 inline std::istream& 
-operator>>( std::istream &istr, BSpatialInertia &m )
+operator>>( std::istream &istr, BRBInertia &m )
 {
     istr >> m.m_mass >> m.m_h >> m.m_I;
     return istr;

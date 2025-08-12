@@ -17,8 +17,8 @@
 
 */
 
-#ifndef __BCROSSPRODUCTS_H__
-#define __BCROSSPRODUCTS_H__
+#ifndef __BPRODUCTS_H__
+#define __BPRODUCTS_H__
 
 #ifndef __BSPATIALMATRIX_H__
 #include "BSpatialMatrix.h"
@@ -51,7 +51,24 @@ namespace arb
                          v[2],   0.0, -v[0],
                         -v[1],  v[0],   0.0 );
     }
- 
+     
+    // return arb::cross(v) * arb::cross(-v)
+    inline const BMatrix3 
+    crosst( const BVector3 &v ) 
+    {
+        const BScalar xx =  v[0] * v[0];
+        const BScalar yy =  v[1] * v[1];
+        const BScalar zz =  v[2] * v[2];
+        const BScalar xy =  v[0] * v[1];
+        const BScalar xz =  v[0] * v[2];
+        const BScalar yz =  v[1] * v[2];
+
+        return BMatrix3( zz + yy,    -xy,      -xz,
+                           -xy,    zz + xx,    -yz,
+                           -xz,      -yz,    yy + xx );
+
+    }
+
   
     // spatial cross product for 'motion cross motion' vectors $v$ and $m$
     // such that $\dot{m} = v \times m$, see RBDA, Section 2.9, eqn 2.29, page 23
@@ -106,7 +123,36 @@ namespace arb
                                0.0,   0.0,   0.0,  -v[1],   v[0],    0.0 );
     }
 
+    // spatial dot or inner product
+    inline BScalar 
+    dot(const BSpatialVector &v1, const BSpatialVector &v2)
+    {
+        return glm::dot(v1.ang(), v2.ang()) + glm::dot(v1.lin(), v2.lin());
+        //return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]) 
+        //        + (v1[3] * v2[3]) + (v1[4] * v2[4]) + (v1[5] * v2[5]);
+    }
 
+    // outer product 
+    inline const BMatrix3
+    outer( const BVector3 &a, const BVector3 &b )
+    { 
+        return BMatrix3(a[0] * b[0], a[0] * b[1], a[0] * b[2], 
+                        a[1] * b[0], a[1] * b[1], a[1] * b[2],  
+                        a[2] * b[0], a[2] * b[1], a[2] * b[2] );
+    }
+
+    // spatial outer product 
+    inline const BSpatialMatrix
+    outer( const BSpatialVector &a, const BSpatialVector &b )
+    { 
+        return BSpatialMatrix(a[0] * b[0], a[0] * b[1], a[0] * b[2],  a[0] * b[3], a[0] * b[4], a[0] * b[5], 
+                              a[1] * b[0], a[1] * b[1], a[1] * b[2],  a[1] * b[3], a[1] * b[4], a[1] * b[5], 
+                              a[2] * b[0], a[2] * b[1], a[2] * b[2],  a[2] * b[3], a[2] * b[4], a[2] * b[5], 
+                            
+                              a[3] * b[0], a[3] * b[1], a[3] * b[2],  a[3] * b[3], a[3] * b[4], a[3] * b[5], 
+                              a[4] * b[0], a[4] * b[1], a[4] * b[2],  a[4] * b[3], a[4] * b[4], a[4] * b[5], 
+                              a[5] * b[0], a[5] * b[1], a[5] * b[2],  a[5] * b[3], a[5] * b[4], a[5] * b[5]);
+    }
 };
 
 

@@ -96,6 +96,7 @@ public:
     const std::array<BScalar, 6>&
     data( void ) const { return m_data; }
     
+    operator const std::array<BScalar, 6>&( void ) const { return  m_data; }
     
     const BSpatialVector
     operator-( void ) const
@@ -179,22 +180,6 @@ private:
 inline const BSpatialVector 
 operator*( BScalar s, const BSpatialVector &v ) { return v * s; } 
 
-namespace arb
-{
-
-    inline bool 
-    isnan(const BVector3 &v) { return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]); }
-
-    // spatial dot product
-    inline BScalar 
-    dot(const BSpatialVector &v1, const BSpatialVector &v2)
-    {
-        return glm::dot(v1.ang(), v2.ang()) + glm::dot(v1.lin(), v2.lin());
-        //return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]) 
-        //        + (v1[3] * v2[3]) + (v1[4] * v2[4]) + (v1[5] * v2[5]);
-    }
-};
-
 inline std::ostream&
 operator<<( std::ostream &ostr, const BSpatialVector &v )
 {
@@ -208,7 +193,6 @@ operator>>( std::istream &istr, BSpatialVector &v )
     istr >> v[0] >> v[1] >> v[2] >> v[3] >> v[4] >> v[5];
     return istr;
 }
-
 
 
 

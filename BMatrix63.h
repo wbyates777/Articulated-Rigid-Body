@@ -28,7 +28,7 @@ class BMatrix63
 public:
     
     BMatrix63( void )=default;
-    explicit BMatrix63( BScalar s ) { set(s); }
+    constexpr explicit BMatrix63( BScalar s ) { set(s); }
     
     constexpr BMatrix63( const std::array<std::array<BScalar, 3>, 6> &d): m_data(d) {}
     
@@ -37,12 +37,12 @@ public:
         assert(d.size() == 6 && d[0].size() == 3);
         set(d);
     }
-    BMatrix63( BScalar m00, BScalar m01, BScalar m02, 
-               BScalar m10, BScalar m11, BScalar m12, 
-               BScalar m20, BScalar m21, BScalar m22, 
-               BScalar m30, BScalar m31, BScalar m32, 
-               BScalar m40, BScalar m41, BScalar m42, 
-               BScalar m50, BScalar m51, BScalar m52 ) 
+    constexpr BMatrix63( BScalar m00, BScalar m01, BScalar m02, 
+                         BScalar m10, BScalar m11, BScalar m12, 
+                         BScalar m20, BScalar m21, BScalar m22, 
+                         BScalar m30, BScalar m31, BScalar m32, 
+                         BScalar m40, BScalar m41, BScalar m42, 
+                         BScalar m50, BScalar m51, BScalar m52 ) 
     { 
         set(m00, m01, m02,
             m10, m11, m12,
@@ -54,7 +54,7 @@ public:
     
     ~BMatrix63( void )=default;
     
-    void
+    constexpr void
     set( BScalar s ) 
     {
         for ( int i = 0; i < 6; ++i )
@@ -71,7 +71,7 @@ public:
                 m_data[i][j] = d[i][j];
     }
     
-    void 
+    constexpr void 
     set( BScalar m00, BScalar m01, BScalar m02, 
          BScalar m10, BScalar m11, BScalar m12, 
          BScalar m20, BScalar m21, BScalar m22, 
@@ -198,7 +198,7 @@ class BMatrix36
 public:
 
     BMatrix36( void )=default;
-    explicit BMatrix36( BScalar s ) { set(s); }
+    constexpr explicit BMatrix36( BScalar s ) { set(s); }
     constexpr BMatrix36( const std::array<std::array<BScalar, 6>, 3> &d ): m_data(d) {}
     
     explicit BMatrix36( const std::vector<std::vector<BScalar>> &d )
@@ -206,9 +206,9 @@ public:
         assert(d.size() == 3 && d[0].size() == 6);
         set(d);
     }
-    BMatrix36( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
-               BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
-               BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25 ) 
+    constexpr BMatrix36( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
+                         BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
+                         BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25 ) 
     {
         set( m00, m01, m02, m03, m04, m05,
              m10, m11, m12, m13, m14, m15,
@@ -216,7 +216,7 @@ public:
     }
     ~BMatrix36( void )=default;
 
-    void
+    constexpr void
     set( BScalar s ) 
     {
         for ( int i = 0; i < 3; ++i )
@@ -233,7 +233,7 @@ public:
                 m_data[i][j] = d[i][j];
     }
     
-    void 
+    constexpr void 
     set( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
          BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
          BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25 )
