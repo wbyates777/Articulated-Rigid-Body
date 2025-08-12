@@ -1,8 +1,8 @@
 /* BRBInertia 20/02/2024
 
- $$$$$$$$$$$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$$$$
  $   BRBInertia.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$$$$
  
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
