@@ -159,9 +159,8 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
 
         m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
         m.body(i).c()  = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
-        // initialise articulated inertia
-        m.IA(i) = BABInertia(BMatrix3(m.body(i).mass()) , arb::cross(m.body(i).h()), m.body(i).inertia()); 
-        //m.IA(i) = m.body(i).I(); 
+        
+        m.IA(i) = m.body(i).I(); // initialise articulated inertia
         m.pA(i) = arb::crossf( m.body(i).v(), m.body(i).I() * m.body(i).v() );
         
         if (!f_ext.empty() && f_ext[i] != B_ZERO_6) 
