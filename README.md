@@ -3,14 +3,11 @@
 
  Trees (and chains) of kinematic equations are used in robotics, computer games, and animation.
  In robotics _forward kinematics_ refers to the use of kinematic equations to compute the position of 
- an end-effector, such as a jointed robotic arm, from specified values for the joint parameters.
- 
-  https://en.wikipedia.org/wiki/Forward_kinematics
-  
+ an end-effector, such as a jointed robotic arm, from specified values for the joint parameters
+ (see  https://en.wikipedia.org/wiki/Forward_kinematics).
+
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
- is known as _inverse kinematics_.
- 
- https://en.wikipedia.org/wiki/Inverse_kinematics
+ is known as _inverse kinematics_ (see https://en.wikipedia.org/wiki/Inverse_kinematics).
 
  BDynamics is an implementation of:
  - the articulated-body algorithm (ABA) and  
@@ -64,12 +61,17 @@
     }
     std::cout << T << " position is " << pos << std::endl; // angles in radians!
 
+ This produces the output:
+
+    0.0 position is 0.00000000 0.00000000 0.00000000 20.00000000 50.00000000 3.00000000 
+    5.0 position is 0.00000000 1.25250000 0.00000000 15.23282410 50.00000000 13.89482750 
+    
  The implementations presented here, are intended for use in computer games, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
  Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn).
  We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
  Some variables have been moved to their appropriate classes and accessor methods 
- have been added throughout. This improves encapsulation and readability, and facillitates comparison testing.
+ have been added throughout. This facillitates comparison testing, and improves encapsulation and readability.
  
 
  RBDL and RBDyn employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
