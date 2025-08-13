@@ -80,6 +80,8 @@ public:
                                                                              m_I(arb::outer(a.ang(), b.ang())),
                                                                              m_H(arb::outer(a.ang(), b.lin()))  {}
     
+    BABInertia( const BRBInertia &rbi ):  m_M(BMatrix3(rbi.mass())), m_H(arb::cross(rbi.h())), m_I(rbi.inertia()) {}
+    
     ~BABInertia( void )=default;
     
     void 
