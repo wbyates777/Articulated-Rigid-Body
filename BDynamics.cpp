@@ -8,7 +8,6 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- 
  The articulated-body algorithm (ABA) is an example of a propagation algorithm, and it is the fastest known algorithm
  for calculating the forward dynamics of a kinematic tree with a computational complexity of $O(N_B)$,
  where $N_B$ is the number of bodies/joints. 
@@ -44,11 +43,10 @@
  the note below on Eigen3 and GLM differences), or  replace GLM with some other simple
  linear algebra library.
 
- 
  //
  // Note the difference in syntax between GLM and Eigen3
  //
-
+ 
  std::cout.precision(4);
  std::cout.setf( std::ios::fixed, std::ios::floatfield );
  
@@ -61,8 +59,6 @@
  Vector3d v2(1.0, 2.0, 3.0);
  Matrix3d m2(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
  std::cout << m2 * v2  << std::endl; 
- 
- 
  
  //
  // LaTeX
@@ -77,17 +73,11 @@
  {}^{#1}\!{#2}_{#3}
  }
  \makeatother
- 
- 
 */
-
 
 #ifndef __BDYNAMICS_H__
 #include "BDynamics.h"
 #endif
-
-
-
 
 BDynamics::BDynamics( int expected_dof ): m_U(),
                                           m_d(),
@@ -113,12 +103,10 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
 // forward dynamics refers to the computation of the position (in our case accelerations) of 
 // an end-effector, such as a jointed robotic arm, from specified values for the joint forces.
 // see RBDA, Table 7.1
-{
-    
+{   
     const std::vector<BScalar>  &q   = qstate.q;    // pos
     const std::vector<BScalar> &qdot = qstate.qdot; // vel 
     const std::vector<BScalar> &tau  = qstate.tau;  // force
-    
     
     const int N_B = (int) m.bodies();
     
@@ -135,8 +123,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     // $a_0 = -a_g$
     m.body(0).v(B_ZERO_6);
     m.body(0).a().set(B_ZERO_3, -m.gravity());
-    
-    
+   
     // first pass (root to leaves) to calculate velocity and bias terms 
     // $v_i   = {i}^X_{\lambda(i)}  v_{\lambda(i)} + v_J$ (RBDA, equation 7.34)
     // $c_i   = c_J + v_i \cross v_J$ (RBDA, equation 7.35)
@@ -158,8 +145,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         else m.body(i).X_base( X_lambda );
 
         m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
-        m.body(i).c()  = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
-        
+        m.body(i).c() = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
         m.IA(i) = m.body(i).I(); // initialise articulated inertia
         m.pA(i) = arb::crossf( m.body(i).v(), m.body(i).I() * m.body(i).v() );
         
