@@ -224,10 +224,11 @@ newton_euler( void )
     // set up single body - a sphere -  
     //
     double mass = 100.0, imass = 1.0 / mass, radius = 0.5;
-    double diag = ((2.0/5.0) * mass * (radius * radius)); 
-    BVector3 com = BVector3(0.0); // centre of mass
-
-    BSpatialInertia I = BSpatialInertia(mass, com,  BMatrix3(diag));
+    double diag = ((2.0/5.0) * mass * (radius * radius));
+    BMatrix3 I_o(diag); // rotational inertia at body coordinate frame origin
+    BVector3 h(0.0); // linear momentum
+ 
+    BRBInertia I = BRBInertia(mass, h, I_o); 
     BSpatialMatrix invI = arb::inverse(I);
     
     BSpatialVector force = B_ZERO_6;
