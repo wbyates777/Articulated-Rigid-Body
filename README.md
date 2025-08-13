@@ -37,6 +37,32 @@
  to form  _spatial force_ vectors.
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
+ For example, the following code excerpt performs Newton-Euler integration (see https://en.wikipedia.org/wiki/Newton–Euler_equations):
+
+    // set up single body - a sphere -  
+    double mass = 100.0, radius = 0.5; 
+    BVector3 h(0.0);
+    BMatrix3 I_o((2.0/5.0) * mass * (radius * radius)); 
+    BRBInertia I(mass, h,  I_o);
+    BSpatialMatrix invI = arb::inverse(I);
+
+    // set initial position, velocity and acceleration
+    BSpatialVector pos(B_ZERO_3, BVector3(20.0, 50.0, 3.0)), vel(B_ZERO_6), acc(B_ZERO_6);
+    
+    // apply an angular force of 1.0 around Y axis and a linear force of 100.0 along Z axis
+    BSpatialVector force(0.0, 1.0, 0.0,  0.0, 0.0, 100.0);
+
+    double T = 0.0, dt = 0.01;
+    std::cout << T << " position is " << pos << std::endl;
+    for (int t = 0; t < 500; ++t)
+    {
+        // Newton-Euler (see Featherstone, Section 2.14, eqn 2.68, page 35).
+        acc = invI * (force - arb::crossf(vel, I * vel)); 
+        vel += acc * dt;
+        pos += vel * dt;
+        T += dt;
+    }
+    std::cout << T << " position is " << pos << std::endl; // angles in radians!
 
  The implementations presented here, are intended for use in computer games, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
