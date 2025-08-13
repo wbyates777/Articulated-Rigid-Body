@@ -56,7 +56,7 @@
     std::cout << T << " position is " << pos << std::endl;
     for (int t = 0; t < 500; ++t)
     {
-        // Newton-Euler (see Featherstone, Section 2.14, eqn 2.68, page 35).
+        // Newton-Euler (see Featherstone, Section 2.15, eqn 2.72, page 36).
         acc = invI * (force - arb::crossf(vel, I * vel)); 
         vel += acc * dt;
         pos += vel * dt;
