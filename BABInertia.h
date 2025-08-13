@@ -151,25 +151,40 @@ public:
         return *this; 
     }
     
-    // SpaceAlgVec::Operators.h; returns a force vector
+    // SpaceAlgVec::Operators.h; pass a motion vector returns a force vector
     const BSpatialVector 
-    operator*( const BSpatialVector &mv ) const
+    operator*( const BSpatialVector &v ) const
     {
-        const BVector3 ang((m_I * mv.ang()) + (glm::transpose(m_H) * mv.lin()));
-        const BVector3 lin((m_H * mv.ang()) + (m_M * mv.lin()) );
-        return BSpatialVector( ang, lin );
+        //const BVector3 ang((m_I * v.ang()) + (glm::transpose(m_H) * v.lin()));
+        //const BVector3 lin((m_H * v.ang()) + (m_M * v.lin()) );
+        //return BSpatialVector( ang, lin );
+        
+        return BSpatialVector((m_I[0][0] * v[0]) + (m_I[1][0] * v[1]) + (m_I[2][0] * v[2])  +  (m_H[0][0] * v[3]) + (m_H[0][1] * v[4]) + (m_H[0][2] * v[5]), 
+                              (m_I[0][1] * v[0]) + (m_I[1][1] * v[1]) + (m_I[2][1] * v[2])  +  (m_H[1][0] * v[3]) + (m_H[1][1] * v[4]) + (m_H[1][2] * v[5]), 
+                              (m_I[0][2] * v[0]) + (m_I[1][2] * v[1]) + (m_I[2][2] * v[2])  +  (m_H[2][0] * v[3]) + (m_H[2][1] * v[4]) + (m_H[2][2] * v[5]), 
+                        
+                              (m_H[0][0] * v[0]) + (m_H[1][0] * v[1]) + (m_H[2][0] * v[2])  +  (m_M[0][0] * v[3]) + (m_M[1][0] * v[4]) + (m_M[2][0] * v[5]),
+                              (m_H[0][1] * v[0]) + (m_H[1][1] * v[1]) + (m_H[2][1] * v[2])  +  (m_M[0][1] * v[3]) + (m_M[1][1] * v[4]) + (m_M[2][1] * v[5]),
+                              (m_H[0][2] * v[0]) + (m_H[1][2] * v[1]) + (m_H[2][2] * v[2])  +  (m_M[0][2] * v[3]) + (m_M[1][2] * v[4]) + (m_M[2][2] * v[5]) );
     }
     
     
     const BMatrix63 
     operator*( const BMatrix63 &m ) const  
     {
-        BMatrix36 retVal = arb::transpose(m);
-        
-        for (int i = 0; i < 3; ++i)
-            retVal[i] = operator*(retVal[i]);
-
-        return arb::transpose(retVal);
+        BMatrix63 retVal(B_ZERO_6x3);
+        for (int i = 0; i < 3; ++i)   
+        {         
+            for (int j = 0; j < 3; ++j)   
+            {     
+                for (int k = 0; k < 3; ++k)
+                {
+                    retVal[i][j]   += m_I[k][i] * m[k][j] + m_H[i][k] * m[k+3][j];       
+                    retVal[i+3][j] += m_H[k][i] * m[k][j] + m_M[k][i] * m[k+3][j];      
+                }
+            }
+        }
+        return retVal;
     }
     
     
