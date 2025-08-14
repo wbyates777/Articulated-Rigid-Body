@@ -587,32 +587,14 @@ BModel::setMass(BBodyId bid, BScalar mass)
     {
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.mass( mass );
+        fbody.setMass( mass );
         m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
     }
     else
     {
-        m_body[bid].mass( mass );
+        m_body[bid].setMass( mass );
     }
 }
-
-
-void 
-BModel::setInertia(BBodyId bid, const BMatrix3 &inertia)
-{
-    if (isFixedBodyId(bid))
-    {
-        BFixedBody& fbody = m_fixed[bid - m_fbd];
-        m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.inertiaCom( inertia );
-        m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
-    }
-    else
-    {
-        m_body[bid].inertiaCom( inertia ); // calls my code now -- it does update
-    }
-}
-
 
 void 
 BModel::setCom(BBodyId bid, const BVector3 &com)
@@ -621,30 +603,47 @@ BModel::setCom(BBodyId bid, const BVector3 &com)
     {
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.com( com );
+        fbody.setCom( com );
         m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
     }
     else
     {
-        m_body[bid].com( com );
+        m_body[bid].setCom( com );
     }
 }
 
-
 void 
-BModel::setParameters( BBodyId bid, BScalar mass, const BMatrix3 &inertia, const BVector3 &com )
+BModel::setInertiaCom(BBodyId bid, const BMatrix3 &I_com)
 {
     if (isFixedBodyId(bid))
     {
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.setBody( mass, com, inertia );
+        fbody.setInertiaCom( I_com );
+        m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
+    }
+    else
+    {
+        m_body[bid].setInertiaCom( I_com ); // calls my code now -- it does update
+    }
+}
+
+
+
+void 
+BModel::setBody( BBodyId bid, BScalar mass, const BVector3 &com, const BMatrix3 &I_com )
+{
+    if (isFixedBodyId(bid))
+    {
+        BFixedBody& fbody = m_fixed[bid - m_fbd];
+        m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
+        fbody.setBody( mass, com, I_com );
         
         m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
     }
     else
     {
-        m_body[bid].setBody( mass, com, inertia );
+        m_body[bid].setBody( mass, com, I_com );
     }
 }
 

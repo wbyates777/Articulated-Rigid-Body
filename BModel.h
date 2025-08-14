@@ -52,8 +52,7 @@ class BModel
 
 public:
 
-
-    BModel( int expected_dof = 1 );
+    BModel( int expected_dof = 5 );
     ~BModel( void )=default;
 
     void 
@@ -87,7 +86,6 @@ public:
     bodies( void ) const { return m_body.size(); }     // $N_B$
         
     
-
     /** \brief Connects a given body to the model
      *
      * The question "where is the new body to be added?" is split up in two
@@ -113,18 +111,18 @@ public:
 
 
     
-    // set a bodies parameters -- updates whole model
+    // set a bodies parameters 
     void 
     setMass( BBodyId bid, BScalar mass );
     
     void 
-    setInertia( BBodyId bid, const BMatrix3 &inertia );
-    
-    void 
     setCom( BBodyId bid, const BVector3 &com );
+   
+    void 
+    setInertiaCom( BBodyId bid, const BMatrix3 &I_com );
     
     void 
-    setParameters( BBodyId bid, BScalar mass, const BMatrix3 &inertia, const BVector3 &com );
+    setBody( BBodyId bid, BScalar mass, const BVector3 &com, const BMatrix3 &I_com );
     //
     
     // set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()
@@ -257,7 +255,7 @@ private:
     int m_q_size; 
     int m_qdot_size;
     
-    BBodyId m_fbd;                    // fixed_body_discriminator
+    BBodyId m_fbd; // fixed_body_discriminator
 
     BVector3 m_gravity;
 

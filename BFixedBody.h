@@ -46,28 +46,28 @@ public:
     getId( void ) const { return m_id; }
     
     void 
-    mass( BScalar m ) { m_mass = m; }
+    setMass( BScalar m ) { m_mass = m; }
     
     BScalar 
     mass( void ) const { return m_mass; }
 
     // com - centre of mass
     void
-    com( const BVector3 &c ) { m_com = c; }
+    setCom( const BVector3 &c ) { m_com = c; }
     
     const BVector3& 
     com( void ) const { return m_com; }
     
     void 
-    inertiaCom( const BMatrix3& I ) { m_inertia_com = I; }
+    setInertiaCom( const BMatrix3& I_com ) { m_inertia_com = I_com; }
     
     const BMatrix3& 
     inertiaCom( void ) const { return m_inertia_com; } 
     
     void 
-    setBody( BScalar m, const BVector3 &c, const BMatrix3 &I ) 
+    setBody( BScalar mass, const BVector3 &com, const BMatrix3 &I_com ) 
     { 
-        m_mass = m;  m_com = c; m_inertia_com = I;
+        m_mass = mass;  m_com = com; m_inertia_com = I_com;
     }
     
     BBody 

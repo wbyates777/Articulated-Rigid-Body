@@ -65,8 +65,8 @@ public:
     
     BABInertia( void )=default;
     
-    // inertia I at body frame origin
-    constexpr BABInertia( const BMatrix3 &M, const BMatrix3 &H, const BMatrix3 &I ): m_M(M), m_H(H), m_I(I) {}
+    // inertia I_o at body frame origin
+    constexpr BABInertia( const BMatrix3 &M, const BMatrix3 &H, const BMatrix3 &I_o ): m_M(M), m_H(H), m_I(I_o) {}
     
     BABInertia( BScalar m, const BVector3 &com, const BMatrix3 &I_com ): m_M(m), m_H(m * arb::cross(com)), m_I(I_com) 
     {

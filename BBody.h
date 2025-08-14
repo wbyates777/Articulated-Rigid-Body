@@ -62,19 +62,19 @@ public:
                                      m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual)
     {
-        BMatrix3 inertia_com = BMatrix3( gyration_radii[0], 0.0, 0.0,
-                             0.0, gyration_radii[1], 0.0,
-                             0.0, 0.0, gyration_radii[2] );
+        BMatrix3 I_com = BMatrix3( gyration_radii[0], 0.0, 0.0,
+                                   0.0, gyration_radii[1], 0.0,
+                                   0.0, 0.0, gyration_radii[2] );
         
-        m_I.setInertia(mass, com, inertia_com);
+        m_I.setInertiaCom(mass, com, I_com);
     }
 
-    // construct a body from mass, center of mass (com) and inertia $I_c$
-    // $I_c$ is defined with respect to the centre of mass $com$ 
-    // if $c = com$ is non-zero then $I_c$ will be translated to position $-com$ - the origin of the rigid body.
+    // construct a body from mass, center of mass (com) and inertia $I_com$
+    // $I_com$ is defined with respect to the centre of mass $com$ 
+    // if $c = com$ is non-zero then $I_com$ will be translated to position $-com$ - the origin of the rigid body.
     BBody( BScalar mass,
            const BVector3 &com,
-           const BMatrix3 &inertia_com,
+           const BMatrix3 &I_com,
            bool isVirtual = false) : m_id(0), 
                                      m_v(B_ZERO_6), 
                                      m_a(B_ZERO_6), 
@@ -84,8 +84,8 @@ public:
                                      m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual) 
     {
-        // WARNING: do not use m_I(mass, com, inertia_com) as this is incorrect
-        m_I.setInertia(mass, com, inertia_com); 
+        // WARNING: do not use m_I(mass, com, I_com) as this is incorrect
+        m_I.setInertiaCom(mass, com, I_com); 
     }
     
     explicit BBody( const BRBInertia &I, bool isVirtual = false ) : m_id(0), 
@@ -116,23 +116,23 @@ public:
     
     
     void 
-    setBody( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_com, bool isVirtual = false )
+    setBody( BScalar mass, const BVector3 &com, const BMatrix3 &I_com, bool isVirtual = false )
     {
         m_v = m_a = m_c = m_f = B_ZERO_6; 
-        m_I.setInertia(mass, com, inertia_com);
+        m_I.setInertiaCom(mass, com, I_com);
         m_X_base.clear();
         m_isVirtual = isVirtual;
     }
     
     void 
-    mass( BScalar m ) { m_I.setMass(m); }
+    setMass( BScalar m ) { m_I.setMass(m); }
     
     BScalar 
     mass( void ) const { return m_I.mass(); }
 
     // centre of mass in body coordinates
     void
-    com( const BVector3 &c ) { m_I.setCom(c); }
+    setCom( const BVector3 &c ) { m_I.setCom(c); }
     
     const BVector3 
     com( void ) const { return  m_I.com(); }
@@ -143,7 +143,7 @@ public:
     
     // set the inertia at the centre of mass $com$ (which may be non-zero)
     void 
-    inertiaCom( const BMatrix3 &I ) { m_I.setInertia(I); }
+    setInertiaCom( const BMatrix3 &I_com ) { m_I.setInertiaCom(I_com); }
 
     // get the inertia at the centre of mass $com$ (which may be non-zero)
     const BMatrix3 //used in Fixed body constructor
