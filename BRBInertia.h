@@ -60,20 +60,19 @@ class BRBInertia
 public:
 
     BRBInertia( void )=default;
-    // the moments of mass; zero, one, and two - note mass can be 0
-    constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &inertia ): m_mass(mass), m_h(h), m_I(inertia) {}
+    // the moments of mass; zero, one, and two - note mass can be 0, I_o inertia at body frame origin
+    constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o ): m_mass(mass), m_h(h), m_I(I_o) {}
     BRBInertia( const BSpatialMatrix &I ) { setInertia(I); }     
     ~BRBInertia( void )=default;
     
     void
     clear( void ) {  m_mass = 0.0; m_h = B_ZERO_3; m_I = B_ZERO_3x3; }
     
-    // the moments of mass; zero, one, and two - note mass can be 0
-    // called by BSpatialTransform::apply/applyTransform
+    // the moments of mass; zero, one, and two - note mass can be 0, I_o inertia at body frame origin
     void 
-    setMoments( BScalar mass, const BVector3 &h, const BMatrix3 &inertia )
+    setInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o )
     {
-        m_mass = mass; m_h = h; m_I = inertia;
+        m_mass = mass; m_h = h; m_I = I_o;
     }
     
     void 
@@ -89,21 +88,21 @@ public:
     // RBDA, Section 2.13, eqn 2.63, page 33.
     // called from BBody::BBody(); this was RBDL function createFromMassComInertiaC(Body) 
     void 
-    setInertia( BScalar mass, const BVector3 &com, const BMatrix3 &inertia_com  )
+    setInertiaCom( BScalar mass, const BVector3 &com, const BMatrix3 &I_com  )
     {
         m_mass = mass;  // note mass can be 0 
         m_h    = com * m_mass;
-        m_I    = inertia_com + m_mass * arb::crosst(com); 
+        m_I    = I_com + m_mass * arb::crosst(com); 
     }
 
     void
-    setMass( BScalar mass ) { setInertia(mass, com(), inertiaCom()); }
+    setMass( BScalar mass ) { setInertiaCom(mass, com(), inertiaCom()); }
 
     void
-    setCom(const BVector3 &com ) { setInertia(m_mass, com, inertiaCom()); }
+    setCom(const BVector3 &com ) { setInertiaCom(m_mass, com, inertiaCom()); }
     
     void
-    setInertia( const BMatrix3 &inertia_com ) { setInertia(m_mass, com(), inertia_com); }
+    setInertiaCom( const BMatrix3 &I_com ) { setInertiaCom(m_mass, com(), I_com); }
  
     // RBDA, Section 2.13, eqn 2.63, page 33.
     operator BSpatialMatrix( void ) const 
@@ -188,11 +187,20 @@ public:
     }
     
     const BSpatialVector 
-    operator*( const BSpatialVector &mv ) const
+    operator*( const BSpatialVector &v ) const
     {
-        const BVector3 ang(glm::cross(m_h, mv.lin()) + (m_I * mv.ang()));
-        const BVector3 lin(m_mass * mv.lin() - glm::cross(m_h, mv.ang()));
-        return BSpatialVector( ang, lin );
+        //const BVector3 ang(glm::cross(m_h, v.lin()) + (m_I * v.ang()));
+        //const BVector3 lin(m_mass * v.lin() - glm::cross(m_h, v.ang()));
+        // return BSpatialVector( ang, lin );
+    
+        return BSpatialVector((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
+                              (m_h[2] * v[3] - v[5] * m_h[0]) + (m_I[0][1] * v[0])  +  (m_I[1][1] * v[1]) + (m_I[2][1] * v[2]),
+                              (m_h[0] * v[4] - v[3] * m_h[1]) + (m_I[0][2] * v[0])  +  (m_I[1][2] * v[1]) + (m_I[2][2] * v[2]),
+                           
+                              (m_mass * v[3])  -  (m_h[1] * v[2] - v[1] * m_h[2]),
+                              (m_mass * v[4])  -  (m_h[2] * v[0] - v[2] * m_h[0]),
+                              (m_mass * v[5])  -  (m_h[0] * v[1] - v[0] * m_h[1]) );
+        
     }
     
     
