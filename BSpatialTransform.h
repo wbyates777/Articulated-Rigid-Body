@@ -222,8 +222,7 @@ public:
     {
         const BMatrix3 ET = glm::transpose(m_E);
         const BVector3 ETrxf = ET * (f_sp.ang() - glm::cross(m_r, f_sp.lin()));
-        const BVector3 aux = ET * f_sp.lin();
-        return BSpatialVector( ETrxf, aux );
+        return BSpatialVector( ETrxf,  ET * f_sp.lin() );
     }
     
     const BSpatialMatrix 
