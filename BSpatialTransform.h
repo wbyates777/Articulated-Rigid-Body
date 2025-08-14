@@ -188,8 +188,8 @@ public:
         const BMatrix3 rx = arb::cross(m_r);
         const BVector3 h = (m_E * rbi.h()) + (rbi.mass() * m_r); 
         const BMatrix3 aux = rx * arb::cross(m_E * rbi.h()) + arb::cross(h) * rx;
-        const BMatrix3 I = (m_E * rbi.inertia() * ET);
-        return BRBInertia(rbi.mass(), h, I - aux);
+        const BMatrix3 I = (m_E * rbi.inertia() * ET) - aux;
+        return BRBInertia(rbi.mass(), h, I);
     }
     
 
