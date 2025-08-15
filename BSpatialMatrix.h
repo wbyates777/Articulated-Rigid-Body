@@ -66,18 +66,30 @@ public:
     constexpr void
     set( BScalar s ) 
     {
-        for ( int i = 0; i < 6; ++i )
-            for ( int j = 0; j < 6; ++j )
-                m_data[i][j] = s;
+        m_data = 
+        {
+            s,  s,  s,  s,  s,  s,
+            s,  s,  s,  s,  s,  s,
+            s,  s,  s,  s,  s,  s,
+            s,  s,  s,  s,  s,  s,
+            s,  s,  s,  s,  s,  s,
+            s,  s,  s,  s,  s,  s
+        };
     }
     
     void 
     set( const std::vector<std::vector<BScalar>> &d )  
     {  
         assert(m_data.size() == 6 && m_data[0].size() == 6);  
-        for ( int i = 0; i < 6; ++i )
-            for ( int j = 0; j < 6; ++j )
-                m_data[i][j] = d[i][j];
+        m_data = 
+        {
+            d[0][0],  d[0][1],  d[0][2],  d[0][3],  d[0][4],  d[0][5],
+            d[1][0],  d[1][1],  d[1][2],  d[1][3],  d[1][4],  d[1][5],
+            d[2][0],  d[2][1],  d[2][2],  d[2][3],  d[2][4],  d[2][5],
+            d[3][0],  d[3][1],  d[3][2],  d[3][3],  d[3][4],  d[3][5],
+            d[4][0],  d[4][1],  d[4][2],  d[4][3],  d[4][4],  d[4][5],
+            d[5][0],  d[5][1],  d[5][2],  d[5][3],  d[5][4],  d[5][5]
+        };
     }
     
     constexpr void 
@@ -88,24 +100,30 @@ public:
          BScalar m40, BScalar m41, BScalar m42, BScalar m43, BScalar m44, BScalar m45,
          BScalar m50, BScalar m51, BScalar m52, BScalar m53, BScalar m54, BScalar m55 )
     {
-        m_data[0][0] = m00; m_data[0][1] = m01;  m_data[0][2] = m02; m_data[0][3] = m03;  m_data[0][4] = m04; m_data[0][5] = m05;
-        m_data[1][0] = m10; m_data[1][1] = m11;  m_data[1][2] = m12; m_data[1][3] = m13;  m_data[1][4] = m14; m_data[1][5] = m15;
-        m_data[2][0] = m20; m_data[2][1] = m21;  m_data[2][2] = m22; m_data[2][3] = m23;  m_data[2][4] = m24; m_data[2][5] = m25;
-        m_data[3][0] = m30; m_data[3][1] = m31;  m_data[3][2] = m32; m_data[3][3] = m33;  m_data[3][4] = m34; m_data[3][5] = m35;
-        m_data[4][0] = m40; m_data[4][1] = m41;  m_data[4][2] = m42; m_data[4][3] = m43;  m_data[4][4] = m44; m_data[4][5] = m45;
-        m_data[5][0] = m50; m_data[5][1] = m51;  m_data[5][2] = m52; m_data[5][3] = m53;  m_data[5][4] = m54; m_data[5][5] = m55;
+        m_data = 
+        {
+            m00,  m01,  m02,  m03,  m04,  m05,
+            m10,  m11,  m12,  m13,  m14,  m15,
+            m20,  m21,  m22,  m23,  m24,  m25,
+            m30,  m31,  m32,  m33,  m34,  m35,
+            m40,  m41,  m42,  m43,  m44,  m45,
+            m50,  m51,  m52,  m53,  m54,  m55
+        };
     }
 
     void 
     set( const BMatrix3 &m0, const BMatrix3 &m1, const BMatrix3 &m2, const BMatrix3 &m3 )
     {
-        m_data[0][0] = m0[0][0]; m_data[0][1] = m0[0][1]; m_data[0][2] = m0[0][2];  m_data[0][3] = m1[0][0]; m_data[0][4] = m1[0][1]; m_data[0][5] = m1[0][2];
-        m_data[1][0] = m0[1][0]; m_data[1][1] = m0[1][1]; m_data[1][2] = m0[1][2];  m_data[1][3] = m1[1][0]; m_data[1][4] = m1[1][1]; m_data[1][5] = m1[1][2];
-        m_data[2][0] = m0[2][0]; m_data[2][1] = m0[2][1]; m_data[2][2] = m0[2][2];  m_data[2][3] = m1[2][0]; m_data[2][4] = m1[2][1]; m_data[2][5] = m1[2][2];
-        
-        m_data[3][0] = m2[0][0]; m_data[3][1] = m2[0][1]; m_data[3][2] = m2[0][2];  m_data[3][3] = m3[0][0]; m_data[3][4] = m3[0][1]; m_data[3][5] = m3[0][2];
-        m_data[4][0] = m2[1][0]; m_data[4][1] = m2[1][1]; m_data[4][2] = m2[1][2];  m_data[4][3] = m3[1][0]; m_data[4][4] = m3[1][1]; m_data[4][5] = m3[1][2];
-        m_data[5][0] = m2[2][0]; m_data[5][1] = m2[2][1]; m_data[5][2] = m2[2][2];  m_data[5][3] = m3[2][0]; m_data[5][4] = m3[2][1]; m_data[5][5] = m3[2][2];
+        m_data = 
+        {
+            m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
+            m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
+            m0[2][0], m0[2][1], m0[2][2], m1[2][0], m1[2][1], m1[2][2],
+
+            m2[0][0], m2[0][1], m2[0][2], m3[0][0], m3[0][1], m3[0][2],
+            m2[1][0], m2[1][1], m2[1][2], m3[1][0], m3[1][1], m3[1][2],
+            m2[2][0], m2[2][1], m2[2][2], m3[2][0], m3[2][1], m3[2][2],
+        };
     }
     
     std::array<BScalar, 6>&

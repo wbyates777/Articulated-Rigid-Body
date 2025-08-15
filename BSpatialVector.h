@@ -35,36 +35,33 @@ public:
     
     BSpatialVector( void )=default;
     constexpr BSpatialVector( const std::array<BScalar, 6> &d ): m_data(d) {}
-    constexpr explicit BSpatialVector( BScalar s ): m_data({s, s, s, s, s, s}) {}
+    constexpr explicit BSpatialVector( BScalar s ): m_data{s, s, s, s, s, s} {}
     explicit BSpatialVector( const std::vector<BScalar> &d ) { assert(d.size() == 6); set(d); }
     explicit BSpatialVector( const std::vector<std::vector<BScalar>> &d ) { assert(d.size() == 1 && d[0].size() == 6); set(d[0]); }
-    constexpr BSpatialVector( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ): m_data({s0, s1, s2, s3, s4, s5}) {}
-    BSpatialVector( const BVector3 &h, const BVector3 &t ): m_data({h[0], h[1], h[2], t[0], t[1], t[2]}) {}
+    constexpr BSpatialVector( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ): m_data{s0, s1, s2, s3, s4, s5} {}
+    BSpatialVector( const BVector3 &h, const BVector3 &t ): m_data{h[0], h[1], h[2], t[0], t[1], t[2]} {}
     ~BSpatialVector( void )=default;
     
     void
-    set( BScalar s ) { m_data[0] = m_data[1] = m_data[2] = m_data[3] = m_data[4] = m_data[5] = s; }
+    set( BScalar s ) { m_data = { s, s, s, s, s, s }; }
     
     void 
     set( const std::vector<BScalar> &d ) 
     { 
         assert(d.size() == 6);
-        m_data[0] = d[0]; m_data[1] = d[1]; m_data[2] = d[2]; 
-        m_data[3] = d[3]; m_data[4] = d[4]; m_data[5] = d[5];
+        m_data = { d[0], d[1], d[2], d[3], d[4], d[5] };
     }
     
     void 
     set( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ) 
     { 
-        m_data[0] = s0; m_data[1] = s1; m_data[2] = s2; 
-        m_data[3] = s3; m_data[4] = s4; m_data[5] = s5;
+        m_data = { s0, s1, s2, s3, s4, s5 };
     }
     
     void 
     set( const BVector3 &h, const BVector3 &t ) 
     { 
-        m_data[0] = h[0]; m_data[1] = h[1]; m_data[2] = h[2]; 
-        m_data[3] = t[0]; m_data[4] = t[1]; m_data[5] = t[2];
+        m_data = { h[0], h[1], h[2], t[0], t[1], t[2] };
     }
     
     // angular
