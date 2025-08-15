@@ -67,6 +67,11 @@
     0.0 position is 0.00000000 0.00000000 0.00000000 20.00000000 50.00000000 3.00000000 
     5.0 position is 0.00000000 1.25250000 0.00000000 15.23282410 50.00000000 13.89482750 
 
+ Technically, Newton-Euler integration is performed by the term ```acc = invI * force```.
+ The extra term ```arb::crossf(vel, I * vel)``` is called the bias force.
+ The bias force represents an inertial force; a so called _fictitious force_ such as centrifugal, Coriolis, or Euler force. 
+ The inertial force is necessary for describing motion correctly (see https://en.wikipedia.org/wiki/Fictitious_force).
+ 
  The implementations presented here, are intended for use in computer games, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
  Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn).
@@ -77,12 +82,13 @@
 
  RBDL and RBDyn employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
- This code does not depend on Eigen3, and instead relies on the lighter-weight GLM library 
+ This code does not depend on Eigen3, and instead relies on the lighter-weight, header only, GLM library 
  for simple 3D-linear algebra types and operations (see https://github.com/g-truc/glm). 
+
  As the GLM library does not support 6D vectors and matricies, the code for RBDL custom
  joint types is not implemented.
 
- This code depends on the 3D GLM types and functions: glm::dvec3, glm::dmat3, glm::dquat,
+ The spatial algebra implementation presented here (though not the agorithms) is also header only, and depends solely on STL and the 3D GLM types and functions: glm::dvec3, glm::dmat3, glm::dquat,
  glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::toMat3(q).
  
  It is straightforward to convert back to Eigen3 (although see 
