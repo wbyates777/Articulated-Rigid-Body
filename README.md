@@ -9,8 +9,9 @@
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
  is known as _inverse kinematics_ (see https://en.wikipedia.org/wiki/Inverse_kinematics).
 
- BDynamics is an implementation of:
- - the articulated-body algorithm (ABA) and  
+ BDynamics is a compact, light-weight implementation of:
+ 
+ - the articulated-body algorithm (ABA), and  
  - the recursive Newton-Euler algorithm (RNEA).
 
  Both of these algorithms are presented in:
@@ -26,7 +27,7 @@
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
- These algorithms are described and implememted using _spatial algebra_. 
+ The algorithms are described and implememted using spatial algebra. 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
  Linear and angular velocities or accelerations are
@@ -65,7 +66,7 @@
 
     0.0 position is 0.00000000 0.00000000 0.00000000 20.00000000 50.00000000 3.00000000 
     5.0 position is 0.00000000 1.25250000 0.00000000 15.23282410 50.00000000 13.89482750 
-    
+
  The implementations presented here, are intended for use in computer games, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
  Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn).
