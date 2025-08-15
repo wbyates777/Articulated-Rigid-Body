@@ -8,15 +8,15 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
  
- Top level include file for a compact, light-weight implementation of spatial algebra as presented in:
+ Top level include file for a compact, light-weight, header only implementation of spatial algebra as presented in:
 
   "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008 (see https://royfeatherstone.org). 
  
- Depends on the  GLM  https://github.com/g-truc/glm
+ Depends on the  header only GLM library (see https://github.com/g-truc/glm).
 
- Specifically the 3D types: 
+ Specifically, we employ the 3D types: 
  
-   glm::dvec3, glm::dquat, glm::dmat3 
+   glm::dvec3, glm::dmat3, glm::quat 
  
  and the functions: 
  
