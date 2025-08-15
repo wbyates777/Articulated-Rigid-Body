@@ -76,7 +76,7 @@ typedef std::vector<std::vector<BScalar>> BJointSpace;
 //inline bool 
 //isnan(const BVector3 &v) { return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]); }
 
-constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0};              // BSpatialVector
+constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BSpatialVector
 
 constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BSpatialMatrix
 {
