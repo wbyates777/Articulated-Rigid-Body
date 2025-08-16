@@ -45,7 +45,7 @@
     BSpatialMatrix invI = arb::inverse(I);
 
     // set initial position, velocity and acceleration
-    BSpatialVector pos(B_ZERO_3, BVector3(20.0, 50.0, 3.0)), vel(B_ZERO_6), acc(B_ZERO_6);
+    BSpatialVector pos(B_ZERO_3, BVector3(20.0, 50.0, 3.0)), vel(0.0), acc(0.0);
     
     // apply an angular force of 1.0 around Y axis and a linear force of 100.0 along Z axis
     BSpatialVector force(0.0, 1.0, 0.0,  0.0, 0.0, 100.0);
