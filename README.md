@@ -72,7 +72,7 @@
  The bias force represents an inertial force; a so called _fictitious force_ such as centrifugal, Coriolis, or Euler force. 
  The inertial force is necessary for describing motion correctly (see https://en.wikipedia.org/wiki/Fictitious_force).
  
- The implementations presented here, are intended for use in computer games, and are 
+ The implementations presented here, are intended for use in computer graphics, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
  Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn).
  We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
