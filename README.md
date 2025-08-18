@@ -1,7 +1,7 @@
 
  ## Forward and Inverse Dynamics of Kinematic Trees.
 
- Trees (and chains) of kinematic equations are used in robotics, computer games, and animation.
+ Trees (and chains) of kinematic equations are used in robotics, computer graphics, and animation.
  In robotics _forward kinematics_ refers to the use of kinematic equations to compute the position of 
  an end-effector, such as a jointed robotic arm, from specified values for the joint parameters
  (see  https://en.wikipedia.org/wiki/Forward_kinematics).
