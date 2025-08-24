@@ -95,10 +95,8 @@ BModel::getBodyId( const std::string &body_name ) const
 {
     auto iter = m_bodyNameMap.find(body_name);
     if (iter == m_bodyNameMap.end()) 
-    {
         return std::numeric_limits<BBodyId>::max();
-    }
-    
+ 
     return iter->second;
 }
 
@@ -112,9 +110,8 @@ BModel::getBodyName( BBodyId bid ) const
     while (iter != m_bodyNameMap.end()) 
     {
         if (iter->second == bid) 
-        {
             return iter->first;
-        }
+
         ++iter;
     }
     
@@ -137,9 +134,7 @@ BModel::getParentBodyId( BBodyId bid ) const
     BBodyId parent_id = m_lambda[bid];
     
     while (m_body[parent_id].isVirtual()) 
-    {
         parent_id = m_lambda[parent_id];
-    }
     
     return parent_id;
 }
@@ -161,12 +156,9 @@ BModel::getJointFrame( BBodyId bid ) const
             child_id = parent_id;
             parent_id = m_lambda[child_id];
         }
-        return m_joint[child_id].X_T();
     } 
-    else 
-    {
-        return m_joint[bid].X_T();
-    }
+
+    return m_joint[child_id].X_T();
 }
 
 void 
@@ -191,7 +183,7 @@ BModel::setJointFrame( BBodyId bid, const BSpatialTransform &transform )
         }
     } 
 
-    m_joint[bid].X_T( transform );
+    m_joint[child_id].X_T( transform );
 }
 
 BVector3
@@ -263,8 +255,6 @@ BMatrix3
 BModel::orient(const BBodyId bid)  const 
 //  an orthonormal 3x3 matrix that rotates vectors from base to body coordinates.
 {
-    BMatrix3 rot; 
-    
     if (isFixedBodyId(bid)) 
     {
         BBodyId fbody_id = bid - m_fbd;
@@ -272,14 +262,11 @@ BModel::orient(const BBodyId bid)  const
         BSpatialTransform baseTrans = m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base();
         
         //  m_fixed[fbody_id].baseTrans( m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base() );
-        rot = baseTrans.E();
+        return baseTrans.E();
     }
-    else
-    {
-        rot = m_body[bid].X_base().E();
-    }
-    
-    return rot;
+ 
+    return m_body[bid].X_base().E();
+
 }
 
 BScalar
