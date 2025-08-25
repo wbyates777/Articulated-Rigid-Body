@@ -135,6 +135,7 @@ namespace arb
     inline const BMatrix3
     outer( const BVector3 &a, const BVector3 &b )
     { 
+        // return glm::outerProduct(b, a); // note signature is glm::outerProduct(col, row)
         return BMatrix3(a[0] * b[0], a[0] * b[1], a[0] * b[2], 
                         a[1] * b[0], a[1] * b[1], a[1] * b[2],  
                         a[2] * b[0], a[2] * b[1], a[2] * b[2] );
