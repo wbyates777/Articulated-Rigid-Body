@@ -19,7 +19,7 @@
  
  where 
      I is the rotational inertia at body frame origin
-     H = |h|\times is the generalised momentum matrix
+     H = |h|\times is the generalised inertia matrix
      M is generalised mass i.e m * S_IDENTITY_3x3 
  and
      m is mass
