@@ -9,7 +9,7 @@
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
  is known as _inverse kinematics_ (see https://en.wikipedia.org/wiki/Inverse_kinematics).
 
- BDynamics is a compact, light-weight implementation of:
+ BDynamics is an implementation of:
  
  - the articulated-body algorithm (ABA), and  
  - the recursive Newton-Euler algorithm (RNEA).
@@ -27,12 +27,12 @@
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
- The algorithms are described and implememted using spatial algebra. 
+ The algorithms are described and implememted using _spatial algebra_ (see RBDA, Chapter 2). 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
- Linear and angular velocities or accelerations are
- combined to form  _spatial motion_ vectors, while forces and moments are combined
- to form  _spatial force_ vectors.
+ Linear and angular velocities (or accelerations) are
+ combined to form  _spatial_ _motion_ vectors, while linear forces and torques are combined
+ to form  _spatial_ _force_ vectors.
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
  For example, the following code excerpt performs Newton-Euler integration (see https://en.wikipedia.org/wiki/Newton–Euler_equations):
@@ -69,27 +69,32 @@
 
  Technically, Newton-Euler integration is performed by the term ```acc = invI * force```.
  The extra term ```arb::crossf(vel, I * vel)``` is called the bias force.
- The bias force represents an inertial force; a so called _fictitious force_ such as centrifugal, Coriolis, or Euler force. 
+ The bias force represents an _inertial_ force; a so called fictitious force such as centrifugal, Coriolis, or Euler force. 
  The inertial force is necessary for describing motion correctly (see https://en.wikipedia.org/wiki/Fictitious_force).
  
  The implementations presented here, are intended for use in computer graphics, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
  Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn).
- We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
+ We intentionally use similar variable names and the same object structure and hierarchy as RBDL. This facillitates comparison testing. 
  Some variables have been moved to their appropriate classes and accessor methods 
- have been added throughout. This facillitates comparison testing, and improves encapsulation and readability.
+ have been added throughout. This improves encapsulation and readability.
  
 
  RBDL and RBDyn employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
- This code does not depend on Eigen3, and instead relies on the lighter-weight, header only, GLM library 
+ This code does not depend on Eigen3, and instead relies on the light-weight, header only, GLM library 
  for simple 3D-linear algebra types and operations (see https://github.com/g-truc/glm). 
 
  As the GLM library does not support 6D vectors and matricies, the code for RBDL custom
  joint types is not implemented.
 
- The spatial algebra implementation presented here (though not the agorithms) is also header only, and depends solely on STL and the 3D GLM types and functions: glm::dvec3, glm::dmat3, glm::dquat,
- glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::toMat3(q).
+ The spatial algebra implementation (though not the agorithms) is also header only, and depends solely on STL and the 3D GLM types: 
+ 
+ ```glm::vec3, glm::mat3, glm::quat```, 
+ 
+ and the GLM functions:
+ 
+ ```glm::cross(v_1, v_2), glm::dot(v1, v2), glm::outerProduct(v1, v2), glm::transpose(m), glm::inverse(m), glm::toMat3(q)```.
  
  It is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3 and GLM differences), or  replace GLM with some other simple
