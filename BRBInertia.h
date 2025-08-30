@@ -11,16 +11,16 @@
  
  Spatial Inertia (see Featherstone, RBDA, Section 2.13, page 32).
  
- A represention of the distribution of mass in a rigid body 
+ A compact represention of the distribution of mass in a rigid body 
  Consists of three moments of mass:
  
  0) the zeroth moment - total mass m,
  1) the first moment  - h = com * mass (where com is centre of mass), and
- 2) the second moment - inertia I.
+ 2) the second moment - 3D rotational inertia I at body coordinate frame origin.
 
  $h$ is the magnitude and direction of the body’s linear momentum (see RBDA, Section 2.12, page 31).
  
- Inertia is represented as 3D rotational inertia, and 6D spatial inertia.
+ Spatial Inertia can also be represented as a 6D spatial matrix.
  
  Note:
  
