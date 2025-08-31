@@ -188,13 +188,11 @@
 
 
 
-
 class BJoint
 {
-    
+
 public:
-   
-    
+      
     enum BJointType 
     {
       UNDEFINED = 0,
@@ -223,17 +221,15 @@ public:
       EulerZXY,  ///< 3 DoF joint that uses Euler ZXY convention (faster than emulated multi DoF joints).
       TranslationXYZ,
       
-      FloatingBase, ///< A 6-DoF joint for floating-base (or freeflyer) systems.  It is internally modeled by a JointTypeTranslationXYZ and a JointTypeSpherical joint. It is recommended to only use this joint for the very first body added to the model.
+      FloatingBase, ///< A 6-DoF joint for floating-base (or freeflyer) systems (see RBDA, Section 9.3, page 179).  
+                    ///< It is internally modeled by a TranslationXYZ and a Spherical joint. 
+                    ///< It is recommended to only use this joint for the very first body added to the model.
       
       Fixed,        ///< Fixed joint which causes the inertial properties to be merged with the parent body.
       
       Helical,      ///< A 1-DoF 'screw' joint with both rotational and translational motion.
       
-  
-        ///<
-      
-        
-     // Custom,
+      // Custom,
       MAXJOINT    
     };
     
@@ -351,15 +347,15 @@ public:
     void
     qindex( int q ) { m_qidx = q; }
 
-   
+    void
+    windex( int w ) { m_widx = w; }
+
     BQuat
     getQuat( const std::vector<BScalar> &q ) const;
     
     void 
     setQuat( const BQuat &quat, std::vector<BScalar> &q ) const;
 
-    void
-    windex( int w ) { m_widx = w; }
     
     bool 
     operator==( const BJoint &v ) const { return (m_id == v.m_id); }
@@ -367,7 +363,6 @@ public:
     bool 
     operator!=( const BJoint &v ) const { return (m_id != v.m_id); }
     
-   
     static std::string 
     toString( BJointType jt );
     
@@ -394,11 +389,11 @@ private:
     BJointId     m_id;
 
     int          m_qidx;
-    int          m_widx; // if joint is spherical - index of quaternion $w$ variable
+    int          m_widx; // if joint is spherical - index of quaternion $w$ variable (at end of $q$-vector)
     BJointType   m_jtype; 
 
   
-    // $s^X_p$ = rot(E) xlt(r) - rotation(E) * translate(r)
+    // $s^X_p$ = rot(E) xlt(r) - rotation(E) * translate(r) - translate br $r$ then rotate by $E$
     BSpatialTransform m_X_lambda;  // ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
     BSpatialTransform m_X_J;       // see RBDA Section 4.4 and Table 4.1
     BSpatialTransform m_X_T;       // $X_T$ transform from parent frame to joint position (see RBDA, Section 4.2)
@@ -436,9 +431,6 @@ operator<<( std::ostream &ostr, const BJoint &j )
     }
     return ostr;
 }
-
-
-
 
 #endif
 
