@@ -124,11 +124,11 @@ namespace arb
 
     // spatial dot or inner product
     inline BScalar 
-    dot(const BSpatialVector &v1, const BSpatialVector &v2)
+    dot(const BSpatialVector &a, const BSpatialVector &v2)
     {
-        return glm::dot(v1.ang(), v2.ang()) + glm::dot(v1.lin(), v2.lin());
-        //return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]) 
-        //        + (v1[3] * v2[3]) + (v1[4] * v2[4]) + (v1[5] * v2[5]);
+        return glm::dot(a.ang(), b.ang()) + glm::dot(a.lin(), b.lin());
+        //return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]) 
+        //        + (a[3] * b[3]) + (a[4] * b[4]) + (a[5] * b[5]);
     }
 
     // outer product 
