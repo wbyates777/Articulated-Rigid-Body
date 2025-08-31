@@ -10,7 +10,7 @@
 
  Spatial or Plücker Transforms (see Featherstone, RBDA, Section 2.8, page 20, and Appendix A3, page 245).
  
- Consider a tranform $X$ that maps points from a coordinate frame $A$ to coordinate a frame $B$ 
+ Consider a tranform $X$ that maps points from a coordinate frame $A$ to a coordinate frame $B$ 
  $$ B^X_A : A \rightarrow B. $$
  The inverse $X^{-1}$ is defined by
  $$ B^{X^{-1}}_A = A^X_B. $$ 
@@ -36,8 +36,12 @@
  1) All angles in radians
  2) BMatrix3 E is a rotation  - the transpose of a rotation is also its inverse
  3) BVector3 r is a translation - inverse translation is -r
+
+ See also:
  
  https://en.wikipedia.org/wiki/Rotation_matrix
+ https://en.wikipedia.org/wiki/Frame_of_reference
+ 
 */
 
 
@@ -61,7 +65,7 @@ public:
     
     BSpatialTransform( void )=default;
     
-    // BSpatialTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans);
+    // BSpatialTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
     constexpr explicit BSpatialTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
     constexpr explicit BSpatialTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
     
@@ -104,7 +108,7 @@ public:
     }
     
     const BSpatialTransform& 
-    operator*= (const BSpatialTransform &rhs) 
+    operator*=( const BSpatialTransform &rhs ) 
     {
         m_E *= rhs.m_E;
         m_r = rhs.m_r + (rhs.m_E * m_r);
@@ -129,7 +133,6 @@ public:
                               m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
                               m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );
         
-        
         // const BMatrix3 ET = arb::transpose(m_E);
         // const BVector3 ang = ET * v.ang();
         // const BVector3 lin = ET * v_rxw;
@@ -142,14 +145,14 @@ public:
     {
         const BVector3 ETf( m_E[0][0] * f[3] + m_E[1][0] * f[4] + m_E[2][0] * f[5],
                             m_E[0][1] * f[3] + m_E[1][1] * f[4] + m_E[2][1] * f[5],
-                            m_E[0][2] * f[3] + m_E[1][2] * f[4] + m_E[2][2] * f[5]);
+                            m_E[0][2] * f[3] + m_E[1][2] * f[4] + m_E[2][2] * f[5] );
         
-        return BSpatialVector(m_E[0][0] * f[0] + m_E[1][0] * f[1] + m_E[2][0] * f[2] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
-                              m_E[0][1] * f[0] + m_E[1][1] * f[1] + m_E[2][1] * f[2] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
-                              m_E[0][2] * f[0] + m_E[1][2] * f[1] + m_E[2][2] * f[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
-                              ETf[0],
-                              ETf[1],
-                              ETf[2] );
+        return BSpatialVector( m_E[0][0] * f[0] + m_E[1][0] * f[1] + m_E[2][0] * f[2] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
+                               m_E[0][1] * f[0] + m_E[1][1] * f[1] + m_E[2][1] * f[2] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
+                               m_E[0][2] * f[0] + m_E[1][2] * f[1] + m_E[2][2] * f[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
+                               ETf[0],
+                               ETf[1],
+                               ETf[2] );
         
         // const BVector3 ETf = m_E * f.lin();
         // const BVector3 aux = m_E * f.ang();
@@ -177,7 +180,7 @@ public:
         const BVector3 h  = ET * (rbi.h() - (rbi.mass() * m_r)); 
         const BMatrix3 aux = (rx * arb::cross(rbi.h())) + ((arb::cross(rbi.h() - rbi.mass() * m_r) * rx));
         const BMatrix3 I =  ET * (rbi.inertia() + aux) * m_E;
-        return BRBInertia(rbi.mass(), h, I);
+        return BRBInertia( rbi.mass(), h, I );
     }
     
     const BRBInertia 
@@ -189,21 +192,21 @@ public:
         const BVector3 h = (m_E * rbi.h()) + (rbi.mass() * m_r); 
         const BMatrix3 aux = rx * arb::cross(m_E * rbi.h()) + arb::cross(h) * rx;
         const BMatrix3 I = (m_E * rbi.inertia() * ET) - aux;
-        return BRBInertia(rbi.mass(), h, I);
+        return BRBInertia( rbi.mass(), h, I );
     }
     
 
     BABInertia
-    applyTranspose( const BABInertia &abI ) const   
+    applyTranspose( const BABInertia &abi ) const   
     // returns X^T I X
     {
         const BMatrix3 ET = glm::transpose(m_E);
         const BMatrix3 rx = arb::cross(m_r);
-        const BMatrix3 M = m_E * abI.M() * ET;
-        const BMatrix3 H = m_E * abI.H() * ET;
+        const BMatrix3 M = m_E * abi.M() * ET;
+        const BMatrix3 H = m_E * abi.H() * ET;
         const BMatrix3 rxM = (rx * M);
-        const BMatrix3 I = (m_E * abI.I() * ET) - (rx * H) + (glm::transpose(H) - rxM) * rx ; 
-        return BABInertia(M, H + -glm::transpose(rxM), I); 
+        const BMatrix3 I = (m_E * abi.I() * ET) - (rx * H) + (glm::transpose(H) - rxM) * rx; 
+        return BABInertia( M, H + -glm::transpose(rxM), I ); 
     }
   
     BABInertia 
