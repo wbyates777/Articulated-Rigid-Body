@@ -29,11 +29,11 @@ namespace arb
 
     // standard Euclidian cross product - replaces glm::cross 
     //inline const BVector3
-    //cross( const BVector3 &x, const BVector3 &y )
+    //cross( const BVector3 &a, const BVector3 &b )
     //{
-    //    return BVector3( x[1] * y[2] - y[1] * x[2],
-    //                     x[2] * y[0] - y[2] * x[0],
-    //                     x[0] * y[1] - y[0] * x[1] );
+    //    return BVector3( a[1] * b[2] - b[1] * a[2],
+    //                     a[2] * b[0] - b[2] * a[0],
+    //                     a[0] * b[1] - b[0] * a[1] );
     //}
   
 
@@ -152,6 +152,9 @@ namespace arb
                               a[3] * b[0], a[3] * b[1], a[3] * b[2],  a[3] * b[3], a[3] * b[4], a[3] * b[5], 
                               a[4] * b[0], a[4] * b[1], a[4] * b[2],  a[4] * b[3], a[4] * b[4], a[4] * b[5], 
                               a[5] * b[0], a[5] * b[1], a[5] * b[2],  a[5] * b[3], a[5] * b[4], a[5] * b[5]);
+
+        // return BSpatialMatrix( glm::outerProduct(b.ang(), a.ang()), glm::outerProduct(b.lin(), a.ang()),
+        //                        glm::outerProduct(b.ang(), a.lin()), glm::outerProduct(b.ang(), a.ang()) );
     }
 };
 
