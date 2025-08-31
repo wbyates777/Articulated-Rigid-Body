@@ -16,7 +16,7 @@
  
  0) the zeroth moment - total mass m,
  1) the first moment  - h = com * mass (where com is centre of mass), and
- 2) the second moment - 3D rotational inertia I at body coordinate frame origin.
+ 2) the second moment - 3D rotational inertia I_o at body coordinate frame origin.
 
  $h$ is the magnitude and direction of the body’s linear momentum (see RBDA, Section 2.12, page 31).
  
