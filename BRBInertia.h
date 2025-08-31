@@ -238,14 +238,15 @@ namespace arb
     inline const BSpatialMatrix 
     inverse( const BRBInertia &I ) 
     // Schur complement - analytical inverse, see RBDA, Section 2.15, eqn 2.74,  page 36
+    // https://en.wikipedia.org/wiki/Schur_complement
     {  
         assert(I.mass() != 0.0);
-        const BMatrix3 iI(glm::inverse(I.inertiaCom()));
-        const BMatrix3 iM(1.0 / I.mass());
+        const BMatrix3 invI(glm::inverse(I.inertiaCom()));
+        const BMatrix3 invM(1.0 / I.mass());
         const BVector3 com(I.com());
         
-        return BSpatialMatrix(          iI,                    iI * arb::cross(-com),  
-                               arb::cross(com) * iI,  iM + arb::cross(com) * iI * arb::cross(-com));
+        return BSpatialMatrix(          invI,                    invI * arb::cross(-com),  
+                               arb::cross(com) * invI,  invM + arb::cross(com) * invI * arb::cross(-com));
         
     } 
 
