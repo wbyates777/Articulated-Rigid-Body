@@ -283,22 +283,18 @@ namespace arb
 
     // you should generally try to avoid taking the inverse of a spatial matrix
     inline const BSpatialMatrix 
-    inverse( const BABInertia &abI ) 
+    inverse( const BABInertia &abi ) 
     // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
     {  
-        const BMatrix3 Minv = glm::inverse(abI.M());
-        const BMatrix3 T = abI.I() - glm::transpose(abI.H()) * Minv * abI.H();
-        const BMatrix3 Tinv = glm::inverse(T);
+        const BMatrix3 invM = glm::inverse(abi.M());
+        const BMatrix3 T = abi.I() - glm::transpose(abi.H()) * invM * abi.H();
+        const BMatrix3 invT = glm::inverse(T);
         
-        const BMatrix3 topLeft  = Minv + Minv * abI.H() * Tinv * glm::transpose(abI.H()) * Minv;
-        const BMatrix3 topRight = -Minv * abI.H() * Tinv;
-        const BMatrix3 botLeft  = -Tinv * glm::transpose(abI.H()) * Minv;
-        const BMatrix3 botRight = Tinv;
-        
-        // remove small asymmetries in H and H^T
-        // topLeft = 0.5 * (topLeft + glm::transpose(topLeft));
-        // botRight = 0.5 * (botRight + glm::transpose(botRight));
-        
+        const BMatrix3 topLeft  = invM + invM * abi.H() * invT * glm::transpose(abi.H()) * invM;
+        const BMatrix3 topRight = -invM * abi.H() * invT;
+        const BMatrix3 botLeft  = -invT * glm::transpose(abi.H()) * invM;
+        const BMatrix3 botRight = invT;
+     
         return BSpatialMatrix(topLeft, topRight, botLeft, botRight);
     } 
 
