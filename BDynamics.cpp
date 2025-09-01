@@ -37,9 +37,6 @@
  This code depends on the 3D GLM types: glm::dvec3, glm::dmat3, glm::dquat, 
  and functions: glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::toMat3(q).
  
- These implemenations run a bit faster (around 10%) than those of RBDL on simple test cases without instrinsics.
- This is due to the omission of the custom joint code, and removing some redundant calculations and unnecessary copying.
- 
  It should be relatively straightforward to convert back to Eigen3 (although see 
  the note below on Eigen3 and GLM differences), or  replace GLM with some other simple
  linear algebra library.
@@ -63,7 +60,6 @@
  std::cout << m2 * v2  << std::endl; 
  
  
- 
  //
  // LaTeX
  //
@@ -77,16 +73,13 @@
  {}^{#1}\!{#2}_{#3}
  }
  \makeatother
- 
- 
+  
 */
 
 
 #ifndef __BDYNAMICS_H__
 #include "BDynamics.h"
 #endif
-
-
 
 
 BDynamics::BDynamics( int expected_dof ): m_U(),
@@ -118,7 +111,6 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     const std::vector<BScalar>  &q   = qstate.q;    // pos
     const std::vector<BScalar> &qdot = qstate.qdot; // vel 
     const std::vector<BScalar> &tau  = qstate.tau;  // force
-    
     
     const int N_B = (int) m.bodies();
     
