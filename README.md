@@ -81,7 +81,7 @@
  have been added throughout. This improves encapsulation and readability.
  
 
- RBDL and RBDyn employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
+ RBDL, RBDyn, and Pinocchio employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
  This code does not depend on Eigen3, and instead relies on the light-weight, header only, GLM library 
  for simple 3D-linear algebra types and operations (see https://github.com/g-truc/glm). 
