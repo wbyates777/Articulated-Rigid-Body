@@ -74,7 +74,8 @@
  
  The implementations presented here, are intended for use in computer graphics, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
- Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn).
+ Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn) and
+ the Pinocchio library (see https://stack-of-tasks.github.io/pinocchio/).
  We intentionally use similar variable names and the same object structure and hierarchy as RBDL. This facillitates comparison testing. 
  Some variables have been moved to their appropriate classes and accessor methods 
  have been added throughout. This improves encapsulation and readability.
