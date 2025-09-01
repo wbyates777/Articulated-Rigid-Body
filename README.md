@@ -33,6 +33,7 @@
  Linear and angular velocities (or accelerations) are
  combined to form  _spatial_ _motion_ vectors, while linear forces and torques are combined
  to form  _spatial_ _force_ vectors.
+ 
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
  For example, the following code excerpt performs Newton-Euler integration (see https://en.wikipedia.org/wiki/Newton–Euler_equations):
