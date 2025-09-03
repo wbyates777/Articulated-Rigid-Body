@@ -68,7 +68,7 @@
     0.0 position is 0.00000000 0.00000000 0.00000000 20.00000000 50.00000000 3.00000000 
     5.0 position is 0.00000000 1.25250000 0.00000000 15.23282410 50.00000000 13.89482750 
 
- Technically, Newton-Euler integration is performed by the term ```acc = invI * force```.
+ The acceleration due to an actual, physical force is calculated by the term ```acc = invI * force```.
  The extra term ```arb::crossf(vel, I * vel)``` is called the bias force.
  The bias force represents an _inertial_ force; a so called fictitious force such as centrifugal, Coriolis, or Euler force. 
  The inertial force is necessary for describing motion correctly (see https://en.wikipedia.org/wiki/Fictitious_force).
