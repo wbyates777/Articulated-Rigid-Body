@@ -163,10 +163,10 @@ public:
     }
 
     bool 
-    operator==( const BSpatialVector& v ) const { return (m_data == v.m_data); }
+    operator==( const BSpatialVector &v ) const { return (m_data == v.m_data); }
     
     bool 
-    operator!=( const BSpatialVector& v ) const { return (m_data != v.m_data); }
+    operator!=( const BSpatialVector &v ) const { return (m_data != v.m_data); }
 
 private:
 
