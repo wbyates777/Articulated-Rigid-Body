@@ -294,19 +294,19 @@ public:
     }
     
     const BSpatialMatrix& 
-    operator*=(const BSpatialMatrix& rhs)
+    operator*=(const BSpatialMatrix &m)
     {
-        BSpatialMatrix res = *this * rhs;
+        BSpatialMatrix res = *this * m;
         *this = res;
         return *this;
     }
     
 
     bool 
-    operator==( const BSpatialMatrix& m ) const { return (m_data == m.m_data); }
+    operator==( const BSpatialMatrix &m ) const { return (m_data == m.m_data); }
     
     bool 
-    operator!=( const BSpatialMatrix& m ) const { return (m_data != m.m_data); }
+    operator!=( const BSpatialMatrix &m ) const { return (m_data != m.m_data); }
     
 private:
 
