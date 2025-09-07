@@ -104,7 +104,7 @@
 
  ## Build Instructions
 
-On a LINUX or macOs platform you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have placed this project and:
+On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and:
 
  ```mkdir build```
  
