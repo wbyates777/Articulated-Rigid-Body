@@ -77,8 +77,8 @@ public:
     
     // called from SDynamics
     explicit BABInertia( const BSpatialVector &a, const BSpatialVector &b ): m_M(arb::outer(a.lin(), b.lin())), 
-                                                                             m_I(arb::outer(a.ang(), b.ang())),
-                                                                             m_H(arb::outer(a.ang(), b.lin()))  {}
+                                                                             m_H(arb::outer(a.ang(), b.lin())),
+                                                                             m_I(arb::outer(a.ang(), b.ang()))  {}
     
     BABInertia( const BRBInertia &rbi ):  m_M(BMatrix3(rbi.mass())), m_H(arb::cross(rbi.h())), m_I(rbi.inertia()) {}
     
