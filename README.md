@@ -102,4 +102,14 @@
  the note on Eigen3 and GLM differences), or  replace GLM with some other simple
  linear algebra library.
 
+ ## Build Instructions
+
+On a LINUX or macOs platform you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have placed this project and:
+
+ ```mkdir build```
  
+ ```cd build```
+ 
+ ```cmake ..```
+ 
+ ```make```
