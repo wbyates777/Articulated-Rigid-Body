@@ -27,6 +27,8 @@
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
+## Spatial Algebra
+
  The algorithms are described and implememted using _spatial algebra_ (see RBDA, Chapter 2). 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
@@ -73,6 +75,8 @@
  The bias force represents an _inertial_ force; a so called fictitious force such as centrifugal, Coriolis, or Euler force. 
  The inertial force is necessary for describing motion correctly (see https://en.wikipedia.org/wiki/Fictitious_force).
  
+## Implementation 
+
  The implementations presented here, are intended for use in computer graphics, and are 
  based on those in the RBDL library (see https://github.com/rbdl/rbdl).
  Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn) and
