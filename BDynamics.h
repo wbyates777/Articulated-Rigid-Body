@@ -41,7 +41,7 @@
  The implemenations here do NOT depend on Eigen3, instead they depend soly on the 
  GLM linear algebra library ( see https://github.com/g-truc/glm ).
   
- It should be relatively straightforward to convert back to Eigen3 (although see 
+ It ie straightforward to convert back to Eigen3 (although see 
  the note on Eigen3 and GLM differences), or  replace GLM with some other simple
  linear algebra library.
 */
@@ -74,7 +74,6 @@ public:
     BDynamics( int expected_dof = 3 );
     ~BDynamics( void )=default;
     
-    
     /** \brief Computes forward dynamics with the Articulated Body algorithm (ABA)
      *
      * This function computes the generalized accelerations $a$ from given
@@ -102,11 +101,9 @@ public:
      * \param f_ext  External forces acting on the body in base coordinates (optional, defaults to empty)
      */
     void  
-    inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce());
-    
+    inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce()); 
 
-private:
-    
+private: 
 
     // temporary variables U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
     std::vector<BSpatialVector> m_U; // $U_i = I_i^A  S_i$ 
@@ -118,11 +115,7 @@ private:
     std::vector<BMatrix63> m_dof3_U;
     std::vector<BMatrix3>  m_dof3_Dinv;
     std::vector<BVector3>  m_dof3_u;
-    
-    // Eigen3 VectoNd stuff here for custom joints 
-    // std::vector<Math::MatrixNd> m_dof6_U;
-    // std::vector<Math::MatrixNd> m_dof6_Dinv;
-    // std::vector<Math::VectorNd> m_dof6_u;
+ 
 };
 
 #endif
