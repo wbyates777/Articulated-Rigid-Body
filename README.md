@@ -94,7 +94,7 @@
  As the GLM library does not support 6D vectors and matricies, the code for RBDL custom
  joint types is not implemented.
 
- The spatial algebra implementation (though not the agorithms) is also header only, and depends solely on STL and the 3D GLM types: 
+ The spatial algebra implementation (though not the algorithms) is also header only, and depends solely on STL and the 3D GLM types: 
  
  ```glm::vec3, glm::mat3, glm::quat```, 
  
