@@ -66,12 +66,18 @@ public:
     
     // angular
     void
+    ang( BScalar s ) { m_data[0] = s; m_data[1] = s; m_data[2] = s; }
+
+    void
     ang( const BVector3 &v ) { m_data[0] = v[0]; m_data[1] = v[1]; m_data[2] = v[2]; }
-    
+
     const BVector3
     ang( void ) const { return BVector3(m_data[0], m_data[1], m_data[2]); }
 
     // linear
+    void
+    lin( BScalar s ) { m_data[3] = s; m_data[4] = s; m_data[5] = s; }
+
     void
     lin( const BVector3 &v ) { m_data[3] = v[0]; m_data[4] = v[1]; m_data[5] = v[2]; }
     
