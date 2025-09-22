@@ -226,7 +226,16 @@ public:
         return BABInertia(M, H, I);
     }
 
-    
+    const BABInertia& 
+    operator+=(const BRBInertia &rbi)
+    // returns Ia += I
+    {
+        m_M += BMatrix3(rbi.mass());
+        m_H += arb::cross(rbi.h());
+        m_I += rbi.inertia(); 
+        return *this;
+    }
+
     bool 
     operator==( const BABInertia &v ) const 
     { 
