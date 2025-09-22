@@ -138,7 +138,10 @@ public:
         // const BVector3 lin = ET * v_rxw;
         // return BSpatialVector(ang, lin);
     }
-    
+
+    const BSpatialVector 
+    apply( const BSpatialVector &v ) const { return operator*(v); }
+
     const BSpatialVector 
     applyTranspose( const BSpatialVector &f ) const
     // returns X^T * f 
