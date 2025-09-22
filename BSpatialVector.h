@@ -197,7 +197,14 @@ operator>>( std::istream &istr, BSpatialVector &v )
     return istr;
 }
 
+namespace arb {
 
+    inline bool 
+    nearZero( const BSpatialVector &v )  {  return (nearZero(v.ang()) && nearZero(v.lin())); }
+
+    inline bool 
+    isnan( const BSpatialVector &v ) { return (isnan(v.lin()) || isnan(v.ang())); }
+};
 
 #endif
 
