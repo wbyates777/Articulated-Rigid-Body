@@ -319,6 +319,20 @@ operator*( BScalar s, const BSpatialMatrix &m ) { return m * s; }
 
 namespace arb
 {
+    inline bool 
+    nearZero( const BSpatialMatrix &m )  
+    {  
+        return    (nearZero(m.topLeft()) && nearZero(m.topRight()) 
+                && nearZero(m.botLeft()) && nearZero(m.botRight()));
+    }
+
+    inline bool 
+    isnan(const BSpatialMatrix &m) 
+    { 
+        return     (isnan(m.topLeft()) || isnan(m.topRight()) 
+                 || isnan(m.botLeft()) || isnan(m.botRight())); 
+    }
+
     // style choice - I prefer arb::traspose(m) to m.transpose() 
 
     //inline const BMatrix3 // replaces glm::transpose
