@@ -72,9 +72,29 @@ typedef std::vector<std::vector<BScalar>> BJointSpace;
     constexpr BMatrix3 B_ZERO_3x3(0.0);   
 #endif
 
-// 
-//inline bool 
-//isnan(const BVector3 &v) { return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]); }
+namespace arb {
+
+    constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
+
+
+    inline bool 
+    nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }
+
+    inline bool 
+    nearZero( const BVector3 &v )  {  return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
+
+    inline bool 
+    nearZero( const BMatrix3 &m )  {  return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
+
+
+    inline bool 
+    isnan(const BVector3 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
+
+    inline bool 
+    isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
+
+}
+
 
 constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BSpatialVector
 
