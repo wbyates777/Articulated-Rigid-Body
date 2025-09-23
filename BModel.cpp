@@ -266,8 +266,51 @@ BModel::orient(const BBodyId bid)  const
     }
  
     return m_body[bid].X_base().E();
-
 }
+
+BSpatialVector 
+BModel::pointVel( BBodyId bid, const BVector3 &body_pos ) 
+// RBDL Kinematics::CalcPointVelocity6D
+{
+    BBodyId  ref_bid = bid;
+    BVector3 ref_pos = body_pos;
+    
+    if (isFixedBodyId(bid)) 
+    {
+        BVector3 base_pos = toBasePos(bid, body_pos);
+        
+        ref_bid = m_fixed[bid - m_fbd].parentId();
+        ref_pos = toBodyPos(ref_bid, base_pos);
+    }
+    
+    BSpatialTransform trans( glm::transpose(orient(ref_bid)), ref_pos );
+    
+    return trans.apply(m_body[ref_bid].v());
+}
+
+BSpatialVector 
+BModel::pointAcc( BBodyId bid,  const BVector3 &body_pos ) 
+// RBDL Kinematics::CalcPointAcceleration6D
+{
+    BBodyId  ref_bid = bid;
+    BVector3 ref_pos = body_pos;
+    
+    if (isFixedBodyId(bid)) 
+    {
+        BVector3 base_pos = toBasePos(bid, body_pos);
+        
+        ref_bid = m_fixed[bid - m_fbd].parentId();
+        ref_pos = toBodyPos(ref_bid, base_pos);
+    }
+    
+    BSpatialTransform p_X(glm::transpose(orient(ref_bid)), ref_pos);
+    
+    BSpatialVector p_v = p_X.apply(m_body[ref_bid].v());
+    BVector3 a_dash = glm::cross(p_v.ang(), p_v.lin());
+    
+    return p_X.apply(m_body[ref_bid].a()) + BSpatialVector(S_ZERO_3, a_dash);
+}
+
 
 BScalar
 BModel::mass( BBodyId bid ) const 
