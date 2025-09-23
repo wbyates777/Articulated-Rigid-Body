@@ -144,6 +144,12 @@ public:
     // return orientation of body $bid$
     BMatrix3 
     orient( BBodyId bid ) const;
+
+    BSpatialVector  
+    pointVel( BBodyId bid, const BVector3 &body_pos );
+    
+    BSpatialVector
+    pointAcc( BBodyId bid, const BVector3 &body_pos );
     //
 
     // total mass of body $bid$ and all children bodies (subtree)
