@@ -72,10 +72,9 @@ typedef std::vector<std::vector<BScalar>> BJointSpace;
     constexpr BMatrix3 B_ZERO_3x3(0.0);   
 #endif
 
+constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
+
 namespace arb {
-
-    constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
-
 
     inline bool 
     nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }

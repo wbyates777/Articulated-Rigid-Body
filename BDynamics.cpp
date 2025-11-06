@@ -180,7 +180,15 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         const BSpatialTransform& X_lambda = m.joint(i).X_lambda(); 
 
-        if (dofCount == 1) 
+        if (dofCount == 0)  // body attached with fixed joint (not merged)
+        {
+            if (lambda != 0) 
+            {
+                m.IA(lambda) += X_lambda.applyTranspose(m.IA(i)); 
+                m.pA(lambda) += X_lambda.applyTranspose(m.pA(i));
+            }
+        }
+        else if (dofCount == 1) 
         {
             BSpatialVector S(m.joint(i).S());
             
@@ -302,7 +310,11 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
         m.body(i).c() = m.joint(i).c_J() + arb::crossm(m.body(i).v(), m.joint(i).v_J());
         
-        if (dofCount == 1) 
+        if (dofCount == 0)  // body attached with fixed joint (not merged)
+        {
+            m.body(i).a() = (X_lambda * m.body(lambda).a());
+        } 
+        else if (dofCount == 1) 
         {
             BSpatialVector S(m.joint(i).S());
             m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * qddot[qidx];

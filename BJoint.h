@@ -18,9 +18,12 @@
  revolute, planar, fixed, singularity-free spherical joints and joints
  with multiple degrees of freedom oint Model Calculation Routinein any combinations.
  
- Fixed joints do not cause any overhead in RBDL as the bodies that are
+ Fixed1 joints do not cause any overhead in RBDL as the bodies that are
  rigidly connected are merged into a single body. For details see \ref
  joint_models_fixed.
+ 
+ Fixed2 joints are not merged into a single body and are added as the bodies that are
+ rigidly connected.
  
  Joints with multiple degrees of freedom are emulated by default which
  means that they are split up into multiple single degree of freedom
@@ -51,9 +54,9 @@
  \note Please note that in the Rigid %Body Dynamics Library all angles
  are specified in radians.
  
- \section joint_models_fixed Fixed Joints
+ \section joint_models_fixed Fixed1 Joints
  
- Fixed joints do not add an additional degree of freedom to the model.
+ Fixed1 joints do not add an additional degree of freedom to the model.
  When adding a body that via a fixed joint (i.e. when the type is
  JointTypeFixed) then the dynamical parameters mass and inertia are
  merged onto its moving parent. By doing so fixed bodies do not add
@@ -225,7 +228,8 @@ public:
                     ///< It is internally modeled by a TranslationXYZ and a Spherical joint. 
                     ///< It is recommended to only use this joint for the very first body added to the model.
       
-      Fixed,        ///< Fixed joint which causes the inertial properties to be merged with the parent body.
+      Fixed1,        ///< Fixed1 joint which causes the inertial properties to be merged with the parent body.
+      Fixed2,        ///< Fixed2 joint which adds a distinct child body to parent body.
       
       Helical,      ///< A 1-DoF 'screw' joint with both rotational and translational motion.
       

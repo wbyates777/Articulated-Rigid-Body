@@ -101,8 +101,12 @@ BJoint::BJoint(BJointType joint_type) : m_id(0),
         int DoF_count = joint_type - J1DoF + 1; 
         m_jointAxes.resize(DoF_count, B_ZERO_6); 
         std::cout << "Warning: zero vector " << m_jointAxes[0] << std::endl;
-    }  
-    else if (m_jtype != BJointType::Fixed && m_jtype != BJointType::FloatingBase) 
+    } 
+    else if (m_jtype == BJointType::Fixed2)
+    {
+        m_jointAxes.clear(); // DoF = 0
+    }
+    else if (m_jtype != BJointType::Fixed1 && m_jtype != BJointType::FloatingBase) 
     {
         std::cout << "Error: Invalid use of Joint constructor Joint(BJointType type). Only allowed when type == BFixed or BSpherical." << std::endl;
         exit(EXIT_FAILURE);
@@ -440,7 +444,14 @@ void
 BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot ) 
 // calculate  $\[ X_lambda, X_J, S_i, v_J, c_J \] = jcalc(jtype(i), q, qdot, i)$ 
 {
-    if (m_jtype == BJointType::RevoluteX)  // 1 DoF 
+    if (m_jtype == BJointType::Fixed2)  // 0 DoF 
+    {
+        m_X_lambda = m_X_T; 
+        m_S        = m_ZERO_1x6;
+        m_v_J      = B_ZERO_6;
+        m_c_J      = B_ZERO_6;
+    } 
+    else if (m_jtype == BJointType::RevoluteX)  // 1 DoF 
     {
         BScalar s = std::sin(q[m_qidx]);
         BScalar c = std::cos(q[m_qidx]);
@@ -735,7 +746,7 @@ BJoint::toString( BJointType jt )
 {
     switch (jt)
     {
-        case BJointType::UNDEFINED:      return "Undefined"; break;
+        case BJointType::UNDEFINED:      return "UNDEFINED"; break;
             
         case BJointType::Prismatic:      return "Prismatic"; break;
         case BJointType::Revolute:       return "Revolute"; break;
@@ -757,10 +768,12 @@ BJoint::toString( BJointType jt )
         case BJointType::J5DoF:           return "5DoF"; break;
         case BJointType::J6DoF:           return "6DoF"; break;
             
-        case BJointType::FloatingBase:   return "FloatingBase"; break;
-        case BJointType::Fixed:          return "Fixed"; break;
-        case BJointType::Helical:        return "Helical"; break;
-        case BJointType::MAXJOINT:       return "MaxJoint"; break;
+        case BJointType::FloatingBase:    return "FloatingBase"; break;
+        case BJointType::Fixed1:          return "Fixed1"; break;
+        case BJointType::Fixed2:          return "Fixed2"; break;
+        case BJointType::Helical:         return "Helical"; break;
+            
+        case BJointType::MAXJOINT:        return "MAXJOINT"; break;
   
         default: exit(EXIT_FAILURE); break;
     }

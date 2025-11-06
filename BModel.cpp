@@ -527,7 +527,7 @@ BModel::addBody( BBodyId parent_id,
     assert(m_lambda.size() > 0);
     assert(joint.jtype() != BJoint::UNDEFINED);
     
-    if (joint.jtype() == BJoint::Fixed) 
+    if (joint.jtype() == BJoint::Fixed1) 
         return addFixedJoint( parent_id, joint_frame, joint, body, body_name );
     
     if (joint.jtype() == BJoint::FloatingBase) 
