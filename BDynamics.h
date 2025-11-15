@@ -57,7 +57,7 @@
 
 struct BModelState 
 {
-    // joint parameters
+    // joint parameters (joint space)
     std::vector<BScalar> q;     // positions
     std::vector<BScalar> qdot;  // velocities
     std::vector<BScalar> qddot; // accelerations
@@ -102,7 +102,18 @@ public:
      */
     void  
     inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce()); 
+    
+    
+    
+    
+    // update kinematics - calculates positions
+    void 
+    update_X_base( BModel &m, BModelState &qstate );
 
+    // update kinematics - calculates velocities
+    void 
+    update_velocity( BModel &m, BModelState &qstate );
+    
 private: 
 
     // temporary variables U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)

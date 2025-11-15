@@ -99,6 +99,46 @@ BDynamics::BDynamics( int expected_dof ): m_U(),
 }
 
 
+void 
+BDynamics::update_X_base( BModel &m, BModelState &qstate ) 
+// update kinematics - calculates positions 
+// based on UpdateKinematicsCustomin RBDL
+{
+    const std::vector<BScalar> qdot_zero(qstate.qdot.size(), 0.0);
+    
+    for (int i = 1; i < m.bodies(); ++i) 
+    {
+        m.joint(i).jcalc(qstate.q, qdot_zero);
+        
+        const BSpatialTransform &X_lambda = m.joint(i).X_lambda(); 
+        const int lambda = m.parentId(i); 
+        
+        if (lambda != 0) 
+            m.body(i).X_base( X_lambda * m.body(lambda).X_base() );
+        else  m.body(i).X_base( X_lambda );
+    }
+}
+
+void 
+BDynamics::update_velocity( BModel &m, BModelState &qstate ) 
+// update kinematics - calculates velocities
+// based on UpdateKinematicsCustomin RBDL
+{
+    for (int i = 1; i < m.bodies(); ++i) 
+    {
+        m.joint(i).jcalc(qstate.q, qstate.qdot);
+        
+        const int lambda = m.parentId(i); 
+        
+        if (lambda != 0) 
+            m.body(i).v() = (m.joint(i).X_lambda() * m.body(lambda).v()) + m.joint(i).v_J();
+        else m.body(i).v() = m.joint(i).v_J();
+
+        m.body(i).c() = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
+    }
+}
+
+
 // compute qddot -- accelerations
 void  
 BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // f_ext is f^x_i
@@ -108,7 +148,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
 // see RBDA, Table 7.1
 {
     
-    const std::vector<BScalar>  &q   = qstate.q;    // pos
+    const std::vector<BScalar> &q    = qstate.q;    // pos
     const std::vector<BScalar> &qdot = qstate.qdot; // vel 
     const std::vector<BScalar> &tau  = qstate.tau;  // force
     
@@ -146,10 +186,16 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         // set spatial transform X_base in this body 
         if (lambda != 0)
+        {
             m.body(i).X_base( X_lambda * m.body(lambda).X_base() );
-        else m.body(i).X_base( X_lambda );
-
-        m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
+            m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
+        }
+        else 
+        {
+            m.body(i).X_base( X_lambda );
+            m.body(i).v() = m.joint(i).v_J();
+        }
+   
         m.body(i).c()  = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
         
         m.IA(i) = m.body(i).I(); // initialise articulated inertia
@@ -231,13 +277,13 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         } 
     }
     
-    // third (and final) pass (root to leaves) to calculate the acceleration $a_i$ for each body $i$ and joint QDDot
+    // third (and final) pass (root to leaves) to calculate the acceleration $a_i$ for each body $i$ and joint qddot
     // $a^{'} = {i}^X_{\lambda(i)} a_{\lambda(i)} + c_i$
     // $\ddot{q}_i = D^{-1}_i (u_i - U_i^T a^{'})$
     // $a_i += S_i \ddot{q}_i$ 
     
-    std::vector<BScalar> &QDDot = qstate.qddot;
-    QDDot.resize(tau.size()); // output accelerations -- one for each force
+    std::vector<BScalar> &qddot = qstate.qddot;
+    qddot.resize(tau.size()); // output accelerations -- one for each force
     
     for (int i = 1; i < N_B; ++i) 
     {
@@ -251,23 +297,23 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         if (dofCount == 1) 
         {
-            QDDot[qidx] = (1.0 / m_d[i]) * (m_u[i] - arb::dot(m_U[i], m.body(i).a()));
+            qddot[qidx] = (1.0 / m_d[i]) * (m_u[i] - arb::dot(m_U[i], m.body(i).a()));
             
             BSpatialVector S(m.joint(i).S());
             
-            m.body(i).a() += S * QDDot[qidx];
+            m.body(i).a() += S * qddot[qidx];
         } 
         else if (dofCount == 3) 
         {
-            BVector3 qdd_tmp(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * m.body(i).a())));
+            BVector3 tmp(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * m.body(i).a())));
     
-            QDDot[qidx]     = qdd_tmp[0];
-            QDDot[qidx + 1] = qdd_tmp[1];
-            QDDot[qidx + 2] = qdd_tmp[2];
+            qddot[qidx]     = tmp[0];
+            qddot[qidx + 1] = tmp[1];
+            qddot[qidx + 2] = tmp[2];
             
             BMatrix63 S(m.joint(i).S());
             
-            m.body(i).a() += S * qdd_tmp;
+            m.body(i).a() += S * tmp;
         } 
     }
 }
@@ -281,7 +327,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
 {
     const std::vector<BScalar> &q     = qstate.q; // pos
     const std::vector<BScalar> &qdot  = qstate.qdot; // vel 
-    const std::vector<BScalar> &qddot = qstate.qddot; // vel 
+    const std::vector<BScalar> &qddot = qstate.qddot; // acc 
    
     
     // reset the velocity of the root body
@@ -322,8 +368,8 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         else if (dofCount == 3) 
         {
             BMatrix63 S(m.joint(i).S());
-            BVector3 qdd_tmp(qddot[qidx], qddot[qidx + 1], qddot[qidx + 2]);
-            m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * qdd_tmp;
+            BVector3 tmp(qddot[qidx], qddot[qidx + 1], qddot[qidx + 2]);
+            m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * tmp;
         }
 
         if (!m.body(i).isVirtual()) 
@@ -351,8 +397,8 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     // $\tau_i = S_i^T f_i$ (equation 5.11)
     // $f_{\lambda(i)} += {\lambda(i)}^X_i^{*} f_i$
     
-    std::vector<BScalar> &Tau  = qstate.tau; // tau
-    Tau.resize(qddot.size()); // output forces -- one for each acceleration
+    std::vector<BScalar> &tau  = qstate.tau; // tau
+    tau.resize(qddot.size()); // output forces -- one for each acceleration
     
     for (int i = N_B - 1; i > 0; --i) 
     {
@@ -363,16 +409,16 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         if (dofCount == 1) 
         {
             BSpatialVector S(m.joint(i).S());
-            Tau[qidx] = arb::dot(S, m.body(i).f());
+            tau[qidx] = arb::dot(S, m.body(i).f());
         } 
         else if (dofCount == 3) 
         {
             BMatrix63 S(m.joint(i).S());
-            BVector3 tau_tmp = arb::transpose(S) * m.body(i).f();
+            BVector3 tmp = arb::transpose(S) * m.body(i).f();
 
-            Tau[qidx]     = tau_tmp[0];
-            Tau[qidx + 1] = tau_tmp[1];
-            Tau[qidx + 2] = tau_tmp[2];
+            tau[qidx]     = tmp[0];
+            tau[qidx + 1] = tmp[1];
+            tau[qidx + 2] = tmp[2];
         }
 
         if (lambda != 0) 
