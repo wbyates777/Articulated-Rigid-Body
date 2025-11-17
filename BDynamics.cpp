@@ -203,7 +203,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         if (!f_ext.empty() && f_ext[i] != B_ZERO_6) 
         { 
-            m.pA(i) -= m.body(i).X_base().toAdjoint() * f_ext[i];
+            m.pA(i) -= m.body(i).X_base().applyAdjoint(f_ext[i]);
         }
     }
      
@@ -390,7 +390,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         {
             BBodyId lambda = m.parentId(i);
             m.body(i).X_base( m.joint(i).X_lambda() * m.body(lambda).X_base() );
-            m.body(i).f() -= m.body(i).X_base().toAdjoint() * f_ext[i];
+            m.body(i).f() -= m.body(i).X_base().applyAdjoint(f_ext[i]);
         }
     }
     
