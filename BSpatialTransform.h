@@ -174,7 +174,8 @@ public:
     const BVector3 
     applyTranspose( const BVector3 &p ) const { return m_r + (glm::transpose(m_E) * p); }
 
-    const  BRBInertia 
+    
+    const BRBInertia 
     apply( const BRBInertia &rbi ) const
     // returns  X^* I X^{-1}
     {
@@ -198,7 +199,18 @@ public:
         return BRBInertia( rbi.mass(), h, I );
     }
     
-
+    
+    BABInertia 
+    apply( const BABInertia &abi ) const  
+    // returns  X^* I X^{-1} 
+    {
+        const BMatrix3 ET = glm::transpose(m_E);
+        const BMatrix3 rx = arb::cross(m_r);
+        const BMatrix3 H = abi.H() - (rx * abi.M());
+        const BMatrix3 I = abi.I() - (rx * glm::transpose(abi.H()) ) + (H * rx);
+        return BABInertia( ET * abi.M() * m_E,  ET * H * m_E,  ET * I * m_E );
+    }
+    
     BABInertia
     applyTranspose( const BABInertia &abi ) const   
     // returns X^T I X
@@ -211,24 +223,22 @@ public:
         const BMatrix3 I = (m_E * abi.I() * ET) - (rx * H) + (glm::transpose(H) - rxM) * rx; 
         return BABInertia( M, H + -glm::transpose(rxM), I ); 
     }
-  
-    BABInertia 
-    apply( const BABInertia &abi ) const  
-    // returns  X^* I X^{-1} 
-    {
-        const BMatrix3 ET = glm::transpose(m_E);
-        const BMatrix3 rx = arb::cross(m_r);
-        const BMatrix3 H = abi.H() - (rx * abi.M());
-        const BMatrix3 I = abi.I() - (rx * glm::transpose(abi.H()) ) + (H * rx);
-        return BABInertia( ET * abi.M() * m_E,  ET * H * m_E,  ET * I * m_E );
-    }
+    
     
     const BSpatialVector
-    applyAdjoint(const BSpatialVector &f_sp) const  
+    applyAdjoint(const BSpatialVector &f) const  
     {
         const BMatrix3 ET = glm::transpose(m_E);
-        const BVector3 ETrxf = ET * (f_sp.ang() - glm::cross(m_r, f_sp.lin()));
-        return BSpatialVector( ETrxf,  ET * f_sp.lin() );
+        const BVector3 ETrxf = ET * (f.ang() - glm::cross(m_r, f.lin()));
+        return BSpatialVector( ETrxf,  ET * f.lin() );
+    }
+    
+    const BSpatialVector 
+    applyAdjointTranspose( const BSpatialVector &v ) const 
+    {
+        const BVector3 aux  = m_E * v.lin();
+        const BVector3 Erxf = m_E * v.ang() + glm::cross(m_r, aux);
+        return BSpatialVector(Erxf, aux);
     }
     
     const BSpatialMatrix 
