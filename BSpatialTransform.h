@@ -236,8 +236,8 @@ public:
     const BSpatialVector 
     applyAdjointTranspose( const BSpatialVector &v ) const 
     {
-        const BVector3 aux  = m_E * v.lin();
-        const BVector3 Erxf = m_E * v.ang() + glm::cross(m_r, aux);
+        const BVector3 aux  =  arb::cross(-m_r) *  m_E * f.ang() + m_E * f.lin();
+        const BVector3 Erxf = m_E * f.ang();
         return BSpatialVector(Erxf, aux);
     }
     
