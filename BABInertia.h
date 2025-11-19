@@ -109,7 +109,7 @@ public:
     
     operator BSpatialMatrix( void ) const 
     { 
-        return BSpatialMatrix( m_I, m_H, glm::transpose(m_H), m_M );
+        return BSpatialMatrix( m_I, m_H, arb::transpose(m_H), m_M );
     }
     
     
@@ -157,7 +157,7 @@ public:
     const BSpatialVector 
     operator*( const BSpatialVector &v ) const
     {
-        //const BVector3 ang((m_I * v.ang()) + (glm::transpose(m_H) * v.lin()));
+        //const BVector3 ang((m_I * v.ang()) + (arb::transpose(m_H) * v.lin()));
         //const BVector3 lin((m_H * v.ang()) + (m_M * v.lin()) );
         //return BSpatialVector( ang, lin );
         
@@ -295,13 +295,13 @@ namespace arb
     inverse( const BABInertia &abi ) 
     // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
     {  
-        const BMatrix3 invM = glm::inverse(abi.M());
-        const BMatrix3 T = abi.I() - glm::transpose(abi.H()) * invM * abi.H();
-        const BMatrix3 invT = glm::inverse(T);
+        const BMatrix3 invM = arb::inverse(abi.M());
+        const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();
+        const BMatrix3 invT = arb::inverse(T);
         
-        const BMatrix3 topLeft  = invM + invM * abi.H() * invT * glm::transpose(abi.H()) * invM;
+        const BMatrix3 topLeft  = invM + invM * abi.H() * invT * arb::transpose(abi.H()) * invM;
         const BMatrix3 topRight = -invM * abi.H() * invT;
-        const BMatrix3 botLeft  = -invT * glm::transpose(abi.H()) * invM;
+        const BMatrix3 botLeft  = -invT * arb::transpose(abi.H()) * invM;
         const BMatrix3 botRight = invT;
      
         return BSpatialMatrix(topLeft, topRight, botLeft, botRight);

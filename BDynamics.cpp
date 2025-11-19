@@ -81,6 +81,9 @@
 #include "BDynamics.h"
 #endif
 
+#ifndef __BADJOINT_H__
+#include "BAdjoint.h"
+#endif
 
 BDynamics::BDynamics( int expected_dof ): m_U(),
                                           m_d(),
@@ -100,7 +103,7 @@ BDynamics::BDynamics( int expected_dof ): m_U(),
 
 
 void 
-BDynamics::update_X_base( BModel &m, BModelState &qstate ) 
+BDynamics::update_X_base( BModel &m, const BModelState &qstate ) 
 // update kinematics - calculates positions 
 // based on UpdateKinematicsCustomin RBDL
 {
@@ -120,7 +123,7 @@ BDynamics::update_X_base( BModel &m, BModelState &qstate )
 }
 
 void 
-BDynamics::update_velocity( BModel &m, BModelState &qstate ) 
+BDynamics::update_velocity( BModel &m, const BModelState &qstate ) 
 // update kinematics - calculates velocities
 // based on UpdateKinematicsCustomin RBDL
 {
@@ -203,7 +206,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         if (!f_ext.empty() && f_ext[i] != B_ZERO_6) 
         { 
-            m.pA(i) -= m.body(i).X_base().applyAdjoint(f_ext[i]);
+            m.pA(i) -= arb::applyAdjoint(m.body(i).X_base(), f_ext[i]);
         }
     }
      
@@ -260,7 +263,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             BVector3 tau_tmp(tau[qidx], tau[qidx + 1], tau[qidx + 2]); 
             
             m_dof3_U[i]    = m.IA(i) * S;
-            m_dof3_Dinv[i] = glm::inverse(arb::transpose(S) * m_dof3_U[i]);
+            m_dof3_Dinv[i] = arb::inverse(arb::transpose(S) * m_dof3_U[i]);
             m_dof3_u[i]    = tau_tmp - (arb::transpose(S) * m.pA(i));
      
             if (lambda != 0) 
@@ -390,7 +393,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         {
             BBodyId lambda = m.parentId(i);
             m.body(i).X_base( m.joint(i).X_lambda() * m.body(lambda).X_base() );
-            m.body(i).f() -= m.body(i).X_base().applyAdjoint(f_ext[i]);
+            m.body(i).f() -= arb::applyAdjoint(m.body(i).X_base(), f_ext[i]);
         }
     }
     

@@ -530,7 +530,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         BScalar Jqd = qdot[m_qidx];
         m_v_J = MS * Jqd;
 
-        BVector3 c = glm::cross(ang, strans); 
+        BVector3 c = arb::cross(ang, strans); 
         c *= -Jqd * Jqd;
         m_c_J = BSpatialVector(B_ZERO_3, c);
         

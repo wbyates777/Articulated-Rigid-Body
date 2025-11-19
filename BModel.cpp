@@ -199,11 +199,11 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
         BBodyId parent_id = m_fixed[fbody_id].movableParent();
         
         const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
-        const BMatrix3 &fixed_rot  = glm::transpose(X_parent.E());
+        const BMatrix3 &fixed_rot  = arb::transpose(X_parent.E());
         const BVector3 &fixed_pos  = X_parent.r();
         
         const BSpatialTransform &X_base = m_body[parent_id].X_base();
-        const BMatrix3 &parent_rot = glm::transpose(X_base.E());
+        const BMatrix3 &parent_rot = arb::transpose(X_base.E());
         const BVector3 &parent_pos = X_base.r();
         
         pos = parent_pos + (parent_rot * (fixed_pos + (fixed_rot * body_pos)));
@@ -213,7 +213,7 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
     {
         //pos = m_body[bid].X_base().applyTranspose(body_pos);
         const BSpatialTransform &X_base = m_body[bid].X_base();
-        pos = X_base.r() + glm::transpose(X_base.E()) * body_pos;
+        pos = X_base.r() + arb::transpose(X_base.E()) * body_pos;
     }
  
     return pos;
@@ -283,7 +283,7 @@ BModel::pointVel( BBodyId bid, const BVector3 &body_pos )
         ref_pos = toBodyPos(ref_bid, base_pos);
     }
     
-    BSpatialTransform trans( glm::transpose(orient(ref_bid)), ref_pos );
+    BSpatialTransform trans( arb::transpose(orient(ref_bid)), ref_pos );
     
     return trans.apply(m_body[ref_bid].v());
 }
@@ -303,10 +303,10 @@ BModel::pointAcc( BBodyId bid,  const BVector3 &body_pos )
         ref_pos = toBodyPos(ref_bid, base_pos); 
     }
     
-    BSpatialTransform p_X(glm::transpose(orient(ref_bid)), ref_pos);
+    BSpatialTransform p_X(arb::transpose(orient(ref_bid)), ref_pos);
     
     BSpatialVector p_v = p_X.apply(m_body[ref_bid].v());
-    BVector3 a_dash = glm::cross(p_v.ang(), p_v.lin());
+    BVector3 a_dash = arb::cross(p_v.ang(), p_v.lin());
     
     return p_X.apply(m_body[ref_bid].a()) + BSpatialVector(B_ZERO_3, a_dash);
 }
@@ -341,7 +341,7 @@ BModel::com( BBodyId bid ) const
 
     assert(m_body[bid].mass() > 0);
     
-    BScalar mass = m_body[bid].mass();
+    BScalar m = m_body[bid].mass();
     BVector3 sum = m_body[bid].mass() * m_body[bid].X_base().applyTranspose(m_body[bid].com());
 
     std::set<BBodyId> children = {bid};
@@ -349,13 +349,13 @@ BModel::com( BBodyId bid ) const
     {
         if (children.contains(m_lambda[i]) && m_body[i].mass() > 0.0)
         {
-            mass += m_body[i].mass();
+            m += m_body[i].mass();
             sum  += m_body[i].mass() * m_body[i].X_base().applyTranspose(m_body[i].com());
             children.insert(i);
         }
     }
 
-    return m_body[bid].X_base().apply(sum / mass) ;
+    return m_body[bid].X_base().apply(sum / m) ;
 }
 
 BRBInertia  
@@ -440,9 +440,7 @@ BModel::addFloatingBaseJoint( BBodyId parent_id,
     
     BBody null_body(0.0, B_ZERO_3, B_ZERO_3, true);
     
-    BBodyId null_parent = parent_id;
-
-    null_parent = addBody(parent_id,
+    BBodyId null_parent = addBody(parent_id,
                           joint_frame,
                           BJoint::TranslationXYZ,
                           null_body);

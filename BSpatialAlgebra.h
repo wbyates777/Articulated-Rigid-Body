@@ -59,6 +59,9 @@
 #include "BSpatialTransform.h"
 #endif
 
+#ifndef __BADJOINT_H__
+#include "BAdjoint.h"
+#endif
 
 #endif
 

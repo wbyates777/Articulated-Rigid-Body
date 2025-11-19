@@ -189,8 +189,8 @@ public:
     const BSpatialVector 
     operator*( const BSpatialVector &v ) const
     {
-        //const BVector3 ang(glm::cross(m_h, v.lin()) + (m_I * v.ang()));
-        //const BVector3 lin(m_mass * v.lin() - glm::cross(m_h, v.ang()));
+        //const BVector3 ang(arb::cross(m_h, v.lin()) + (m_I * v.ang()));
+        //const BVector3 lin(m_mass * v.lin() - arb::cross(m_h, v.ang()));
         // return BSpatialVector( ang, lin );
     
         return BSpatialVector((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
@@ -241,7 +241,7 @@ namespace arb
     // https://en.wikipedia.org/wiki/Schur_complement
     {  
         assert(I.mass() != 0.0);
-        const BMatrix3 invI(glm::inverse(I.inertiaCom()));
+        const BMatrix3 invI(arb::inverse(I.inertiaCom()));
         const BMatrix3 invM(1.0 / I.mass());
         const BVector3 com(I.com());
         

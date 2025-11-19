@@ -76,8 +76,8 @@ public:
 
     operator BSpatialMatrix( void ) const 
     {
-        const BMatrix3 ETrx =  glm::transpose(-m_E) * arb::cross(m_r);
-        return BSpatialMatrix( m_E, B_ZERO_3x3, -glm::transpose(ETrx), m_E );
+        const BMatrix3 ETrx =  arb::transpose(-m_E) * arb::cross(m_r);
+        return BSpatialMatrix( m_E, B_ZERO_3x3, -arb::transpose(ETrx), m_E );
     }
 
     // rotation, preserves coordinate frame origin
@@ -113,6 +113,12 @@ public:
         m_E *= rhs.m_E;
         m_r = rhs.m_r + (rhs.m_E * m_r);
         return *this;
+    }
+    
+    const BSpatialMatrix 
+    operator*( const BSpatialMatrix &rhs ) const 
+    {
+        return BSpatialMatrix(*this) * rhs;
     }
     
     // In RBDL called SpatialRigidBodyInertia::apply(const SpatialVector &v_sp)
@@ -172,14 +178,14 @@ public:
     apply( const BVector3 &p ) const { return m_E * (p - m_r); }
     
     const BVector3 
-    applyTranspose( const BVector3 &p ) const { return m_r + (glm::transpose(m_E) * p); }
+    applyTranspose( const BVector3 &p ) const { return m_r + (arb::transpose(m_E) * p); }
 
     
     const BRBInertia 
     apply( const BRBInertia &rbi ) const
     // returns  X^* I X^{-1}
     {
-        const BMatrix3 ET = glm::transpose(m_E);
+        const BMatrix3 ET = arb::transpose(m_E);
         const BMatrix3 rx = arb::cross(m_r);
         const BVector3 h  = ET * (rbi.h() - (rbi.mass() * m_r)); 
         const BMatrix3 aux = (rx * arb::cross(rbi.h())) + ((arb::cross(rbi.h() - rbi.mass() * m_r) * rx));
@@ -191,7 +197,7 @@ public:
     applyTranspose( const BRBInertia &rbi ) const 
     // returns X^T I X 
     {
-        const BMatrix3 ET = glm::transpose(m_E);
+        const BMatrix3 ET = arb::transpose(m_E);
         const BMatrix3 rx = arb::cross(m_r);
         const BVector3 h = (m_E * rbi.h()) + (rbi.mass() * m_r); 
         const BMatrix3 aux = rx * arb::cross(m_E * rbi.h()) + arb::cross(h) * rx;
@@ -204,10 +210,10 @@ public:
     apply( const BABInertia &abi ) const  
     // returns  X^* I X^{-1} 
     {
-        const BMatrix3 ET = glm::transpose(m_E);
+        const BMatrix3 ET = arb::transpose(m_E);
         const BMatrix3 rx = arb::cross(m_r);
         const BMatrix3 H = abi.H() - (rx * abi.M());
-        const BMatrix3 I = abi.I() - (rx * glm::transpose(abi.H()) ) + (H * rx);
+        const BMatrix3 I = abi.I() - (rx * arb::transpose(abi.H()) ) + (H * rx);
         return BABInertia( ET * abi.M() * m_E,  ET * H * m_E,  ET * I * m_E );
     }
     
@@ -215,31 +221,14 @@ public:
     applyTranspose( const BABInertia &abi ) const   
     // returns X^T I X
     {
-        const BMatrix3 ET = glm::transpose(m_E);
+        const BMatrix3 ET = arb::transpose(m_E);
         const BMatrix3 rx = arb::cross(m_r);
         const BMatrix3 M = m_E * abi.M() * ET;
         const BMatrix3 H = m_E * abi.H() * ET;
         const BMatrix3 rxM = (rx * M);
-        const BMatrix3 I = (m_E * abi.I() * ET) - (rx * H) + (glm::transpose(H) - rxM) * rx; 
-        return BABInertia( M, H + -glm::transpose(rxM), I ); 
+        const BMatrix3 I = (m_E * abi.I() * ET) - (rx * H) + (arb::transpose(H) - rxM) * rx; 
+        return BABInertia( M, H + -arb::transpose(rxM), I ); 
     }
-    
-    
-    const BSpatialVector
-    applyAdjoint(const BSpatialVector &f) const  
-    {
-        const BMatrix3 ET = glm::transpose(m_E);
-        const BVector3 ETrxf = ET * (f.ang() - glm::cross(m_r, f.lin()));
-        return BSpatialVector( ETrxf,  ET * f.lin() );
-    }
-    
-    const BSpatialMatrix 
-    toAdjoint( void ) const 
-    {
-        const BMatrix3 ETrx = glm::transpose(m_E) * arb::cross(m_r);
-        return BSpatialMatrix( m_E, glm::transpose(ETrx), B_ZERO_3x3, m_E );
-    }
-    
     
     bool 
     operator==( const BSpatialTransform &v ) const { return (m_r == v.m_r) && (m_E == v.m_E); }
@@ -294,7 +283,7 @@ namespace arb
     inline const BSpatialMatrix 
     transpose( const BSpatialTransform &m ) 
     { 
-        const BMatrix3 ET = glm::transpose(m.E());
+        const BMatrix3 ET = arb::transpose(m.E());
         const BMatrix3 Erx = ET * arb::cross(m.r()); 
         return BSpatialMatrix( ET, Erx, B_ZERO_3x3, ET );
     }
@@ -302,14 +291,14 @@ namespace arb
     inline const BSpatialTransform 
     inverse( const BSpatialTransform &m )  
     { 
-        const BMatrix3 ET = glm::transpose(m.E()); 
+        const BMatrix3 ET = arb::transpose(m.E()); 
         return BSpatialTransform(ET, -ET * m.r()); 
     }
 
 
     // all angles in radians
     inline const BSpatialTransform 
-    Xrot( BScalar angle, const BVector3 &axis ) 
+    Xrot( BScalar angle, const BVector3 &axis ) // WARNING - axis *must* be normalized
     {
         const BScalar s = std::sin(angle);
         const BScalar c = std::cos(angle);

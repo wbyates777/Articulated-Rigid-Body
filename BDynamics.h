@@ -107,12 +107,12 @@ public:
     
     
     // update kinematics - calculates positions
-    void 
-    update_X_base( BModel &m, BModelState &qstate );
+    static void 
+    update_X_base( BModel &m, const BModelState &qstate );
 
     // update kinematics - calculates velocities
-    void 
-    update_velocity( BModel &m, BModelState &qstate );
+    static void 
+    update_velocity( BModel &m, const BModelState &qstate );
     
 private: 
 

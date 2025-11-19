@@ -27,6 +27,10 @@
 #endif
 
 
+#ifndef __BADJOINT_H__
+#include "BAdjoint.h"
+#endif
+
 void
 example1( void ) 
 // this example is taken from RBDL library https://github.com/rbdl/rbdl
@@ -79,6 +83,7 @@ example1( void )
     
     std::cout << qinput.qddot << std::endl;
     
+    dyn.update_X_base( *model, qinput ); 
     
     delete model;
 }
@@ -269,6 +274,100 @@ newton_euler( void )
     }
 }
 
+void
+test_adjoints( void )
+{
+    const BSpatialVector force(-1.1, 1.2, -1.3, 4.0, 0.0, 6.0);
+    BSpatialTransform Z = arb::Xrot(0.3, glm::normalize(BVector3(-1.1,-2.2,1.3)));
+    
+    BSpatialTransform X(Z.E(), BVector3(1.0, 2.0, 3.0));
+    
+  // const BTransform X = arb::Xtrans(glm::dvec3(1.0,2.0,3.0)); // pure translation
+   //const BTransform X = arb::Xrot(0.3, glm::dvec3(-1.1,-2.2,1.3)); // pure rotation
+    
+    
+    if (1)
+    {
+        std::cout << "Adjoint  -- Ad_X--------------------" << std::endl;
+        BSpatialVector x1 =  arb::applyAdjoint( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjoint(X); 
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+        std::cout << arb::nearZero(x1 - x2) << std::endl;
+        bool test1 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjointInverse(X, force) ) - force);
+        bool test2 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjoint(arb::inverse(X), force) ) - force);
+    }
+    if (1)
+    {
+        std::cout << "Adjoint Transpose -- Ad_X^{T} --------------------" << std::endl;
+        BSpatialVector x1 =  arb::applyAdjointTranspose( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjointTranspose(X);
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+        std::cout << "----------------------------------------------------------" << std::endl;
+    }
+    if (1)
+    {
+        std::cout << "Adjoint Inverse  Ad_X^{-1} -------------------------" << std::endl;
+         BSpatialVector x1 =  arb::applyAdjointInverse( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjointInverse(X);
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+
+        std::cout << "----------------------------------------------------------" << std::endl;
+     }
+  
+    if (1)
+    {
+        std::cout << "Adjoint DualAdjoint -- Ad_X^{-T}--------------------" << std::endl;
+        BSpatialVector x1 =  arb::applyAdjointInverseTranspose( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjointInverseTranspose(X);
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+    }
+    
+    if (1)
+    {
+        BSpatialTransform Y(X.E(), BVector3(0.1, 2.0, 0.3));
+        std::cout << Y * arb::inverse(Y) << std::endl;
+    }
+    
+    if (1)
+    {
+        std::cout << "Inverse Checks------------------" << std::endl;
+        auto P =  arb::toAdjoint(X) *  arb::toAdjointInverse(X);
+        std::cout << P << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+        auto Q = arb::toAdjointInverse(X) * arb::toAdjoint(X);
+        std::cout << Q << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+    }
+    if (1)
+    {
+        std::cout << "Transpose Checks 1-----------------" << std::endl;
+        BSpatialMatrix tmp4 = arb::toAdjointTranspose(X);
+        std::cout << tmp4 << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+        BSpatialMatrix tmp5 =  arb::transpose(arb::toAdjoint(X)); 
+        std::cout << tmp5 << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+    }
+    
+    if (1)
+    {
+        std::cout << "Transpose Checks 2-----------------" << std::endl;
+        BSpatialMatrix tmp5 =  arb::transpose(arb::toAdjointInverse(X)); 
+        std::cout << tmp5 << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+        BSpatialMatrix tmp6 = arb::toAdjointInverseTranspose(X);
+        std::cout << tmp6 << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+    }
+}
 
 int 
 main()
@@ -290,4 +389,6 @@ main()
     
     // Example 4 
     single_body();
+    
+   // test_adjoints();
 }
