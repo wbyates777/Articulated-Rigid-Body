@@ -36,7 +36,16 @@
  1) All angles in radians
  2) BMatrix3 E is a rotation  - the transpose of a rotation is also its inverse
  3) BVector3 r is a translation - inverse translation is -r
-
+ 4) Note X^* = X^{-T} (RBDA, eqn 2.13)
+ 5) transform of inertia see RBDA, eqn 2.66, page 34
+ 
+ 6) X(E,r) in block 6x6 matrix form:
+ 
+ |     E      0  |
+ | -rx * E    E  |
+ 
+ where rx = arb::cross(r)
+ 
  See also:
  
  https://en.wikipedia.org/wiki/Rotation_matrix
