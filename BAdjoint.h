@@ -10,8 +10,25 @@
  History:
 
  
- Adjoints are derrived from a BSpatialTransform X
- They transform motion or force spatial vectors from one coordinate frame to another.
+ Adjoints are derrived from a BSpatialTransform X - they map between spatial and body coords.
+ 
+ Ad_X maps body velocity coordinates to spatial velocity coordinates.
+ 
+ 
+ 
+ Ad_X       =  | E   -E * rx |
+               | 0       E   |
+ 
+ Ad_X^{-1}  =  | E^T   rx * E^T |
+               | 0       E^T    |
+ 
+ Ad_X^{T}   =  |    E^T      0  |
+               | rx * E^T   E^T |
+ 
+ Ad_X^{-T}  =  |    E      0 |
+               | -E * rx   E |
+ 
+ where rx = arb::cross(r)
  
  
 */
