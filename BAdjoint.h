@@ -51,8 +51,8 @@ namespace arb
     toAdjoint( const BSpatialTransform &X )  
     // Ad_X - forward motion
     {
-        const BMatrix3 Erx = arb::transpose(X.E()) * arb::cross(X.r());
-        return BSpatialMatrix( X.E(), arb::transpose(Erx), B_ZERO_3x3, X.E() );
+        const BMatrix3 Erx = arb::cross(-X.r()) * X.E();
+        return BSpatialMatrix( X.E(), Erx, B_ZERO_3x3, X.E() );
     }
 
     inline const BSpatialVector
