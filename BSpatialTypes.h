@@ -60,7 +60,8 @@ typedef std::vector<std::vector<BScalar>> BJointSpace;
     const BVector3 B_ZERO_3(0.0);
     const BVector3 B_ONE_3(1.0);
     const BMatrix3 B_IDENTITY_3x3(1.0);
-    const BMatrix3 B_ZERO_3x3(0.0);   
+    const BMatrix3 B_ZERO_3x3(0.0);
+    const BQuat B_IDENTITY_QUAT(glm::identity<BQuat>());
 #else
     constexpr BVector3 B_XAXIS(1.0, 0.0, 0.0);
     constexpr BVector3 B_YAXIS(0.0, 1.0, 0.0);
@@ -69,7 +70,8 @@ typedef std::vector<std::vector<BScalar>> BJointSpace;
     constexpr BVector3 B_ZERO_3(0.0);
     constexpr BVector3 B_ONE_3(1.0);
     constexpr BMatrix3 B_IDENTITY_3x3(1.0);
-    constexpr BMatrix3 B_ZERO_3x3(0.0);   
+    constexpr BMatrix3 B_ZERO_3x3(0.0);
+    constexpr BQuat B_IDENTITY_QUAT(glm::identity<BQuat>());
 #endif
 
 
