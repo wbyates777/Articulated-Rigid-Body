@@ -120,6 +120,28 @@ public:
     const std::array<std::array<BScalar, 3>, 6>&
     data( void ) const { return m_data; }
     
+    
+    const BMatrix3
+    top( void ) const 
+    {
+        BMatrix3 retVal;
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[i][j] = m_data[i][j];
+        return retVal; 
+    }
+    
+    const BMatrix3
+    bot( void ) const 
+    {
+        BMatrix3 retVal; 
+        for ( int i = 3; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[i-3][j] = m_data[i][j];
+        return retVal; 
+    }
+    
+
     const BSpatialVector 
     operator*( const BVector3 &v ) const 
     {
@@ -284,6 +306,28 @@ public:
     
     const std::array<std::array<BScalar, 6>, 3>&
     data( void ) const { return m_data; }
+    
+    
+    const BMatrix3
+    left( void ) const 
+    {
+        BMatrix3 retVal;
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[i][j] = m_data[i][j];
+        return retVal; 
+    }
+    
+    const BMatrix3
+    right( void ) const 
+    {
+        BMatrix3 retVal; 
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 3; j < 6; ++j )
+                retVal[i][j-3] = m_data[i][j];
+        return retVal; 
+    }
+    
     
     const BVector3
     operator*( const BSpatialVector &v ) const 
