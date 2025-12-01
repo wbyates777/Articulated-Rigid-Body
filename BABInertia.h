@@ -19,8 +19,8 @@
  
  where 
      I is the rotational inertia at body frame origin
-     H = |h|\times is the generalised inertia matrix
-     M is generalised mass i.e m * S_IDENTITY_3x3 
+     H is the generalised inertia matrix, initially H = |h|\times, 
+     M is generalised mass, initially M = m * B_IDENTITY_3x3 
  and
      m is mass
      c is centre of mass
