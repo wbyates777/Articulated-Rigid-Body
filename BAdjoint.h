@@ -10,9 +10,9 @@
  History:
 
  
- Adjoints are derrived from a BSpatialTransform X - they map between spatial and body coords.
+ Adjoints are derrived from a BSpatialTransform X - they map between world and body coords.
  
- Ad_X maps body velocity coordinates to spatial velocity coordinates.
+ Ad_X maps body velocity coordinates to world velocity coordinates.
  
  
  
