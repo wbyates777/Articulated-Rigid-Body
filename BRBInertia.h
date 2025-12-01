@@ -20,7 +20,16 @@
 
  $h$ is the magnitude and direction of the body’s linear momentum (see RBDA, Section 2.12, page 31).
  
- Spatial Inertia can also be represented as a 6D spatial matrix.
+ Spatial Inertia can also be represented as a 6D spatial matrix defined by
+ 
+ |  I    hx |
+ | -hx   M  |
+ 
+ where
+ 
+     I is the rotational inertia at body frame origin
+     hx = arb::cross(h) is the generalised inertia matrix
+     M = m * S_IDENTITY_3x3 is the generalised mass 
  
  Note:
  
