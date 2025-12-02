@@ -16,6 +16,7 @@ set(SOURCES
 )
 
 set(HEADERS
+    BAdjoint.h
     BJoint.h
     BModel.h
     BDynamics.h
@@ -40,7 +41,7 @@ set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/lib)
 FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/g-truc/glm.git
-    GIT_TAG        1.0.1
+    GIT_TAG        1.0.2
 )
 
 # Populate (download + configure)
