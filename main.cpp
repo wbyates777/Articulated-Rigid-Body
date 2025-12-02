@@ -175,17 +175,21 @@ single_body( void )
     BJoint joint = BJoint( BJoint::FloatingBase );
     BBodyId spaceshipId = model->addBody(0, arb::Xtrans(B_ZERO_3), joint, spaceship);
     
-    // control
- 
-   
+    // control -- apply myforce to whole spaceship model -- 100 Newtons along z axis
+    // body[0] is a header, body[1] is virtual, body[2] is the first, real body with mass
+    // for floating base we only need apply external force to body[2]
+    BSpatialVector myforce( B_ZERO_3, BVector3(0.0, 0.0, 100.0));
+    BExtForce f_ext(model->bodies(), B_ZERO_6); 
+    f_ext[2] =  BSpatialVector( myforce );
+    
     BModelState qinput;
     
-    qinput.q.resize(model->qsize(),1.0);
-    qinput.qdot.resize(model->qdotsize(), 1.0);
+    qinput.q.resize(model->qsize(),0.0);
+    qinput.qdot.resize(model->qdotsize(), 0.0);
     qinput.tau.resize(model->qdotsize(), 0.0);
     
     BDynamics dyn;
-    dyn.forward(*model, qinput);
+    dyn.forward(*model, qinput, f_ext);
     
 
     std::cout << "linear acceleration (" << qinput.qddot[0] << ", " << qinput.qddot[1] << ", " << qinput.qddot[2] << std::endl;
