@@ -84,8 +84,7 @@ public:
 
     operator BSpatialMatrix( void ) const 
     {
-        const BMatrix3 ETrx =  arb::transpose(-m_E) * arb::cross(m_r);
-        return BSpatialMatrix( m_E, B_ZERO_3x3, -arb::transpose(ETrx), m_E );
+        return BSpatialMatrix( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
     }
 
     // rotation, preserves coordinate frame origin
