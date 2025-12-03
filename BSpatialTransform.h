@@ -305,7 +305,7 @@ namespace arb
     inline const BSpatialMatrix 
     dual( const BSpatialTransform &m ) 
     { 
-        const BMatrix3 ErxE = m.E() * arb::cross(-m.r() * m.E()); 
+        const BMatrix3 ErxE = m.E() * arb::cross(arb::transpose(m.E()) * -m.r()); 
         return BSpatialMatrix( m.E(), ErxE, B_ZERO_3x3, m.E() );
     }
 
