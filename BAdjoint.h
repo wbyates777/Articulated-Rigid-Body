@@ -30,7 +30,7 @@
  
  where rx = arb::cross(r)
  
- 
+ Note AdjointDual <=> AdjointInverseTranspose
 */
 
 
@@ -102,14 +102,14 @@ namespace arb
 
 
     inline const BSpatialMatrix 
-    toAdjointInverseTranspose( const BSpatialTransform &X )  
+    toAdjointDual( const BSpatialTransform &X )  
     // Ad_X^{-T} - inverse force
     {
         return BSpatialMatrix( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E() , X.E() );
     }
 
     inline const BSpatialVector 
-    applyAdjointInverseTranspose( const BSpatialTransform &X, const BSpatialVector &f )  
+    applyAdjointDual( const BSpatialTransform &X, const BSpatialVector &f )  
     // Ad_X^{-T} - inverse force
     {
         const BMatrix3 ET = arb::transpose(X.E());
