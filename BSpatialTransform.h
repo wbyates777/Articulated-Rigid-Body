@@ -38,7 +38,6 @@
  3) BVector3 r is a translation - inverse translation is -r
  4) Note X^* = X^{-T} (RBDA, eqn 2.13)
  5) transform of inertia see RBDA, eqn 2.66, page 34
- 
  6) X(E,r) in block 6x6 matrix form:
  
  |     E      0  |
@@ -286,8 +285,6 @@ operator>>( std::istream &istr, BSpatialTransform &m )
 
 namespace arb
 {
-    // $X^* = X^{-T}$  where X^{-T} = arb::transpose(arb::inverse(X));
- 
     // style choice - I prefer arb::transpose(m) to m.transpose()  
     inline const BSpatialMatrix 
     transpose( const BSpatialTransform &m ) 
@@ -304,6 +301,13 @@ namespace arb
         return BSpatialTransform(ET, -ET * m.r()); 
     }
 
+    // dual is $X^* = X^{-T}$ where X^{-T} = (X^{-1))^T is arb::transpose(arb::inverse(X));
+    inline const BSpatialMatrix 
+    dual( const BSpatialTransform &m ) 
+    { 
+        const BMatrix3 ErxE = m.E() * arb::cross(-m.r() * m.E()); 
+        return BSpatialMatrix( m.E(), ErxE, B_ZERO_3x3, m.E() );
+    }
 
     // all angles in radians
     inline const BSpatialTransform 
