@@ -92,25 +92,25 @@ namespace arb
     }
 
     inline const BSpatialVector 
-    applyAdjointInverse( const BSpatialTransform &X, const BSpatialVector &v )  // inverse motion
+    applyAdjointInverse( const BSpatialTransform &X, const BSpatialVector &v ) 
     // Ad_X^{-1} - inverse motion
     {
-        BVector3 lin  = X.E() * v.lin();
-        BVector3 ang = (X.E() * v.ang()) + (arb::cross(-X.r()) * X.E() * v.lin());
+        const BVector3 lin  = X.E() * v.lin();
+        const BVector3 ang = (X.E() * v.ang()) + (arb::cross(-X.r()) * X.E() * v.lin());
         return BSpatialVector(ang, lin);
     }
 
 
     inline const BSpatialMatrix 
     toAdjointDual( const BSpatialTransform &X )  
-    // Ad_X^{-T} - inverse force
+    // Ad_X^{-T} or Ad_X^* - inverse force
     {
         return BSpatialMatrix( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E() , X.E() );
     }
 
     inline const BSpatialVector 
     applyAdjointDual( const BSpatialTransform &X, const BSpatialVector &f )  
-    // Ad_X^{-T} - inverse force
+    // Ad_X^{-T} or Ad_X^* - inverse force
     {
         const BMatrix3 ET = arb::transpose(X.E());
         const BVector3 lin = ET * (f.lin() - arb::cross(X.r(), f.ang()));
