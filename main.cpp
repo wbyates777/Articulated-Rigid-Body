@@ -327,8 +327,8 @@ test_adjoints( void )
     if (1)
     {
         std::cout << "Adjoint DualAdjoint -- Ad_X^{-T}--------------------" << std::endl;
-        BSpatialVector x1 =  arb::applyAdjointInverseTranspose( X, force ); 
-        BSpatialMatrix m1 =  arb::toAdjointInverseTranspose(X);
+        BSpatialVector x1 =  arb::applyAdjointDual( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjointDual(X);
         BSpatialVector x2 =  m1 * force;
         std::cout << x1 << std::endl;
         std::cout << x2 << std::endl;
@@ -367,7 +367,7 @@ test_adjoints( void )
         BSpatialMatrix tmp5 =  arb::transpose(arb::toAdjointInverse(X)); 
         std::cout << tmp5 << std::endl;
         std::cout << "-------------------------------------" << std::endl;
-        BSpatialMatrix tmp6 = arb::toAdjointInverseTranspose(X);
+        BSpatialMatrix tmp6 = arb::toAdjointDual(X);
         std::cout << tmp6 << std::endl;
         std::cout << "-------------------------------------" << std::endl;
     }
