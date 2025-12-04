@@ -274,7 +274,7 @@ operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 inline std::ostream&
 operator<<( std::ostream &ostr, const BRBInertia &m )
 {
-    ostr << m.m_mass << '\n' << m.m_h << '\n'  << m.m_I << ' ';
+    ostr << m.m_mass << '\n' << m.m_h << '\n'  << m.m_I << '\n';
     return ostr;
 }
 

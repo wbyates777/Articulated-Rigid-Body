@@ -290,7 +290,7 @@ operator*( BScalar s, const BABInertia &m ) { return m * s; }
 inline std::ostream&
 operator<<( std::ostream &ostr, const BABInertia &m )
 {
-    ostr << m.m_M << '\n' << m.m_H << '\n'  << m.m_I << ' ';
+    ostr << m.m_M << '\n' << m.m_H << '\n'  << m.m_I << '\n';
     return ostr;
 }
 

@@ -156,7 +156,8 @@ namespace  glm
     template<typename T> inline std::istream&
     operator>>( std::istream &istr, glm::tvec3<T> &v )
     {
-        istr >> v.x >> v.y >> v.z;
+        char delim;
+        istr >> v.x >> delim >> v.y >> delim >> v.z;
         return istr;
     }
 
@@ -173,8 +174,8 @@ namespace  glm
     template<typename T> inline std::istream&
     operator>>( std::istream &istr, glm::tmat3x3<T> &m )
     {
-        istr >> m[0][0] >> m[0][1] >> m[0][0] 
-             >> m[1][0] >> m[1][1] >> m[1][1]
+        istr >> m[0][0] >> m[0][1] >> m[0][2] 
+             >> m[1][0] >> m[1][1] >> m[1][2]
              >> m[2][0] >> m[2][1] >> m[2][2];
         return istr;
     }

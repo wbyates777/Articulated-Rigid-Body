@@ -35,9 +35,9 @@ class BFixedBody
 public:
     
     BFixedBody( void )=default;
-    BFixedBody( const BBody &body ):  m_id(0), m_mass(body.mass()), m_com(body.com()), m_inertia_com(body.inertiaCom()), m_movableParentId(0), m_parentTransform(B_IDENTITY_TRANS), m_baseTransform(B_IDENTITY_TRANS) {} 
+    BFixedBody( const BBody &body ):  m_id(0), m_movableParentId(0), m_mass(body.mass()), m_com(body.com()), m_inertia_com(body.inertiaCom()), m_parentTransform(B_IDENTITY_TRANS), m_baseTransform(B_IDENTITY_TRANS) {} 
     ~BFixedBody( void )=default;
-    //
+  
     
     void
     setId( BBodyId bid ) { m_id = bid; }
@@ -99,25 +99,60 @@ public:
     bool 
     operator!=( const BFixedBody &v ) const { return (m_id != v.m_id); }
     
+    friend std::ostream&
+    operator<<( std::ostream &ostr, const BFixedBody &b );
+    
+    friend std::istream& 
+    operator>>( std::istream &istr, BFixedBody &b );
     
 private: 
 
     BBodyId m_id;
-    
+    // bid of the movable body that this fixed body is attached to.
+    BBodyId m_movableParentId;
     
     BScalar  m_mass;
     BVector3 m_com;      // position of the center of mass in body coordinates
     BMatrix3 m_inertia_com;  // inertia matrix at the center of mass 
  
-    // bid of the movable body that this fixed body is attached to.
-    BBodyId m_movableParentId;
+
     // transforms spatial quantities expressed for the parent to the fixed body.
     
     BSpatialTransform m_parentTransform; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
     BSpatialTransform m_baseTransform; // m_X_base - transformation from the base  to this body's coordinate
 };
 
+inline std::ostream&
+operator<<( std::ostream &ostr, const BFixedBody &b )
+{
+    ostr << b.m_id << ' ';
+    ostr << b.m_movableParentId << '\n';
+    
+    ostr << b.m_mass << '\n';
+    ostr << b.m_com << '\n';
+    ostr << b.m_inertia_com << '\n';
+    
+    ostr << b.m_parentTransform << '\n';
+    ostr << b.m_baseTransform << '\n';
+ 
+    return ostr;
+}
 
+inline std::istream& 
+operator>>( std::istream &istr, BFixedBody &b )
+{
+    istr >> b.m_id;
+    istr >> b.m_movableParentId;
+    
+    istr >> b.m_mass;
+    istr >> b.m_com;
+    istr >> b.m_inertia_com ;
+    
+    istr >> b.m_parentTransform;
+    istr >> b.m_baseTransform;
+    
+    return istr;
+}
 
 #endif
 

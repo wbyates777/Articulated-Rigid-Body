@@ -364,6 +364,13 @@ public:
     static std::string 
     toString( BJointType jt );
     
+    
+    friend std::ostream&
+    operator<<( std::ostream &ostr, const BJoint &j );
+    
+    friend std::istream& 
+    operator>>( std::istream &istr, BJoint &j );
+    
 private:
     
     void
@@ -412,23 +419,55 @@ private:
     static const std::vector<std::vector<BScalar>> m_ZERO_6x6;
 };
 
+
+
 inline std::ostream&
 operator<<( std::ostream &ostr, const BJoint &j )
 {
-    ostr << j.X_lambda() << '\n';
-    ostr << j.X_T() << '\n';
-    ostr << j.X_J() << '\n';
-    ostr << j.v_J() << '\n';
-    ostr << j.c_J() << '\n';
-    ostr << j.S()   << '\n';
-    ostr << j.DoFCount() << '\n';
+    ostr << j.m_id << ' ';
+    ostr << j.m_qidx << ' ';
+    ostr << j.m_widx << ' ';
+    ostr << int(j.m_jtype) << '\n';
     
-    for (int i = 0; i < j.DoFCount(); ++i)
-    {
-        ostr << j.axis(i)  << '\n';
-    }
+    ostr << j.m_X_lambda << '\n';
+    ostr << j.m_X_J << '\n';
+    ostr << j.m_X_T << '\n';
+    
+    ostr << j.m_v_J << '\n';
+    ostr << j.m_c_J << '\n';
+   
+    ostr << j.m_S  << '\n';
+
+    ostr << j.m_jointAxes << '\n';
+    
     return ostr;
 }
+
+inline std::istream& 
+operator>>( std::istream &istr, BJoint &j )
+{
+    istr >> j.m_id;
+    istr >> j.m_qidx;
+    istr >> j.m_widx;
+    
+    int jt;
+    istr >> jt;
+    j.m_jtype = BJoint::BJointType(jt);
+    
+    istr >> j.m_X_lambda;
+    istr >> j.m_X_J;
+    istr >> j.m_X_T;
+    
+    istr >> j.m_v_J;
+    istr >> j.m_c_J;
+   
+    istr >> j.m_S;
+
+    istr >> j.m_jointAxes;
+    
+    return istr;
+}
+
 
 #endif
 

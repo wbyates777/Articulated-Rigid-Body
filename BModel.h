@@ -222,8 +222,12 @@ public:
     getParentBodyId( BBodyId bid ) const;
 
     
-   // friend std::ostream&
-  //  operator<<( std::ostream &ostr, const BModel &m );
+    
+    friend std::ostream&
+    operator<<( std::ostream &ostr, const BModel &m );
+    
+    friend std::istream& 
+    operator>>( std::istream &istr, BModel &m );
     
 private:
 
@@ -281,21 +285,53 @@ private:
 };
 
 
+
 inline std::ostream&
 operator<<( std::ostream &ostr, const BModel &m )
 {
-    for (int i = 0; i < m.bodies(); ++i)
-    {
-        ostr << m.body(i) << '\n';
-    }
-    ostr << '\n';
-    for (int i = 0; i < m.joints(); ++i)
-    {
-        ostr << m.joint(i)  << '\n';
-    }
+    ostr << m.m_dof_count << ' ';
+    ostr << m.m_q_size << ' ';
+    ostr << m.m_qdot_size << ' ';
+    ostr << m.m_fbd << '\n';
+    
+    ostr << m.m_gravity << '\n';
+    ostr << m.m_lambda << '\n';
+    
+    ostr << m.m_joint << '\n';
+    ostr << m.m_body << '\n';
+    ostr << m.m_fixed << '\n';
+    
+    ostr << m.m_IA << '\n';
+    ostr << m.m_pA << '\n';
+
+    ostr << m.m_bodyNameMap << '\n';
 
     return ostr;
 }
+
+inline std::istream& 
+operator>>( std::istream &istr, BModel &m )
+{
+    istr >> m.m_dof_count;
+    istr >> m.m_q_size;
+    istr >> m.m_qdot_size;
+    istr >> m.m_fbd;
+    
+    istr >> m.m_gravity;
+    istr >> m.m_lambda;
+    
+    istr >> m.m_joint;
+    istr >> m.m_body;
+    istr >> m.m_fixed;
+    
+    istr >> m.m_IA;
+    istr >> m.m_pA;
+
+    istr >> m.m_bodyNameMap;
+    
+    return istr;
+}
+
 
 #endif
 

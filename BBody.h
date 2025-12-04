@@ -249,6 +249,12 @@ public:
     bool 
     operator!=( const BBody &v ) const { return (m_id != v.m_id); }
     
+    friend std::ostream&
+    operator<<( std::ostream &ostr, const BBody &b );
+    
+    friend std::istream& 
+    operator>>( std::istream &istr, BBody &b );
+    
 private:
 
     BBodyId m_id;
@@ -266,22 +272,36 @@ private:
     bool m_isVirtual;
 };
 
-// add operator >> as friend
 
 inline std::ostream&
 operator<<( std::ostream &ostr, const BBody &b )
 {
-    ostr << b.getId() << '\n';
-    ostr << b.X_base() << '\n';
-    ostr << b.I() << '\n';
-    ostr << b.v() << '\n';
-    ostr << b.a() << '\n';
-    ostr << b.c() << '\n';
+    ostr << b.m_id << '\n';
+    ostr << b.m_v << '\n';
+    ostr << b.m_a << '\n';
+    ostr << b.m_c << '\n';
+    ostr << b.m_f << '\n';
+    ostr << b.m_I << '\n';
+    ostr << b.m_X_base << '\n';
+    ostr << b.m_isVirtual << '\n';
     
     return ostr;
 }
 
-
+inline std::istream& 
+operator>>( std::istream &istr, BBody &b )
+{
+    istr >> b.m_id;
+    istr >> b.m_v;
+    istr >> b.m_a;
+    istr >> b.m_c;
+    istr >> b.m_f;
+    istr >> b.m_I;
+    istr >> b.m_X_base;
+    istr >> b.m_isVirtual;
+    
+    return istr;
+}
 
 #endif
 
