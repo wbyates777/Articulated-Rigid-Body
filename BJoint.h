@@ -198,43 +198,37 @@ public:
       
     enum BJointType 
     {
-      UNDEFINED = 0,
-     
-      // values here are important - do not change
-      J1DoF = 1,
-      J2DoF = 2, ///< Emulated 2 DoF joint.
-      J3DoF = 3, ///< Emulated 3 DoF joint.
-      J4DoF = 4, ///< Emulated 4 DoF joint.
-      J5DoF = 5, ///< Emulated 5 DoF joint.
-      J6DoF = 6, ///< Emulated 6 DoF joint.
-      //
+        UNDEFINED = 0,
         
-      Prismatic,   ///< Sliding joint
-      
-      Revolute,    ///<  Hinge joint
-      RevoluteX,
-      RevoluteY,
-      RevoluteZ,
+        // Emulated 2-6 DoF joint.
+        // values here are important - do not change
+        J1DoF = 1, J2DoF = 2, J3DoF = 3, J4DoF = 4, J5DoF = 5, J6DoF = 6, 
         
-      // Spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
-      Spherical, ///< 3 DoF joint using Quaternions for joint positional variables and angular velocity for joint velocity variables.
-      EulerZYX,  ///< 3 DoF joint that uses Euler ZYX convention (faster than emulated multi DoF joints).
-      EulerXYZ,  ///< 3 DoF joint that uses Euler XYZ convention (faster than emulated multi DoF joints).
-      EulerYXZ,  ///< 3 DoF joint that uses Euler YXZ convention (faster than emulated multi DoF joints).
-      EulerZXY,  ///< 3 DoF joint that uses Euler ZXY convention (faster than emulated multi DoF joints).
-      TranslationXYZ,
-      
-      FloatingBase, ///< A 6-DoF joint for floating-base (or freeflyer) systems (see RBDA, Section 9.3, page 179).  
-                    ///< It is internally modeled by a TranslationXYZ and a Spherical joint. 
-                    ///< It is recommended to only use this joint for the very first body added to the model.
-      
-      Fixed1,        ///< Fixed1 joint which causes the inertial properties to be merged with the parent body.
-      Fixed2,        ///< Fixed2 joint which adds a distinct child body to parent body.
-      
-      Helical,      ///< A 1-DoF 'screw' joint with both rotational and translational motion.
-      
-      // Custom,
-      MAXJOINT    
+        
+        Prismatic, // 1 DoF - Sliding joint
+        
+        Revolute, RevoluteX, RevoluteY, RevoluteZ,  // 1 DoF - Hinge joint
+        
+        // 3 DoF joint that uses Euler conventions (faster than emulated multi DoF joints).
+        EulerZYX,  EulerXYZ,  EulerYXZ,   EulerZXY,  
+        
+        // Spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
+        Spherical, // 3 DoF joint using quaternions for joint positional and angular velocity variables.
+        
+        TranslationXYZ,
+        
+        // A 6-DoF joint for floating-base systems.  
+        // modeled internally by a TranslationXYZ and a Spherical joint. 
+        // use this joint for first body added to model (see RBDA, section 4.1, page 66).
+        FloatingBase, 
+        
+        Fixed1,        // Fixed1 joint which causes the inertial properties to be merged with the parent body.
+        Fixed2,        // Fixed2 joint which adds a distinct child body to parent body.
+        
+        Helical,      // A 1-DoF 'screw' joint with both rotational and translational motion.
+        
+        // Custom,
+        MAXJOINT    
     };
     
     BJoint( void )=default;
