@@ -72,6 +72,9 @@ public:
     ang( BScalar s ) { m_data[0] = s; m_data[1] = s; m_data[2] = s; }
 
     void
+    ang( BScalar s0, BScalar s1, BScalar s2 ) { m_data[0] = s0; m_data[1] = s1; m_data[2] = s2; }
+    
+    void
     ang( const BVector3 &v ) { m_data[0] = v[0]; m_data[1] = v[1]; m_data[2] = v[2]; }
 
     const BVector3
@@ -81,6 +84,9 @@ public:
     void
     lin( BScalar s ) { m_data[3] = s; m_data[4] = s; m_data[5] = s; }
 
+    void
+    lin( BScalar s3, BScalar s4, BScalar s5 ) { m_data[3] = s3; m_data[4] = s4; m_data[5] = s5; }
+    
     void
     lin( const BVector3 &v ) { m_data[3] = v[0]; m_data[4] = v[1]; m_data[5] = v[2]; }
     
