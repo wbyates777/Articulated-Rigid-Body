@@ -14,6 +14,9 @@
  
  Ad_X maps body velocity coordinates to world velocity coordinates.
  
+ toAdjoint() tested against RBDL function SpatialTransform::toMatrixAdjoint()
+ 
+ The following definitions are taken from the RBDL code. 
  
  
  Ad_X       =  | E   -E * rx |
@@ -31,6 +34,7 @@
  where rx = arb::cross(r)
  
  Note AdjointDual <=> AdjointInverseTranspose
+ 
 */
 
 
@@ -46,7 +50,6 @@
 namespace arb
 {
 
-  
     inline const BSpatialMatrix 
     toAdjoint( const BSpatialTransform &X )  
     // Ad_X - forward motion
@@ -64,6 +67,7 @@ namespace arb
         const BVector3 ang = ET * (f.ang() - arb::cross(X.r(), f.lin()));
         return BSpatialVector( ang,  lin );
     }
+
 
     inline const BSpatialMatrix 
     toAdjointTranspose( const BSpatialTransform &X )  
