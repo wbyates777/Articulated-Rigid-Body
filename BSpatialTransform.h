@@ -300,12 +300,11 @@ namespace arb
         return BSpatialTransform(ET, -ET * m.r()); 
     }
 
-    // dual is $X^* = X^{-T}$ where X^{-T} = (X^{-1))^T is arb::transpose(arb::inverse(X));
+    // dual is $X^* = X^{-T}$ 
     inline const BSpatialMatrix 
     dual( const BSpatialTransform &m ) 
     { 
-        const BMatrix3 ErxE = m.E() * arb::cross(arb::transpose(m.E()) * -m.r()); 
-        return BSpatialMatrix( m.E(), ErxE, B_ZERO_3x3, m.E() );
+        return BSpatialMatrix( m.E(), arb::cross(-m.r()) * m.E(), B_ZERO_3x3, m.E() );
     }
 
     // all angles in radians
