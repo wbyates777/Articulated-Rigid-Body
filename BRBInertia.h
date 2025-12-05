@@ -116,7 +116,7 @@ public:
     // RBDA, Section 2.13, eqn 2.63, page 33.
     operator BSpatialMatrix( void ) const 
     { 
-        return BSpatialMatrix( topLeft(), topRight(), botLeft(), botRight() );
+        return BSpatialMatrix( m_I, arb::cross(m_h), arb::cross(-m_h),  BMatrix3(m_mass) );
     }
     
     // zeroth moment of mass
@@ -142,19 +142,6 @@ public:
     const BMatrix3 
     inertiaCom( void ) const { return m_I - m_mass * arb::crosst(com()); } 
  
- 
-    const BMatrix3&
-    topLeft( void ) const { return m_I; } // inertia at origin
-    
-    const BMatrix3
-    topRight( void ) const { return arb::cross(m_h); }
-    
-    const BMatrix3
-    botLeft( void ) const { return arb::cross(-m_h); }
-    
-    const BMatrix3
-    botRight( void ) const  { return BMatrix3(m_mass); }
-    
 
     const BRBInertia
     operator-( void ) const { return BRBInertia(-m_mass, -m_h, -m_I); }
