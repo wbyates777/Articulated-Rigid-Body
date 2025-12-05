@@ -326,9 +326,7 @@ public:
     const BSpatialMatrix& 
     operator*=(const BSpatialMatrix &m)
     {
-        BSpatialMatrix res = *this * m;
-        *this = res;
-        return *this;
+        return (*this = *this * m);
     }
     
 
