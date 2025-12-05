@@ -12,26 +12,27 @@
  
  Adjoints are derrived from a BSpatialTransform X - they map between world and body coords.
  
- Ad_X maps body velocity coordinates to world velocity coordinates.
+ The adjoint of X, denoted Ad_X maps body velocity coordinates to world velocity coordinates.
  
- toAdjoint() tested against RBDL function SpatialTransform::toMatrixAdjoint()
+ arb::toAdjoint() has been tested against the RBDL function SpatialTransform::toMatrixAdjoint() (using Eigen3)
  
- The following definitions are taken from the RBDL code. 
- 
- 
- Ad_X       =  | E   -E * rx |
-               | 0       E   |
- 
- Ad_X^{-1}  =  | E^T   rx * E^T |
-               | 0       E^T    |
- 
- Ad_X^{T}   =  |    E^T      0  |
-               | rx * E^T   E^T |
- 
- Ad_X^{-T}  =  |    E      0 |
-               | -E * rx   E |
- 
- where rx = arb::cross(r)
+ SpatialMatrix toMatrixAdjoint () const {
+   Matrix3d _Erx =
+     E * Matrix3d (
+         0., -r[2], r[1],
+         r[2], 0., -r[0],
+         -r[1], r[0], 0.
+         );
+   SpatialMatrix result;
+   result.block<3,3>(0,0) = E;
+   result.block<3,3>(0,3) = -_Erx;
+   result.block<3,3>(3,0) = Matrix3d::Zero();
+   result.block<3,3>(3,3) = E;
+
+   return result;
+ }
+
+ The remaining adjoint functions are constructed from this basic definition.
  
  Note AdjointDual <=> AdjointInverseTranspose
  
