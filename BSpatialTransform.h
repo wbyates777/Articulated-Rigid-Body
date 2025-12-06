@@ -18,7 +18,7 @@
  We require diﬀerent coordinate transformation matrices for motions and forces. 
  For motion vectors $v \in M^6$, 
  $$ B^{X}_A : A \rightarrow B $$
- For force vectors $v \in F^6$, the 'star' version of the transform must be used 
+ For force vectors $v \in F^6$, the dual or 'star' version of the transform must be used 
  $$ B^{X^*}_A : A \rightarrow B $$
  If the matrix $X$ performs a coordinate transformation on motion vectors, and $X^*$ performs the same
  transformation on force vectors, then the two are related by $X^* = X^{-T}$ 
@@ -44,6 +44,20 @@
  | -rx * E    E  |
  
  where rx = arb::cross(r)
+ 
+7) The remaining transforms have analytical block definitions (which differ from 
+   the usual matrix definitions) of inverse and transpose (see RBDA, page 22).
+ 
+ X^{-1}  =  |    E^T      0  |
+            | E^T * rx   E^T |
+ 
+ X^{T}   =  | E^T    E^T * rx |
+            |  0         E^T  |
+ 
+ X^*  =     | E  -rx * E |
+            | 0      E   |
+ 
+ Note  X^* = X^{-T} and  X^* == Ad_X (compare BAdjoint.h)
  
  See also:
  

@@ -16,6 +16,8 @@
  Colloquially, a spatial velocity vector is called a 'twist', 
  while a spatial force vector is called a 'wrench'.
  
+ It should be noted that we employ an (ang, lin) represenation, following Featherstone and RBDL.
+ 
 */
 
 

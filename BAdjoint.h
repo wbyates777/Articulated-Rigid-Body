@@ -11,30 +11,55 @@
 
  
  Adjoints are derrived from a BSpatialTransform X - they map between world and body coords.
+ See pages 55, 56 "A Mathematical Introduction to Robotic Manipulation",  
+ Murray, R.M., Li, Z., Shankar Sastry S. 1994. 
+ Note Murray et al. uses (lin, ang) vector representation.
  
- The adjoint of X, denoted Ad_X maps body velocity coordinates to world velocity coordinates.
  
- arb::toAdjoint() has been tested against the RBDL function SpatialTransform::toMatrixAdjoint() (using Eigen3)
+ The adjoint of a spatial transform X(E,r), denoted Ad_X maps body velocity 
+ coordinates to world/spatial velocity coordinates.
  
- SpatialMatrix toMatrixAdjoint () const {
-   Matrix3d _Erx =
-     E * Matrix3d (
-         0., -r[2], r[1],
-         r[2], 0., -r[0],
-         -r[1], r[0], 0.
-         );
-   SpatialMatrix result;
-   result.block<3,3>(0,0) = E;
-   result.block<3,3>(0,3) = -_Erx;
-   result.block<3,3>(3,0) = Matrix3d::Zero();
-   result.block<3,3>(3,3) = E;
+ The arb::toAdjoint() presented here has been tested against and matches the Eigen3 RBDL function:
+ 
+     SpatialMatrix toMatrixAdjoint () const {
+       Matrix3d _Erx =
+         E * Matrix3d (
+             0., -r[2], r[1],
+             r[2], 0., -r[0],
+             -r[1], r[0], 0.
+             );
+       SpatialMatrix result;
+       result.block<3,3>(0,0) = E;
+       result.block<3,3>(0,3) = -_Erx;
+       result.block<3,3>(3,0) = Matrix3d::Zero();
+       result.block<3,3>(3,3) = E;
 
-   return result;
- }
+       return result;
+     }
 
- The remaining adjoint functions are constructed from this basic definition.
+ The remaining adjoints are constructed from this basic definition.
  
- Note AdjointDual <=> AdjointInverseTranspose
+ The adjoint matricies are: 
+ 
+ Ad_X       =  | E   -rx * E |
+               | 0       E   |
+ 
+ Ad_X^{-1}  =  | E^T   E^T * rx |
+               | 0       E^T    |
+ 
+ Ad_X^{T}   =  |    E^T      0  |
+               | E^T * rx   E^T |
+ 
+ Ad_X^{-T}  =  |    E      0 |
+               | -rx * E   E |
+ 
+ where rx = arb::cross(r)
+ 
+ Notes: 
+ 
+ 1) Ad_X^{-T} == Ad_X^*
+ 2) Ad_X ==  X^{-T}  (compare BTransform.h)
+ 3) AdjointDual <=> AdjointInverseTranspose
  
 */
 
