@@ -37,6 +37,9 @@ public:
         assert(d.size() == 6 && d[0].size() == 3);
         set(d);
     }
+    
+    BMatrix63( const BMatrix3 &top, const BMatrix3 &bot ) { set(top, bot); }
+    
     constexpr BMatrix63( BScalar m00, BScalar m01, BScalar m02, 
                          BScalar m10, BScalar m11, BScalar m12, 
                          BScalar m20, BScalar m21, BScalar m22, 
@@ -100,6 +103,18 @@ public:
             m40,  m41,  m42, 
             m50,  m51,  m52 
         };
+    }
+    
+    void 
+    set( const BMatrix3 &top, const BMatrix3 &bot ) 
+    {
+        m_data[0][0] = top[0][0]; m_data[0][1] = top[0][1]; m_data[0][2] = top[0][2];
+        m_data[1][0] = top[1][0]; m_data[1][1] = top[1][1]; m_data[1][2] = top[1][2];
+        m_data[2][0] = top[2][0]; m_data[2][1] = top[2][1]; m_data[2][2] = top[2][2];
+        
+        m_data[3][0] = bot[0][0]; m_data[3][1] = bot[0][1]; m_data[3][2] = bot[0][2];
+        m_data[4][0] = bot[1][0]; m_data[4][1] = bot[1][1]; m_data[4][2] = bot[1][2];
+        m_data[5][0] = bot[2][0]; m_data[5][1] = bot[2][1]; m_data[5][2] = bot[2][2];
     }
     
     std::array<BScalar, 3>&
@@ -238,7 +253,7 @@ public:
     BMatrix36( void )=default;
     constexpr explicit BMatrix36( BScalar s ) { set(s); }
     constexpr BMatrix36( const std::array<std::array<BScalar, 6>, 3> &d ): m_data(d) {}
-    
+    BMatrix36( const BMatrix3 &left, const BMatrix3 &right ) { set(left, right); }
     explicit BMatrix36( const std::vector<std::vector<BScalar>> &d )
     {
         assert(d.size() == 3 && d[0].size() == 6);
@@ -288,6 +303,19 @@ public:
             m10, m11, m12, m13, m14, m15,
             m20, m21, m22, m23, m24, m25, 
         };
+    }
+    
+    void 
+    set( const BMatrix3 &left, const BMatrix3 &right ) 
+    {
+        m_data[0][0] =  left[0][0]; m_data[0][1] =  left[0][1]; m_data[0][2] =  left[0][2]; 
+        m_data[0][3] = right[0][0]; m_data[0][4] = right[0][1]; m_data[0][5] = right[0][2];
+        
+        m_data[1][0] =  left[1][0]; m_data[1][1] =  left[1][1]; m_data[1][2] =  left[1][2]; 
+        m_data[1][3] = right[1][0]; m_data[1][4] = right[1][1]; m_data[1][5] = right[1][2];
+        
+        m_data[2][0] =  left[2][0]; m_data[2][1] =  left[2][1]; m_data[2][2] =  left[2][2]; 
+        m_data[2][3] = right[2][0]; m_data[2][4] = right[2][1]; m_data[2][5] = right[2][2];
     }
     
     std::array<BScalar, 6>&
