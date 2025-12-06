@@ -206,6 +206,9 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         if (!f_ext.empty() && f_ext[i] != B_ZERO_6) 
         { 
+            // external forces are assumed to be in world coordinates
+            // forces must be applied in body coordinates to each body.
+            // we use adjoint here - it is equivalent to arb::dual(X_base)
             m.pA(i) -= arb::applyAdjoint(m.body(i).X_base(), f_ext[i]);
         }
     }

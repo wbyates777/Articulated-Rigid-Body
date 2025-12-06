@@ -41,7 +41,7 @@
  The implemenations here do NOT depend on Eigen3, instead they depend soly on the 
  GLM linear algebra library ( see https://github.com/g-truc/glm ).
   
- It ie straightforward to convert back to Eigen3 (although see 
+ It is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3 and GLM differences), or  replace GLM with some other simple
  linear algebra library.
 */
@@ -84,7 +84,7 @@ public:
      *
      * \param m      rigid body model
      * \param qstate state  of the internal joints (positions, velocities, accelerations)
-     * \param f_ext  External forces acting on the body in base coordinates (optional, defaults to empty)
+     * \param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
      */
     void
     forward( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce() ); 
@@ -98,7 +98,7 @@ public:
      *
      * \param m      rigid body model
      * \param qstate state  of the internal joints (positions, velocities, accelerations)
-     * \param f_ext  External forces acting on the body in base coordinates (optional, defaults to empty)
+     * \param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
      */
     void  
     inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce()); 
