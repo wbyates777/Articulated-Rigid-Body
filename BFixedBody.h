@@ -35,7 +35,9 @@ class BFixedBody
 public:
     
     BFixedBody( void )=default;
-    BFixedBody( const BBody &body ):  m_id(0), m_movableParentId(0), m_mass(body.mass()), m_com(body.com()), m_inertia_com(body.inertiaCom()), m_parentTransform(B_IDENTITY_TRANS), m_baseTransform(B_IDENTITY_TRANS) {} 
+    BFixedBody( const BBody &b ):  m_id(0), m_parentId(0), 
+                                   m_mass(b.mass()), m_com(b.com()), m_I_com(b.inertiaCom()), 
+                                   m_parent(B_IDENTITY_TRANS), m_base(B_IDENTITY_TRANS) {} 
     ~BFixedBody( void )=default;
   
     
@@ -44,6 +46,14 @@ public:
     
     BBodyId
     getId( void ) const { return m_id; }
+    
+    
+    BBodyId
+    movableParent( void ) const { return m_parentId; }
+    
+    void
+    movableParent( BBodyId bid ) { m_parentId = bid; }
+    
     
     void 
     setMass( BScalar m ) { m_mass = m; }
@@ -59,40 +69,35 @@ public:
     com( void ) const { return m_com; }
     
     void 
-    setInertiaCom( const BMatrix3& I_com ) { m_inertia_com = I_com; }
+    setInertiaCom( const BMatrix3& I_com ) { m_I_com = I_com; }
     
     const BMatrix3& 
-    inertiaCom( void ) const { return m_inertia_com; } 
+    inertiaCom( void ) const { return m_I_com; } 
     
     void 
     setBody( BScalar mass, const BVector3 &com, const BMatrix3 &I_com ) 
     { 
-        m_mass = mass;  m_com = com; m_inertia_com = I_com;
+        m_mass = mass;  m_com = com; m_I_com = I_com;
     }
     
     BBody 
-    toBody( void ) const { return BBody(m_mass, m_com, m_inertia_com); }
+    toBody( void ) const { return BBody(m_mass, m_com, m_I_com); }
     
     
     const BSpatialTransform& 
-    parentTrans( void ) const { return m_parentTransform; }
+    parentTrans( void ) const { return m_parent; }
     
     void 
-    parentTrans( const BSpatialTransform &pt )  { m_parentTransform = pt; }
+    parentTrans( const BSpatialTransform &pt )  { m_parent = pt; }
     
     const BSpatialTransform& 
-    baseTrans( void ) const { return m_baseTransform; }
+    baseTrans( void ) const { return m_base; }
     
     void 
-    baseTrans( const BSpatialTransform &bt ) { m_baseTransform = bt; }
+    baseTrans( const BSpatialTransform &bt ) { m_base = bt; }
     
     
-    BBodyId
-    movableParent( void ) const { return m_movableParentId; }
-    
-    void
-    movableParent( BBodyId bid ) { m_movableParentId = bid; }
-    
+
     bool 
     operator==( const BFixedBody &v ) const { return (m_id == v.m_id); }
     
@@ -108,32 +113,29 @@ public:
 private: 
 
     BBodyId m_id;
-    // bid of the movable body that this fixed body is attached to.
-    BBodyId m_movableParentId;
+    BBodyId m_parentId;    // bid of the movable body that this fixed body is attached to.
     
     BScalar  m_mass;
-    BVector3 m_com;      // position of the center of mass in body coordinates
-    BMatrix3 m_inertia_com;  // inertia matrix at the center of mass 
+    BVector3 m_com;        // position of the center of mass in body coordinates
+    BMatrix3 m_I_com;      // inertia matrix at the center of mass 
  
-
     // transforms spatial quantities expressed for the parent to the fixed body.
-    
-    BSpatialTransform m_parentTransform; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
-    BSpatialTransform m_baseTransform; // m_X_base - transformation from the base  to this body's coordinate
+    BSpatialTransform m_parent; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
+    BSpatialTransform m_base;   // m_X_base   - transformation from the base  to this body's coordinate
 };
 
 inline std::ostream&
 operator<<( std::ostream &ostr, const BFixedBody &b )
 {
     ostr << b.m_id << ' ';
-    ostr << b.m_movableParentId << '\n';
+    ostr << b.m_parentId << '\n';
     
     ostr << b.m_mass << '\n';
     ostr << b.m_com << '\n';
-    ostr << b.m_inertia_com << '\n';
+    ostr << b.m_I_com << '\n';
     
-    ostr << b.m_parentTransform << '\n';
-    ostr << b.m_baseTransform << '\n';
+    ostr << b.m_parent << '\n';
+    ostr << b.m_base << '\n';
  
     return ostr;
 }
@@ -142,14 +144,14 @@ inline std::istream&
 operator>>( std::istream &istr, BFixedBody &b )
 {
     istr >> b.m_id;
-    istr >> b.m_movableParentId;
+    istr >> b.m_parentId;
     
     istr >> b.m_mass;
     istr >> b.m_com;
-    istr >> b.m_inertia_com ;
+    istr >> b.m_I_com;
     
-    istr >> b.m_parentTransform;
-    istr >> b.m_baseTransform;
+    istr >> b.m_parent;
+    istr >> b.m_base;
     
     return istr;
 }
