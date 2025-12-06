@@ -207,7 +207,7 @@ operator<<( std::ostream &ostr, const BMatrix63 &m )
          << m[2][0] << ' ' << m[2][1] << ' ' << m[2][2] << '\n'
          << m[3][0] << ' ' << m[3][1] << ' ' << m[3][2] << '\n' 
          << m[4][0] << ' ' << m[4][1] << ' ' << m[4][2] << '\n' 
-         << m[5][0] << ' ' << m[5][1] << ' ' << m[5][2] << ' ';
+         << m[5][0] << ' ' << m[5][1] << ' ' << m[5][2] << '\n';
     return ostr;
 }
 
@@ -222,6 +222,7 @@ operator>>( std::istream &istr, BMatrix63 &m )
          >> m[5][0] >> m[5][1] >> m[5][2];
     return istr;
 }
+
 
 
 //
@@ -395,7 +396,7 @@ operator*( const BMatrix63 &m1, const BMatrix36 &m2 )
     return retVal;
 }
 
-inline const BMatrix63 //  move this out of this class
+inline const BMatrix63 
 operator*( const BSpatialMatrix &m1, const BMatrix63 &m2 ) 
 {    
     BMatrix63 retVal(B_ZERO_6x3);
@@ -411,7 +412,7 @@ operator<<( std::ostream &ostr, const BMatrix36 &m )
 {
     ostr << m[0][0] << ' ' << m[0][1] << ' ' << m[0][2] << ' ' << m[0][3] << ' ' << m[0][4] << ' ' << m[0][5] << '\n'
          << m[1][0] << ' ' << m[1][1] << ' ' << m[1][2] << ' ' << m[1][3] << ' ' << m[1][4] << ' ' << m[1][5] << '\n'
-         << m[2][0] << ' ' << m[2][1] << ' ' << m[2][2] << ' ' << m[2][3] << ' ' << m[2][4] << ' ' << m[2][5] << ' ';
+         << m[2][0] << ' ' << m[2][1] << ' ' << m[2][2] << ' ' << m[2][3] << ' ' << m[2][4] << ' ' << m[2][5] << '\n';
     return ostr;
 }
 
@@ -430,6 +431,20 @@ operator>>( std::istream &istr, BMatrix36 &m )
 
 namespace arb
 {
+
+    inline bool 
+    nearZero( const BMatrix63 &m )  { return (nearZero(m.top()) && nearZero(m.bot())); }
+
+    inline bool 
+    isnan( const BMatrix63 &m ) { return (isnan(m.top()) || isnan(m.bot())); }
+
+
+    inline bool 
+    nearZero( const BMatrix36 &m ) { return (nearZero(m.left()) && nearZero(m.right())); }
+
+    inline bool 
+    isnan( const BMatrix36 &m ) { return (isnan(m.left()) || isnan(m.right())); }
+
 
     inline const BMatrix63 
     transpose( const BMatrix36 &m ) 
