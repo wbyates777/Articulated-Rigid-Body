@@ -21,8 +21,7 @@
 
 BModel::BModel( int expected_dof ) :  m_dof_count(0), m_q_size(0), m_qdot_size(0), m_gravity(B_ZERO_3)
 {
-    m_IA.reserve(expected_dof);
-    m_pA.reserve(expected_dof);
+
     m_joint.reserve(expected_dof);
     m_body.reserve(expected_dof);
     m_lambda.reserve(expected_dof);
@@ -43,10 +42,7 @@ BModel::clear( void )
     m_body.clear();
     m_joint.clear();
     m_fixed.clear(); 
-    
-    m_IA.clear(); 
-    m_pA.clear(); 
-    
+
     m_bodyNameMap.clear();
     
     init();
@@ -65,10 +61,6 @@ BModel::init( void )
     m_joint[0].clear();
     
     m_bodyNameMap["ROOT"] = 0;
-    
-    // dynamic variables
-    m_IA.push_back(B_ZERO_ABI);
-    m_pA.push_back(B_ZERO_6);
 }
 
 
@@ -577,10 +569,7 @@ BModel::addBody( BBodyId parent_id,
     
     // calculate DoF-count, w-indexes, and q-sizes
     calcDoF();
-    
-    // dynamic variables
-    m_IA.push_back(B_ZERO_ABI);
-    m_pA.push_back(B_ZERO_6);
+
 
     return bid; 
 }

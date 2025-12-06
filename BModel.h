@@ -42,9 +42,6 @@
 #include "BJoint.h"
 #endif
 
-#ifndef __BABINERTIA_H__
-#include "BABInertia.h"
-#endif
 
 
 class BModel
@@ -183,25 +180,7 @@ public:
     void 
     gravity( const BVector3& g ) { m_gravity = g; }
     
-    //
-    // dynamic variables
-    //
 
-    // IA are the articulated-body inertia $I_i^A$ for a body $Bi$ in $A_i$.
-    const BABInertia&      // const BSpatialMatrix&
-    IA( int i ) const { return m_IA[i]; }
-    
-    BABInertia&      //  BSpatialMatrix&
-    IA( int i ) { return m_IA[i]; }
-    
-    // pA are the bias forces $p_i^A$ for a body $Bi$ in $A_i$.
-    const BSpatialVector& 
-    pA( int i ) const { return m_pA[i]; }
-    
-    BSpatialVector& 
-    pA( int i ) { return m_pA[i]; }
-
-    
     bool 
     isBodyId( BBodyId bid ) const;
     
@@ -270,16 +249,12 @@ private:
     BVector3 m_gravity;
 
     // the id of the parent body
-    std::vector<BBodyId> m_lambda;
+    std::vector<BBodyId>    m_lambda;
     
     std::vector<BJoint>     m_joint;
     std::vector<BBody>      m_body;
     std::vector<BFixedBody> m_fixed;  //  bodies attached via a fixed joint
 
-    std::vector<BABInertia> m_IA; // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
-    //std::vector<BSpatialMatrix> m_IA; // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
-    std::vector<BSpatialVector> m_pA; // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
-    
     // human readable names for the bodies
     std::map<std::string, BBodyId> m_bodyNameMap;
 };
@@ -301,9 +276,6 @@ operator<<( std::ostream &ostr, const BModel &m )
     ostr << m.m_body << '\n';
     ostr << m.m_fixed << '\n';
     
-    ostr << m.m_IA << '\n';
-    ostr << m.m_pA << '\n';
-
     ostr << m.m_bodyNameMap << '\n';
 
     return ostr;
@@ -324,9 +296,6 @@ operator>>( std::istream &istr, BModel &m )
     istr >> m.m_body;
     istr >> m.m_fixed;
     
-    istr >> m.m_IA;
-    istr >> m.m_pA;
-
     istr >> m.m_bodyNameMap;
     
     return istr;

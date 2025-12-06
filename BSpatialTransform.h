@@ -45,7 +45,7 @@
  
  where rx = arb::cross(r)
  
-7) The remaining transforms have analytical block definitions (which differ from 
+7) The remaining transforms have analytic block definitions (which differ from 
    the usual matrix definitions) of inverse and transpose (see RBDA, page 22).
  
  X^{-1}  =  |    E^T      0  |

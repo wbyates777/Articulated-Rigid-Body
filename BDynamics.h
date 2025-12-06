@@ -54,6 +54,10 @@
 #include "BModel.h"
 #endif
 
+#ifndef __BABINERTIA_H__
+#include "BABInertia.h"
+#endif
+
 
 struct BModelState 
 {
@@ -126,7 +130,10 @@ private:
     std::vector<BMatrix63> m_dof3_U;
     std::vector<BMatrix3>  m_dof3_Dinv;
     std::vector<BVector3>  m_dof3_u;
- 
+    
+    std::vector<BABInertia> m_IA;     // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
+    std::vector<BSpatialVector> m_pA; // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
+    
 };
 
 #endif

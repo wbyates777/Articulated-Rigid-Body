@@ -99,6 +99,9 @@ BDynamics::BDynamics( int expected_dof ): m_U(),
     m_dof3_U.reserve(expected_dof);  
     m_dof3_Dinv.reserve(expected_dof);
     m_dof3_u.reserve(expected_dof);
+    
+    m_IA.reserve(expected_dof);
+    m_pA.reserve(expected_dof);
 }
 
 
@@ -165,6 +168,9 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     m_dof3_Dinv.assign(N_B, B_ZERO_3x3);
     m_dof3_u.assign(N_B, B_ZERO_3);
     
+    m_IA.assign(N_B, B_ZERO_ABI);
+    m_pA.assign(N_B, B_ZERO_6);
+    
     // reset the velocity of the root body
     // $v_0 = 0$
     // $a_0 = -a_g$
@@ -201,15 +207,15 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
    
         m.body(i).c()  = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
         
-        m.IA(i) = m.body(i).I(); // initialise articulated inertia
-        m.pA(i) = arb::crossf( m.body(i).v(), m.body(i).I() * m.body(i).v() );
+        m_IA[i] = m.body(i).I(); // initialise articulated inertia
+        m_pA[i] = arb::crossf( m.body(i).v(), m.body(i).I() * m.body(i).v() );
         
         if (!f_ext.empty() && f_ext[i] != B_ZERO_6) 
         { 
             // external forces are assumed to be in world coordinates
             // forces must be applied in body coordinates to each body.
             // we use adjoint here - it is equivalent to arb::dual(X_base)
-            m.pA(i) -= arb::applyAdjoint(m.body(i).X_base(), f_ext[i]);
+            m_pA[i] -= arb::applyAdjoint(m.body(i).X_base(), f_ext[i]);
         }
     }
      
@@ -232,31 +238,29 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         const BSpatialTransform& X_lambda = m.joint(i).X_lambda(); 
 
-        if (dofCount == 0)  // body attached with fixed joint (not merged)
+        if (dofCount == 0)  // body attached with Fixed2 joint (not merged)
         {
             if (lambda != 0) 
             {
-                m.IA(lambda) += X_lambda.applyTranspose(m.IA(i)); 
-                m.pA(lambda) += X_lambda.applyTranspose(m.pA(i));
+                m_IA[lambda] += X_lambda.applyTranspose(m_IA[i]); 
+                m_pA[lambda] += X_lambda.applyTranspose(m_pA[i]);
             }
         }
         else if (dofCount == 1) 
         {
             BSpatialVector S(m.joint(i).S());
             
-            m_U[i] = m.IA(i) * S;                       
+            m_U[i] = m_IA[i] * S;                       
             m_d[i] = arb::dot(S, m_U[i]);  // $S_i^T U_i$                    
-            m_u[i] = tau[qidx] - arb::dot(S, m.pA(i)); 
+            m_u[i] = tau[qidx] - arb::dot(S, m_pA[i]); 
             
             if (lambda != 0) 
             {
                 BScalar Dinv = 1.0 / m_d[i];
-                BABInertia Ia = m.IA(i) - BABInertia(m_U[i], (m_U[i] * Dinv)); 
-                m.IA(lambda) += X_lambda.applyTranspose(Ia); 
-                //BSpatialMatrix Ia(m.IA(i) - arb::outer(m_U[i], (m_U[i] * Dinv))); 
-                //m.IA(lambda) += arb::transpose(X_lambda) * Ia * X_lambda;
-                BSpatialVector pa(m.pA(i) + (Ia * m.body(i).c()) + (m_U[i] * (m_u[i] * Dinv))); 
-                m.pA(lambda) += X_lambda.applyTranspose(pa);
+                BABInertia Ia = m_IA[i] - BABInertia(m_U[i], (m_U[i] * Dinv)); 
+                m_IA[lambda] += X_lambda.applyTranspose(Ia); 
+                BSpatialVector pa(m_pA[i] + (Ia * m.body(i).c()) + (m_U[i] * (m_u[i] * Dinv))); 
+                m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
         else if (dofCount == 3) 
@@ -265,20 +269,18 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
             BVector3 tau_tmp(tau[qidx], tau[qidx + 1], tau[qidx + 2]); 
             
-            m_dof3_U[i]    = m.IA(i) * S;
+            m_dof3_U[i]    = m_IA[i] * S;
             m_dof3_Dinv[i] = arb::inverse(arb::transpose(S) * m_dof3_U[i]);
-            m_dof3_u[i]    = tau_tmp - (arb::transpose(S) * m.pA(i));
+            m_dof3_u[i]    = tau_tmp - (arb::transpose(S) * m_pA[i]);
      
             if (lambda != 0) 
             {
                 BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
                 
-                BABInertia Ia = m.IA(i) - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
-                m.IA(lambda) += X_lambda.applyTranspose(Ia); 
-                //BSpatialMatrix Ia( m.IA(i) - UDinv_tmp * arb::transpose(m_dof3_U[i]));
-                //m.IA(lambda) += arb::transpose(X_lambda) * Ia * X_lambda;
-                BSpatialVector pa(m.pA(i) + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
-                m.pA(lambda) += X_lambda.applyTranspose(pa);
+                BABInertia Ia = m_IA[i] - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
+                m_IA[lambda] += X_lambda.applyTranspose(Ia); 
+                BSpatialVector pa(m_pA[i] + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
+                m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
     }

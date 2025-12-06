@@ -204,9 +204,8 @@ public:
         // values here are important - do not change
         J1DoF = 1, J2DoF = 2, J3DoF = 3, J4DoF = 4, J5DoF = 5, J6DoF = 6, 
         
-        
         Prismatic, // 1 DoF - Sliding joint
-        
+
         Revolute, RevoluteX, RevoluteY, RevoluteZ,  // 1 DoF - Hinge joint
         
         // 3 DoF joint that uses Euler conventions (faster than emulated multi DoF joints).
