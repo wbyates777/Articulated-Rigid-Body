@@ -23,16 +23,175 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/transform.hpp> 
 
 #ifndef __BDYNAMICS_H__
 #include "BDynamics.h"
 #endif
 
-
 #ifndef __BADJOINT_H__
 #include "BAdjoint.h"
 #endif
 
+void
+test_adjoints( void )
+{
+    std::cout << "\nSpatial Adjoint Test\n" << std::endl; 
+    
+    BMatrix3 rot = glm::rotate(glm::radians(BScalar(46.0)), glm::normalize(BVector3(-1.1,-2.2,1.3)));
+    BSpatialTransform X(rot, BVector3(1.0, 2.0, 3.0));
+    
+    const BSpatialVector force(-1.1, 1.2, -1.3, 4.0, 0.0, 6.0);
+
+  // const BTransform X = arb::Xtrans(glm::dvec3(1.0,2.0,3.0)); // pure translation
+   //const BTransform X = arb::Xrot(0.3, glm::dvec3(-1.1,-2.2,1.3)); // pure rotation
+    
+    
+    if (1)
+    {
+        std::cout << "Adjoint  -- Ad_X --------------------" << std::endl;
+        BSpatialVector x1 =  arb::applyAdjoint( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjoint(X); 
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+        bool test1 = arb::nearZero(x1 - x2);
+        bool test2 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjointInverse(X, force) ) - force);
+        bool test3 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjoint(arb::inverse(X), force) ) - force);
+        std::cout  << "Test1 is " << test1 << std::endl;
+        std::cout  << "Test2 is " << test2 << std::endl;
+        std::cout  << "Test3 is " << test3 << std::endl;
+    }
+    if (1)
+    {
+        std::cout << "Adjoint Transpose -- Ad_X^{T} --------------------" << std::endl;
+        BSpatialVector x1 =  arb::applyAdjointTranspose( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjointTranspose(X);
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+        bool test1 = arb::nearZero(x1 - x2);
+        std::cout  << "Adjoint Transpose test is " << test1 << std::endl;
+        std::cout << "----------------------------------------------------------" << std::endl;
+    }
+    if (1)
+    {
+        std::cout << "Adjoint Inverse -- Ad_X^{-1} -------------------------" << std::endl;
+         BSpatialVector x1 =  arb::applyAdjointInverse( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjointInverse(X);
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+        bool test1 = arb::nearZero(x1 - x2);
+        std::cout  << "Adjoint Inverse test is " << test1 << std::endl;
+        std::cout << "----------------------------------------------------------" << std::endl;
+     }
+  
+    if (1)
+    {
+        std::cout << "Adjoint Dual -- Ad_X^{-T} --------------------" << std::endl;
+        BSpatialVector x1 =  arb::applyAdjointDual( X, force ); 
+        BSpatialMatrix m1 =  arb::toAdjointDual(X);
+        BSpatialVector x2 =  m1 * force;
+        std::cout << x1 << std::endl;
+        std::cout << x2 << std::endl;
+        bool test1 = arb::nearZero(x1 - x2);
+        std::cout  << "Adjoint Dual test is " << test1 << std::endl;
+        std::cout << "----------------------------------------------------------" << std::endl;
+    }
+    
+    if (1)
+    {
+        std::cout << "More Inverse Checks -- X^{-1}--------------------" << std::endl;
+        BSpatialTransform Y(X.E(), BVector3(0.1, 2.0, 0.3));
+        BSpatialTransform Z = Y * arb::inverse(Y);
+        //std::cout << Z << std::endl;
+        bool test1 = arb::nearZero(BSpatialMatrix(Z) - B_IDENTITY_6x6);
+        std::cout  << "Inverse test1 is " << test1 << std::endl;
+ 
+        auto P =  arb::toAdjoint(X) *  arb::toAdjointInverse(X);
+        //std::cout << P << std::endl;
+        bool test2 = arb::nearZero(P - B_IDENTITY_6x6);
+        std::cout  << "Inverse test2 is " << test2 << std::endl;
+
+        auto Q = arb::toAdjointInverse(X) * arb::toAdjoint(X);
+        //std::cout << Q << std::endl;
+        bool test3 = arb::nearZero(Q - B_IDENTITY_6x6);
+        std::cout  << "Inverse test3 is " << test3 << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+    }
+    
+    if (1)
+    {
+        std::cout << "More Transpose Checks -- X^{T} -----------------" << std::endl;
+        BSpatialMatrix tmp4 = arb::toAdjointTranspose(X);
+        //std::cout << tmp4 << std::endl;
+        BSpatialMatrix tmp5 =  arb::transpose(arb::toAdjoint(X)); 
+        //std::cout << tmp5 << std::endl;
+        bool test1 = arb::nearZero(tmp4 - tmp5);
+        std::cout  << "Transpose test1 is " << test1 << std::endl;
+   
+        BSpatialMatrix tmp6 =  arb::transpose(arb::toAdjointInverse(X)); 
+        //std::cout << tmp6 << std::endl;
+        BSpatialMatrix tmp7 = arb::toAdjointDual(X);
+        //std::cout << tmp7 << std::endl;
+        bool test2 = arb::nearZero(tmp6 - tmp7);
+        std::cout  << "Transpose test2 is " << test2 << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
+    }
+}
+
+void
+test_rbinertia( void )
+{
+    std::cout << "\nSpatial Inertia Test\n" << std::endl; 
+    
+    double mass = 59.0, radius = 0.5;
+    BVector3 com(1.0);
+    BVector3 gyration((2.0/5.0) * mass * (radius * radius));
+    BBody sphere(mass, com, gyration);
+    
+    BRBInertia I = sphere.I();
+    
+    BMatrix3 rot = glm::rotate(glm::radians(BScalar(46.0)), glm::normalize(BVector3(1.1, 2.2, 3.3)));
+    BVector3 trans = BVector3(-0.9, 8.0, 3.0);
+    
+    BSpatialTransform X(rot, trans);
+    
+    if (1)
+    {   
+        // Apply - X^* I X^{-1}
+        BRBInertia I1 = X.apply( I ); 
+        
+        BSpatialMatrix aux1 = arb::transpose(BSpatialMatrix(arb::inverse(X))) * BSpatialMatrix(I) * BSpatialMatrix(arb::inverse(X));
+        BSpatialMatrix aux2 = arb::dual(X) * BSpatialMatrix(I) * BSpatialMatrix(arb::inverse(X));
+        BSpatialMatrix aux3 = arb::dual(X) * I * arb::inverse(X);
+        BSpatialMatrix aux4 = arb::transpose(arb::inverse(X)) * BSpatialMatrix(I) * arb::inverse(X);
+        
+        bool test1 = arb::nearZero(aux1 - BSpatialMatrix(I1));
+        bool test2 = arb::nearZero(aux2 - BSpatialMatrix(I1));
+        bool test3 = arb::nearZero(aux3 - BSpatialMatrix(I1));
+        bool test4 = arb::nearZero(aux4 - BSpatialMatrix(I1));
+        std::cout  << "Test1 is " << test1 << std::endl;
+        std::cout  << "Test2 is " << test2 << std::endl;
+        std::cout  << "Test3 is " << test3 << std::endl;
+        std::cout  << "Test4 is " << test4 << std::endl;
+    }
+  
+    if (1)                                                      
+    {
+        // ApplyTransposw -  X^T I X
+        BRBInertia I2 = X.applyTranspose( I ); 
+        
+        BSpatialMatrix aux5 = arb::transpose(BSpatialMatrix(X)) * BSpatialMatrix(I) * BSpatialMatrix(X);
+        BSpatialMatrix aux6 = arb::transpose(X) * I * X;
+        
+        bool test5 =  arb::nearZero(aux5 - BSpatialMatrix(I2));
+        bool test6 =  arb::nearZero(aux6 - BSpatialMatrix(I2));
+        std::cout  << "Test5 is " << test5 << std::endl;
+        std::cout  << "Test6 is " << test6 << std::endl;
+    }
+}
 
 void
 example1( void ) 
@@ -86,28 +245,24 @@ example1( void )
     
     std::cout << qinput.qddot << std::endl;
     
-   // dyn.update_X_base( *model, qinput ); 
-    
-    //
+
     //
     //
     
-    std::cout << "Stream operator test..." << std::endl;
+    std::cout << "\nStream operator test\n" << std::endl;
     
     std::ostringstream outstr;
-    
     outstr << *model;
     
     delete model;
     
-
     std::istringstream instr(outstr.str());
     BModel model2;
     instr >> model2; 
     
-    qinput.q.resize(model2.qsize(),0.0);
-    qinput.qdot.resize(model2.qdotsize(), 0.0);
-    qinput.tau.resize(model2.qdotsize(), 0.0);
+    qinput.q.assign(model2.qsize(),0.0);
+    qinput.qdot.assign(model2.qdotsize(), 0.0);
+    qinput.tau.assign(model2.qdotsize(), 0.0);
     
     dyn.forward(model2, qinput);
     
@@ -207,6 +362,7 @@ single_body( void )
     // control -- apply myforce to whole spaceship model -- 100 Newtons along z axis
     // body[0] is a header, body[1] is virtual, body[2] is the first, real body with mass
     // for floating base we only need apply external force to body[2]
+    // external forces are assumed to be in world coordinates
     BSpatialVector myforce( B_ZERO_3, 0.0, 0.0, 100.0);
     BExtForce f_ext(model->bodies(), B_ZERO_6); 
     f_ext[spaceshipId] =  BSpatialVector( myforce );
@@ -238,9 +394,8 @@ print( double T, const BSpatialVector &mv )
     std::cout << T << ") ";
     
     BVector3 pos = mv.lin();
-    std::cout << " pos( " <<  pos.x << ", " <<  pos.y << ", " <<  pos.z  << " )";
-    std::cout << " - ";
-    
+    std::cout << " pos( " <<  pos.x << ", " <<  pos.y << ", " <<  pos.z  << " ) - ";
+ 
     BVector3 ang = mv.ang();
   
     ang.x = std::remainder(ang.x, M_2PI);
@@ -258,10 +413,8 @@ newton_euler( void )
 // https://en.wikipedia.org/wiki/Newton–Euler_equations
 {
 
-    //
     // set up single body - a sphere -  
-    //
-    double mass = 100.0, imass = 1.0 / mass, radius = 0.5;
+    double mass = 100.0, radius = 0.5;
     double diag = ((2.0/5.0) * mass * (radius * radius));
     BMatrix3 I_o(diag); // rotational inertia at body coordinate frame origin
     BVector3 h(0.0); // linear momentum
@@ -307,101 +460,6 @@ newton_euler( void )
     }
 }
 
-void
-test_adjoints( void )
-{
-    const BSpatialVector force(-1.1, 1.2, -1.3, 4.0, 0.0, 6.0);
-    BSpatialTransform Z = arb::Xrot(0.3, glm::normalize(BVector3(-1.1,-2.2,1.3)));
-    
-    BSpatialTransform X(Z.E(), BVector3(1.0, 2.0, 3.0));
-    
-  // const BTransform X = arb::Xtrans(glm::dvec3(1.0,2.0,3.0)); // pure translation
-   //const BTransform X = arb::Xrot(0.3, glm::dvec3(-1.1,-2.2,1.3)); // pure rotation
-    
-    
-    if (1)
-    {
-        std::cout << "Adjoint  -- Ad_X--------------------" << std::endl;
-        BSpatialVector x1 =  arb::applyAdjoint( X, force ); 
-        BSpatialMatrix m1 =  arb::toAdjoint(X); 
-        BSpatialVector x2 =  m1 * force;
-        std::cout << x1 << std::endl;
-        std::cout << x2 << std::endl;
-        std::cout << arb::nearZero(x1 - x2) << std::endl;
-        bool test1 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjointInverse(X, force) ) - force);
-        bool test2 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjoint(arb::inverse(X), force) ) - force);
-    }
-    if (1)
-    {
-        std::cout << "Adjoint Transpose -- Ad_X^{T} --------------------" << std::endl;
-        BSpatialVector x1 =  arb::applyAdjointTranspose( X, force ); 
-        BSpatialMatrix m1 =  arb::toAdjointTranspose(X);
-        BSpatialVector x2 =  m1 * force;
-        std::cout << x1 << std::endl;
-        std::cout << x2 << std::endl;
-        std::cout << "----------------------------------------------------------" << std::endl;
-    }
-    if (1)
-    {
-        std::cout << "Adjoint Inverse  Ad_X^{-1} -------------------------" << std::endl;
-         BSpatialVector x1 =  arb::applyAdjointInverse( X, force ); 
-        BSpatialMatrix m1 =  arb::toAdjointInverse(X);
-        BSpatialVector x2 =  m1 * force;
-        std::cout << x1 << std::endl;
-        std::cout << x2 << std::endl;
-
-        std::cout << "----------------------------------------------------------" << std::endl;
-     }
-  
-    if (1)
-    {
-        std::cout << "Adjoint DualAdjoint -- Ad_X^{-T}--------------------" << std::endl;
-        BSpatialVector x1 =  arb::applyAdjointDual( X, force ); 
-        BSpatialMatrix m1 =  arb::toAdjointDual(X);
-        BSpatialVector x2 =  m1 * force;
-        std::cout << x1 << std::endl;
-        std::cout << x2 << std::endl;
-    }
-    
-    if (1)
-    {
-        BSpatialTransform Y(X.E(), BVector3(0.1, 2.0, 0.3));
-        std::cout << Y * arb::inverse(Y) << std::endl;
-    }
-    
-    if (1)
-    {
-        std::cout << "Inverse Checks------------------" << std::endl;
-        auto P =  arb::toAdjoint(X) *  arb::toAdjointInverse(X);
-        std::cout << P << std::endl;
-        std::cout << "-------------------------------------" << std::endl;
-        auto Q = arb::toAdjointInverse(X) * arb::toAdjoint(X);
-        std::cout << Q << std::endl;
-        std::cout << "-------------------------------------" << std::endl;
-    }
-    if (1)
-    {
-        std::cout << "Transpose Checks 1-----------------" << std::endl;
-        BSpatialMatrix tmp4 = arb::toAdjointTranspose(X);
-        std::cout << tmp4 << std::endl;
-        std::cout << "-------------------------------------" << std::endl;
-        BSpatialMatrix tmp5 =  arb::transpose(arb::toAdjoint(X)); 
-        std::cout << tmp5 << std::endl;
-        std::cout << "-------------------------------------" << std::endl;
-    }
-    
-    if (1)
-    {
-        std::cout << "Transpose Checks 2-----------------" << std::endl;
-        BSpatialMatrix tmp5 =  arb::transpose(arb::toAdjointInverse(X)); 
-        std::cout << tmp5 << std::endl;
-        std::cout << "-------------------------------------" << std::endl;
-        BSpatialMatrix tmp6 = arb::toAdjointDual(X);
-        std::cout << tmp6 << std::endl;
-        std::cout << "-------------------------------------" << std::endl;
-    }
-}
-
 
 int 
 main()
@@ -409,22 +467,22 @@ main()
     std::cout.precision(8);
     std::cout.setf( std::ios::fixed, std::ios::floatfield );
     
+    test_adjoints();
+    test_rbinertia();
+    
     // example1 is taken from RBDL library https://github.com/rbdl/rbdl
     // the output generated by RBDL is QDDot = { -6.54000000  6.54000000  0.00000000 }
     example1();
     
 
-    
     // the ForwardDynamics output generated by RBDL on this example is
     // QDDot = { 0.00000621, -9.80999590, 0.00000644, 31.43004589, -0.74277671, 15.33985878, -65.28759632, 54.91808109, -40.79517561, 3.69334706, 9.57489516 }
     // you should notice slight differences in the last decimal places
     example2();
     
-
-    //newton_euler();
-
+        
     single_body();
     
-   // test_adjoints();
-    
+    newton_euler();
+
 }
