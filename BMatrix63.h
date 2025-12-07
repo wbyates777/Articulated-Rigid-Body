@@ -108,13 +108,16 @@ public:
     void 
     set( const BMatrix3 &top, const BMatrix3 &bot ) 
     {
-        m_data[0][0] = top[0][0]; m_data[0][1] = top[0][1]; m_data[0][2] = top[0][2];
-        m_data[1][0] = top[1][0]; m_data[1][1] = top[1][1]; m_data[1][2] = top[1][2];
-        m_data[2][0] = top[2][0]; m_data[2][1] = top[2][1]; m_data[2][2] = top[2][2];
-        
-        m_data[3][0] = bot[0][0]; m_data[3][1] = bot[0][1]; m_data[3][2] = bot[0][2];
-        m_data[4][0] = bot[1][0]; m_data[4][1] = bot[1][1]; m_data[4][2] = bot[1][2];
-        m_data[5][0] = bot[2][0]; m_data[5][1] = bot[2][1]; m_data[5][2] = bot[2][2];
+        m_data = 
+        {
+            top[0][0], top[0][1], top[0][2],
+            top[1][0], top[1][1], top[1][2],
+            top[2][0], top[2][1], top[2][2],
+            
+            bot[0][0], bot[0][1], bot[0][2],
+            bot[1][0], bot[1][1], bot[1][2],
+            bot[2][0], bot[2][1], bot[2][2]
+        };
     }
     
     std::array<BScalar, 3>&
@@ -308,14 +311,12 @@ public:
     void 
     set( const BMatrix3 &left, const BMatrix3 &right ) 
     {
-        m_data[0][0] =  left[0][0]; m_data[0][1] =  left[0][1]; m_data[0][2] =  left[0][2]; 
-        m_data[0][3] = right[0][0]; m_data[0][4] = right[0][1]; m_data[0][5] = right[0][2];
-        
-        m_data[1][0] =  left[1][0]; m_data[1][1] =  left[1][1]; m_data[1][2] =  left[1][2]; 
-        m_data[1][3] = right[1][0]; m_data[1][4] = right[1][1]; m_data[1][5] = right[1][2];
-        
-        m_data[2][0] =  left[2][0]; m_data[2][1] =  left[2][1]; m_data[2][2] =  left[2][2]; 
-        m_data[2][3] = right[2][0]; m_data[2][4] = right[2][1]; m_data[2][5] = right[2][2];
+        m_data = 
+        {
+            left[0][0], left[0][1], left[0][2],  right[0][0], right[0][1], right[0][2],
+            left[1][0], left[1][1], left[1][2],  right[1][0], right[1][1], right[1][2],
+            left[2][0], left[2][1], left[2][2],  right[2][0], right[2][1], right[2][2]
+        };
     }
     
     std::array<BScalar, 6>&
