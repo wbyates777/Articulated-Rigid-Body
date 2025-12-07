@@ -131,8 +131,12 @@ private:
     std::vector<BMatrix3>  m_dof3_Dinv;
     std::vector<BVector3>  m_dof3_u;
     
+    // forward
     std::vector<BABInertia> m_IA;     // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
     std::vector<BSpatialVector> m_pA; // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
+    
+    // inverse
+    std::vector<BSpatialVector>  m_f; // $f_i$ the net internal force acting on body $B_i$ (see RBDA, equation 5.9)
     
 };
 

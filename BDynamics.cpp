@@ -346,6 +346,8 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     
     const int N_B = (int) m.bodies();
     
+    m_f.assign(N_B, B_ZERO_6);
+    
     // $v_i = {i}^X_{\lambda(i)} v_{\lambda(i)} + v_J$
     // $c_i = c_J + v_i \cross v_J$
     // $a_i = {i}^X_{\lambda(i)} a_{\lambda(i)} + S_i \ddot{q} + c_i$
@@ -383,11 +385,11 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         if (!m.body(i).isVirtual()) 
         {
             BBody &b(m.body(i));
-            b.f() = b.I() * b.a() + arb::crossf(b.v(), b.I() * b.v());
+            m_f[i] = b.I() * b.a() + arb::crossf(b.v(), b.I() * b.v());
         } 
         else 
         {
-            m.body(i).f() = B_ZERO_6;
+            m_f[i] = B_ZERO_6;
         } 
     }
     
@@ -398,7 +400,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         {
             BBodyId lambda = m.parentId(i);
             m.body(i).X_base( m.joint(i).X_lambda() * m.body(lambda).X_base() );
-            m.body(i).f() -= arb::applyAdjoint(m.body(i).X_base(), f_ext[i]);
+            m_f[i] -= arb::applyAdjoint(m.body(i).X_base(), f_ext[i]);
         }
     }
     
@@ -417,12 +419,12 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         if (dofCount == 1) 
         {
             BSpatialVector S(m.joint(i).S());
-            tau[qidx] = arb::dot(S, m.body(i).f());
+            tau[qidx] = arb::dot(S, m_f[i]);
         } 
         else if (dofCount == 3) 
         {
             BMatrix63 S(m.joint(i).S());
-            BVector3 tmp = arb::transpose(S) * m.body(i).f();
+            BVector3 tmp = arb::transpose(S) * m_f[i];
 
             tau[qidx]     = tmp[0];
             tau[qidx + 1] = tmp[1];
@@ -431,7 +433,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
 
         if (lambda != 0) 
         {
-            m.body(lambda).f() += m.joint(i).X_lambda().applyTranspose(m.body(i).f());
+            m_f[lambda] += m.joint(i).X_lambda().applyTranspose(m_f[i]);
         }
     }
 }

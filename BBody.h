@@ -57,7 +57,6 @@ public:
                                      m_v(B_ZERO_6), 
                                      m_a(B_ZERO_6),
                                      m_c(B_ZERO_6),
-                                     m_f(B_ZERO_6),
                                      m_I(B_ZERO_RBI),
                                      m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual)
@@ -79,7 +78,6 @@ public:
                                      m_v(B_ZERO_6), 
                                      m_a(B_ZERO_6), 
                                      m_c(B_ZERO_6),
-                                     m_f(B_ZERO_6),
                                      m_I(B_ZERO_RBI),
                                      m_X_base(B_IDENTITY_TRANS), 
                                      m_isVirtual(isVirtual) 
@@ -92,7 +90,6 @@ public:
                                                                     m_v(B_ZERO_6), 
                                                                     m_a(B_ZERO_6), 
                                                                     m_c(B_ZERO_6),
-                                                                    m_f(B_ZERO_6),
                                                                     m_I(I),
                                                                     m_X_base(B_IDENTITY_TRANS), 
                                                                     m_isVirtual(isVirtual) {}
@@ -102,7 +99,7 @@ public:
     void
     clear( void )
     {
-        m_v = m_a = m_c = m_f = B_ZERO_6;
+        m_v = m_a = m_c = B_ZERO_6;
         m_I.clear();
         m_X_base.clear(); 
         m_isVirtual = false;
@@ -118,7 +115,7 @@ public:
     void 
     setBody( BScalar mass, const BVector3 &com, const BMatrix3 &I_com, bool isVirtual = false )
     {
-        m_v = m_a = m_c = m_f = B_ZERO_6; 
+        m_v = m_a = m_c = B_ZERO_6; 
         m_I.setInertiaCom(mass, com, I_com);
         m_X_base.clear();
         m_isVirtual = isVirtual;
@@ -228,17 +225,6 @@ public:
     c( const BSpatialVector &sv ) { m_c = sv; } 
     
     
-    // internal forces on the body (used only BDynamics::inverse())
-    // $f_i$ the net force acting on body $B_i$ (see RBDA, equation 5.9)
-    const BSpatialVector& 
-    f( void ) const { return m_f; }
-    
-    BSpatialVector& 
-    f( void ) { return m_f; }
-    
-    void  
-    f( const BSpatialVector& v ) { m_f = v; }
-   
     bool
     isVirtual( void ) const { return m_isVirtual; }
     
@@ -262,7 +248,6 @@ private:
     BSpatialVector  m_v;    // spatial velocity of the body
     BSpatialVector  m_a;    // spatial acceleration of the body
     BSpatialVector  m_c;    // spatial velocity-dependent acceleration term
-    BSpatialVector  m_f;    // internal forces on the body (used only BDynamics::inverse())
 
     BRBInertia m_I;         // spatial inertia at origin of the body (mass, com, rotational inertia)
    
@@ -280,7 +265,6 @@ operator<<( std::ostream &ostr, const BBody &b )
     ostr << b.m_v << '\n';
     ostr << b.m_a << '\n';
     ostr << b.m_c << '\n';
-    ostr << b.m_f << '\n';
     ostr << b.m_I << '\n';
     ostr << b.m_X_base << '\n';
     ostr << b.m_isVirtual << '\n';
@@ -295,7 +279,6 @@ operator>>( std::istream &istr, BBody &b )
     istr >> b.m_v;
     istr >> b.m_a;
     istr >> b.m_c;
-    istr >> b.m_f;
     istr >> b.m_I;
     istr >> b.m_X_base;
     istr >> b.m_isVirtual;
