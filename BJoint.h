@@ -8,7 +8,9 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- Note: The following comments has been copied from the RBDL code.
+ Note: The following comments has been taken (and slightly edited) from the RBDL code.
+ 
+ 
  
  \page joint_description Joint Modeling
  
@@ -22,8 +24,8 @@
  rigidly connected are merged into a single body. For details see \ref
  joint_models_fixed.
  
- Fixed2 joints are not merged into a single body and are added as the bodies that are
- rigidly connected.
+ Fixed2 joints are not merged into a single body and are added as the distict bodies (with mass) that are
+ fixed, that is, rigidly connected.
  
  Joints with multiple degrees of freedom are emulated by default which
  means that they are split up into multiple single degree of freedom
@@ -44,10 +46,10 @@
  used:
  
  \code 
-    Joint planar_joint = Joint (
-        Math::SpatialVector (0., 0., 0., 1., 0., 0.),
-        Math::SpatialVector (0., 0., 0., 0., 1., 0.),
-        Math::SpatialVector (0., 0., 1., 0., 0., 0.)
+    Joint planar_joint = BJoint (
+        BSpatialVector (B_ZERO_3, B_XAXIS),
+        BSpatialVector (B_ZERO_3, B_YAXIS),
+        BSpatialVector (B_ZAXIS,  B_ZERO_3,)
     );
  \endcode
  
@@ -77,17 +79,17 @@
  RBDL has highly efficient implementations for the following three degree
  of freedom joints:
  <ul>
-     <li>\ref JointTypeTranslationXYZ which first translates along X, then
+     <li>\ref TranslationXYZ which first translates along X, then
      Y, and finally Z.</li>
-     <li>\ref JointTypeEulerZYX which first rotates around Z, then Y, and
+     <li>\ref EulerZYX which first rotates around Z, then Y, and
      then X.</li>
-     <li>\ref JointTypeEulerXYZ which first rotates around X, then Y, and
+     <li>\ref EulerXYZ which first rotates around X, then Y, and
      then Z.</li>
-     <li>\ref JointTypeEulerYXZ which first rotates around Y, then X, and
+     <li>\ref EulerYXZ which first rotates around Y, then X, and
      then Z.</li>
-     <li>\ref JointTypeEulerZXY which first rotates around Z, then X, and
+     <li>\ref EulerZXY which first rotates around Z, then X, and
      then Y.</li>
-     <li>\ref JointTypeSpherical which is a singularity free joint that
+     <li>\ref Spherical which is a singularity free joint that
      uses a Quaternion and the bodies angular velocity (see \ref
      joint_singularities for details).</li>
  </ul>
@@ -95,7 +97,7 @@
  These joints can be created by providing the joint type as an argument
  to the Joint constructor, e.g.:
  
- \code Joint joint_rot_zyx = Joint ( JointTypeEulerZYX ); \endcode
+ \code Joint joint_rot_zyx = Joint ( EulerZYX ); \endcode
  
  Using 3-Dof joints is always favourable over using their emulated
  counterparts as they are considerably faster and describe the same
@@ -104,10 +106,10 @@
  \section joint_floatingbase Floating-Base Joint (a.k.a. Freeflyer Joint)
  
  RBDL has a special joint type for floating-base systems that uses the
- enum JointTypeFloatingBase. The first three DoF are translations along
- X,Y, and Z. For the rotational part it uses a JointTypeSpherical joint.
- It is internally modeled by a JointTypeTranslationXYZ and a
- JointTypeSpherical joint. It is recommended to only use this joint for
+ enum FloatingBase. The first three DoF are translations along
+ X,Y, and Z. For the rotational part it uses a Spherical joint.
+ It is internally modeled by a TranslationXYZ and a
+ Spherical joint. It is recommended to only use this joint for
  the very first body added to the model.
  
  Positional variables are translations along X, Y, and Z, and for
@@ -127,7 +129,7 @@
  or exploding accelerations in the forward dynamics calculations.
  
  For this case RBDL has the special joint type
- RigidBodyDynamics::JointTypeSpherical. When using this joint type the
+ RigidBodyDynamics::Spherical. When using this joint type the
  model does not suffer from singularities, however this also results in
  a change of interpretation for the values \f$\mathbf{q}, \mathbf{\dot{q}}, \mathbf{\ddot{q}}\f$, and \f$\mathbf{\tau}\f$:
  
@@ -212,9 +214,10 @@ public:
         EulerZYX,  EulerXYZ,  EulerYXZ,   EulerZXY,  
         
         // Spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
-        Spherical, // 3 DoF joint using quaternions for joint positional and angular velocity variables.
+        // 3 DoF joint using quaternions for joint positional and angular velocity variables.
+        Spherical, 
         
-        TranslationXYZ,
+        TranslationXYZ, // 3 DoF joint
         
         // A 6-DoF joint for floating-base systems.  
         // modeled internally by a TranslationXYZ and a Spherical joint. 
@@ -222,11 +225,10 @@ public:
         FloatingBase, 
         
         Fixed1,        // Fixed1 joint which causes the inertial properties to be merged with the parent body.
-        Fixed2,        // Fixed2 joint which adds a distinct child body to parent body.
+        Fixed2,        // Fixed2 joint which adds a distinct child body (with inertia etc) to parent body.
         
-        Helical,      // A 1-DoF 'screw' joint with both rotational and translational motion.
+        Helical,       // A 1-DoF 'screw' joint with both rotational and translational motion.
         
-        // Custom,
         MAXJOINT    
     };
     
@@ -277,7 +279,7 @@ public:
     getId( void ) const { return m_id; }
     
     int
-    DoFCount( void ) const { return (int) m_jointAxes.size(); }
+    DoFCount( void ) const { return (int) m_axis.size(); }
     
     BJointType 
     jtype( void ) const { return m_jtype; }
@@ -296,11 +298,11 @@ public:
 
     // the spatial axis i of the joint
     const BSpatialVector&
-    axis( int i ) const { return m_jointAxes[i]; }
+    axis( int i ) const { return m_axis[i]; }
 
     // the spatial axes of the joint
     const std::vector<BSpatialVector>&
-    axes( void ) const { return m_jointAxes; }
+    axes( void ) const { return m_axis; }
     
     // the transformation from the parent body frame $\lambda(i)$ to body $i$ 
     // ${i}^X_{\lambda(i)} = X_J * X_T(i)$
@@ -347,7 +349,7 @@ public:
     void
     windex( int w ) { m_widx = w; }
 
-    BQuat
+    const BQuat
     getQuat( const std::vector<BScalar> &q ) const;
     
     void 
@@ -359,16 +361,18 @@ public:
     
     bool 
     operator!=( const BJoint &v ) const { return (m_id != v.m_id); }
-    
-    static std::string 
-    toString( BJointType jt );
-    
+
     
     friend std::ostream&
     operator<<( std::ostream &ostr, const BJoint &j );
     
     friend std::istream& 
     operator>>( std::istream &istr, BJoint &j );
+    
+    
+    static std::string 
+    toString( BJointType jt );
+    
     
 private:
     
@@ -410,7 +414,7 @@ private:
     BJointSpace       m_S; 
 
     // spatial axes of the joint; 1 for each degree of freedom
-    std::vector<BSpatialVector> m_jointAxes;
+    std::vector<BSpatialVector> m_axis;
     
     // motion subspace constants -- note type here is std::vector not std::array
     static const std::vector<std::vector<BScalar>> m_ZERO_6x3;
@@ -437,7 +441,7 @@ operator<<( std::ostream &ostr, const BJoint &j )
    
     ostr << j.m_S  << '\n';
 
-    ostr << j.m_jointAxes << '\n';
+    ostr << j.m_axis << '\n';
     
     return ostr;
 }
@@ -462,7 +466,7 @@ operator>>( std::istream &istr, BJoint &j )
    
     istr >> j.m_S;
 
-    istr >> j.m_jointAxes;
+    istr >> j.m_axis;
     
     return istr;
 }

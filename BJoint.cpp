@@ -38,73 +38,73 @@ BJoint::BJoint(BJointType joint_type) : m_id(0),
                                         m_v_J(B_ZERO_6),
                                         m_c_J(B_ZERO_6),
                                         m_S(m_ZERO_1x6),
-                                        m_jointAxes(1)
+                                        m_axis(1)
 {
     
     if (m_jtype == BJointType::RevoluteX) 
     {
-        m_jointAxes[0] = BSpatialVector(B_XAXIS, B_ZERO_3);
+        m_axis[0] = BSpatialVector(B_XAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::RevoluteY) 
     {
-        m_jointAxes[0] = BSpatialVector(B_YAXIS, B_ZERO_3);
+        m_axis[0] = BSpatialVector(B_YAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::RevoluteZ) 
     {
-        m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_axis[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::Spherical) 
     {
-        m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
-        m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
-        m_jointAxes[2] = BSpatialVector(B_XAXIS, B_ZERO_3);
+        m_axis.resize(3);
+        m_axis[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_axis[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
+        m_axis[2] = BSpatialVector(B_XAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::EulerZYX) 
     {
-        m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
-        m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
-        m_jointAxes[2] = BSpatialVector(B_XAXIS, B_ZERO_3);
+        m_axis.resize(3);
+        m_axis[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_axis[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
+        m_axis[2] = BSpatialVector(B_XAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::EulerXYZ) 
     {
-        m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_XAXIS, B_ZERO_3);
-        m_jointAxes[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
-        m_jointAxes[2] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_axis.resize(3);
+        m_axis[0] = BSpatialVector(B_XAXIS, B_ZERO_3);
+        m_axis[1] = BSpatialVector(B_YAXIS, B_ZERO_3);
+        m_axis[2] = BSpatialVector(B_ZAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::EulerYXZ) 
     {
-        m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_YAXIS, B_ZERO_3);
-        m_jointAxes[1] = BSpatialVector(B_XAXIS, B_ZERO_3);
-        m_jointAxes[2] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_axis.resize(3);
+        m_axis[0] = BSpatialVector(B_YAXIS, B_ZERO_3);
+        m_axis[1] = BSpatialVector(B_XAXIS, B_ZERO_3);
+        m_axis[2] = BSpatialVector(B_ZAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::EulerZXY) 
     {
-        m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
-        m_jointAxes[1] = BSpatialVector(B_XAXIS, B_ZERO_3);
-        m_jointAxes[2] = BSpatialVector(B_YAXIS, B_ZERO_3);
+        m_axis.resize(3);
+        m_axis[0] = BSpatialVector(B_ZAXIS, B_ZERO_3);
+        m_axis[1] = BSpatialVector(B_XAXIS, B_ZERO_3);
+        m_axis[2] = BSpatialVector(B_YAXIS, B_ZERO_3);
     } 
     else if (m_jtype == BJointType::TranslationXYZ) 
     {
-        m_jointAxes.resize(3);
-        m_jointAxes[0] = BSpatialVector(B_ZERO_3, B_XAXIS);
-        m_jointAxes[1] = BSpatialVector(B_ZERO_3, B_YAXIS);
-        m_jointAxes[2] = BSpatialVector(B_ZERO_3, B_ZAXIS);
+        m_axis.resize(3);
+        m_axis[0] = BSpatialVector(B_ZERO_3, B_XAXIS);
+        m_axis[1] = BSpatialVector(B_ZERO_3, B_YAXIS);
+        m_axis[2] = BSpatialVector(B_ZERO_3, B_ZAXIS);
     } 
     else if (m_jtype >= BJointType::J1DoF && m_jtype <= BJointType::J6DoF) 
     {
         // create a joint and allocate memory for it.
         int DoF_count = joint_type - J1DoF + 1; 
-        m_jointAxes.resize(DoF_count, B_ZERO_6); 
-        std::cout << "Warning: zero vector " << m_jointAxes[0] << std::endl;
+        m_axis.resize(DoF_count, B_ZERO_6); 
+        std::cout << "Warning: zero vector " << m_axis[0] << std::endl;
     } 
     else if (m_jtype == BJointType::Fixed2)
     {
-        m_jointAxes.clear(); // DoF = 0
+        m_axis.clear(); // DoF = 0
     }
     else if (m_jtype != BJointType::Fixed1 && m_jtype != BJointType::FloatingBase) 
     {
@@ -112,10 +112,10 @@ BJoint::BJoint(BJointType joint_type) : m_id(0),
         exit(EXIT_FAILURE);
     }
     
-    if (!m_jointAxes.empty())
+    if (!m_axis.empty())
     {
-        setJointSpace(m_jointAxes[0]);
-        m_v_J = m_jointAxes[0];
+        setJointSpace(m_axis[0]);
+        m_v_J = m_axis[0];
     }
 }
 
@@ -131,7 +131,7 @@ BJoint::BJoint( BJointType joint_type, const BVector3 &joint_axis ) : m_id(0),
                                                                       m_v_J(B_ZERO_6),
                                                                       m_c_J(B_ZERO_6),
                                                                       m_S(m_ZERO_1x6),
-                                                                      m_jointAxes(1)
+                                                                      m_axis(1)
 {
     // Only rotation around the Z-axis
     assert( joint_type == BJointType::Revolute || joint_type == BJointType::Prismatic );
@@ -140,19 +140,19 @@ BJoint::BJoint( BJointType joint_type, const BVector3 &joint_axis ) : m_id(0),
     {
         // make sure we have a unit axis
         // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
-        m_jointAxes[0].set( joint_axis, B_ZERO_3  );
+        m_axis[0].set( joint_axis, B_ZERO_3  );
     } 
     else if (m_jtype == BJointType::Prismatic) 
     {
         // make sure we have a unit axis
         // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
-        m_jointAxes[0].set( B_ZERO_3, joint_axis );
+        m_axis[0].set( B_ZERO_3, joint_axis );
     }
     
-    if (!m_jointAxes.empty())
+    if (!m_axis.empty())
     {
-        setJointSpace(m_jointAxes[0]);
-        m_v_J = m_jointAxes[0];
+        setJointSpace(m_axis[0]);
+        m_v_J = m_axis[0];
     }
 }
 
@@ -173,10 +173,10 @@ BJoint::BJoint( const BSpatialVector &axis_0 ): m_id(0),
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
-                                                m_jointAxes(1, axis_0)
+                                                m_axis(1, axis_0)
 {
-    setJointSpace(m_jointAxes[0]);
-    m_v_J = m_jointAxes[0];
+    setJointSpace(m_axis[0]);
+    m_v_J = m_axis[0];
     
     // TODO: this has to be properly determined AND test case. Try Matt's dot product idea
     if (axis_0 == BSpatialVector(B_XAXIS, B_ZERO_3)) 
@@ -200,7 +200,7 @@ BJoint::BJoint( const BSpatialVector &axis_0 ): m_id(0),
         m_jtype = BJointType::Helical;
     }
     
-    validate_spatial_axis(m_jointAxes[0]);  
+    validate_spatial_axis(m_axis[0]);  
 }
 
 BJoint::BJoint( const BSpatialVector &axis_0, 
@@ -214,7 +214,7 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
-                                                m_jointAxes()
+                                                m_axis()
 {
     setJoint({axis_0, axis_1}); 
 }
@@ -231,7 +231,7 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
-                                                m_jointAxes()
+                                                m_axis()
 {
     setJoint({axis_0, axis_1, axis_2}); 
 }
@@ -249,7 +249,7 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
-                                                m_jointAxes()
+                                                m_axis()
 {
     setJoint({axis_0, axis_1, axis_2, axis_3}); 
 }
@@ -268,7 +268,7 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
-                                                m_jointAxes()
+                                                m_axis()
 {
     setJoint({axis_0, axis_1, axis_2, axis_3, axis_4}); 
 }
@@ -288,7 +288,7 @@ BJoint::BJoint( const BSpatialVector &axis_0,
                                                 m_v_J(B_ZERO_6),
                                                 m_c_J(B_ZERO_6),
                                                 m_S(m_ZERO_1x6),
-                                                m_jointAxes()
+                                                m_axis()
 {
     setJoint({axis_0, axis_1, axis_2, axis_3, axis_4, axis_5}); 
 }
@@ -299,7 +299,7 @@ BJoint::setJoint( const std::vector<BSpatialVector> &axes )
 {
     int DoF_count = (int) axes.size();
     
-    m_jointAxes = axes;
+    m_axis = axes;
     
     // emulated 2-6 DoF joint.
     switch (DoF_count)
@@ -314,7 +314,7 @@ BJoint::setJoint( const std::vector<BSpatialVector> &axes )
 
     for (int i = 0; i < DoF_count; ++i)
     {
-        validate_spatial_axis(m_jointAxes[i]);
+        validate_spatial_axis(m_axis[i]);
     }
 }
 
@@ -374,10 +374,10 @@ BJoint::clear( void )
     m_c_J = B_ZERO_6;
     m_S   = m_ZERO_1x6; // 1 DoF
     
-    m_jointAxes.clear();
+    m_axis.clear();
 }    
 
-BQuat
+const BQuat
 BJoint::getQuat(const std::vector<BScalar> &q) const
 {
     assert(m_jtype == BJointType::Spherical);
@@ -447,9 +447,9 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     if (m_jtype == BJointType::Fixed2)  // 0 DoF 
     {
         m_X_lambda = m_X_T; 
-        m_S        = m_ZERO_1x6;
-        m_v_J      = B_ZERO_6;
-        m_c_J      = B_ZERO_6;
+        //m_S        = m_ZERO_1x6;
+        //m_v_J      = B_ZERO_6;
+        //m_c_J      = B_ZERO_6;
     } 
     else if (m_jtype == BJointType::RevoluteX)  // 1 DoF 
     {
@@ -497,7 +497,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == BJointType::Revolute) // 1 DoF
     {
-        m_X_J = arb::Xrot(q[m_qidx], m_jointAxes[0].ang());
+        m_X_J = arb::Xrot(q[m_qidx], m_axis[0].ang());
    
         // Note m_S should be non-zero here
         BSpatialVector MS(m_S);
@@ -507,7 +507,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     }
     else if (m_jtype == BJointType::Prismatic) // 1 DoF
     {
-        m_X_J = arb::Xtrans(m_jointAxes[0].lin() * q[m_qidx]);
+        m_X_J = arb::Xtrans(m_axis[0].lin() * q[m_qidx]);
 
         // Note m_S should be non-zero here
         BSpatialVector MS(m_S);
@@ -517,8 +517,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == BJointType::Helical) // 1 DoF
     {
-        BVector3 ang(m_jointAxes[0].ang());
-        BVector3 lin(m_jointAxes[0].lin());
+        BVector3 ang(m_axis[0].ang());
+        BVector3 lin(m_axis[0].lin());
         
         BSpatialTransform jrot   = arb::Xrot(q[m_qidx], ang);
         BSpatialTransform jtrans = arb::Xtrans(lin * q[m_qidx]);
