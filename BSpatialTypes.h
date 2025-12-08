@@ -83,10 +83,10 @@ namespace arb {
     nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }
 
     inline bool 
-    nearZero( const BVector3 &v )  {  return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
+    nearZero( const BVector3 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
 
     inline bool 
-    nearZero( const BMatrix3 &m )  {  return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
+    nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
 
 
     inline bool 
@@ -216,59 +216,74 @@ operator>>(std::istream &istr, std::pair<T,U> &v)
     return istr;
 }
 
+// stream operators;
 template <typename T>
 std::ostream&
-operator<<( std::ostream &ostr, const std::vector<T> &v )
+operator<<( std::ostream& ostr, const std::vector<T> &v )
 {
-    ostr << v.size() << '\n';
+    ostr << int(v.size()) << '\n';
+    
     int count = 0;
-    auto print = [&ostr, &count](const T& val) { ostr << val << (!(++count % 10) ? '\n' : ' '); };
-    std::for_each(v.begin(), v.end(), print);
+    for (auto  i = v.begin(); i != v.end(); ++i)
+    {
+        ostr << *i << ((++count % 20) ? ' ' : '\n');
+    }
+
     return ostr;
 }
 
 template <typename T>
 std::istream& 
-operator>>( std::istream &istr, std::vector<T> &v )
+operator>>( std::istream& istr, std::vector<T> &v )
 {
     int len = 0;    
     istr >> len;
     v.resize(len);
-    auto read = [&istr](T& val) { istr >> val; };
-    std::for_each(v.begin(), v.end(), read);
+
+    for (auto  i = v.begin(); i != v.end(); ++i)
+    {
+        istr >> *i;
+    }
+    
     return istr;
 }
 
 template <typename K, typename T>
 std::ostream& 
-operator<<(std::ostream &ostr, const std::map<K,T> &m)
+operator<<(std::ostream& ostr, const std::map<K,T> &m)
 {
-    ostr << m.size() << '\n';
-    auto print = [&ostr](const typename std::map<K,T>::value_type &val) { ostr << val.first << ' ' << val.second <<  '\n'; };
-    std::for_each(m.begin(), m.end(), print);
+    ostr << int(m.size()) << '\n';
+
+    for (auto  i = m.begin(); i != m.end(); ++i)
+    {
+        ostr << i->first << ' ' << i->second <<  '\n';
+    }
+    
     return ostr;
 }
 
 template <typename K, typename T>
 std::istream&
-operator>>(std::istream &istr, std::map<K,T> &m)
+operator>>(std::istream& istr, std::map<K,T> &m)
 {
     m.clear();
 
     K key = K();
-    T item = T();
+    T val = T();
     
     int len = 0;
     istr >> len;
     
-    auto lastPos = m.begin();
+    auto pos = m.begin();
     for (int i = 0; i < len; ++i)
     {
-        istr >> key >> item;
-        lastPos = m.insert( lastPos, typename std::map<K,T>::value_type( key, item ));
+        istr >> key >> val;
+        pos = m.insert( pos, typename std::map<K,T>::value_type( key, val ));
     }
+    
     return istr;
 }
+
 
 
 #endif
