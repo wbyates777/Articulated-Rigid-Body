@@ -227,7 +227,7 @@ public:
     }
     
     
-    BABInertia 
+    const BABInertia 
     apply( const BABInertia &abi ) const  
     // returns  X^* I X^{-1} 
     {
@@ -238,7 +238,7 @@ public:
         return BABInertia( ET * abi.M() * m_E,  ET * H * m_E,  ET * I * m_E );
     }
     
-    BABInertia
+    const BABInertia
     applyTranspose( const BABInertia &abi ) const   
     // returns X^T I X
     {
