@@ -28,7 +28,15 @@ class BMatrix63
 public:
     
     BMatrix63( void )=default;
-    constexpr explicit BMatrix63( BScalar s ) { set(s); }
+    constexpr explicit BMatrix63( BScalar s ) : m_data 
+                                                {   
+                                                    s,  s,  s, 
+                                                    s,  s,  s, 
+                                                    s,  s,  s, 
+                                                    s,  s,  s, 
+                                                    s,  s,  s, 
+                                                    s,  s,  s 
+                                                } {}
     
     constexpr BMatrix63( const std::array<std::array<BScalar, 3>, 6> &d): m_data(d) {}
     
@@ -45,19 +53,19 @@ public:
                          BScalar m20, BScalar m21, BScalar m22, 
                          BScalar m30, BScalar m31, BScalar m32, 
                          BScalar m40, BScalar m41, BScalar m42, 
-                         BScalar m50, BScalar m51, BScalar m52 ) 
-    { 
-        set(m00, m01, m02,
-            m10, m11, m12,
-            m20, m21, m22, 
-            m30, m31, m32,
-            m40, m41, m42, 
-            m50, m51, m52);
-    }
+                         BScalar m50, BScalar m51, BScalar m52 )  : m_data  
+                                                                    {   
+                                                                        m00,  m01,  m02, 
+                                                                        m10,  m11,  m12, 
+                                                                        m20,  m21,  m22, 
+                                                                        m30,  m31,  m32, 
+                                                                        m40,  m41,  m42, 
+                                                                        m50,  m51,  m52 
+                                                                    } {}
     
     ~BMatrix63( void )=default;
     
-    constexpr void
+    void
     set( BScalar s ) 
     {
         m_data = 
@@ -86,7 +94,7 @@ public:
         };
     }
     
-    constexpr void 
+    void 
     set( BScalar m00, BScalar m01, BScalar m02, 
          BScalar m10, BScalar m11, BScalar m12, 
          BScalar m20, BScalar m21, BScalar m22, 
@@ -254,7 +262,12 @@ class BMatrix36
 public:
 
     BMatrix36( void )=default;
-    constexpr explicit BMatrix36( BScalar s ) { set(s); }
+    constexpr explicit BMatrix36( BScalar s ) : m_data 
+                                                {
+                                                    s, s, s, s, s, s,
+                                                    s, s, s, s, s, s,
+                                                    s, s, s, s, s, s, 
+                                                } {}
     constexpr BMatrix36( const std::array<std::array<BScalar, 6>, 3> &d ): m_data(d) {}
     BMatrix36( const BMatrix3 &left, const BMatrix3 &right ) { set(left, right); }
     explicit BMatrix36( const std::vector<std::vector<BScalar>> &d )
@@ -265,14 +278,15 @@ public:
     constexpr BMatrix36( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
                          BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
                          BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25 ) 
-    {
-        set( m00, m01, m02, m03, m04, m05,
-             m10, m11, m12, m13, m14, m15,
-             m20, m21, m22, m23, m24, m25 );
-    }
+                         : m_data
+                         {
+                             m00, m01, m02, m03, m04, m05,
+                             m10, m11, m12, m13, m14, m15,
+                             m20, m21, m22, m23, m24, m25, 
+                         } {}
     ~BMatrix36( void )=default;
 
-    constexpr void
+    void
     set( BScalar s ) 
     {
         m_data = 
@@ -295,7 +309,7 @@ public:
         };
     }
     
-    constexpr void 
+    void 
     set( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
          BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
          BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25 )
