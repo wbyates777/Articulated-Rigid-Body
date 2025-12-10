@@ -62,27 +62,38 @@ public:
 
     BSpatialMatrix( void )=default;
     constexpr BSpatialMatrix( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
-    
-    constexpr explicit BSpatialMatrix( BScalar s ){ set(s); }
     explicit BSpatialMatrix( const std::vector<std::vector<BScalar>> &d ) 
     {
         assert(m_data.size() == 6 && m_data[0].size() == 6);
         set(d);
     }
+    
+    constexpr explicit BSpatialMatrix( BScalar s ) 
+    : m_data 
+    {
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s
+    } {}
+    
     constexpr BSpatialMatrix( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
                               BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
                               BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25,
                               BScalar m30, BScalar m31, BScalar m32, BScalar m33, BScalar m34, BScalar m35,
                               BScalar m40, BScalar m41, BScalar m42, BScalar m43, BScalar m44, BScalar m45,
                               BScalar m50, BScalar m51, BScalar m52, BScalar m53, BScalar m54, BScalar m55 ) 
-    {
-        set(m00, m01, m02, m03, m04, m05,
-            m10, m11, m12, m13, m14, m15,
-            m20, m21, m22, m23, m24, m25,
-            m30, m31, m32, m33, m34, m35,
-            m40, m41, m42, m43, m44, m45,
-            m50, m51, m52, m53, m54, m55);
-    }
+                              : m_data 
+                              {
+                                  m00,  m01,  m02,  m03,  m04,  m05,
+                                  m10,  m11,  m12,  m13,  m14,  m15,
+                                  m20,  m21,  m22,  m23,  m24,  m25,
+                                  m30,  m31,  m32,  m33,  m34,  m35,
+                                  m40,  m41,  m42,  m43,  m44,  m45,
+                                  m50,  m51,  m52,  m53,  m54,  m55
+                              } {}
     
     BSpatialMatrix( const BMatrix3 &m0, const BMatrix3 &m1, 
                     const BMatrix3 &m2, const BMatrix3 &m3 )
@@ -93,7 +104,7 @@ public:
     ~BSpatialMatrix( void )=default;
 
 
-    constexpr void
+    void
     set( BScalar s ) 
     {
         m_data = 
@@ -122,7 +133,7 @@ public:
         };
     }
     
-    constexpr void 
+    void 
     set( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
          BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
          BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25,
@@ -401,7 +412,7 @@ operator<<( std::ostream &ostr, const BSpatialMatrix &m )
          << m[2][0] << ' ' << m[2][1] << ' ' << m[2][2] << ' ' << m[2][3] << ' ' << m[2][4] << ' ' << m[2][5] << '\n'
          << m[3][0] << ' ' << m[3][1] << ' ' << m[3][2] << ' ' << m[3][3] << ' ' << m[3][4] << ' ' << m[3][5] << '\n'
          << m[4][0] << ' ' << m[4][1] << ' ' << m[4][2] << ' ' << m[4][3] << ' ' << m[4][4] << ' ' << m[4][5] << '\n'
-         << m[5][0] << ' ' << m[5][1] << ' ' << m[5][2] << ' ' << m[5][3] << ' ' << m[5][4] << ' ' << m[5][5] << ' ';
+         << m[5][0] << ' ' << m[5][1] << ' ' << m[5][2] << ' ' << m[5][3] << ' ' << m[5][4] << ' ' << m[5][5] << '\n';
     return ostr;
 }
 
