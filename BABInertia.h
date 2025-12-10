@@ -14,11 +14,11 @@
  Articulated body inertia is a generalisation of spatial inertia 
  and is defined as a 6x6 matrix 
  
- | I   H |
- | H^T M |
+ | I_o  H |
+ | H^T  M |
  
  where 
-     I is the rotational inertia at body frame origin
+     I_o is the rotational inertia at body frame origin
      H is the generalised inertia matrix, initially H = |h|\times, 
      M is generalised mass, initially M = m * B_IDENTITY_3x3 
  and

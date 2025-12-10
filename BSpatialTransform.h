@@ -59,6 +59,10 @@
  
  Note  X^* = X^{-T} and  X^* == Ad_X (compare BAdjoint.h)
  
+ 8) When when transforming a spatial inertia I by X note:
+    X.apply(I) returns  X^* I X^{-1} 
+    X.applyTranspose(I) returns X^T I X  
+ 
  See also:
  
  https://en.wikipedia.org/wiki/Rotation_matrix

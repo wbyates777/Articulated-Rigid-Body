@@ -20,14 +20,18 @@
 
  $h$ is the magnitude and direction of the body’s linear momentum (see RBDA, Section 2.12, page 31).
  
+ 3D Rotational inertia can be specified at the centre of mass (com), denoted I_com, or
+ at the origin of a coordinate frame, denoted I_o. If com is B_ZERO_3 then I_com and I_o coincide and 
+ I_com == I_o. If com is non-zero I_com can be translated to the coordinate frame origin I_o.
+ 
  Spatial Inertia can also be represented as a 6D spatial matrix defined by
  
- |  I    hx |
- | -hx   M  |
+ |  I_o    hx  |
+ |  -hx     M  |
  
  where
  
-     I is the rotational inertia at body frame origin
+     I_o is the rotational inertia at body frame origin
      hx = arb::cross(h) is the generalised inertia matrix
      M = m * S_IDENTITY_3x3 is the generalised mass 
  
