@@ -36,7 +36,7 @@ public:
     
     BFixedBody( void )=default;
     BFixedBody( const BBody &b ):  m_id(0), m_parentId(0), 
-                                   m_mass(b.mass()), m_com(b.com()), m_I_com(b.inertiaCom()), 
+                                   m_mass(b.I().mass()), m_com(b.I().com()), m_I_com(b.I().inertiaCom()), 
                                    m_parent(B_IDENTITY_TRANS), m_base(B_IDENTITY_TRANS) {} 
     ~BFixedBody( void )=default;
   

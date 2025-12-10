@@ -107,6 +107,7 @@ public:
     void
     setMass( BScalar mass ) { setInertiaCom(mass, com(), inertiaCom()); }
 
+    // centre of mass in body coordinates
     void
     setCom(const BVector3 &com ) { setInertiaCom(m_mass, com, inertiaCom()); }
     

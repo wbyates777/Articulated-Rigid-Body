@@ -171,7 +171,7 @@ public:
     
     // total of degrees of freedom for these articulated bodies
     int  
-    dofCount( void ) const { return m_dof_count; }
+    DoFCount( void ) const { return m_dof_count; }
     
     
     const BVector3& 

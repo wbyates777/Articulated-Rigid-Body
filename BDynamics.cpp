@@ -219,8 +219,8 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         }
     }
      
-    // second  pass (leaves to root) to calculate articulated body spatial intertia of bodies   
-    // 'm.IA' and the spatial bias force 'm.pA' using intermediate results U_i, D_i, and u_i
+    // second  pass (leaves to root) to calculate  articulated intertia of bodies   
+    // 'm_IA' and the spatial bias force 'm_pA' using intermediate results U_i, D_i, and u_i
     // see RBDA, Section 7.3, equations 7.43, 7.44, 7.45, 7.47, 7.48
     // $U_i = I_i^A S_i$ 
     // $D_i = S_i^T U_i$ 

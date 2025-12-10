@@ -317,12 +317,12 @@ BModel::mass( BBodyId bid ) const
     {
         if (children.contains(m_lambda[i]))
         {
-            mass += m_body[i].mass();
+            mass += m_body[i].I().mass();
             children.insert(i);
         }
     }
 
-    return m_body[bid].mass() + mass;
+    return m_body[bid].I().mass() + mass;
 }
 
 BVector3 
@@ -331,18 +331,18 @@ BModel::com( BBodyId bid ) const
     if (isFixedBodyId(bid)) 
         bid = m_fixed[bid - m_fbd].movableParent();
 
-    assert(m_body[bid].mass() > 0);
+    assert(m_body[bid].I().mass() > 0);
     
-    BScalar m = m_body[bid].mass();
-    BVector3 sum = m_body[bid].mass() * m_body[bid].X_base().applyTranspose(m_body[bid].com());
+    BScalar m = m_body[bid].I().mass();
+    BVector3 sum = m_body[bid].I().mass() * m_body[bid].X_base().applyTranspose(m_body[bid].I().com());
 
     std::set<BBodyId> children = {bid};
     for (int i = 1; i < m_body.size(); ++i)
     {
-        if (children.contains(m_lambda[i]) && m_body[i].mass() > 0.0)
+        if (children.contains(m_lambda[i]) && m_body[i].I().mass() > 0.0)
         {
-            m += m_body[i].mass();
-            sum  += m_body[i].mass() * m_body[i].X_base().applyTranspose(m_body[i].com());
+            m += m_body[i].I().mass();
+            sum  += m_body[i].I().mass() * m_body[i].X_base().applyTranspose(m_body[i].I().com());
             children.insert(i);
         }
     }
@@ -609,7 +609,7 @@ BModel::setMass(BBodyId bid, BScalar mass)
     }
     else
     {
-        m_body[bid].setMass( mass );
+        m_body[bid].I().setMass( mass );
     }
 }
 
@@ -625,7 +625,7 @@ BModel::setCom(BBodyId bid, const BVector3 &com)
     }
     else
     {
-        m_body[bid].setCom( com );
+        m_body[bid].I().setCom( com );
     }
 }
 
@@ -641,7 +641,7 @@ BModel::setInertiaCom(BBodyId bid, const BMatrix3 &I_com)
     }
     else
     {
-        m_body[bid].setInertiaCom( I_com ); // calls my code now -- it does update
+        m_body[bid].I().setInertiaCom( I_com ); // calls my code now -- it does update
     }
 }
 

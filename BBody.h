@@ -120,40 +120,14 @@ public:
         m_X_base.clear();
         m_isVirtual = isVirtual;
     }
-    
-    void 
-    setMass( BScalar m ) { m_I.setMass(m); }
-    
-    BScalar 
-    mass( void ) const { return m_I.mass(); }
-
-    // centre of mass in body coordinates
-    void
-    setCom( const BVector3 &c ) { m_I.setCom(c); }
-    
-    const BVector3 
-    com( void ) const { return  m_I.com(); }
-    
-    //  magnitude and direction of linear momentum; first moment of mass 
-    const BVector3 
-    h( void ) const { return m_I.h(); }
-    
-    // set the inertia at the centre of mass $com$ (which may be non-zero)
-    void 
-    setInertiaCom( const BMatrix3 &I_com ) { m_I.setInertiaCom(I_com); }
-
-    // get the inertia at the centre of mass $com$ (which may be non-zero)
-    const BMatrix3 //used in Fixed body constructor
-    inertiaCom( void ) const { return m_I.inertiaCom();  }
-    
-    // get the inertia at the the origin of this body's coordinate frame
-    const BMatrix3& 
-    inertia( void ) const { return m_I.inertia();  } 
-    
+ 
 
     // spatial interia of body at the origin $I_i$ (see RBDA, Section 7.1) 
     const BRBInertia&
     I( void ) const { return m_I; }
+    
+    BRBInertia&
+    I( void ) { return m_I; }
 
     void  
     I( const BRBInertia &si ) { m_I = si; }
@@ -164,10 +138,10 @@ public:
     void 
     join( const BSpatialTransform &X, const BBody &other_body )
     {
-        if (other_body.mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
+        if (other_body.I().mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
             return;
         
-        assert(m_I.mass() + other_body.mass() != 0.0);
+        assert(m_I.mass() + other_body.I().mass() != 0.0);
         m_I += X.applyTranspose(other_body.I()); 
     }
 
@@ -176,10 +150,10 @@ public:
     void 
     separate( const BSpatialTransform &X, const BBody &other_body )
     {
-        if (other_body.mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
+        if (other_body.I().mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
             return;
         
-        assert(m_I.mass() - other_body.mass() != 0.0);
+        assert(m_I.mass() - other_body.I().mass() != 0.0);
         m_I -= X.applyTranspose(other_body.I()); 
     }
     
@@ -234,6 +208,7 @@ public:
     
     bool 
     operator!=( const BBody &v ) const { return (m_id != v.m_id); }
+    
     
     friend std::ostream&
     operator<<( std::ostream &ostr, const BBody &b );

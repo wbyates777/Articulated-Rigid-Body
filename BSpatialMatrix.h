@@ -64,20 +64,18 @@ public:
     constexpr BSpatialMatrix( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
     explicit BSpatialMatrix( const std::vector<std::vector<BScalar>> &d ) 
     {
-        assert(m_data.size() == 6 && m_data[0].size() == 6);
         set(d);
     }
     
-    constexpr explicit BSpatialMatrix( BScalar s ) 
-    : m_data 
-    {
-        s,  s,  s,  s,  s,  s,
-        s,  s,  s,  s,  s,  s,
-        s,  s,  s,  s,  s,  s,
-        s,  s,  s,  s,  s,  s,
-        s,  s,  s,  s,  s,  s,
-        s,  s,  s,  s,  s,  s
-    } {}
+    constexpr explicit BSpatialMatrix( BScalar s ): m_data 
+                                                    {
+                                                        s,  s,  s,  s,  s,  s,
+                                                        s,  s,  s,  s,  s,  s,
+                                                        s,  s,  s,  s,  s,  s,
+                                                        s,  s,  s,  s,  s,  s,
+                                                        s,  s,  s,  s,  s,  s,
+                                                        s,  s,  s,  s,  s,  s
+                                                    } {}
     
     constexpr BSpatialMatrix( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
                               BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
