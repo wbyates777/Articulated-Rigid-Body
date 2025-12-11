@@ -61,11 +61,9 @@ class BSpatialMatrix
 public:
 
     BSpatialMatrix( void )=default;
+    
     constexpr BSpatialMatrix( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
-    explicit BSpatialMatrix( const std::vector<std::vector<BScalar>> &d ) 
-    {
-        set(d);
-    }
+    explicit BSpatialMatrix( const std::vector<std::vector<BScalar>> &d )  { set(d); }
     
     constexpr explicit BSpatialMatrix( BScalar s ): m_data 
                                                     {
@@ -377,14 +375,14 @@ namespace arb
     }
 
 
-    // see this header for comments
+    //  m^{-1} - see this header for comments
     inline const BMatrix3 
     inverse( const BMatrix3 &m ) 
     { 
         return glm::inverse(m);
     }
 
-    // style choice - I prefer arb::transpose(m) to m.transpose() 
+    //  m^T - style choice - I prefer arb::transpose(m) to m.transpose() 
     inline const BMatrix3 
     transpose( const BMatrix3 &m ) 
     { 
@@ -397,6 +395,7 @@ namespace arb
         //return retVal;  
     }
 
+    //  m^T  
     inline const BSpatialMatrix
     transpose( const BSpatialMatrix &m ) 
     { 

@@ -646,7 +646,6 @@ BModel::setInertiaCom(BBodyId bid, const BMatrix3 &I_com)
 }
 
 
-
 void 
 BModel::setBody( BBodyId bid, BScalar mass, const BVector3 &com, const BMatrix3 &I_com )
 {

@@ -219,7 +219,7 @@ operator>>(std::istream &istr, std::pair<T,U> &v)
 // stream operators;
 template <typename T>
 std::ostream&
-operator<<( std::ostream& ostr, const std::vector<T> &v )
+operator<<( std::ostream &ostr, const std::vector<T> &v )
 {
     ostr << int(v.size()) << '\n';
     
@@ -234,7 +234,7 @@ operator<<( std::ostream& ostr, const std::vector<T> &v )
 
 template <typename T>
 std::istream& 
-operator>>( std::istream& istr, std::vector<T> &v )
+operator>>( std::istream &istr, std::vector<T> &v )
 {
     int len = 0;    
     istr >> len;
@@ -250,7 +250,7 @@ operator>>( std::istream& istr, std::vector<T> &v )
 
 template <typename K, typename T>
 std::ostream& 
-operator<<(std::ostream& ostr, const std::map<K,T> &m)
+operator<<(std::ostream &ostr, const std::map<K,T> &m)
 {
     ostr << int(m.size()) << '\n';
 
@@ -264,7 +264,7 @@ operator<<(std::ostream& ostr, const std::map<K,T> &m)
 
 template <typename K, typename T>
 std::istream&
-operator>>(std::istream& istr, std::map<K,T> &m)
+operator>>(std::istream &istr, std::map<K,T> &m)
 {
     m.clear();
 

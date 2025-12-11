@@ -23,8 +23,8 @@
      M is generalised mass, initially M = m * B_IDENTITY_3x3 
  and
      m is mass
-     c is centre of mass
-     h = m * c is linear momentum
+     com is centre of mass
+     h = m * com is linear momentum
 
  ABInertia is only used (at the moment) inside BDynamics::forward() for holding 
  interim 'articulated inertias' that are linked together in a kinematic chain/tree of bodies. 

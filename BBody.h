@@ -70,7 +70,7 @@ public:
 
     // construct a body from mass, center of mass (com) and inertia $I_com$
     // $I_com$ is defined with respect to the centre of mass $com$ 
-    // if $c = com$ is non-zero then $I_com$ will be translated to position $-com$ - the origin of the rigid body.
+    // if $com$ is non-zero then $I_com$ will be translated to position $-com$ - the origin of the rigid body.
     BBody( BScalar mass,
            const BVector3 &com,
            const BMatrix3 &I_com,

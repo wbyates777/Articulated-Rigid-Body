@@ -34,24 +34,24 @@
  Notes:
  
  1) All angles in radians
- 2) BMatrix3 E is a rotation  - the transpose of a rotation is also its inverse
+ 2) BMatrix3 E is a rotation  - the transpose of a rotation E^T is also its inverse E^{-1}
  3) BVector3 r is a translation - inverse translation is -r
  4) Note X^* = X^{-T} (RBDA, eqn 2.13)
- 5) transform of inertia see RBDA, eqn 2.66, page 34
- 6) X(E,r) in block 6x6 matrix form:
+
+ 5) X(E,r) in block 6x6 matrix form:
  
  |     E      0  |
  | -rx * E    E  |
  
  where rx = arb::cross(r)
  
-7) The remaining transforms have analytic block definitions (which differ from 
+ 6) The remaining transforms have analytic block definitions (which differ from 
    the usual matrix definitions) of inverse and transpose (see RBDA, page 22).
  
  X^{-1}  =  |    E^T      0  |
             | E^T * rx   E^T |
  
- X^{T}   =  | E^T    E^T * rx |
+ X^T     =  | E^T    E^T * rx |
             |  0         E^T  |
  
  X^*  =     | E  -rx * E |
@@ -59,9 +59,10 @@
  
  Note  X^* = X^{-T} and  X^* == Ad_X (compare BAdjoint.h)
  
- 8) When when transforming a spatial inertia I by X note:
-    X.apply(I) returns  X^* I X^{-1} 
-    X.applyTranspose(I) returns X^T I X  
+ 7) Transform of inertia see RBDA, eqn 2.66, page 34.
+    When when transforming a spatial inertia I by a spatial transform X note:
+    X.apply(I) returns I' = X^* I X^{-1} 
+    X.applyTranspose(I) returns I' = X^T I X  
  
  See also:
  
@@ -302,15 +303,15 @@ operator>>( std::istream &istr, BSpatialTransform &m )
 
 namespace arb
 {
-    // style choice - I prefer arb::transpose(m) to m.transpose()  
+    // X^T - style choice - I prefer arb::transpose(m) to m.transpose()  
     inline const BSpatialMatrix 
     transpose( const BSpatialTransform &m ) 
     { 
         const BMatrix3 ET = arb::transpose(m.E());
-        const BMatrix3 Erx = ET * arb::cross(m.r()); 
-        return BSpatialMatrix( ET, Erx, B_ZERO_3x3, ET );
+        return BSpatialMatrix( ET, ET * arb::cross(m.r()), B_ZERO_3x3, ET );
     }
 
+    // X^{-1}
     inline const BSpatialTransform 
     inverse( const BSpatialTransform &m )  
     { 

@@ -47,7 +47,7 @@
  Ad_X^{-1}  =  | E^T   E^T * rx |
                | 0       E^T    |
  
- Ad_X^{T}   =  |    E^T      0  |
+ Ad_X^T     =  |    E^T      0  |
                | E^T * rx   E^T |
  
  Ad_X^{-T}  =  |    E      0 |
@@ -58,7 +58,7 @@
  Notes: 
  
  1) Ad_X^{-T} == Ad_X^*
- 2) Ad_X ==  X^{-T}  (compare BTransform.h)
+ 2) Ad_X ==  X^{-T}  (compare BSpatialTransform.h)
  3) AdjointDual <=> AdjointInverseTranspose
  
 */
@@ -97,7 +97,7 @@ namespace arb
 
     inline const BSpatialMatrix 
     toAdjointTranspose( const BSpatialTransform &X )  
-    // Ad_X^{T} - forward force
+    // Ad_X^T - forward force
     {
         const BMatrix3 ET = arb::transpose(X.E());
         return BSpatialMatrix( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
@@ -105,7 +105,7 @@ namespace arb
 
     inline const BSpatialVector 
     applyAdjointTranspose( const BSpatialTransform &X, const BSpatialVector &f ) 
-    // Ad_X^{T} - forward force
+    // Ad_X^T - forward force
     {
         const BVector3 lin  = arb::cross(-X.r()) *  X.E() * f.ang() + X.E() * f.lin();
         const BVector3 ang = X.E() * f.ang();
