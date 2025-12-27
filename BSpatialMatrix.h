@@ -197,6 +197,14 @@ public:
         return retVal; 
     }
     
+    void
+    topLeft( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j] = m[i][j];
+    }
+    
     const BMatrix3
     topRight( void ) const 
     {
@@ -205,6 +213,14 @@ public:
             for ( int j = 3; j < 6; ++j )
                 retVal[i][j-3] = m_data[i][j];
         return retVal; 
+    }
+    
+    void
+    topRight( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j+3] = m[i][j];
     }
     
     const BMatrix3
@@ -217,6 +233,14 @@ public:
         return retVal; 
     }
     
+    void
+    botLeft( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i+3][j] = m[i][j];
+    }
+    
     const BMatrix3
     botRight( void ) const 
     {
@@ -227,6 +251,13 @@ public:
         return retVal; 
     }
 
+    void
+    botRight( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i+3][j+3] = m[i][j];
+    }
     
     const BSpatialMatrix
     operator-( void ) const
