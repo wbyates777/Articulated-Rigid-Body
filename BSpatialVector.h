@@ -39,6 +39,7 @@ public:
     
     constexpr BSpatialVector( const std::array<BScalar, 6> &d ): m_data(d) {}
     constexpr explicit BSpatialVector( BScalar s ): m_data{s, s, s, s, s, s} {}
+    constexpr explicit BSpatialVector( BScalar s0, BScalar s1 ): m_data{s0, s0, s0, s1, s1, s1} {}
     explicit BSpatialVector( const std::vector<BScalar> &d ) { assert(d.size() == 6); set(d); }
     explicit BSpatialVector( const std::vector<std::vector<BScalar>> &d ) { assert(d.size() == 1 && d[0].size() == 6); set(d[0]); }
     constexpr BSpatialVector( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ): m_data{s0, s1, s2, s3, s4, s5} {}
@@ -51,17 +52,20 @@ public:
     void
     set( BScalar s ) { m_data = { s, s, s, s, s, s }; }
     
-    void 
-    set( const std::vector<BScalar> &d ) 
-    { 
-        assert(d.size() == 6);
-        m_data = { d[0], d[1], d[2], d[3], d[4], d[5] };
-    }
+    void
+    set( BScalar s0, BScalar s1 ) { m_data = { s0, s0, s0, s1, s1, s1 }; }
     
     void 
     set( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ) 
     { 
         m_data = { s0, s1, s2, s3, s4, s5 };
+    }
+    
+    void 
+    set( const std::vector<BScalar> &d ) 
+    { 
+        assert(d.size() == 6);
+        m_data = { d[0], d[1], d[2], d[3], d[4], d[5] };
     }
     
     void 
@@ -99,7 +103,7 @@ public:
     BScalar&
     operator[]( int i ) { return m_data[i]; }
     
-    const BScalar
+    BScalar
     operator[]( int i ) const { return m_data[i]; }
 
     static size_t 
@@ -216,6 +220,35 @@ namespace arb {
 
     inline bool 
     isnan( const BSpatialVector &v ) { return (isnan(v.lin()) || isnan(v.ang())); }
+    
+    
+    inline BVector3 
+    min(const BVector3 &v1, const BVector3 &v2) 
+    { 
+        return glm::min(v1, v2);
+        //return BVector3(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]));
+    }
+    
+    inline BVector3 
+    max(const BVector3 &v1, const BVector3 &v2)
+    { 
+        return glm::max(v1, v2);
+        //return BVector3(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]));
+    }
+    
+    inline BSpatialVector 
+    min(const BSpatialVector &v1, const BSpatialVector &v2) 
+    { 
+        return BSpatialVector(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]), 
+                              std::min(v1[3],v2[3]), std::min(v1[4],v2[4]), std::min(v1[5],v2[5]));
+    }
+    
+    inline BSpatialVector 
+    max(const BSpatialVector &v1, const BSpatialVector &v2)
+    { 
+        return BSpatialVector(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]), 
+                              std::max(v1[3],v2[3]), std::max(v1[4],v2[4]), std::max(v1[5],v2[5]));
+    }
 };
 
 #endif
