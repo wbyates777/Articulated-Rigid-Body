@@ -222,28 +222,28 @@ namespace arb {
     isnan( const BSpatialVector &v ) { return (isnan(v.lin()) || isnan(v.ang())); }
     
     
-    inline BVector3 
+    inline const BVector3 
     min(const BVector3 &v1, const BVector3 &v2) 
     { 
         return glm::min(v1, v2);
         //return BVector3(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]));
     }
     
-    inline BVector3 
+    inline const BVector3 
     max(const BVector3 &v1, const BVector3 &v2)
     { 
         return glm::max(v1, v2);
         //return BVector3(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]));
     }
     
-    inline BSpatialVector 
+    inline const BSpatialVector 
     min(const BSpatialVector &v1, const BSpatialVector &v2) 
     { 
         return BSpatialVector(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]), 
                               std::min(v1[3],v2[3]), std::min(v1[4],v2[4]), std::min(v1[5],v2[5]));
     }
     
-    inline BSpatialVector 
+    inline const BSpatialVector 
     max(const BSpatialVector &v1, const BSpatialVector &v2)
     { 
         return BSpatialVector(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]), 
