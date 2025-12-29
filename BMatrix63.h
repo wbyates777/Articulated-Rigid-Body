@@ -161,6 +161,14 @@ public:
         return retVal; 
     }
     
+    void
+    top( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j] = m[i][j];
+    }
+    
     const BMatrix3
     bot( void ) const 
     {
@@ -171,6 +179,13 @@ public:
         return retVal; 
     }
     
+    void
+    bot( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i+3][j] = m[i][j];
+    }
 
     const BSpatialVector 
     operator*( const BVector3 &v ) const 
@@ -211,12 +226,80 @@ public:
         return *this;    
     }
 
+    const BMatrix63
+    operator/( BScalar s ) const
+    { 
+        BMatrix63 retVal;
+        for (int i = 0; i < 6; ++i)
+            for (int j = 0; j < 3; ++j)
+                retVal[i][j] = m_data[i][j] / s;
+        return retVal; 
+    }
+
+    const BMatrix63&
+    operator/=( BScalar s )
+    {
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j] /= s;
+        return *this;    
+    }
+    
+    const BMatrix63
+    operator-( const BMatrix63 &m ) const
+    {
+        BMatrix63 retVal;
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[i][j] = m_data[i][j] - m[i][j];
+        return retVal;
+    }
+ 
+    const BMatrix63&
+    operator-=( const BMatrix63 &m )
+    {
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j] -= m[i][j];
+        return *this;
+    }
+    
+    const BMatrix63
+    operator-( void ) const
+    {
+        BMatrix63 retVal;
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[i][j] = -m_data[i][j];
+        return retVal;
+    }
+    
+    const BMatrix63
+    operator+( const BMatrix63 &m ) const
+    {
+        BMatrix63 retVal;
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[i][j] = m_data[i][j] + m[i][j];
+        return retVal;
+    }
+    
+    const BMatrix63&
+    operator+=( const BMatrix63 &m )
+    {
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j] += m[i][j];
+        return *this;    
+    }
+    
+  
+    
     bool 
     operator==( const BMatrix63 &v ) const { return (m_data == v.m_data); }
     
     bool 
     operator!=( const BMatrix63 &v ) const { return (m_data != v.m_data); }
-
     
 private:
     
@@ -372,6 +455,14 @@ public:
         return retVal; 
     }
     
+    void
+    left( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j] = m[i][j];
+    }
+    
     const BMatrix3
     right( void ) const 
     {
@@ -382,6 +473,13 @@ public:
         return retVal; 
     }
     
+    void
+    right( const BMatrix3 &m )  
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                m_data[i][j+3] = m[i][j];
+    }
     
     const BVector3
     operator*( const BSpatialVector &v ) const 
@@ -422,6 +520,74 @@ public:
                 m_data[i][j] *= s;
         return *this;    
     }
+    
+    const BMatrix36
+    operator/( BScalar s ) const
+    { 
+        BMatrix36 retVal;
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 6; ++j)
+                retVal[i][j] = m_data[i][j] / s;
+        return retVal; 
+    }
+
+    const BMatrix36&
+    operator/=( BScalar s )
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 6; ++j )
+                m_data[i][j] /= s;
+        return *this;    
+    }
+    
+    const BMatrix36
+    operator-( const BMatrix36 &m ) const
+    {
+        BMatrix36 retVal;
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 6; ++j )
+                retVal[i][j] = m_data[i][j] - m[i][j];
+        return retVal;
+    }
+ 
+    const BMatrix36&
+    operator-=( const BMatrix36 &m )
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 6; ++j )
+                m_data[i][j] -= m[i][j];
+        return *this;
+    }
+    
+    const BMatrix36
+    operator-( void ) const
+    {
+        BMatrix36 retVal;
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 6; ++j )
+                retVal[i][j] = -m_data[i][j];
+        return retVal;
+    }
+    
+    const BMatrix36
+    operator+( const BMatrix36 &m ) const
+    {
+        BMatrix36 retVal;
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 6; ++j )
+                retVal[i][j] = m_data[i][j] + m[i][j];
+        return retVal;
+    }
+    
+    const BMatrix36&
+    operator+=( const BMatrix36 &m )
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 6; ++j )
+                m_data[i][j] += m[i][j];
+        return *this;    
+    }
+    
     
     bool 
     operator==( const BMatrix36 &v ) const { return (m_data == v.m_data); }
@@ -484,7 +650,6 @@ operator>>( std::istream &istr, BMatrix36 &m )
 
 namespace arb
 {
-
     inline bool 
     nearZero( const BMatrix63 &m )  { return (nearZero(m.top()) && nearZero(m.bot())); }
 
@@ -519,8 +684,7 @@ namespace arb
                 retVal[i][j] = m[j][i];
         return retVal;
     }
-
-}; 
+} 
 
 #endif
 
