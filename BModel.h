@@ -102,8 +102,8 @@ public:
     BBodyId 
     addBody( BBodyId parent_id,
              const BSpatialTransform &joint_frame,
-             const BJoint &joint, // used to set X_T in joint -- parent to this
-             const BBody &body, // will set bodyId
+             const BJoint &joint, 
+             const BBody &body, 
              const std::string &body_name = "" );    
 
 
@@ -127,25 +127,25 @@ public:
     setJointFrame( BBodyId bid, const BSpatialTransform &transform );
     
     // joint frame transformtion, i.e. X_T, the second argument to BModel::addBody()
-    BSpatialTransform 
+    const BSpatialTransform 
     getJointFrame( BBodyId bid ) const;
     
     // return base coordinates of body_pos where body_pos is expressed in body $bid$ coordinates 
-    BVector3
+    const BVector3
     toBasePos( BBodyId bid, const BVector3 &body_pos = B_ZERO_3 ) const;
     
     // return body $bid$ coordinates of base_pos where base_pos is expressed in base coordinates 
-    BVector3 
+    const BVector3 
     toBodyPos( BBodyId bid,  const BVector3 &base_pos ) const;
 
     // return orientation of body $bid$
-    BMatrix3 
+    const BMatrix3 
     orient( BBodyId bid ) const;
 
-    BSpatialVector  
+    const BSpatialVector  
     pointVel( BBodyId bid, const BVector3 &body_pos );
     
-    BSpatialVector
+    const BSpatialVector
     pointAcc( BBodyId bid, const BVector3 &body_pos );
     //
 
@@ -154,11 +154,11 @@ public:
     mass( BBodyId bid ) const; 
     
     // centre of mass of body $bid$ and all children bodies  (subtree)
-    BVector3 
+    const BVector3 
     com( BBodyId bid ) const; 
     
     // inertia of body $bid$ and all children bodies  (subtree)
-    BRBInertia 
+    const BRBInertia 
     inertia( BBodyId bid ) const;
     
     // size of the $\mathbf{q}$-vector.
@@ -193,7 +193,7 @@ public:
     BBodyId 
     getBodyId( const std::string &body_name ) const;
 
-    std::string 
+    const std::string 
     getBodyName( BBodyId bid ) const;
 
     // returns the id of the actual non-virtual parent body.

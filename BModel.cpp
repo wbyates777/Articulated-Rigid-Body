@@ -93,7 +93,7 @@ BModel::getBodyId( const std::string &body_name ) const
 }
 
 
-std::string 
+const std::string 
 BModel::getBodyName( BBodyId bid ) const
 // the name of a body for a given body id 
 {
@@ -131,7 +131,7 @@ BModel::getParentBodyId( BBodyId bid ) const
     return parent_id;
 }
 
-BSpatialTransform 
+const BSpatialTransform 
 BModel::getJointFrame( BBodyId bid ) const
 // returns the joint frame transformtion, i.e. the second argument to BModel::addBody()
 {
@@ -178,7 +178,7 @@ BModel::setJointFrame( BBodyId bid, const BSpatialTransform &transform )
     m_joint[child_id].X_T( transform );
 }
 
-BVector3
+const BVector3
 BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
 // returns the base coordinates of a position given in body coordinates.
 // see kinematics.cc - CalcBodyToBaseCoordinates
@@ -212,7 +212,7 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
 }
 
 
-BVector3
+const BVector3
 BModel::toBodyPos( BBodyId bid, const BVector3 &base_pos ) const
 {
     BVector3 pos;
@@ -243,7 +243,7 @@ BModel::toBodyPos( BBodyId bid, const BVector3 &base_pos ) const
     return pos;
 }
 
-BMatrix3
+const BMatrix3
 BModel::orient(const BBodyId bid)  const 
 //  an orthonormal 3x3 matrix that rotates vectors from base to body coordinates.
 {
@@ -260,7 +260,7 @@ BModel::orient(const BBodyId bid)  const
     return m_body[bid].X_base().E();
 }
 
-BSpatialVector 
+const BSpatialVector 
 BModel::pointVel( BBodyId bid, const BVector3 &body_pos ) 
 // RBDL Kinematics::CalcPointVelocity6D
 {
@@ -280,7 +280,7 @@ BModel::pointVel( BBodyId bid, const BVector3 &body_pos )
     return trans.apply(m_body[ref_bid].v());
 }
 
-BSpatialVector 
+const BSpatialVector 
 BModel::pointAcc( BBodyId bid,  const BVector3 &body_pos ) 
 // RBDL Kinematics::CalcPointAcceleration6D
 {
@@ -325,7 +325,7 @@ BModel::mass( BBodyId bid ) const
     return m_body[bid].I().mass() + mass;
 }
 
-BVector3 
+const BVector3 
 BModel::com( BBodyId bid ) const 
 {
     if (isFixedBodyId(bid)) 
@@ -350,7 +350,7 @@ BModel::com( BBodyId bid ) const
     return m_body[bid].X_base().apply(sum / m) ;
 }
 
-BRBInertia  
+const BRBInertia  
 BModel::inertia( BBodyId bid ) const
 {
     if (isFixedBodyId(bid)) 
