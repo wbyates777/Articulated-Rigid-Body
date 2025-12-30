@@ -45,13 +45,13 @@
     BVector3 h(0.0);
     BMatrix3 I_o((2.0/5.0) * mass * (radius * radius)); 
     BRBInertia I(mass, h,  I_o);
-    BSpatialMatrix invI = arb::inverse(I);
+    BMatrix6 invI = arb::inverse(I);
 
     // set initial position, velocity and acceleration
-    BSpatialVector pos(B_ZERO_3, 20.0, 50.0, 3.0), vel(0.0), acc(0.0);
+    BVector6 pos(B_ZERO_3, 20.0, 50.0, 3.0), vel(0.0), acc(0.0);
     
     // apply an angular force of 1.0 around Y axis and a linear force of 100.0 along Z axis
-    BSpatialVector force(0.0, 1.0, 0.0,  0.0, 0.0, 100.0);
+    BVector6 force(0.0, 1.0, 0.0,  0.0, 0.0, 100.0);
 
     double T = 0.0, dt = 0.01;
     std::cout << T << " position is " << pos << std::endl;
