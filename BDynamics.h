@@ -68,7 +68,7 @@ struct BModelState
     std::vector<BScalar> tau;   // forces
 };
 
-typedef  std::vector<BSpatialVector> BExtForce;
+typedef  std::vector<BVector6> BExtForce;
 
 class BDynamics
 {
@@ -123,7 +123,7 @@ private:
     // forward algorithm
     
     // temporary variables U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
-    std::vector<BSpatialVector> m_U; // $U_i = I_i^A  S_i$ 
+    std::vector<BVector6> m_U; // $U_i = I_i^A  S_i$ 
     std::vector<BScalar> m_d;        // $d_i = S_i^T U_i$
     std::vector<BScalar> m_u;        // $u_i = \tau_i − S_i^T p_i^A$
    
@@ -133,11 +133,11 @@ private:
     std::vector<BVector3>  m_dof3_u;
     
     std::vector<BABInertia> m_IA;     // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
-    std::vector<BSpatialVector> m_pA; // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
+    std::vector<BVector6> m_pA; // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
     
     // inverse algorithm
     
-    std::vector<BSpatialVector>  m_f; // $f_i$ the net internal force acting on body $B_i$ (see RBDA, equation 5.9)
+    std::vector<BVector6>  m_f; // $f_i$ the net internal force acting on body $B_i$ (see RBDA, equation 5.9)
     
 };
 

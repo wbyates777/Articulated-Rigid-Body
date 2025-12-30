@@ -10,7 +10,7 @@
  History:
 
  
- Adjoints are derrived from a BSpatialTransform X - they map between world and body coords.
+ Adjoints are derrived from a BTransform X - they map between world and body coords.
  See pages 55, 56 "A Mathematical Introduction to Robotic Manipulation",  
  Murray, R.M., Li, Z., Shankar Sastry S. 1994. 
  Note Murray et al. uses (lin, ang) vector representation.
@@ -58,7 +58,7 @@
  Notes: 
  
  1) Ad_X^{-T} == Ad_X^*
- 2) Ad_X ==  X^{-T}  (compare BSpatialTransform.h)
+ 2) Ad_X ==  X^{-T}  (compare BTransform.h)
  3) AdjointDual <=> AdjointInverseTranspose
  
 */
@@ -68,84 +68,84 @@
 #define __BADJOINT_H__
 
 
-#ifndef __BSPATIALTRANSFORM_H__
-#include "BSpatialTransform.h"
+#ifndef __BTRANSFORM_H__
+#include "BTransform.h"
 #endif
 
 
 namespace arb
 {
 
-    inline const BSpatialMatrix 
-    toAdjoint( const BSpatialTransform &X )  
+    inline const BMatrix6 
+    toAdjoint( const BTransform &X )  
     // Ad_X - forward motion
     {
         const BMatrix3 Erx = arb::cross(-X.r()) * X.E();
-        return BSpatialMatrix( X.E(), Erx, B_ZERO_3x3, X.E() );
+        return BMatrix6( X.E(), Erx, B_ZERO_3x3, X.E() );
     }
 
-    inline const BSpatialVector
-    applyAdjoint(const BSpatialTransform &X, const BSpatialVector &f)   
+    inline const BVector6
+    applyAdjoint(const BTransform &X, const BVector6 &f)   
     // Ad_X - forward motion
     {
         const BMatrix3 ET = arb::transpose(X.E());
         const BVector3 lin = ET * f.lin();
         const BVector3 ang = ET * (f.ang() - arb::cross(X.r(), f.lin()));
-        return BSpatialVector( ang,  lin );
+        return BVector6( ang,  lin );
     }
 
 
-    inline const BSpatialMatrix 
-    toAdjointTranspose( const BSpatialTransform &X )  
+    inline const BMatrix6 
+    toAdjointTranspose( const BTransform &X )  
     // Ad_X^T - forward force
     {
         const BMatrix3 ET = arb::transpose(X.E());
-        return BSpatialMatrix( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
+        return BMatrix6( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
     }
 
-    inline const BSpatialVector 
-    applyAdjointTranspose( const BSpatialTransform &X, const BSpatialVector &f ) 
+    inline const BVector6 
+    applyAdjointTranspose( const BTransform &X, const BVector6 &f ) 
     // Ad_X^T - forward force
     {
         const BVector3 lin  = arb::cross(-X.r()) *  X.E() * f.ang() + X.E() * f.lin();
         const BVector3 ang = X.E() * f.ang();
-        return BSpatialVector(ang, lin);
+        return BVector6(ang, lin);
     }
 
 
-    inline const BSpatialMatrix 
-    toAdjointInverse( const BSpatialTransform &X )  
+    inline const BMatrix6 
+    toAdjointInverse( const BTransform &X )  
     // Ad_X^{-1} - inverse motion
     {
         const BMatrix3 ET = arb::transpose(X.E());
-        return BSpatialMatrix( ET, ET * arb::cross(X.r()), B_ZERO_3x3 , ET );
+        return BMatrix6( ET, ET * arb::cross(X.r()), B_ZERO_3x3 , ET );
     }
 
-    inline const BSpatialVector 
-    applyAdjointInverse( const BSpatialTransform &X, const BSpatialVector &v ) 
+    inline const BVector6 
+    applyAdjointInverse( const BTransform &X, const BVector6 &v ) 
     // Ad_X^{-1} - inverse motion
     {
         const BVector3 lin  = X.E() * v.lin();
         const BVector3 ang = (X.E() * v.ang()) + (arb::cross(-X.r()) * X.E() * v.lin());
-        return BSpatialVector(ang, lin);
+        return BVector6(ang, lin);
     }
 
 
-    inline const BSpatialMatrix 
-    toAdjointDual( const BSpatialTransform &X )  
+    inline const BMatrix6 
+    toAdjointDual( const BTransform &X )  
     // Ad_X^{-T} or Ad_X^* - inverse force
     {
-        return BSpatialMatrix( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E() , X.E() );
+        return BMatrix6( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E() , X.E() );
     }
 
-    inline const BSpatialVector 
-    applyAdjointDual( const BSpatialTransform &X, const BSpatialVector &f )  
+    inline const BVector6 
+    applyAdjointDual( const BTransform &X, const BVector6 &f )  
     // Ad_X^{-T} or Ad_X^* - inverse force
     {
         const BMatrix3 ET = arb::transpose(X.E());
         const BVector3 lin = ET * (f.lin() - arb::cross(X.r(), f.ang()));
         const BVector3 ang = ET * f.ang();
-        return BSpatialVector(ang, lin);
+        return BVector6(ang, lin);
     }
 
 }

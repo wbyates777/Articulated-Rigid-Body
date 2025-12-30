@@ -32,8 +32,8 @@
 #ifndef __BBODY_H__
 #define __BBODY_H__
 
-#ifndef __BSPATIALTRANSFORM_H__
-#include "BSpatialTransform.h"
+#ifndef __BTRANSFORM_H__
+#include "BTransform.h"
 #endif
 
 #ifndef __BRBINERTIA_H__
@@ -136,7 +136,7 @@ public:
     // X is a transform from this frame to other body frame
     // transform other body inertia into this frame and add
     void 
-    join( const BSpatialTransform &X, const BBody &other_body )
+    join( const BTransform &X, const BBody &other_body )
     {
         if (other_body.I().mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
             return;
@@ -148,7 +148,7 @@ public:
     // X is a transform from this frame to other body frame
     // transform other body inertia into this frame and subtract
     void 
-    separate( const BSpatialTransform &X, const BBody &other_body )
+    separate( const BTransform &X, const BBody &other_body )
     {
         if (other_body.I().mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
             return;
@@ -158,45 +158,45 @@ public:
     }
     
     // transformation from the base to this body's $B_i$ coordinate frame $F^i$ - set in  BDynmaics::forward()
-    const BSpatialTransform& 
+    const BTransform& 
     X_base( void ) const { return m_X_base; }
     
     void
-    X_base( const BSpatialTransform &b )  { m_X_base = b; }
+    X_base( const BTransform &b )  { m_X_base = b; }
     
     
     // spatial velocity $v_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.34)
-    const BSpatialVector&
+    const BVector6&
     v( void ) const { return m_v; } 
 
-    BSpatialVector&
+    BVector6&
     v( void ) { return m_v; } 
     
     void
-    v( const BSpatialVector &sv ) { m_v = sv; } 
+    v( const BVector6 &sv ) { m_v = sv; } 
     
     
     // spatial acceleration $a_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.31)
-    const BSpatialVector&
+    const BVector6&
     a( void ) const { return m_a; } 
    
-    BSpatialVector&
+    BVector6&
     a( void ) { return m_a; } 
     
     void
-    a( const BSpatialVector &sv ) { m_a = sv; } 
+    a( const BVector6 &sv ) { m_a = sv; } 
     
     
     // velocity-dependent spatial acceleration term $c_i$ (see RBDA, Section 7.3, equation 7.35)
     // $c_i = c_J + v_i \cross v_J$
-    const BSpatialVector&
+    const BVector6&
     c( void ) const { return m_c; } 
    
-    BSpatialVector&
+    BVector6&
     c( void ) { return m_c; } 
     
     void
-    c( const BSpatialVector &sv ) { m_c = sv; } 
+    c( const BVector6 &sv ) { m_c = sv; } 
     
     
     bool
@@ -220,14 +220,14 @@ private:
 
     BBodyId m_id;
     
-    BSpatialVector  m_v;    // spatial velocity of the body
-    BSpatialVector  m_a;    // spatial acceleration of the body
-    BSpatialVector  m_c;    // spatial velocity-dependent acceleration term
+    BVector6  m_v;    // spatial velocity of the body
+    BVector6  m_a;    // spatial acceleration of the body
+    BVector6  m_c;    // spatial velocity-dependent acceleration term
 
     BRBInertia m_I;         // spatial inertia at origin of the body (mass, com, rotational inertia)
    
     // transformation from the base frame to this body's coordinate frame - set dynamically
-    BSpatialTransform m_X_base;
+    BTransform m_X_base;
     
     bool m_isVirtual;
 };

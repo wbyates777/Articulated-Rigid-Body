@@ -131,7 +131,7 @@ BModel::getParentBodyId( BBodyId bid ) const
     return parent_id;
 }
 
-const BSpatialTransform 
+const BTransform 
 BModel::getJointFrame( BBodyId bid ) const
 // returns the joint frame transformtion, i.e. the second argument to BModel::addBody()
 {
@@ -154,7 +154,7 @@ BModel::getJointFrame( BBodyId bid ) const
 }
 
 void 
-BModel::setJointFrame( BBodyId bid, const BSpatialTransform &transform )
+BModel::setJointFrame( BBodyId bid, const BTransform &transform )
 // sets the joint frame transformtion, i.e. the second argument to BModel::addBody()
 {
     if (isFixedBodyId(bid)) 
@@ -190,11 +190,11 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
         BBodyId fbody_id = bid - m_fbd;
         BBodyId parent_id = m_fixed[fbody_id].movableParent();
         
-        const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
+        const BTransform &X_parent = m_fixed[fbody_id].parentTrans();
         const BMatrix3 &fixed_rot  = arb::transpose(X_parent.E());
         const BVector3 &fixed_pos  = X_parent.r();
         
-        const BSpatialTransform &X_base = m_body[parent_id].X_base();
+        const BTransform &X_base = m_body[parent_id].X_base();
         const BMatrix3 &parent_rot = arb::transpose(X_base.E());
         const BVector3 &parent_pos = X_base.r();
         
@@ -204,7 +204,7 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
     else
     {
         //pos = m_body[bid].X_base().applyTranspose(body_pos);
-        const BSpatialTransform &X_base = m_body[bid].X_base();
+        const BTransform &X_base = m_body[bid].X_base();
         pos = X_base.r() + arb::transpose(X_base.E()) * body_pos;
     }
  
@@ -222,11 +222,11 @@ BModel::toBodyPos( BBodyId bid, const BVector3 &base_pos ) const
         BBodyId fbody_id = bid - m_fbd;
         BBodyId parent_id = m_fixed[fbody_id].movableParent();
         
-        const BSpatialTransform &X_parent = m_fixed[fbody_id].parentTrans();
+        const BTransform &X_parent = m_fixed[fbody_id].parentTrans();
         const BMatrix3 &fixed_rot = X_parent.E();
         const BVector3 &fixed_pos = X_parent.r();
         
-        const BSpatialTransform &X_base = m_body[parent_id].X_base();
+        const BTransform &X_base = m_body[parent_id].X_base();
         const BMatrix3 &parent_rot = X_base.E();
         const BVector3 &parent_pos = X_base.r();
         
@@ -236,7 +236,7 @@ BModel::toBodyPos( BBodyId bid, const BVector3 &base_pos ) const
     else
     {
         //pos = m_body[bid].X_base().apply(base_pos);
-        const BSpatialTransform &X_base = m_body[bid].X_base();
+        const BTransform &X_base = m_body[bid].X_base();
         pos = X_base.E() * (base_pos - X_base.r());
     }
     
@@ -251,7 +251,7 @@ BModel::orient(const BBodyId bid)  const
     {
         BBodyId fbody_id = bid - m_fbd;
         BBodyId parent_id    = m_fixed[fbody_id].movableParent();
-        BSpatialTransform baseTrans = m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base();
+        BTransform baseTrans = m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base();
         
         //  m_fixed[fbody_id].baseTrans( m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base() );
         return baseTrans.E();
@@ -260,7 +260,7 @@ BModel::orient(const BBodyId bid)  const
     return m_body[bid].X_base().E();
 }
 
-const BSpatialVector 
+const BVector6 
 BModel::pointVel( BBodyId bid, const BVector3 &body_pos ) 
 // RBDL Kinematics::CalcPointVelocity6D
 {
@@ -275,12 +275,12 @@ BModel::pointVel( BBodyId bid, const BVector3 &body_pos )
         ref_pos = toBodyPos(ref_bid, base_pos);
     }
     
-    BSpatialTransform trans( arb::transpose(orient(ref_bid)), ref_pos );
+    BTransform trans( arb::transpose(orient(ref_bid)), ref_pos );
     
     return trans.apply(m_body[ref_bid].v());
 }
 
-const BSpatialVector 
+const BVector6 
 BModel::pointAcc( BBodyId bid,  const BVector3 &body_pos ) 
 // RBDL Kinematics::CalcPointAcceleration6D
 {
@@ -295,12 +295,12 @@ BModel::pointAcc( BBodyId bid,  const BVector3 &body_pos )
         ref_pos = toBodyPos(ref_bid, base_pos); 
     }
     
-    BSpatialTransform p_X(arb::transpose(orient(ref_bid)), ref_pos);
+    BTransform p_X(arb::transpose(orient(ref_bid)), ref_pos);
     
-    BSpatialVector p_v = p_X.apply(m_body[ref_bid].v());
+    BVector6 p_v = p_X.apply(m_body[ref_bid].v());
     BVector3 a_dash = arb::cross(p_v.ang(), p_v.lin());
     
-    return p_X.apply(m_body[ref_bid].a()) + BSpatialVector(B_ZERO_3, a_dash);
+    return p_X.apply(m_body[ref_bid].a()) + BVector6(B_ZERO_3, a_dash);
 }
 
 
@@ -390,7 +390,7 @@ BModel::addName(  BBodyId bid, const std::string &body_name )
 
 BBodyId 
 BModel::addFixedJoint( const BBodyId parent_id,
-                       const BSpatialTransform &joint_frame,
+                       const BTransform &joint_frame,
                        const BJoint &joint,
                        const BBody &body,
                        const std::string &body_name )
@@ -424,7 +424,7 @@ BModel::addFixedJoint( const BBodyId parent_id,
 
 BBodyId
 BModel::addFloatingBaseJoint( BBodyId parent_id,
-                              const BSpatialTransform &joint_frame,
+                              const BTransform &joint_frame,
                               const BJoint &joint,
                               const BBody &body,
                               const std::string &body_name )
@@ -438,7 +438,7 @@ BModel::addFloatingBaseJoint( BBodyId parent_id,
                           null_body);
     
     return addBody(null_parent,
-                   BSpatialTransform(B_IDENTITY_TRANS),
+                   BTransform(B_IDENTITY_TRANS),
                    BJoint::Spherical,
                    body,
                    body_name);
@@ -446,7 +446,7 @@ BModel::addFloatingBaseJoint( BBodyId parent_id,
 
 BBodyId 
 BModel::addMultiDofJoint( BBodyId parent_id,
-                          const BSpatialTransform &joint_frame,
+                          const BTransform &joint_frame,
                           const BJoint &joint,
                           const BBody &body,
                           const std::string &body_name ) 
@@ -461,7 +461,7 @@ BModel::addMultiDofJoint( BBodyId parent_id,
     BBodyId null_parent_id = parent_id;
 
     BJoint single_dof_joint;
-    BSpatialTransform joint_frame_transf;
+    BTransform joint_frame_transf;
     
     // Here we add multiple virtual bodies that have no mass or inertia for
     // which each is attached to the model with a single degree of freedom joint.
@@ -484,7 +484,7 @@ BModel::addMultiDofJoint( BBodyId parent_id,
         // others must have a null transformation
         if (j == 0) 
             joint_frame_transf = joint_frame;
-        else joint_frame_transf = BSpatialTransform(B_IDENTITY_TRANS);
+        else joint_frame_transf = BTransform(B_IDENTITY_TRANS);
 
         if (j < joint_count - 1)
         {
@@ -508,7 +508,7 @@ BModel::addMultiDofJoint( BBodyId parent_id,
 
 BBodyId 
 BModel::addBody( BBodyId parent_id,
-                 const BSpatialTransform &joint_frame,
+                 const BTransform &joint_frame,
                  const BJoint &joint,
                  const BBody  &body,
                  const std::string &body_name )
@@ -530,7 +530,7 @@ BModel::addBody( BBodyId parent_id,
     // If we add the body to a fixed body we have to make sure that we
     // actually add it to its movable parent.
     BBodyId movable_parent_id = parent_id;
-    BSpatialTransform movable_parent_transform(B_IDENTITY_TRANS);
+    BTransform movable_parent_transform(B_IDENTITY_TRANS);
     
     if (isFixedBodyId(parent_id)) 
     {
@@ -562,7 +562,7 @@ BModel::addBody( BBodyId parent_id,
     
     // set body transform X_base - base to body frame origin - assume initial joint position is 'closed'
     m_joint[bid].jcalc();  
-    const BSpatialTransform &X_lambda = m_joint[bid].X_lambda(); 
+    const BTransform &X_lambda = m_joint[bid].X_lambda(); 
     if (m_lambda[bid] != 0)
         m_body[bid].X_base( X_lambda * m_body[m_lambda[bid]].X_base() );
     else m_body[bid].X_base( X_lambda );

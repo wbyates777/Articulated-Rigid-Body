@@ -1,8 +1,8 @@
-/* BSpatialTransform 20/02/2024
+/* BTransform 20/02/2024
 
- $$$$$$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialTransform.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$$$$
+ $   BTransform.h   $
+ $$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
@@ -73,8 +73,8 @@
 
 
 
-#ifndef __BSPATIALTRANSFORM_H__
-#define __BSPATIALTRANSFORM_H__
+#ifndef __BTRANSFORM_H__
+#define __BTRANSFORM_H__
 
 
 #ifndef __BRBINERTIA_H__
@@ -85,25 +85,25 @@
 #include "BABInertia.h"
 #endif
 
-class BSpatialTransform
+class BTransform
 {
     
 public:
     
-    BSpatialTransform( void )=default;
+    BTransform( void )=default;
     
-    // BSpatialTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
-    constexpr explicit BSpatialTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
-    constexpr explicit BSpatialTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
+    // BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
+    constexpr explicit BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
+    constexpr explicit BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
     
-    ~BSpatialTransform( void )=default;
+    ~BTransform( void )=default;
     
     void
     clear( void ) {  m_E = B_IDENTITY_3x3; m_r = B_ZERO_3; }
 
-    operator BSpatialMatrix( void ) const 
+    operator BMatrix6( void ) const 
     {
-        return BSpatialMatrix( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
+        return BMatrix6( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
     }
 
     // rotation, preserves coordinate frame origin
@@ -127,29 +127,29 @@ public:
     r( const BVector3 &v ) { m_r = v; }
     
  
-    const BSpatialTransform 
-    operator*( const BSpatialTransform &rhs ) const 
+    const BTransform 
+    operator*( const BTransform &rhs ) const 
     {
-        return BSpatialTransform(rhs.m_E * m_E, rhs.m_r + (rhs.m_E * m_r));
+        return BTransform(rhs.m_E * m_E, rhs.m_r + (rhs.m_E * m_r));
     }
     
-    const BSpatialTransform& 
-    operator*=( const BSpatialTransform &rhs ) 
+    const BTransform& 
+    operator*=( const BTransform &rhs ) 
     {
         m_E *= rhs.m_E;
         m_r = rhs.m_r + (rhs.m_E * m_r);
         return *this;
     }
     
-    const BSpatialMatrix 
-    operator*( const BSpatialMatrix &rhs ) const 
+    const BMatrix6 
+    operator*( const BMatrix6 &rhs ) const 
     {
-        return BSpatialMatrix(*this) * rhs;
+        return BMatrix6(*this) * rhs;
     }
     
     // In RBDL called SpatialRigidBodyInertia::apply(const SpatialVector &v_sp)
-    const BSpatialVector 
-    operator*( const BSpatialVector &v ) const 
+    const BVector6 
+    operator*( const BVector6 &v ) const 
     // return X * v
     {
         // v_rxw = v.lin() - arb::cross(m_r, v.ang())
@@ -157,7 +157,7 @@ public:
                               v[4] - m_r[2] * v[0] + m_r[0] * v[2],
                               v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
         
-        return BSpatialVector(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
+        return BVector6(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
                               m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
                               m_E[2][0] * v[0]  + m_E[2][1] * v[1]  + m_E[2][2] * v[2],
                               
@@ -168,21 +168,21 @@ public:
         // const BMatrix3 ET = arb::transpose(m_E);
         // const BVector3 ang = ET * v.ang();
         // const BVector3 lin = ET * v_rxw;
-        // return BSpatialVector(ang, lin);
+        // return BVector6(ang, lin);
     }
 
-    const BSpatialVector 
-    apply( const BSpatialVector &v ) const { return operator*(v); }
+    const BVector6 
+    apply( const BVector6 &v ) const { return operator*(v); }
 
-    const BSpatialVector 
-    applyTranspose( const BSpatialVector &f ) const
+    const BVector6 
+    applyTranspose( const BVector6 &f ) const
     // returns X^T * f 
     {
         const BVector3 ETf( m_E[0][0] * f[3] + m_E[1][0] * f[4] + m_E[2][0] * f[5],
                             m_E[0][1] * f[3] + m_E[1][1] * f[4] + m_E[2][1] * f[5],
                             m_E[0][2] * f[3] + m_E[1][2] * f[4] + m_E[2][2] * f[5] );
         
-        return BSpatialVector( m_E[0][0] * f[0] + m_E[1][0] * f[1] + m_E[2][0] * f[2] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
+        return BVector6( m_E[0][0] * f[0] + m_E[1][0] * f[1] + m_E[2][0] * f[2] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
                                m_E[0][1] * f[0] + m_E[1][1] * f[1] + m_E[2][1] * f[2] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
                                m_E[0][2] * f[0] + m_E[1][2] * f[1] + m_E[2][2] * f[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
                                ETf[0],
@@ -191,7 +191,7 @@ public:
         
         // const BVector3 ETf = m_E * f.lin();
         // const BVector3 aux = m_E * f.ang();
-        // return BSpatialVector(aux[0] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
+        // return BVector6(aux[0] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
         //                       aux[1] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
         //                       aux[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
         //                       ETf[0],
@@ -257,16 +257,16 @@ public:
     }
     
     bool 
-    operator==( const BSpatialTransform &v ) const { return (m_r == v.m_r) && (m_E == v.m_E); }
+    operator==( const BTransform &v ) const { return (m_r == v.m_r) && (m_E == v.m_E); }
     
     bool 
-    operator!=( const BSpatialTransform &v ) const { return (m_r != v.m_r) || (m_E != v.m_E); }
+    operator!=( const BTransform &v ) const { return (m_r != v.m_r) || (m_E != v.m_E); }
     
     friend std::istream& 
-    operator>>( std::istream &istr, BSpatialTransform &m );
+    operator>>( std::istream &istr, BTransform &m );
     
     friend std::ostream&
-    operator<<( std::ostream &ostr, const BSpatialTransform &m );
+    operator<<( std::ostream &ostr, const BTransform &m );
     
 private:
     
@@ -276,26 +276,11 @@ private:
 
  
 #ifndef GLM_FORCE_INTRINSICS
-constexpr BSpatialTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
+constexpr BTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
 #else
-const BSpatialTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
+const BTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
 #endif
 
-
-inline std::ostream&
-operator<<( std::ostream &ostr, const BSpatialTransform &m )
-{
-    ostr << m.m_E << ' ' << m.m_r  << ' ';
-    return ostr;
-}
-
-
-inline std::istream& 
-operator>>( std::istream &istr, BSpatialTransform &m )
-{
-    istr >> m.m_E >> m.m_r;
-    return istr;
-}
 
 //
 // Articulated Rigid Body
@@ -304,36 +289,36 @@ operator>>( std::istream &istr, BSpatialTransform &m )
 namespace arb
 {
     // X^T - style choice - I prefer arb::transpose(m) to m.transpose()  
-    inline const BSpatialMatrix 
-    transpose( const BSpatialTransform &m ) 
+    inline const BMatrix6 
+    transpose( const BTransform &m ) 
     { 
         const BMatrix3 ET = arb::transpose(m.E());
-        return BSpatialMatrix( ET, ET * arb::cross(m.r()), B_ZERO_3x3, ET );
+        return BMatrix6( ET, ET * arb::cross(m.r()), B_ZERO_3x3, ET );
     }
 
     // X^{-1}
-    inline const BSpatialTransform 
-    inverse( const BSpatialTransform &m )  
+    inline const BTransform 
+    inverse( const BTransform &m )  
     { 
         const BMatrix3 ET = arb::transpose(m.E()); 
-        return BSpatialTransform(ET, -ET * m.r()); 
+        return BTransform(ET, -ET * m.r()); 
     }
 
     // dual is $X^* = X^{-T}$ 
-    inline const BSpatialMatrix 
-    dual( const BSpatialTransform &m ) 
+    inline const BMatrix6 
+    dual( const BTransform &m ) 
     { 
-        return BSpatialMatrix( m.E(), arb::cross(-m.r()) * m.E(), B_ZERO_3x3, m.E() );
+        return BMatrix6( m.E(), arb::cross(-m.r()) * m.E(), B_ZERO_3x3, m.E() );
     }
 
     // all angles in radians
-    inline const BSpatialTransform 
+    inline const BTransform 
     Xrot( BScalar angle, const BVector3 &axis ) // WARNING - axis *must* be normalized
     {
         const BScalar s = std::sin(angle);
         const BScalar c = std::cos(angle);
   
-        return BSpatialTransform(BMatrix3( axis[0] * axis[0] * (1.0 - c) + c,
+        return BTransform(BMatrix3( axis[0] * axis[0] * (1.0 - c) + c,
                                            axis[1] * axis[0] * (1.0 - c) + axis[2] * s,
                                            axis[0] * axis[2] * (1.0 - c) - axis[1] * s,
                                           
@@ -347,42 +332,59 @@ namespace arb
     }
 
     // RBDA, Section 2.8, table, 2.2, page 23
-    inline const BSpatialTransform 
+    inline const BTransform 
     Xrotx( BScalar xrot ) 
     {
         const BScalar s = std::sin(xrot);
         const BScalar c = std::cos(xrot);
-        return BSpatialTransform ( BMatrix3( 1.0, 0.0, 0.0,
+        return BTransform ( BMatrix3( 1.0, 0.0, 0.0,
                                              0.0,   c,   s,
                                              0.0,  -s,   c ) );
     }
 
-    inline const BSpatialTransform 
+    inline const BTransform 
     Xroty( BScalar yrot ) 
     {
         const BScalar s = std::sin(yrot);
         const BScalar c = std::cos(yrot);
-        return BSpatialTransform( BMatrix3(   c, 0.0,  -s,
+        return BTransform( BMatrix3(   c, 0.0,  -s,
                                             0.0, 1.0, 0.0,
                                               s, 0.0,   c ) );
     }
 
-    inline const BSpatialTransform 
+    inline const BTransform 
     Xrotz( BScalar zrot ) 
     {
         const BScalar s = std::sin(zrot);
         const BScalar c = std::cos(zrot);
-        return BSpatialTransform( BMatrix3(  c,   s, 0.0,
+        return BTransform( BMatrix3(  c,   s, 0.0,
                                             -s,   c, 0.0,
                                            0.0, 0.0, 1.0 ) );
     }
 
-    inline const BSpatialTransform 
+    inline const BTransform 
     Xtrans( const BVector3 &r ) 
     {
-        return BSpatialTransform( B_IDENTITY_3x3, r ); 
+        return BTransform( B_IDENTITY_3x3, r ); 
     }
-};
+}
+
+
+inline std::ostream&
+operator<<( std::ostream &ostr, const BTransform &m )
+{
+    ostr << m.m_E << ' ' << m.m_r  << ' ';
+    return ostr;
+}
+
+
+inline std::istream& 
+operator>>( std::istream &istr, BTransform &m )
+{
+    istr >> m.m_E >> m.m_r;
+    return istr;
+}
+
 
 #endif
 

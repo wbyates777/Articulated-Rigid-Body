@@ -21,8 +21,8 @@
 #define __BFIXEDBODY_H__
 
 
-#ifndef __BSPATIALTRANSFORM_H__
-#include "BSpatialTransform.h"
+#ifndef __BTRANSFORM_H__
+#include "BTransform.h"
 #endif
 
 #ifndef __BBODY_H__
@@ -84,17 +84,17 @@ public:
     toBody( void ) const { return BBody(m_mass, m_com, m_I_com); }
     
     
-    const BSpatialTransform& 
+    const BTransform& 
     parentTrans( void ) const { return m_parent; }
     
     void 
-    parentTrans( const BSpatialTransform &pt )  { m_parent = pt; }
+    parentTrans( const BTransform &pt )  { m_parent = pt; }
     
-    const BSpatialTransform& 
+    const BTransform& 
     baseTrans( void ) const { return m_base; }
     
     void 
-    baseTrans( const BSpatialTransform &bt ) { m_base = bt; }
+    baseTrans( const BTransform &bt ) { m_base = bt; }
     
     
 
@@ -120,8 +120,8 @@ private:
     BMatrix3 m_I_com;      // inertia matrix at the center of mass 
  
     // transforms spatial quantities expressed for the parent to the fixed body.
-    BSpatialTransform m_parent; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
-    BSpatialTransform m_base;   // m_X_base   - transformation from the base  to this body's coordinate
+    BTransform m_parent; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
+    BTransform m_base;   // m_X_base   - transformation from the base  to this body's coordinate
 };
 
 inline std::ostream&

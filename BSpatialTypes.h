@@ -98,9 +98,9 @@ namespace arb {
 }
 
 
-constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BSpatialVector
+constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6
 
-constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BSpatialMatrix
+constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BMatrix6
 {
     1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
@@ -110,7 +110,7 @@ constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BSpatialMatri
     0.0, 0.0, 0.0, 0.0, 0.0, 1.0
 };
 
-constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6     // BSpatialMatrix
+constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6     // BMatrix6
 {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,

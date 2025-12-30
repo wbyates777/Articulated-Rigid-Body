@@ -41,8 +41,8 @@
 #define __BABINERTIA_H__
 
 
-#ifndef __BSPATIALMATRIX_H__
-#include "BSpatialMatrix.h"
+#ifndef __BMATRIX6_H__
+#include "BMatrix6.h"
 #endif
 
 #ifndef __BPRODUCTS_H__
@@ -73,10 +73,10 @@ public:
         m_I += m * arb::crosst(com); // transform I_com to body coordinate frame origin  if com != zero
     }
     
-    explicit BABInertia( const BSpatialMatrix &I ) { setInertia(I); }    
+    explicit BABInertia( const BMatrix6 &I ) { setInertia(I); }    
     
     // called from SDynamics
-    explicit BABInertia( const BSpatialVector &a, const BSpatialVector &b ): m_M(arb::outer(a.lin(), b.lin())), 
+    explicit BABInertia( const BVector6 &a, const BVector6 &b ): m_M(arb::outer(a.lin(), b.lin())), 
                                                                              m_H(arb::outer(a.ang(), b.lin())),
                                                                              m_I(arb::outer(a.ang(), b.ang()))  {}
     
@@ -89,7 +89,7 @@ public:
     clear( void ) { m_M = m_H = m_I = B_ZERO_3x3; }
     
     void 
-    setInertia( const BSpatialMatrix &I ) 
+    setInertia( const BMatrix6 &I ) 
     { 
         m_I = I.topLeft(); m_H = I.topRight(); m_M = I.botRight(); 
     }
@@ -106,9 +106,9 @@ public:
     const BMatrix3&
     I( void ) const { return m_I; } 
     
-    operator BSpatialMatrix( void ) const 
+    operator BMatrix6( void ) const 
     { 
-        return BSpatialMatrix( m_I, m_H, arb::transpose(m_H), m_M );
+        return BMatrix6( m_I, m_H, arb::transpose(m_H), m_M );
     }
     
     const BABInertia
@@ -152,14 +152,14 @@ public:
     }
     
     // SpaceAlgVec::Operators.h; pass a motion vector returns a force vector
-    const BSpatialVector 
-    operator*( const BSpatialVector &v ) const
+    const BVector6 
+    operator*( const BVector6 &v ) const
     {
         //const BVector3 ang((m_I * v.ang()) + (arb::transpose(m_H) * v.lin()));
         //const BVector3 lin((m_H * v.ang()) + (m_M * v.lin()) );
-        //return BSpatialVector( ang, lin );
+        //return BVector6( ang, lin );
         
-        return BSpatialVector((m_I[0][0] * v[0]) + (m_I[1][0] * v[1]) + (m_I[2][0] * v[2])  +  (m_H[0][0] * v[3]) + (m_H[0][1] * v[4]) + (m_H[0][2] * v[5]), 
+        return BVector6((m_I[0][0] * v[0]) + (m_I[1][0] * v[1]) + (m_I[2][0] * v[2])  +  (m_H[0][0] * v[3]) + (m_H[0][1] * v[4]) + (m_H[0][2] * v[5]), 
                               (m_I[0][1] * v[0]) + (m_I[1][1] * v[1]) + (m_I[2][1] * v[2])  +  (m_H[1][0] * v[3]) + (m_H[1][1] * v[4]) + (m_H[1][2] * v[5]), 
                               (m_I[0][2] * v[0]) + (m_I[1][2] * v[1]) + (m_I[2][2] * v[2])  +  (m_H[2][0] * v[3]) + (m_H[2][1] * v[4]) + (m_H[2][2] * v[5]), 
                         
@@ -287,6 +287,30 @@ const BABInertia B_ZERO_ABI(B_ZERO_3x3, B_ZERO_3x3, B_ZERO_3x3);
 inline const BABInertia 
 operator*( BScalar s, const BABInertia &m ) { return m * s; }
 
+
+namespace arb
+{
+
+    // you should generally try to avoid taking the inverse of a spatial matrix
+    inline const BMatrix6 
+    inverse( const BABInertia &abi ) 
+    // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
+    {  
+        const BMatrix3 invM = arb::inverse(abi.M());
+        const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();
+        const BMatrix3 invT = arb::inverse(T);
+        
+        const BMatrix3 topLeft  = invM + invM * abi.H() * invT * arb::transpose(abi.H()) * invM;
+        const BMatrix3 topRight = -invM * abi.H() * invT;
+        const BMatrix3 botLeft  = -invT * arb::transpose(abi.H()) * invM;
+        const BMatrix3 botRight = invT;
+     
+        return BMatrix6(topLeft, topRight, botLeft, botRight);
+    } 
+
+}
+
+
 inline std::ostream&
 operator<<( std::ostream &ostr, const BABInertia &m )
 {
@@ -301,28 +325,6 @@ operator>>( std::istream &istr, BABInertia &m )
     return istr;
 }
 
-
-namespace arb
-{
-
-    // you should generally try to avoid taking the inverse of a spatial matrix
-    inline const BSpatialMatrix 
-    inverse( const BABInertia &abi ) 
-    // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
-    {  
-        const BMatrix3 invM = arb::inverse(abi.M());
-        const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();
-        const BMatrix3 invT = arb::inverse(T);
-        
-        const BMatrix3 topLeft  = invM + invM * abi.H() * invT * arb::transpose(abi.H()) * invM;
-        const BMatrix3 topRight = -invM * abi.H() * invT;
-        const BMatrix3 botLeft  = -invT * arb::transpose(abi.H()) * invM;
-        const BMatrix3 botRight = invT;
-     
-        return BSpatialMatrix(topLeft, topRight, botLeft, botRight);
-    } 
-
-};
 
 #endif
 

@@ -31,12 +31,12 @@
 #include "BSpatialTypes.h"
 #endif
 
-#ifndef __BSPATIALVECTOR_H__
-#include "BSpatialVector.h"
+#ifndef __BVECTOR6_H__
+#include "BVector6.h"
 #endif
 
-#ifndef __BSPATIALMATRIX_H__
-#include "BSpatialMatrix.h"
+#ifndef __BMATRIX6_H__
+#include "BMatrix6.h"
 #endif
 
 #ifndef __BPRODUCTS_H__
@@ -55,8 +55,8 @@
 #include "BABInertia.h"
 #endif
 
-#ifndef __BSPATIALTRANSFORM_H__
-#include "BSpatialTransform.h"
+#ifndef __BTRANSFORM_H__
+#include "BTransform.h"
 #endif
 
 #ifndef __BADJOINT_H__

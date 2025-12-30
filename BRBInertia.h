@@ -58,8 +58,8 @@
 #define __BRBINERTIA_H__
 
 
-#ifndef __BSPATIALMATRIX_H__
-#include "BSpatialMatrix.h"
+#ifndef __BMATRIX6_H__
+#include "BMatrix6.h"
 #endif
 
 #ifndef __BPRODUCTS_H__
@@ -75,7 +75,7 @@ public:
     BRBInertia( void )=default;
     // the moments of mass; zero, one, and two - note mass can be 0, I_o inertia at body frame origin
     constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o ): m_mass(mass), m_h(h), m_I(I_o) {}
-    BRBInertia( const BSpatialMatrix &I ) { setInertia(I); }     
+    BRBInertia( const BMatrix6 &I ) { setInertia(I); }     
     ~BRBInertia( void )=default;
     
     void
@@ -89,7 +89,7 @@ public:
     }
     
     void 
-    setInertia( const BSpatialMatrix &I )     
+    setInertia( const BMatrix6 &I )     
     {
         m_mass = I[3][3]; 
         m_h    = BVector3(-I[1][5], I[0][5], -I[0][4]); 
@@ -119,9 +119,9 @@ public:
     setInertiaCom( const BMatrix3 &I_com ) { setInertiaCom(m_mass, com(), I_com); }
  
     // RBDA, Section 2.13, eqn 2.63, page 33.
-    operator BSpatialMatrix( void ) const 
+    operator BMatrix6( void ) const 
     { 
-        return BSpatialMatrix( m_I, arb::cross(m_h), arb::cross(-m_h),  BMatrix3(m_mass) );
+        return BMatrix6( m_I, arb::cross(m_h), arb::cross(-m_h),  BMatrix3(m_mass) );
     }
     
     // zeroth moment of mass
@@ -187,14 +187,14 @@ public:
         return *this; 
     }
     
-    const BSpatialVector 
-    operator*( const BSpatialVector &v ) const
+    const BVector6 
+    operator*( const BVector6 &v ) const
     {
         //const BVector3 ang(arb::cross(m_h, v.lin()) + (m_I * v.ang()));
         //const BVector3 lin(m_mass * v.lin() - arb::cross(m_h, v.ang()));
-        // return BSpatialVector( ang, lin );
+        // return BVector6( ang, lin );
     
-        return BSpatialVector((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
+        return BVector6((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
                               (m_h[2] * v[3] - v[5] * m_h[0]) + (m_I[0][1] * v[0])  +  (m_I[1][1] * v[1]) + (m_I[2][1] * v[2]),
                               (m_h[0] * v[4] - v[3] * m_h[1]) + (m_I[0][2] * v[0])  +  (m_I[1][2] * v[1]) + (m_I[2][2] * v[2]),
                            
@@ -236,7 +236,7 @@ namespace arb
 {
     // you should generally try to avoid taking the inverse of a spatial matrix
     // for articulated rigid bodies use the ABA to calculate accelerations
-    inline const BSpatialMatrix 
+    inline const BMatrix6 
     inverse( const BRBInertia &I ) 
     // Schur complement - analytical inverse, see RBDA, Section 2.15, eqn 2.74,  page 36
     // https://en.wikipedia.org/wiki/Schur_complement
@@ -246,12 +246,12 @@ namespace arb
         const BMatrix3 invM(1.0 / I.mass());
         const BVector3 com(I.com());
         
-        return BSpatialMatrix(          invI,                    invI * arb::cross(-com),  
+        return BMatrix6(          invI,                    invI * arb::cross(-com),  
                                arb::cross(com) * invI,  invM + arb::cross(com) * invI * arb::cross(-com));
         
     } 
 
-};
+}
 
 #ifndef GLM_FORCE_INTRINSICS
 constexpr BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);

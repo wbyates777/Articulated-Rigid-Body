@@ -101,7 +101,7 @@ public:
      */
     BBodyId 
     addBody( BBodyId parent_id,
-             const BSpatialTransform &joint_frame,
+             const BTransform &joint_frame,
              const BJoint &joint, 
              const BBody &body, 
              const std::string &body_name = "" );    
@@ -124,10 +124,10 @@ public:
     
     // set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()
     void 
-    setJointFrame( BBodyId bid, const BSpatialTransform &transform );
+    setJointFrame( BBodyId bid, const BTransform &transform );
     
     // joint frame transformtion, i.e. X_T, the second argument to BModel::addBody()
-    const BSpatialTransform 
+    const BTransform 
     getJointFrame( BBodyId bid ) const;
     
     // return base coordinates of body_pos where body_pos is expressed in body $bid$ coordinates 
@@ -142,10 +142,10 @@ public:
     const BMatrix3 
     orient( BBodyId bid ) const;
 
-    const BSpatialVector  
+    const BVector6  
     pointVel( BBodyId bid, const BVector3 &body_pos );
     
-    const BSpatialVector
+    const BVector6
     pointAcc( BBodyId bid, const BVector3 &body_pos );
     //
 
@@ -212,14 +212,14 @@ private:
 
     BBodyId 
     addMultiDofJoint( BBodyId parent_id,
-                      const BSpatialTransform &joint_frame,
+                      const BTransform &joint_frame,
                       const BJoint &joint,
                       const BBody &body,
                       const std::string &body_name = ""); 
     
     BBodyId
     addFixedJoint( BBodyId parent_id,
-                   const BSpatialTransform &joint_frame,
+                   const BTransform &joint_frame,
                    const BJoint &joint,
                    const BBody &body,
                    const std::string &body_name = "" );   
@@ -227,7 +227,7 @@ private:
     
     BBodyId
     addFloatingBaseJoint( BBodyId parent_id,
-                          const BSpatialTransform &joint_frame,
+                          const BTransform &joint_frame,
                           const BJoint &joint,
                           const BBody &body,
                           const std::string &body_name = "" );

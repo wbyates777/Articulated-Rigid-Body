@@ -19,8 +19,8 @@
 #ifndef __BPRODUCTS_H__
 #define __BPRODUCTS_H__
 
-#ifndef __BSPATIALMATRIX_H__
-#include "BSpatialMatrix.h"
+#ifndef __BMATRIX6_H__
+#include "BMatrix6.h"
 #endif
 
 
@@ -73,10 +73,10 @@ namespace arb
   
     // spatial cross product for 'motion cross motion' vectors $v$ and $m$
     // such that $\dot{m} = v \times m$, see RBDA, Section 2.9, eqn 2.29, page 23
-    inline const BSpatialVector 
-    crossm( const BSpatialVector &v, const BSpatialVector &m ) 
+    inline const BVector6 
+    crossm( const BVector6 &v, const BVector6 &m ) 
     {
-        return BSpatialVector( -v[2] * m[1] + v[1] * m[2],
+        return BVector6( -v[2] * m[1] + v[1] * m[2],
                                 v[2] * m[0] - v[0] * m[2],
                                -v[1] * m[0] + v[0] * m[1],
                                -v[5] * m[1] + v[4] * m[2] - v[2] * m[4] + v[1] * m[5],
@@ -86,10 +86,10 @@ namespace arb
 
     // spatial cross product for 'motion cross force' vectors $v$ and $f$
     // such that $\dot{f} = v \times^* f$, see RBDA, Section 2.9, eqn 2.30, page 23
-    inline const BSpatialVector 
-    crossf( const BSpatialVector &v, const BSpatialVector &f ) 
+    inline const BVector6 
+    crossf( const BVector6 &v, const BVector6 &f ) 
     {
-        return BSpatialVector( -v[2] * f[1] + v[1] * f[2] - v[5] * f[4] + v[4] * f[5],
+        return BVector6( -v[2] * f[1] + v[1] * f[2] - v[5] * f[4] + v[4] * f[5],
                                 v[2] * f[0] - v[0] * f[2] + v[5] * f[3] - v[3] * f[5],
                                -v[1] * f[0] + v[0] * f[1] - v[4] * f[3] + v[3] * f[4],
                                -v[2] * f[4] + v[1] * f[5],
@@ -99,11 +99,11 @@ namespace arb
 
 
     // motion vector operator $v\times$, see RBDA, Section 2.9, eqn 2.31, page 25
-    inline const BSpatialMatrix 
-    crossm( const BSpatialVector &v ) 
+    inline const BMatrix6 
+    crossm( const BVector6 &v ) 
     {
-        //return BSpatialMatrix(arb::cross(v.ang()), B_ZERO_3x3, arb::cross(v.lin()), arb::cross(v.ang()));
-        return BSpatialMatrix( 0.0,  -v[2],   v[1],   0.0,   0.0,    0.0, 
+        //return BMatrix6(arb::cross(v.ang()), B_ZERO_3x3, arb::cross(v.lin()), arb::cross(v.ang()));
+        return BMatrix6( 0.0,  -v[2],   v[1],   0.0,   0.0,    0.0, 
                               v[2],    0.0,  -v[0],   0.0,   0.0,    0.0, 
                              -v[1],   v[0],    0.0,   0.0,   0.0,    0.0,        
                                0.0,  -v[5],   v[4],   0.0, -v[2],   v[1],
@@ -112,11 +112,11 @@ namespace arb
     }
 
     // force vector operator $v\times^*$, see RBDA, Section 2.9, eqn 2.32, page 25
-    inline const BSpatialMatrix 
-    crossf( const BSpatialVector &v ) 
+    inline const BMatrix6 
+    crossf( const BVector6 &v ) 
     {
-        //return BSpatialMatrix(arb::cross(v.ang()), arb::cross(v.lin()), B_ZERO_3x3, arb::cross(v.ang()));
-        return BSpatialMatrix( 0.0, -v[2],  v[1],    0.0,  -v[5],   v[4],
+        //return BMatrix6(arb::cross(v.ang()), arb::cross(v.lin()), B_ZERO_3x3, arb::cross(v.ang()));
+        return BMatrix6( 0.0, -v[2],  v[1],    0.0,  -v[5],   v[4],
                               v[2],   0.0, -v[0],   v[5],    0.0,  -v[3],
                              -v[1],  v[0],   0.0,  -v[4],   v[3],    0.0, 
                                0.0,   0.0,   0.0,    0.0,  -v[2],   v[1],
@@ -126,7 +126,7 @@ namespace arb
 
     // spatial dot or inner product
     inline BScalar 
-    dot(const BSpatialVector &a, const BSpatialVector &b)
+    dot(const BVector6 &a, const BVector6 &b)
     {
         return glm::dot(a.ang(), b.ang()) + glm::dot(a.lin(), b.lin());
         //return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]) 
@@ -144,10 +144,10 @@ namespace arb
     }
 
     // spatial outer product 
-    inline const BSpatialMatrix
-    outer( const BSpatialVector &a, const BSpatialVector &b )
+    inline const BMatrix6
+    outer( const BVector6 &a, const BVector6 &b )
     { 
-        return BSpatialMatrix(a[0] * b[0], a[0] * b[1], a[0] * b[2],  a[0] * b[3], a[0] * b[4], a[0] * b[5], 
+        return BMatrix6(a[0] * b[0], a[0] * b[1], a[0] * b[2],  a[0] * b[3], a[0] * b[4], a[0] * b[5], 
                               a[1] * b[0], a[1] * b[1], a[1] * b[2],  a[1] * b[3], a[1] * b[4], a[1] * b[5], 
                               a[2] * b[0], a[2] * b[1], a[2] * b[2],  a[2] * b[3], a[2] * b[4], a[2] * b[5], 
                             
@@ -155,10 +155,10 @@ namespace arb
                               a[4] * b[0], a[4] * b[1], a[4] * b[2],  a[4] * b[3], a[4] * b[4], a[4] * b[5], 
                               a[5] * b[0], a[5] * b[1], a[5] * b[2],  a[5] * b[3], a[5] * b[4], a[5] * b[5]);
 
-        // return BSpatialMatrix( glm::outerProduct(b.ang(), a.ang()), glm::outerProduct(b.lin(), a.ang()),
+        // return BMatrix6( glm::outerProduct(b.ang(), a.ang()), glm::outerProduct(b.lin(), a.ang()),
         //                        glm::outerProduct(b.ang(), a.lin()), glm::outerProduct(b.ang(), a.ang()) );
     }
-};
+}
 
 
 #endif

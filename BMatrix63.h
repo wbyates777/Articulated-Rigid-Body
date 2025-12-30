@@ -17,8 +17,8 @@
 
 
 
-#ifndef __BSPATIALMATRIX_H__
-#include "BSpatialMatrix.h"
+#ifndef __BMATRIX6_H__
+#include "BMatrix6.h"
 #endif
 
 
@@ -187,10 +187,10 @@ public:
                 m_data[i+3][j] = m[i][j];
     }
 
-    const BSpatialVector 
+    const BVector6 
     operator*( const BVector3 &v ) const 
     {
-        BSpatialVector retVal;
+        BVector6 retVal;
         for ( int i = 0; i < 6; ++i )
             retVal[i] = glm::dot(BVector3(m_data[i][0], m_data[i][1], m_data[i][2]), v);
         return retVal; 
@@ -482,7 +482,7 @@ public:
     }
     
     const BVector3
-    operator*( const BSpatialVector &v ) const 
+    operator*( const BVector6 &v ) const 
     {
         BVector3 retVal(B_ZERO_3);
         for ( int i = 0; i < 3; ++i )
@@ -604,10 +604,10 @@ private:
 inline const BMatrix36 
 operator*( BScalar s, const BMatrix36 &m ) { return m * s; }
 
-inline const BSpatialMatrix 
+inline const BMatrix6 
 operator*( const BMatrix63 &m1, const BMatrix36 &m2 )  
 {
-    BSpatialMatrix retVal(B_ZERO_6x6);
+    BMatrix6 retVal(B_ZERO_6x6);
     for ( int i = 0; i < 6; ++i )
         for ( int j = 0; j < 6; ++j )
             for ( int k = 0; k < 3; ++k )
@@ -616,7 +616,7 @@ operator*( const BMatrix63 &m1, const BMatrix36 &m2 )
 }
 
 inline const BMatrix63 
-operator*( const BSpatialMatrix &m1, const BMatrix63 &m2 ) 
+operator*( const BMatrix6 &m1, const BMatrix63 &m2 ) 
 {    
     BMatrix63 retVal(B_ZERO_6x3);
     for ( int i = 0; i < 6; ++i ) 

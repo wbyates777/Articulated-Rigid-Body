@@ -47,9 +47,9 @@
  
  \code 
     Joint planar_joint = BJoint (
-        BSpatialVector (B_ZERO_3, B_XAXIS),
-        BSpatialVector (B_ZERO_3, B_YAXIS),
-        BSpatialVector (B_ZAXIS,  B_ZERO_3,)
+        BVector6 (B_ZERO_3, B_XAXIS),
+        BVector6 (B_ZERO_3, B_YAXIS),
+        BVector6 (B_ZAXIS,  B_ZERO_3,)
     );
  \endcode
  
@@ -179,16 +179,16 @@
 #define __BJOINT_H__
 
 
-#ifndef __BSPATIALVECTOR_H__
-#include "BSpatialVector.h"
+#ifndef __BVECTOR6_H__
+#include "BVector6.h"
 #endif
 
 #ifndef __BMATRIX63_H__
 #include "BMatrix63.h"
 #endif
 
-#ifndef __BSPATIALTRANSFORM_H__
-#include "BSpatialTransform.h"
+#ifndef __BTRANSFORM_H__
+#include "BTransform.h"
 #endif
 
 
@@ -240,32 +240,32 @@ public:
     BJoint( BJointType joint_type, const BVector3 &joint_axis);
     
     // constructs a 1-6 DoF joint with the given motion subspaces.
-    BJoint( const BSpatialVector &axis_0 );
+    BJoint( const BVector6 &axis_0 );
     
-    BJoint( const BSpatialVector &axis_0, 
-            const BSpatialVector &axis_1 );
+    BJoint( const BVector6 &axis_0, 
+            const BVector6 &axis_1 );
     
-    BJoint( const BSpatialVector &axis_0,
-            const BSpatialVector &axis_1,
-            const BSpatialVector &axis_2 );
+    BJoint( const BVector6 &axis_0,
+            const BVector6 &axis_1,
+            const BVector6 &axis_2 );
     
-    BJoint( const BSpatialVector &axis_0,
-            const BSpatialVector &axis_1,
-            const BSpatialVector &axis_2,
-            const BSpatialVector &axis_3 );
+    BJoint( const BVector6 &axis_0,
+            const BVector6 &axis_1,
+            const BVector6 &axis_2,
+            const BVector6 &axis_3 );
     
-    BJoint( const BSpatialVector &axis_0,
-            const BSpatialVector &axis_1,
-            const BSpatialVector &axis_2,
-            const BSpatialVector &axis_3,
-            const BSpatialVector &axis_4 );
+    BJoint( const BVector6 &axis_0,
+            const BVector6 &axis_1,
+            const BVector6 &axis_2,
+            const BVector6 &axis_3,
+            const BVector6 &axis_4 );
     
-    BJoint( const BSpatialVector &axis_0,
-            const BSpatialVector &axis_1,
-            const BSpatialVector &axis_2,
-            const BSpatialVector &axis_3,
-            const BSpatialVector &axis_4,
-            const BSpatialVector &axis_5 );
+    BJoint( const BVector6 &axis_0,
+            const BVector6 &axis_1,
+            const BVector6 &axis_2,
+            const BVector6 &axis_3,
+            const BVector6 &axis_4,
+            const BVector6 &axis_5 );
     
     ~BJoint( void )=default;
     
@@ -297,32 +297,32 @@ public:
     }
 
     // the spatial axis i of the joint
-    const BSpatialVector&
+    const BVector6&
     axis( int i ) const { return m_axis[i]; }
 
     // the spatial axes of the joint
-    const std::vector<BSpatialVector>&
+    const std::vector<BVector6>&
     axes( void ) const { return m_axis; }
     
     // the transformation from the parent body frame $\lambda(i)$ to body $i$ 
     // ${i}^X_{\lambda(i)} = X_J * X_T(i)$
-    const BSpatialTransform& 
+    const BTransform& 
     X_lambda( void ) const { return m_X_lambda; }
    
     // the action of the joint - typically a function of the joint's type m_jtype and state $q = (pos,vel,acc,tau)$     
     // $X_J = (E,r)$ (see RBDA, Table 4.1)
-    const BSpatialTransform& 
+    const BTransform& 
     X_J( void ) const { return m_X_J; } 
     
     // transformation from the parent body $\lambda(i)$ to the origin 
     // of the joint frame in body $i$ (see RBDA, Section 4.2, page 73). 
     // $X_T$ locates the joint's coordinate frame origin in body $i$.
     // Set by BModel::addBody(). 
-    const BSpatialTransform& 
+    const BTransform& 
     X_T( void ) const { return m_X_T; }
     
     void 
-    X_T( const BSpatialTransform &b )  { m_X_T = b; }
+    X_T( const BTransform &b )  { m_X_T = b; }
     
     
     // a joint's motion subspace $S$ (see RBDA, Table 4.1) - depends on type of joint 
@@ -332,11 +332,11 @@ public:
 
 
     // joint spatial velocity $v_J$ (see RBDA, Section 4.4)
-    const BSpatialVector&
+    const BVector6&
     v_J( void ) const { return m_v_J; } 
     
     // joint spatial acceleration $c_J$ (see RBDA, Section 4.4)
-    const BSpatialVector&
+    const BVector6&
     c_J( void ) const { return m_c_J; } 
     
     
@@ -380,19 +380,19 @@ private:
     setJointSpace( const BJointSpace &m ) { m_S = m; }
     
     inline void
-    setJointSpace( const BSpatialVector &v );
+    setJointSpace( const BVector6 &v );
     
     void
     setJointSpace( const BMatrix63 &m );
   
     void
-    setJointSpace( const BSpatialMatrix &m );
+    setJointSpace( const BMatrix6 &m );
     
     static bool 
-    validate_spatial_axis( const BSpatialVector &axis );
+    validate_spatial_axis( const BVector6 &axis );
     
     void
-    setJoint( const std::vector<BSpatialVector> &axes );
+    setJoint( const std::vector<BVector6> &axes );
     
     BJointId     m_id;
 
@@ -402,19 +402,19 @@ private:
 
   
     // $s^X_p$ = rot(E) xlt(r) - rotation(E) * translate(r) - translate br $r$ then rotate by $E$
-    BSpatialTransform m_X_lambda;  // ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
-    BSpatialTransform m_X_J;       // see RBDA Section 4.4 and Table 4.1
-    BSpatialTransform m_X_T;       // $X_T$ transform from parent frame to joint position (see RBDA, Section 4.2)
+    BTransform m_X_lambda;  // ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
+    BTransform m_X_J;       // see RBDA Section 4.4 and Table 4.1
+    BTransform m_X_T;       // $X_T$ transform from parent frame to joint position (see RBDA, Section 4.2)
     
     // joint state variables - joint spatial velocity and spatial acceleration (see RBDA, Section 4.4)
-    BSpatialVector    m_v_J;     
-    BSpatialVector    m_c_J;       
+    BVector6    m_v_J;     
+    BVector6    m_c_J;       
    
     // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)
     BJointSpace       m_S; 
 
     // spatial axes of the joint; 1 for each degree of freedom
-    std::vector<BSpatialVector> m_axis;
+    std::vector<BVector6> m_axis;
     
     // motion subspace constants -- note type here is std::vector not std::array
     static const std::vector<std::vector<BScalar>> m_ZERO_6x3;

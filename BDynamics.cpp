@@ -116,7 +116,7 @@ BDynamics::update_X_base( BModel &m, const BModelState &qstate )
     {
         m.joint(i).jcalc(qstate.q, qdot_zero);
         
-        const BSpatialTransform &X_lambda = m.joint(i).X_lambda(); 
+        const BTransform &X_lambda = m.joint(i).X_lambda(); 
         const int lambda = m.parentId(i); 
         
         if (lambda != 0) 
@@ -191,7 +191,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         int lambda = m.parentId(i); 
         
         // X_lambda is transformation from the parent body frame to this body frame
-        const BSpatialTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform& X_lambda = m.joint(i).X_lambda(); 
         
         // set spatial transform X_base in this body 
         if (lambda != 0)
@@ -236,7 +236,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         int dofCount = m.joint(i).DoFCount();   
         int lambda   = m.parentId(i); 
         
-        const BSpatialTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform& X_lambda = m.joint(i).X_lambda(); 
 
         if (dofCount == 0)  // body attached with Fixed2 joint (not merged)
         {
@@ -248,7 +248,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         }
         else if (dofCount == 1) 
         {
-            BSpatialVector S(m.joint(i).S());
+            BVector6 S(m.joint(i).S());
             
             m_U[i] = m_IA[i] * S;                       
             m_d[i] = arb::dot(S, m_U[i]);  // $S_i^T U_i$                    
@@ -259,7 +259,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
                 BScalar Dinv = 1.0 / m_d[i];
                 BABInertia Ia = m_IA[i] - BABInertia(m_U[i], (m_U[i] * Dinv)); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
-                BSpatialVector pa(m_pA[i] + (Ia * m.body(i).c()) + (m_U[i] * (m_u[i] * Dinv))); 
+                BVector6 pa(m_pA[i] + (Ia * m.body(i).c()) + (m_U[i] * (m_u[i] * Dinv))); 
                 m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
@@ -279,7 +279,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
                 
                 BABInertia Ia = m_IA[i] - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
-                BSpatialVector pa(m_pA[i] + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
+                BVector6 pa(m_pA[i] + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
                 m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
@@ -299,7 +299,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         int dofCount = m.joint(i).DoFCount();   
         int lambda   = m.parentId(i);
         
-        const BSpatialTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform& X_lambda = m.joint(i).X_lambda(); 
         
         m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c();
         
@@ -307,7 +307,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         {
             qddot[qidx] = (1.0 / m_d[i]) * (m_u[i] - arb::dot(m_U[i], m.body(i).a()));
             
-            BSpatialVector S(m.joint(i).S());
+            BVector6 S(m.joint(i).S());
             
             m.body(i).a() += S * qddot[qidx];
         } 
@@ -361,7 +361,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         int dofCount = m.joint(i).DoFCount();   
         int lambda   = m.parentId(i);
         
-        const BSpatialTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform& X_lambda = m.joint(i).X_lambda(); 
         
         m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
         m.body(i).c() = m.joint(i).c_J() + arb::crossm(m.body(i).v(), m.joint(i).v_J());
@@ -372,7 +372,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         } 
         else if (dofCount == 1) 
         {
-            BSpatialVector S(m.joint(i).S());
+            BVector6 S(m.joint(i).S());
             m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * qddot[qidx];
         } 
         else if (dofCount == 3) 
@@ -418,7 +418,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         
         if (dofCount == 1) 
         {
-            BSpatialVector S(m.joint(i).S());
+            BVector6 S(m.joint(i).S());
             tau[qidx] = arb::dot(S, m_f[i]);
         } 
         else if (dofCount == 3) 
