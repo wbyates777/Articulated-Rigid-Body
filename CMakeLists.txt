@@ -26,11 +26,11 @@ set(HEADERS
     BSpatialTypes.h
     BBody.h			
     BProducts.h		
-    BSpatialMatrix.h	
-    BSpatialVector.h
+    BMatrix6.h	
+    BVector6.h
     BMatrix63.h		
     BRBInertia.h		
-    BSpatialTransform.h
+    BTransform.h
 )
 
 # --- External dependencies into lib/ ---
