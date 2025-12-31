@@ -566,6 +566,7 @@ BMatrix6
 toWorldInvInertia( BBody &body )
 // convert 'body coordinate' rotational inertia I_o to 'world coordinates' I_w 
 // Note in a rotating body I_o is constant while I_w is changing 
+// Note: this only works when com = (0,0,0)
 {
     BMatrix6 invI = arb::inverse(body.I());
     
@@ -581,6 +582,7 @@ void
 impulse( void )
 // RBDA, chapter 11, Contact and Impact. 
 // Two-Body Collisions, page 232, eqn 11.65
+// For each body we assume that com = (0,0,0)
 /*
  ''two rigid bodies, body1 and body2, that collide at a single point C.
  Their velocities before the impact are v1 and v2, and their velocities afterwards
