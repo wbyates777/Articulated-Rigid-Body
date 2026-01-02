@@ -93,8 +93,8 @@ public:
     BTransform( void )=default;
     
     // BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
-    constexpr explicit BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
-    constexpr explicit BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
+    constexpr BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
+    constexpr BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
     
     ~BTransform( void )=default;
     
@@ -105,7 +105,20 @@ public:
     {
         return BMatrix6( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
     }
-
+    
+    
+    void
+    set( const BMatrix3 &E, const BVector3 &r = B_ZERO_3 ) 
+    {
+        m_E = E; m_r = r;
+    }
+    
+    void
+    set( const BVector3 &r ) 
+    {
+        m_E = B_IDENTITY_3x3; m_r = r;
+    }
+    
     // rotation, preserves coordinate frame origin
     const BMatrix3&
     E( void ) const { return m_E; }
@@ -158,12 +171,12 @@ public:
                               v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
         
         return BVector6(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
-                              m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
-                              m_E[2][0] * v[0]  + m_E[2][1] * v[1]  + m_E[2][2] * v[2],
-                              
-                              m_E[0][0] * v_rxw[0] + m_E[0][1] * v_rxw[1] + m_E[0][2] * v_rxw[2],
-                              m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
-                              m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );
+                        m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
+                        m_E[2][0] * v[0]  + m_E[2][1] * v[1]  + m_E[2][2] * v[2],
+                      
+                        m_E[0][0] * v_rxw[0] + m_E[0][1] * v_rxw[1] + m_E[0][2] * v_rxw[2],
+                        m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
+                        m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );
         
         // const BMatrix3 ET = arb::transpose(m_E);
         // const BVector3 ang = ET * v.ang();
@@ -183,20 +196,20 @@ public:
                             m_E[0][2] * f[3] + m_E[1][2] * f[4] + m_E[2][2] * f[5] );
         
         return BVector6( m_E[0][0] * f[0] + m_E[1][0] * f[1] + m_E[2][0] * f[2] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
-                               m_E[0][1] * f[0] + m_E[1][1] * f[1] + m_E[2][1] * f[2] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
-                               m_E[0][2] * f[0] + m_E[1][2] * f[1] + m_E[2][2] * f[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
-                               ETf[0],
-                               ETf[1],
-                               ETf[2] );
+                         m_E[0][1] * f[0] + m_E[1][1] * f[1] + m_E[2][1] * f[2] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
+                         m_E[0][2] * f[0] + m_E[1][2] * f[1] + m_E[2][2] * f[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
+                         ETf[0],
+                         ETf[1],
+                         ETf[2] );
         
         // const BVector3 ETf = m_E * f.lin();
         // const BVector3 aux = m_E * f.ang();
         // return BVector6(aux[0] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
-        //                       aux[1] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
-        //                       aux[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
-        //                       ETf[0],
-        //                       ETf[1],
-        //                       ETf[2]);
+        //                 aux[1] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
+        //                 aux[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
+        //                 ETf[0],
+        //                 ETf[1],
+        //                 ETf[2]);
     }
 
     // transform 3D point p to/from coordinate frame 
@@ -319,16 +332,16 @@ namespace arb
         const BScalar c = std::cos(angle);
   
         return BTransform(BMatrix3( axis[0] * axis[0] * (1.0 - c) + c,
-                                           axis[1] * axis[0] * (1.0 - c) + axis[2] * s,
-                                           axis[0] * axis[2] * (1.0 - c) - axis[1] * s,
-                                          
-                                           axis[0] * axis[1] * (1.0 - c) - axis[2] * s,
-                                           axis[1] * axis[1] * (1.0 - c) + c,
-                                           axis[1] * axis[2] * (1.0 - c) + axis[0] * s,
-                                          
-                                           axis[0] * axis[2] * (1.0 - c) + axis[1] * s,
-                                           axis[1] * axis[2] * (1.0 - c) - axis[0] * s,
-                                           axis[2] * axis[2] * (1.0 - c) + c ));
+                                    axis[1] * axis[0] * (1.0 - c) + axis[2] * s,
+                                    axis[0] * axis[2] * (1.0 - c) - axis[1] * s,
+                                  
+                                    axis[0] * axis[1] * (1.0 - c) - axis[2] * s,
+                                    axis[1] * axis[1] * (1.0 - c) + c,
+                                    axis[1] * axis[2] * (1.0 - c) + axis[0] * s,
+                                  
+                                    axis[0] * axis[2] * (1.0 - c) + axis[1] * s,
+                                    axis[1] * axis[2] * (1.0 - c) - axis[0] * s,
+                                    axis[2] * axis[2] * (1.0 - c) + c) );
     }
 
     // RBDA, Section 2.8, table, 2.2, page 23
@@ -338,8 +351,8 @@ namespace arb
         const BScalar s = std::sin(xrot);
         const BScalar c = std::cos(xrot);
         return BTransform ( BMatrix3( 1.0, 0.0, 0.0,
-                                             0.0,   c,   s,
-                                             0.0,  -s,   c ) );
+                                      0.0,   c,   s,
+                                      0.0,  -s,   c ) );
     }
 
     inline const BTransform 
@@ -348,8 +361,8 @@ namespace arb
         const BScalar s = std::sin(yrot);
         const BScalar c = std::cos(yrot);
         return BTransform( BMatrix3(   c, 0.0,  -s,
-                                            0.0, 1.0, 0.0,
-                                              s, 0.0,   c ) );
+                                     0.0, 1.0, 0.0,
+                                       s, 0.0,   c ) ); 
     }
 
     inline const BTransform 
@@ -358,8 +371,8 @@ namespace arb
         const BScalar s = std::sin(zrot);
         const BScalar c = std::cos(zrot);
         return BTransform( BMatrix3(  c,   s, 0.0,
-                                            -s,   c, 0.0,
-                                           0.0, 0.0, 1.0 ) );
+                                     -s,   c, 0.0,
+                                    0.0, 0.0, 1.0 ) );
     }
 
     inline const BTransform 

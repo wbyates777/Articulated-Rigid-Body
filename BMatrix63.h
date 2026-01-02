@@ -190,9 +190,10 @@ public:
     const BVector6 
     operator*( const BVector3 &v ) const 
     {
-        BVector6 retVal;
+        BVector6 retVal(B_ZERO_6);
         for ( int i = 0; i < 6; ++i )
-            retVal[i] = glm::dot(BVector3(m_data[i][0], m_data[i][1], m_data[i][2]), v);
+            for ( int j = 0; j < 3; ++j )
+                retVal[i] += m_data[i][j] * v[j];  
         return retVal; 
     }
 
