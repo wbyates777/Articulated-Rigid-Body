@@ -654,11 +654,11 @@ newton_euler( void )
 
 BMatrix6 
 toWorldInvInertia( BBody &body )
-// convert 'body coordinate' rotational inertia I_b to 'world coordinates' I_w 
+// convert 'body coordinate' inverse spatial inertia I_b to 'world coordinates' I_w 
 // Note in a rotating body I_b is constant while I_w is changing 
 // see RBDA, Table 2.5 and eqn 2.66, page 34
 {
-    const BTransform X(body.X_base().E()); // body to world
+    const BTransform X(body.X_base().E());   // world to body
     return arb::inverse(X) *  arb::inverse(body.I()) * arb::dual(X);
 }
 
