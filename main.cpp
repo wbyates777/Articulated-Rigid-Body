@@ -272,7 +272,7 @@ test_abinertia(void)
 int
 test_inverse( void )
 {
-    std::cout << "\Inverse Inertia Test\n" << std::endl; 
+    std::cout << "\nInverse Inertia Test\n" << std::endl; 
     
     // setup a body
     BMatrix3 I_com(B_ZERO_3x3);
