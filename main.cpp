@@ -1,8 +1,8 @@
 /* Articulated Rigid Body Dynamics 20/02/2024
 
- $$$$$$$$$$$$$$
- $   BARB.h   $
- $$$$$$$$$$$$$$
+ $$$$$$$$$$$$$
+ $   ARB.h   $
+ $$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
@@ -268,6 +268,95 @@ test_abinertia(void)
     return testsPassed;
 }
 
+
+int
+test_inverse( void )
+{
+    std::cout << "\Inverse Inertia Test\n" << std::endl; 
+    
+    // setup a body
+    BMatrix3 I_com(B_ZERO_3x3);
+    
+    I_com[0][0] = 1.0;
+    I_com[1][1] = 2.0;
+    I_com[2][2] = 3.0;
+    
+    BScalar mass = 2.0;
+    
+    BRBInertia I;
+    BVector3 com(1.0, 2.0, 3.0);
+    I.setInertiaCom(mass, com, I_com);
+    
+    
+    // world to body transform
+    BMatrix3 E = glm::rotate(glm::radians(-90.0), B_ZAXIS);
+    BVector3 r(1.0, 0.0, 0.0);
+    BTransform X_wb(E,r); 
+    
+    int testsPassed = 0;
+    
+    if (1)
+    {
+        // BTransform identities 
+        
+        // Identity 1
+        BMatrix6 M1(X_wb * arb::inverse(X_wb)); 
+        bool test1 = arb::nearZero(M1 - B_IDENTITY_6x6);
+        std::cout << "BTransform -- b^X_w * arb::inverse(b^X_w) == Identity -- Test1 is " << test1  << std::endl;
+        
+        // Identity 2
+        BMatrix6 M2(arb::inverse(X_wb) * X_wb);
+        bool test2 = arb::nearZero(M2 - B_IDENTITY_6x6);
+        std::cout << "BTransform -- arb::inverse(b^X_w) * b^X_w == Identity -- Test2 is  " << test2  << std::endl;
+        
+        // Identity 3
+        BMatrix6 M3 = arb::transpose(X_wb) * arb::dual(X_wb);
+        bool test3 = arb::nearZero(M3 - B_IDENTITY_6x6);
+        std::cout << "BTransform -- arb::transpose(b^X_w) * arb::dual(b^X_w) == Identity -- Test3 is " << test3  << std::endl;
+        
+        testsPassed += test1 + test2 + test3;
+    }
+    
+    
+    if (1)
+    {
+        // momentum is a force vector
+        BVector6 h_w(0.0, 0.0, 1.0,  2.0, 0.0, 0.0); 
+        
+        // body coords momentum and velocity
+        BVector6 h_b = arb::dual(X_wb) * h_w; // RBDA, eqn 2.61, page 32.
+        BVector6 v_b = arb::inverse(I) * h_b; 
+        
+        // world coords velocity
+        BVector6 v_w = arb::inverse(X_wb) * v_b;
+        
+        BMatrix6 invI_w = arb::inverse(X_wb) * arb::inverse(I) * arb::dual(X_wb);  // RBDA, Table 2.5, page 34
+        
+        BVector6 my_v_w = invI_w * h_w;  
+        
+        bool test1 = arb::nearZero(my_v_w - v_w);
+        std::cout << "Inverse Inertia -- Velocity -- Test1 is " << test1 << std::endl;
+        // std::cout << my_v_w << std::endl;
+        // std::cout << v_w << std::endl;
+        
+        BMatrix6 invI_b = (X_wb * invI_w * arb::transpose(X_wb));  
+        bool test2 = arb::nearZero(invI_b - arb::inverse(I));
+        std::cout << "Inverse Inertia -- Identity -- Test2 is " << test2 << std::endl;
+        
+        // If a force f acts on a rigid body having a velocity v, then
+        // the power delivered by the force is f \dot v (RDBA, Scalar Products, page 19). 
+        bool test3 = arb::nearZero(arb::dot(h_w, v_w) - arb::dot(h_b, v_b));
+        std::cout << "Power -- Test3 is " << test3 << std::endl;
+        // std::cout << arb::dot(h_w, v_w) << std::endl;
+        // std::cout << arb::dot(h_b, v_b) << std::endl;
+        
+        testsPassed += test1 + test2 + test3;
+    }
+    
+    return testsPassed;
+}
+
+
 void
 check( void )
 // consistency checks 
@@ -277,8 +366,9 @@ check( void )
     int a = test_adjoints();
     int b = test_rbinertia();
     int c = test_abinertia();
+    int d = test_inverse();
     
-    int errs = 22 - (a + b + c); // 11 + 6 + 5
+    int errs = 28 - (a + b + c + d); // 11 + 6 + 5
     
     if (errs)
     {
@@ -474,8 +564,8 @@ single_body( void )
     BDynamics dyn;
     dyn.forward(*model, qinput, f_ext);
     
-    std::cout << "linear acceleration (" << qinput.qddot[0] << ", " << qinput.qddot[1] << ", " << qinput.qddot[2] << std::endl;
-    std::cout << "angular acceleration (" << qinput.qddot[3] << ", " << qinput.qddot[4] << ", " << qinput.qddot[5] << std::endl;
+    std::cout << "linear acc (" << qinput.qddot[0] << ", " << qinput.qddot[1] << ", " << qinput.qddot[2] << std::endl;
+    std::cout << "angular acc (" << qinput.qddot[3] << ", " << qinput.qddot[4] << ", " << qinput.qddot[5] << std::endl;
     
     std::cout << std::endl;
     
@@ -564,13 +654,12 @@ newton_euler( void )
 
 BMatrix6 
 toWorldInvInertia( BBody &body )
-// convert 'body coordinate' rotational inertia I_o to 'world coordinates' I_w 
-// Note in a rotating body I_o is constant while I_w is changing 
+// convert 'body coordinate' rotational inertia I_b to 'world coordinates' I_w 
+// Note in a rotating body I_b is constant while I_w is changing 
+// see RBDA, Table 2.5 and eqn 2.66, page 34
 {
-    BMatrix6 invI = arb::inverse(body.I());
-    
-    BMatrix6 X = arb::toAdjointDual(BTransform(body.X_base().E()));
-    return X * invI * arb::transpose(X);
+    const BTransform X(body.X_base().E()); // body to world
+    return arb::inverse(X) *  arb::inverse(body.I()) * arb::dual(X);
 }
 
 void
@@ -629,12 +718,13 @@ impulse( void )
     BScalar mA = body1.I().mass();
     BScalar uA = 2.0; // body1.v()[5];
     BScalar mB = body2.I().mass();
-    BScalar uB = -3.0; // body1.v()[5];
-    BScalar vA = (((mA - mB)/(mA + mB)) * uA) + (((2.0 * mB)/(mA + mB)) * uB);
-    BScalar vB = (((2.0 * mA)/(mA + mB)) * uA) + (((mB - mA)/(mA + mB)) * uB);
+    BScalar uB = -3.0; // body2.v()[5];
+    BScalar vA = (((mA - mB) / (mA + mB)) * uA) + (((2.0 * mB) / (mA + mB)) * uB);
+    BScalar vB = (((2.0 * mA) / (mA + mB)) * uA) + (((mB - mA) / (mA + mB)) * uB);
     
-    std::cout << "Should equal " << "vA " << vA  << ", vB " <<  vB << std::endl;
+    std::cout << "Should equal " << "v1 " << vA  << ", v2 " <<  vB << std::endl;
 }
+
 
 int 
 main()
