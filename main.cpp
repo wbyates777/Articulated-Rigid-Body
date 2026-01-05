@@ -154,7 +154,8 @@ test_rbinertia( void )
     
     double mass = 59.0, radius = 0.5;
     BVector3 com(1.0);
-    BVector3 gyration((2.0/5.0) * mass * (radius * radius));
+    BScalar gyr((2.0/5.0) * mass * (radius * radius));
+    BVector3 gyration(gyr * 0.5, gyr, gyr * 2.1);
     BBody sphere(mass, com, gyration);
     
     BRBInertia I = sphere.I();
@@ -168,6 +169,26 @@ test_rbinertia( void )
     
     if (1)
     {   
+        // basic inverse
+        bool test1 = arb::nearZero( (BMatrix6(I) * arb::inverse(I)) - B_IDENTITY_6x6 );
+        std::cout  << "RBInertia --  I_b * I_b^{-1} == IDENTITY_6x6 -- Test1 is " << test1 << std::endl;
+        
+        
+        // world coords
+        BMatrix6 I_w  = arb::transpose(X) * I * X; // inertia in word coords
+        //std::cout << m_I_w  << std::endl;
+        
+        BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::dual(X); // inverse inertia in word coords
+        //std::cout << m_invI_w  << std::endl; 
+        
+        //std::cout << I_w * m_invI_w << std::endl;
+        bool test2 = arb::nearZero( (I_w * invI_w) - B_IDENTITY_6x6 );
+        std::cout  << "RBInertia --  I_w * I_w^{-1} == IDENTITY_6x6 -- Test2 is " << test2 << std::endl;
+        
+        testsPassed += test1 + test2;
+    }
+    if (1)
+    {   
         // Apply - X^* I X^{-1}
         BRBInertia I1 = X.apply( I ); 
         
@@ -175,6 +196,7 @@ test_rbinertia( void )
         BMatrix6 aux2 = arb::dual(X) * BMatrix6(I) * BMatrix6(arb::inverse(X));
         BMatrix6 aux3 = arb::dual(X) * I * arb::inverse(X);
         BMatrix6 aux4 = arb::transpose(arb::inverse(X)) * BMatrix6(I) * arb::inverse(X);
+        
         
         bool test1 = arb::nearZero(aux1 - BMatrix6(I1));
         bool test2 = arb::nearZero(aux2 - BMatrix6(I1));
@@ -212,20 +234,17 @@ test_abinertia(void)
     
     // set up single body - a sphere -  
     BScalar mass = 10.0, radius = 1.5;
-    double diag = ((2.0/5.0) * mass * (radius * radius)); 
     BVector3 com = BVector3(2.0,-1.0, 10.0); // centre of mass
-
-    BMatrix3 I(diag);
+   
+    BScalar d((2.0/5.0) * mass * (radius * radius));
+    BVector3 diag(d * 0.5, d, d * 2.1);
+    BMatrix3 I(d);
+    I[0][0] = diag[0];
+    I[1][1] = diag[1];
+    I[2][2] = diag[2];
+    
     BMatrix3 M(mass);
     BMatrix3 H = arb::cross(mass * com);
-    
-    // check inverse 
-    BMatrix6 ABI(M, H, glm::transpose(H), I);
-    BMatrix6 ABIinv = arb::inverse(BABInertia(M,H,I));
-    BMatrix6 I6 = ABI * ABIinv;
-   // std::cout << "AB * ABinv = \n" << I6 << "\n\n";
-    bool test1 = arb::nearZero(I6 - B_IDENTITY_6x6);
-    std::cout << "ABInertia Inverse -- I^{-1} -- Test1 is " << test1 << "\n";
     
     // check ABI transforms
     BABInertia abi(M,H,I);
@@ -235,6 +254,26 @@ test_abinertia(void)
     BTransform X(rot, trans);
 
     int testsPassed = 0;
+    if (1)
+    {   
+        // basic inverse
+        bool test1 = arb::nearZero( (BMatrix6(abi) * arb::inverse(abi)) - B_IDENTITY_6x6 );
+        std::cout  << "ABInertia --  I_b * I_b^{-1} == IDENTITY_6x6 -- Test1 is " << test1 << std::endl;
+        
+        
+        // world coords
+        BMatrix6 I_w  = arb::transpose(X) * abi * X; // inertia in word coords
+        //std::cout << m_I_w  << std::endl;
+        
+        BMatrix6 invI_w = arb::inverse(X) * arb::inverse(abi) * arb::dual(X); // inverse inertia in word coords
+        //std::cout << m_invI_w  << std::endl; 
+        
+        //std::cout << I_w * m_invI_w << std::endl;
+        bool test2 = arb::nearZero( (I_w * invI_w) - B_IDENTITY_6x6 );
+        std::cout  << "ABInertia --  I_w * I_w^{-1} == IDENTITY_6x6 -- Test2 is " << test2 << std::endl;
+        
+        testsPassed += test1 + test2;
+    }
     if (1)
     {
         // Apply - X^* I X^{-1}
@@ -320,12 +359,14 @@ test_inverse( void )
     
     if (1)
     {
+        // velocity test
+        
         // momentum is a force vector
         BVector6 h_w(0.0, 0.0, 1.0,  2.0, 0.0, 0.0); 
         
         // body coords momentum and velocity
-        BVector6 h_b = arb::dual(X_wb) * h_w; // RBDA, eqn 2.61, page 32.
-        BVector6 v_b = arb::inverse(I) * h_b; 
+        BVector6 h_b = arb::dual(X_wb) * h_w; 
+        BVector6 v_b = arb::inverse(I) * h_b;  // RBDA, eqn 2.61, page 32.
         
         // world coords velocity
         BVector6 v_w = arb::inverse(X_wb) * v_b;
@@ -339,18 +380,15 @@ test_inverse( void )
         // std::cout << my_v_w << std::endl;
         // std::cout << v_w << std::endl;
         
-        BMatrix6 invI_b = (X_wb * invI_w * arb::transpose(X_wb));  
-        bool test2 = arb::nearZero(invI_b - arb::inverse(I));
-        std::cout << "Inverse Inertia -- Identity -- Test2 is " << test2 << std::endl;
         
         // If a force f acts on a rigid body having a velocity v, then
         // the power delivered by the force is f \dot v (RDBA, Scalar Products, page 19). 
-        bool test3 = arb::nearZero(arb::dot(h_w, v_w) - arb::dot(h_b, v_b));
-        std::cout << "Power -- Test3 is " << test3 << std::endl;
+        bool test2 = arb::nearZero(arb::dot(h_w, v_w) - arb::dot(h_b, v_b));
+        std::cout << "Power -- Test2 is " << test2 << std::endl;
         // std::cout << arb::dot(h_w, v_w) << std::endl;
         // std::cout << arb::dot(h_b, v_b) << std::endl;
         
-        testsPassed += test1 + test2 + test3;
+        testsPassed += test1 + test2;
     }
     
     return testsPassed;
@@ -368,7 +406,7 @@ check( void )
     int c = test_abinertia();
     int d = test_inverse();
     
-    int errs = 28 - (a + b + c + d); // 11 + 6 + 5
+    int errs = 31 - (a + b + c + d); 
     
     if (errs)
     {
@@ -654,11 +692,11 @@ newton_euler( void )
 
 BMatrix6 
 toWorldInvInertia( BBody &body )
-// convert 'body coordinate' inverse spatial inertia I_b to 'world coordinates' I_w 
+// convert 'body coordinate' inverse spatial inertia I^{-1}_b to 'world coordinates' I^{-1}_w 
 // Note in a rotating body I_b is constant while I_w is changing 
 // see RBDA, Table 2.5 and eqn 2.66, page 34
 {
-    const BTransform X(body.X_base().E());   // world to body
+    const BTransform X(body.X_base().E()); // world to body
     return arb::inverse(X) *  arb::inverse(body.I()) * arb::dual(X);
 }
 

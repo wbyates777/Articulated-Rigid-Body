@@ -300,11 +300,11 @@ namespace arb
         const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();
         const BMatrix3 invT = arb::inverse(T);
         
-        const BMatrix3 topLeft  = invM + invM * abi.H() * invT * arb::transpose(abi.H()) * invM;
+        const BMatrix3 topLeft  = invT;
         const BMatrix3 topRight = -invM * abi.H() * invT;
         const BMatrix3 botLeft  = -invT * arb::transpose(abi.H()) * invM;
-        const BMatrix3 botRight = invT;
-     
+        const BMatrix3 botRight = invM + invM * abi.H() * invT * arb::transpose(abi.H()) * invM;
+ 
         return BMatrix6(topLeft, topRight, botLeft, botRight);
     } 
 

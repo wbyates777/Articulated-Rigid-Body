@@ -245,9 +245,9 @@ namespace arb
         const BMatrix3 invI(arb::inverse(I.inertiaCom()));
         const BMatrix3 invM(1.0 / I.mass());
         const BVector3 com(I.com());
-        
-        return BMatrix6(          invI,                    invI * arb::cross(-com),  
-                               arb::cross(com) * invI,  invM + arb::cross(com) * invI * arb::cross(-com));
+
+        return BMatrix6(           invI,                       arb::cross(-com) * invI,  
+                        invI * arb::cross(com),  invM + arb::cross(-com) * invI * arb::cross(com) );
         
     } 
 
