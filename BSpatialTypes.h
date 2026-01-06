@@ -131,7 +131,7 @@ namespace arb {
     clamp(const BVector3 &v, const BVector3 &lo, const BVector3 &hi) 
     { 
         return glm::clamp(v, lo, hi);
-        return BVector3(std::clamp(v[0], lo[0], hi[0]), std::clamp(v[1], lo[1], hi[1]), std::clamp(v[2], lo[2], hi[2]));
+        //return BVector3(std::clamp(v[0], lo[0], hi[0]), std::clamp(v[1], lo[1], hi[1]), std::clamp(v[2], lo[2], hi[2]));
     }
 }
 
