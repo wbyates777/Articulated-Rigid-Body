@@ -209,48 +209,25 @@ namespace arb
     inline bool 
     isnan( const BVector6 &v ) { return (isnan(v.lin()) || isnan(v.ang())); }
     
-    
-    inline const BVector3 
-    min(const BVector3 &v1, const BVector3 &v2) 
-    { 
-        return glm::min(v1, v2);
-        //return BVector3(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]));
-    }
-    
-    inline const BVector3 
-    min(const BVector3 &v1, BScalar v2) { return min(v1, BVector3(v2)); }
-    
-    inline const BVector3 
-    min(BScalar v1, const BVector3 &v2) { return min(BVector3(v1), v2); }
-
-    
     inline const BVector6 
     min(const BVector6 &v1, const BVector6 &v2) 
     { 
         return BVector6(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]), 
-                              std::min(v1[3],v2[3]), std::min(v1[4],v2[4]), std::min(v1[5],v2[5]));
+                        std::min(v1[3],v2[3]), std::min(v1[4],v2[4]), std::min(v1[5],v2[5]));
     }
-    
-    
-    inline const BVector3 
-    max(const BVector3 &v1, const BVector3 &v2)
-    { 
-        return glm::max(v1, v2);
-        //return BVector3(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]));
-    }
-    
-    inline const BVector3 
-    max(const BVector3 &v1, BScalar v2) { return max(v1, BVector3(v2)); }
-    
-    inline const BVector3 
-    max(BScalar v1, const BVector3 &v2) { return max(BVector3(v1), v2); }
-    
     
     inline const BVector6 
     max(const BVector6 &v1, const BVector6 &v2)
     { 
         return BVector6(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]), 
-                              std::max(v1[3],v2[3]), std::max(v1[4],v2[4]), std::max(v1[5],v2[5]));
+                        std::max(v1[3],v2[3]), std::max(v1[4],v2[4]), std::max(v1[5],v2[5]));
+    }
+    
+    inline const BVector6 
+    clamp(const BVector6 &v, const BVector6 &lo, const BVector6 &hi) 
+    { 
+        return BVector6(std::clamp(v[0], lo[0], hi[0]), std::clamp(v[1], lo[1], hi[1]), std::clamp(v[2], lo[2], hi[2]), 
+                        std::clamp(v[3], lo[3], hi[3]), std::clamp(v[4], lo[4], hi[4]), std::clamp(v[5], lo[5], hi[5]));
     }
 }
 

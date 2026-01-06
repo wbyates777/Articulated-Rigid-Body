@@ -95,6 +95,44 @@ namespace arb {
     inline bool 
     isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
 
+    
+    inline const BVector3 
+    min(const BVector3 &v1, const BVector3 &v2) 
+    { 
+        return glm::min(v1, v2);
+        //return BVector3(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]));
+    }
+    
+    inline const BVector3 
+    min(const BVector3 &v1, BScalar v2) { return min(v1, BVector3(v2)); }
+    
+    inline const BVector3 
+    min(BScalar v1, const BVector3 &v2) { return min(BVector3(v1), v2); }
+    
+    
+    inline const BVector3 
+    max(const BVector3 &v1, const BVector3 &v2)
+    { 
+        return glm::max(v1, v2);
+        //return BVector3(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]));
+    }
+    
+    inline const BVector3 
+    max(const BVector3 &v1, BScalar v2) { return max(v1, BVector3(v2)); }
+    
+    inline const BVector3 
+    max(BScalar v1, const BVector3 &v2) { return max(BVector3(v1), v2); }
+    
+
+    inline BScalar 
+    clamp(BScalar v, BScalar lo, BScalar hi) { return std::clamp(v, lo, hi); }
+     
+    inline const BVector3 
+    clamp(const BVector3 &v, const BVector3 &lo, const BVector3 &hi) 
+    { 
+        return glm::clamp(v, lo, hi);
+        return BVector3(std::clamp(v[0], lo[0], hi[0]), std::clamp(v[1], lo[1], hi[1]), std::clamp(v[2], lo[2], hi[2]));
+    }
 }
 
 
