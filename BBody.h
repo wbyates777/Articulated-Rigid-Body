@@ -16,14 +16,23 @@
 
  
 
- Example 1.
+ Examples.
  
- double mass = 99.0;   // kg
- double radius = 0.25; // m
- BVector3 gyration_radii = BVector3((2.0 / 5.0) * mass * (radius * radius));
- BVector3 com = BVector3(0.0); // centre of mass in body coordinates
+ BInertia 
+ sphere( BScalar mass, BScalar radius )
+ {
+     return BInertia(mass, glm::dvec3((2.0/5.0) * mass * radius * radius));
+ }
  
- BBody sphere = BBody(mass,  com, gyration_radii);
+ BInertia 
+ rectangle( BScalar mass, BScalar height, BScalar width, BScalar depth )
+ {
+     glm::dvec3 diag;
+     diag[0] = (1.0/12.0) * mass * (depth * depth + height * height); // x-width
+     diag[1] = (1.0/12.0) * mass * (depth * depth + width * width);   // y-height
+     diag[2] = (1.0/12.0) * mass * (width * width + height * height); // z-depth
+     return BInertia(mass, diag);
+ }
  
  
 */
@@ -48,8 +57,6 @@ public:
 
     BBody( void )=default; 
     
-    // construct a body from mass, center of mass (com) and radii of gyration
-    // gyration radii used to set the main diagonal of inertia tensor 
     BBody( const BInertia &I, bool isVirtual = false): m_id(0), 
                                                        m_v(B_ZERO_6), 
                                                        m_a(B_ZERO_6),
@@ -129,7 +136,7 @@ public:
         m_I -= X.applyTranspose(other_body.I()); 
     }
     
-    // transformation from the base to this body's $B_i$ coordinate frame $F^i$ - set in  BDynmaics::forward()
+    // transformation from the base (world) frame to this body's coordinate frame
     const BTransform& 
     X_base( void ) const { return m_X_base; }
     
@@ -196,9 +203,9 @@ private:
     BVector6  m_a;    // spatial acceleration of the body
     BVector6  m_c;    // spatial velocity-dependent acceleration term
 
-    BRBInertia m_I;         // spatial inertia at origin of the body (mass, com, rotational inertia)
+    BRBInertia m_I;   // spatial inertia at origin of the body (mass, com, rotational inertia)
    
-    // transformation from the base frame to this body's coordinate frame - set dynamically
+    // transformation from the base frame to this body's coordinate frame  - set dynamically
     BTransform m_X_base;
     
     bool m_isVirtual;
