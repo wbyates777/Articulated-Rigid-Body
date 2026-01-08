@@ -83,7 +83,7 @@ public:
     Icom( void ) const { return (m_mass < 1E-6) ? m_I : m_I - (arb::crosst(m_h) / m_mass); }  // inertia at com
     
     const BVector3
-    com( void ) const { return (m_mass > 1E-6) ? m_h / m_mass : B_ZERO_3; }  
+    com( void ) const { return (m_mass < 1E-6) ? B_ZERO_3 : m_h / m_mass; }  
  
     void
     rotate( const BMatrix3 &R ) 
