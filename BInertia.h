@@ -86,7 +86,7 @@ public:
     com( void ) const { return (m_mass > 1E-6) ? m_h / m_mass : B_ZERO_3; }  
  
     void
-    rotate( const BMatrix3 &R ) // rotate about com
+    rotate( const BMatrix3 &R ) 
     {
         m_h = R * m_h;  
         m_I = R * m_I * arb::transpose(R);
@@ -235,7 +235,7 @@ private:
     
     BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
     BVector3 m_h;    // first moment of mass h = m_com * m_mass - (see RBDA, Section 2.12, page 31)
-    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0); second moment of mass 
+    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0,0); second moment of mass 
  
 };
 
