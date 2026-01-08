@@ -33,8 +33,6 @@
 #include "BProducts.h"
 #endif
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/norm.hpp>
 
 class BInertia
 {
@@ -205,7 +203,7 @@ public:
         
         // handle the massless case (valid for pure coordinate frames)
         if (m_mass == 0.0) 
-            return (glm::length2(m_h) == 0.0 && m_I == B_ZERO_3x3);
+            return (m_h == B_ZERO_3 && m_I == B_ZERO_3x3);
         
         // triangle inequality only strictly applies at the COM.
         const BMatrix3 I_c = Icom();
