@@ -228,7 +228,7 @@ public:
         const BMatrix3 rx = arb::cross(m_r);
         const BVector3 h  = ET * (rbi.h() - (rbi.mass() * m_r)); 
         const BMatrix3 aux = (rx * arb::cross(rbi.h())) + ((arb::cross(rbi.h() - rbi.mass() * m_r) * rx));
-        const BMatrix3 I =  ET * (rbi.inertia() + aux) * m_E;
+        const BMatrix3 I =  ET * (rbi.I() + aux) * m_E;
         return BRBInertia( rbi.mass(), h, I );
     }
     
@@ -240,7 +240,7 @@ public:
         const BMatrix3 rx = arb::cross(m_r);
         const BVector3 h = (m_E * rbi.h()) + (rbi.mass() * m_r); 
         const BMatrix3 aux = rx * arb::cross(m_E * rbi.h()) + arb::cross(h) * rx;
-        const BMatrix3 I = (m_E * rbi.inertia() * ET) - aux;
+        const BMatrix3 I = (m_E * rbi.I() * ET) - aux;
         return BRBInertia( rbi.mass(), h, I );
     }
     

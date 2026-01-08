@@ -49,7 +49,6 @@
 #include "BProducts.h"
 #endif
 
-
 #ifndef __BMATRIX63_H__
 #include "BMatrix63.h"
 #endif
@@ -57,6 +56,7 @@
 #ifndef __BRBINERTIA_H__
 #include "BRBInertia.h"
 #endif
+
 
 class BABInertia
 {
@@ -68,19 +68,16 @@ public:
     // inertia I_o at body frame origin
     constexpr BABInertia( const BMatrix3 &M, const BMatrix3 &H, const BMatrix3 &I_o ): m_M(M), m_H(H), m_I(I_o) {}
     
-    BABInertia( BScalar m, const BVector3 &com, const BMatrix3 &I_com ): m_M(m), m_H(m * arb::cross(com)), m_I(I_com) 
-    {
-        m_I += m * arb::crosst(com); // transform I_com to body coordinate frame origin  if com != zero
-    }
+    BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {} 
     
-    explicit BABInertia( const BMatrix6 &I ) { setInertia(I); }    
+    explicit BABInertia( const BMatrix6 &I ) { set(I); }    
     
     // called from SDynamics
     explicit BABInertia( const BVector6 &a, const BVector6 &b ): m_M(arb::outer(a.lin(), b.lin())), 
-                                                                             m_H(arb::outer(a.ang(), b.lin())),
-                                                                             m_I(arb::outer(a.ang(), b.ang()))  {}
+                                                                 m_H(arb::outer(a.ang(), b.lin())),
+                                                                 m_I(arb::outer(a.ang(), b.ang()))  {}
     
-    BABInertia( const BRBInertia &rbi ):  m_M(BMatrix3(rbi.mass())), m_H(arb::cross(rbi.h())), m_I(rbi.inertia()) {}
+    BABInertia( const BRBInertia &I ):  m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {}
     
     ~BABInertia( void )=default;
 
@@ -89,11 +86,28 @@ public:
     clear( void ) { m_M = m_H = m_I = B_ZERO_3x3; }
     
     void 
-    setInertia( const BMatrix6 &I ) 
+    set( const BInertia &I ) 
+    {
+        m_M = I.mass(); m_H = arb::cross(I.h()); m_I = I.I();
+    }
+    
+    void 
+    set( const BRBInertia &I ) 
+    {
+        m_M = I.mass(); m_H = arb::cross(I.h()); m_I = I.I();
+    }
+    
+    void 
+    set( const BMatrix6 &I ) 
     { 
         m_I = I.topLeft(); m_H = I.topRight(); m_M = I.botRight(); 
     }
 
+    operator BMatrix6( void ) const 
+    { 
+        return BMatrix6( m_I, m_H, arb::transpose(m_H), m_M );
+    }
+    
     // generalized mass 
     const BMatrix3&
     M( void ) const { return m_M; } 
@@ -106,11 +120,7 @@ public:
     const BMatrix3&
     I( void ) const { return m_I; } 
     
-    operator BMatrix6( void ) const 
-    { 
-        return BMatrix6( m_I, m_H, arb::transpose(m_H), m_M );
-    }
-    
+
     const BABInertia
     operator-( void ) const { return BABInertia(-m_M, -m_H, -m_I); }
     
@@ -215,20 +225,20 @@ public:
     operator+(const BRBInertia &rbi) const
     // returns Ia + I
     {
-        const BMatrix3 M = m_M + BMatrix3(rbi.mass());
-        const BMatrix3 H = m_H + arb::cross(rbi.h());
-        const BMatrix3 I = m_I + rbi.inertia(); 
-        return BABInertia(M, H, I);
+        const BMatrix3 M_ = m_M + BMatrix3(rbi.mass());
+        const BMatrix3 H_ = m_H + arb::cross(rbi.h());
+        const BMatrix3 I_ = m_I + rbi.I(); 
+        return BABInertia(M_, H_, I_);
     }
 
     const BABInertia  
     operator-(const BRBInertia &rbi) const
     // returns Ia - I
     {
-        const BMatrix3 M = m_M - BMatrix3(rbi.mass());
-        const BMatrix3 H = m_H - arb::cross(rbi.h());
-        const BMatrix3 I = m_I - rbi.inertia(); 
-        return BABInertia(M, H, I);
+        const BMatrix3 M_ = m_M - BMatrix3(rbi.mass());
+        const BMatrix3 H_ = m_H - arb::cross(rbi.h());
+        const BMatrix3 I_ = m_I - rbi.I(); 
+        return BABInertia(M_, H_, I_);
     }
 
     const BABInertia& 
@@ -237,7 +247,7 @@ public:
     {
         m_M += BMatrix3(rbi.mass());
         m_H += arb::cross(rbi.h());
-        m_I += rbi.inertia(); 
+        m_I += rbi.I(); 
         return *this;
     }
 
@@ -247,7 +257,7 @@ public:
     {
         m_M -= BMatrix3(rbi.mass());
         m_H -= arb::cross(rbi.h());
-        m_I -= rbi.inertia(); 
+        m_I -= rbi.I(); 
         return *this;
     }
 
@@ -277,21 +287,21 @@ private:
     
 };
 
-#ifndef GLM_FORCE_INTRINSICS
-constexpr BABInertia B_ZERO_ABI(B_ZERO_3x3, B_ZERO_3x3, B_ZERO_3x3);
-#else
-const BABInertia B_ZERO_ABI(B_ZERO_3x3, B_ZERO_3x3, B_ZERO_3x3);
-#endif
 
 // scalar multiplication
 inline const BABInertia 
 operator*( BScalar s, const BABInertia &m ) { return m * s; }
 
 
+#ifndef GLM_FORCE_INTRINSICS
+constexpr BABInertia B_ZERO_ABI(B_ZERO_3x3, B_ZERO_3x3, B_ZERO_3x3);
+#else
+const BABInertia B_ZERO_ABI(B_ZERO_3x3, B_ZERO_3x3, B_ZERO_3x3);
+#endif
+
+
 namespace arb
 {
-
-    // you should generally try to avoid taking the inverse of a spatial matrix
     inline const BMatrix6 
     inverse( const BABInertia &abi ) 
     // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement

@@ -50,42 +50,14 @@ public:
     
     // construct a body from mass, center of mass (com) and radii of gyration
     // gyration radii used to set the main diagonal of inertia tensor 
-    BBody( BScalar mass,
-           const BVector3 &com,
-           const BVector3 &gyration_radii = B_ONE_3,
-           bool isVirtual = false) : m_id(0), 
-                                     m_v(B_ZERO_6), 
-                                     m_a(B_ZERO_6),
-                                     m_c(B_ZERO_6),
-                                     m_I(B_ZERO_RBI),
-                                     m_X_base(B_IDENTITY_TRANS), 
-                                     m_isVirtual(isVirtual)
-    {
-        BMatrix3 I_com = BMatrix3( gyration_radii[0], 0.0, 0.0,
-                                   0.0, gyration_radii[1], 0.0,
-                                   0.0, 0.0, gyration_radii[2] );
-        
-        m_I.setInertiaCom(mass, com, I_com);
-    }
+    BBody( const BInertia &I, bool isVirtual = false): m_id(0), 
+                                                       m_v(B_ZERO_6), 
+                                                       m_a(B_ZERO_6),
+                                                       m_c(B_ZERO_6),
+                                                       m_I(I),
+                                                       m_X_base(B_IDENTITY_TRANS), 
+                                                       m_isVirtual(isVirtual) {}
 
-    // construct a body from mass, center of mass (com) and inertia $I_com$
-    // $I_com$ is defined with respect to the centre of mass $com$ 
-    // if $com$ is non-zero then $I_com$ will be translated to position $-com$ - the origin of the rigid body.
-    BBody( BScalar mass,
-           const BVector3 &com,
-           const BMatrix3 &I_com,
-           bool isVirtual = false) : m_id(0), 
-                                     m_v(B_ZERO_6), 
-                                     m_a(B_ZERO_6), 
-                                     m_c(B_ZERO_6),
-                                     m_I(B_ZERO_RBI),
-                                     m_X_base(B_IDENTITY_TRANS), 
-                                     m_isVirtual(isVirtual) 
-    {
-        // WARNING: do not use m_I(mass, com, I_com) as this is incorrect
-        m_I.setInertiaCom(mass, com, I_com); 
-    }
-    
     explicit BBody( const BRBInertia &I, bool isVirtual = false ) : m_id(0), 
                                                                     m_v(B_ZERO_6), 
                                                                     m_a(B_ZERO_6), 
@@ -113,10 +85,10 @@ public:
     
     
     void 
-    setBody( BScalar mass, const BVector3 &com, const BMatrix3 &I_com, bool isVirtual = false )
+    setBody( const BInertia &inertia, bool isVirtual = false )
     {
         m_v = m_a = m_c = B_ZERO_6; 
-        m_I.setInertiaCom(mass, com, I_com);
+        m_I.set(inertia);
         m_X_base.clear();
         m_isVirtual = isVirtual;
     }
@@ -138,7 +110,7 @@ public:
     void 
     join( const BTransform &X, const BBody &other_body )
     {
-        if (other_body.I().mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
+        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_IDENTITY_3x3) 
             return;
         
         assert(m_I.mass() + other_body.I().mass() != 0.0);
@@ -150,7 +122,7 @@ public:
     void 
     separate( const BTransform &X, const BBody &other_body )
     {
-        if (other_body.I().mass() == 0.0 && other_body.I().inertiaCom() == B_IDENTITY_3x3) 
+        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_IDENTITY_3x3) 
             return;
         
         assert(m_I.mass() - other_body.I().mass() != 0.0);

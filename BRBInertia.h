@@ -49,7 +49,7 @@
  
  https://en.wikipedia.org/wiki/List_of_moments_of_inertia
  
- TODO: separate 3D stuff into BMass(mass,h,I^3) and I^6 stuff BRBInertia
+
  
 */
 
@@ -57,6 +57,10 @@
 #ifndef __BRBINERTIA_H__
 #define __BRBINERTIA_H__
 
+
+#ifndef __BINERTIA_H__
+#include "BInertia.h"
+#endif
 
 #ifndef __BMATRIX6_H__
 #include "BMatrix6.h"
@@ -75,49 +79,25 @@ public:
     BRBInertia( void )=default;
     // the moments of mass; zero, one, and two - note mass can be 0, I_o inertia at body frame origin
     constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o ): m_mass(mass), m_h(h), m_I(I_o) {}
-    BRBInertia( const BMatrix6 &I ) { setInertia(I); }     
+    BRBInertia( const BInertia &I ): m_mass(I.mass()), m_h(I.h()), m_I(I.I()) {} 
+    BRBInertia( const BMatrix6 &I ) { set(I); }     
     ~BRBInertia( void )=default;
     
     void
     clear( void ) {  m_mass = 0.0; m_h = B_ZERO_3; m_I = B_ZERO_3x3; }
     
-    // the moments of mass; zero, one, and two - note mass can be 0, I_o inertia at body frame origin
     void 
-    setInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o )
-    {
-        m_mass = mass; m_h = h; m_I = I_o;
-    }
+    set( const BInertia &I ) { m_mass = I.mass(); m_h = I.h(); m_I = I.I(); }
     
     void 
-    setInertia( const BMatrix6 &I )     
+    set( const BMatrix6 &I )     
     {
         m_mass = I[3][3]; 
         m_h    = BVector3(-I[1][5], I[0][5], -I[0][4]); 
         m_I    = I.topLeft();
     }
 
-    // inertia_com matrix is defined with respect to com  
-    // if com is non zero the inertia will be translated to the body frame origin
-    // RBDA, Section 2.13, eqn 2.63, page 33.
-    // called from BBody::BBody(); this was RBDL function createFromMassComInertiaC(Body) 
-    void 
-    setInertiaCom( BScalar mass, const BVector3 &com, const BMatrix3 &I_com  )
-    {
-        m_mass = mass;  // note mass can be 0 
-        m_h    = com * m_mass;
-        m_I    = I_com + m_mass * arb::crosst(com); 
-    }
-
-    void
-    setMass( BScalar mass ) { setInertiaCom(mass, com(), inertiaCom()); }
-
-    // centre of mass in body coordinates
-    void
-    setCom(const BVector3 &com ) { setInertiaCom(m_mass, com, inertiaCom()); }
-    
-    void
-    setInertiaCom( const BMatrix3 &I_com ) { setInertiaCom(m_mass, com(), I_com); }
- 
+  
     // RBDA, Section 2.13, eqn 2.63, page 33.
     operator BMatrix6( void ) const 
     { 
@@ -127,6 +107,19 @@ public:
     // zeroth moment of mass
     BScalar
     mass( void ) const { return m_mass; }
+  
+    // magnitude and direction of linear momentum; first moment of mass 
+    const BVector3
+    h( void ) const {  return m_h; }
+    
+    // rotational inertia at body frame origin; second moment of mass
+    const BMatrix3& 
+    I( void ) const { return m_I; } 
+    
+    // rotational inertia at com; second moment of mass
+    const BMatrix3 
+    Icom( void ) const { return m_I - m_mass * arb::crosst(com()); } 
+ 
     
     // centre of mass in body coordinates
     const BVector3
@@ -134,20 +127,8 @@ public:
     
    // const BVector3 // some virtual bodies have mass 0
    // com( void ) const { return (m_mass) ? (m_h / m_mass) : B_ZERO_3; }
-        
-    // magnitude and direction of linear momentum; first moment of mass 
-    const BVector3
-    h( void ) const {  return m_h; }
+      
     
-    // rotational inertia at body frame origin; second moment of mass
-    const BMatrix3& 
-    inertia( void ) const { return m_I; } 
-    
-    // rotational inertia at com; second moment of mass
-    const BMatrix3 
-    inertiaCom( void ) const { return m_I - m_mass * arb::crosst(com()); } 
- 
-
     const BRBInertia
     operator-( void ) const { return BRBInertia(-m_mass, -m_h, -m_I); }
     
@@ -232,26 +213,11 @@ private:
     
 };
 
-namespace arb
-{
-    // you should generally try to avoid taking the inverse of a spatial matrix
-    // for articulated rigid bodies use the ABA to calculate accelerations
-    inline const BMatrix6 
-    inverse( const BRBInertia &I ) 
-    // Schur complement - analytical inverse, see RBDA, Section 2.15, eqn 2.74,  page 36
-    // https://en.wikipedia.org/wiki/Schur_complement
-    {  
-        assert(I.mass() != 0.0);
-        const BMatrix3 invI(arb::inverse(I.inertiaCom()));
-        const BMatrix3 invM(1.0 / I.mass());
-        const BVector3 com(I.com());
 
-        return BMatrix6(           invI,                       arb::cross(-com) * invI,  
-                        invI * arb::cross(com),  invM + arb::cross(-com) * invI * arb::cross(com) );
-        
-    } 
+// scalar multiplication
+inline const BRBInertia 
+operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 
-}
 
 #ifndef GLM_FORCE_INTRINSICS
 constexpr BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
@@ -259,9 +225,25 @@ constexpr BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 const BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 #endif
 
-// scalar multiplication
-inline const BRBInertia 
-operator*( BScalar s, const BRBInertia &m ) { return m * s; }
+
+namespace arb
+{
+    inline const BMatrix6 
+    inverse( const BRBInertia &I ) 
+    // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
+    // see RBDA, Section 2.15, eqn 2.74,  page 36
+    {  
+        assert(I.mass() != 0.0);
+        const BMatrix3 invI(arb::inverse(I.Icom()));
+        const BMatrix3 invM(1.0 / I.mass());
+        const BVector3 com(I.com());
+
+        return BMatrix6(           invI,                       arb::cross(-com) * invI,  
+                        invI * arb::cross(com),  invM + arb::cross(-com) * invI * arb::cross(com) );
+        
+    } 
+}
+
 
 inline std::ostream&
 operator<<( std::ostream &ostr, const BRBInertia &m )

@@ -430,7 +430,7 @@ BModel::addFloatingBaseJoint( BBodyId parent_id,
                               const std::string &body_name )
 {
     
-    BBody null_body(0.0, B_ZERO_3, B_ZERO_3, true);
+    BBody null_body(BInertia(0.0, B_ZERO_3, B_ZERO_3x3), true);
     
     BBodyId null_parent = addBody(parent_id,
                           joint_frame,
@@ -489,7 +489,7 @@ BModel::addMultiDofJoint( BBodyId parent_id,
         if (j < joint_count - 1)
         {
             // add an intermediate body
-            BBody null_body(0.0, B_ZERO_3, B_ZERO_3, true);
+            BBody null_body(BInertia(0.0, B_ZERO_3, B_ZERO_3x3), true);
             null_parent_id = addBody( null_parent_id, joint_frame_transf, single_dof_joint, null_body );
         } 
         else 
@@ -598,69 +598,21 @@ BModel::calcDoF( void )
 
 
 void 
-BModel::setMass(BBodyId bid, BScalar mass)
+BModel::setBody(BBodyId bid, BInertia &inertia)
 {
     if (isFixedBodyId(bid))
     {
         BFixedBody& fbody = m_fixed[bid - m_fbd];
         m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.setMass( mass );
+        fbody.set( inertia );
         m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
     }
     else
     {
-        m_body[bid].I().setMass( mass );
-    }
-}
-
-void 
-BModel::setCom(BBodyId bid, const BVector3 &com)
-{
-    if (isFixedBodyId(bid))
-    {
-        BFixedBody& fbody = m_fixed[bid - m_fbd];
-        m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.setCom( com );
-        m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
-    }
-    else
-    {
-        m_body[bid].I().setCom( com );
-    }
-}
-
-void 
-BModel::setInertiaCom(BBodyId bid, const BMatrix3 &I_com)
-{
-    if (isFixedBodyId(bid))
-    {
-        BFixedBody& fbody = m_fixed[bid - m_fbd];
-        m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.setInertiaCom( I_com );
-        m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
-    }
-    else
-    {
-        m_body[bid].I().setInertiaCom( I_com ); // calls my code now -- it does update
+        m_body[bid].I().set( inertia );
     }
 }
 
 
-void 
-BModel::setBody( BBodyId bid, BScalar mass, const BVector3 &com, const BMatrix3 &I_com )
-{
-    if (isFixedBodyId(bid))
-    {
-        BFixedBody& fbody = m_fixed[bid - m_fbd];
-        m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
-        fbody.setBody( mass, com, I_com );
-        
-        m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
-    }
-    else
-    {
-        m_body[bid].setBody( mass, com, I_com );
-    }
-}
 
 

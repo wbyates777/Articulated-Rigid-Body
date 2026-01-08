@@ -14,6 +14,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <numeric>
 
 #define GLM_ENABLE_EXPERIMENTAL
 
@@ -156,7 +157,8 @@ test_rbinertia( void )
     BVector3 com(1.0);
     BScalar gyr((2.0/5.0) * mass * (radius * radius));
     BVector3 gyration(gyr * 0.5, gyr, gyr * 2.1);
-    BBody sphere(mass, com, gyration);
+
+    BBody sphere(BInertia(mass, com, gyration));
     
     BRBInertia I = sphere.I();
     
@@ -171,18 +173,16 @@ test_rbinertia( void )
     {   
         // basic inverse
         bool test1 = arb::nearZero( (BMatrix6(I) * arb::inverse(I)) - B_IDENTITY_6x6 );
-        std::cout  << "RBInertia --  I_b * I_b^{-1} == IDENTITY_6x6 -- Test1 is " << test1 << std::endl;
-        
-        
+ 
         // world coords
         BMatrix6 I_w  = arb::transpose(X) * I * X; // inertia in word coords
         //std::cout << m_I_w  << std::endl;
-        
         BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::dual(X); // inverse inertia in word coords
         //std::cout << m_invI_w  << std::endl; 
-        
         //std::cout << I_w * m_invI_w << std::endl;
         bool test2 = arb::nearZero( (I_w * invI_w) - B_IDENTITY_6x6 );
+        
+        std::cout  << "RBInertia --  I_b * I_b^{-1} == IDENTITY_6x6 -- Test1 is " << test1 << std::endl;
         std::cout  << "RBInertia --  I_w * I_w^{-1} == IDENTITY_6x6 -- Test2 is " << test2 << std::endl;
         
         testsPassed += test1 + test2;
@@ -307,7 +307,6 @@ test_abinertia(void)
     return testsPassed;
 }
 
-
 int
 test_inverse( void )
 {
@@ -321,11 +320,8 @@ test_inverse( void )
     I_com[2][2] = 3.0;
     
     BScalar mass = 2.0;
-    
-    BRBInertia I;
     BVector3 com(1.0, 2.0, 3.0);
-    I.setInertiaCom(mass, com, I_com);
-    
+    BRBInertia I(BInertia(mass, com, I_com));
     
     // world to body transform
     BMatrix3 E = glm::rotate(glm::radians(-90.0), B_ZAXIS);
@@ -355,7 +351,6 @@ test_inverse( void )
         
         testsPassed += test1 + test2 + test3;
     }
-    
     
     if (1)
     {
@@ -394,19 +389,75 @@ test_inverse( void )
     return testsPassed;
 }
 
+int
+test_invertia( void )
+{
+    std::cout << "\nRotational Inertia Test\n" << std::endl; 
+    
+    int testsPassed = 0;
+    
+    double mass = 453.0;
+    BVector3 com(1.0, 2.0, 3.0);
+    BVector3 diag(4.0, 5.0, 6.0);
+    
+    BInertia I3(mass, com, diag);
+    
+    BMatrix3 rot = glm::rotate(glm::radians(BScalar(-46.0)), glm::normalize(BVector3(-1.1, 2.2, 1.3)));
+    BTransform X(rot, BVector3(5.0, 4.0, -3.0));  
+    
+    if (1)
+    {
+        std::cout << I3 << std::endl;
+        bool test1 =  I3.valid();
+        // check inertia at origin matches spatial inertia at origin
+        BRBInertia I6(I3.mass(), I3.h(), I3.I());
+        bool test2 = arb::nearZero(I6.I() - BMatrix3(I3.I()));
+        
+        // check inetia transform matches spatial transform
+        I6 = X.apply(I6);
+        I3.transform(X.E(),X.r());
+
+        bool test3 = arb::nearZero(I6.Icom() - BMatrix3(I3.Icom()));
+
+        BVector3 r(5.1, -4.2, 3.3);
+        //std::cout << I3 << std::endl;
+        BInertia tmp = I3;
+  
+        I3.shift( r );  
+        //std::cout << I3 << std::endl;
+        I3.shift( -r ); 
+        //std::cout << I3 << std::endl;
+        
+        bool test4 = arb::nearZero(I3 - tmp);
+        
+        std::cout  << "BInertia -- inertial is valid -- Test1 is " << test1 << std::endl;     
+        std::cout  << "BInertia -- agreement with spatial inertia -- Test2 is " << test2 << std::endl; 
+        std::cout  << "BInertia -- transform inertia -- Test3 is " << test3 << std::endl; 
+        std::cout <<  "BInertia -- shift inertia -- Test4 is " << I3.valid() << std::endl;
+        
+        testsPassed += test1 + test2 + test3  + test4;
+    }
+    
+    return testsPassed;
+}
+
 
 void
 check( void )
 // consistency checks 
 {
     std::cout << "\nARB: Performing consistency checks..." << std::endl;
-
-    int a = test_adjoints();
-    int b = test_rbinertia();
-    int c = test_abinertia();
-    int d = test_inverse();
     
-    int errs = 31 - (a + b + c + d); 
+    std::vector<int> results;
+    
+    results.push_back(test_adjoints());
+    results.push_back(test_rbinertia());
+    results.push_back(test_abinertia());
+    results.push_back(test_inverse());
+    results.push_back(test_invertia());
+    
+    int correct = std::accumulate(results.begin(), results.end(), 0);
+    int errs = 35 - correct; 
     
     if (errs)
     {
@@ -437,7 +488,7 @@ example1( void )
     
     model->gravity( BVector3 (0., -9.81, 0.) );
     
-    body_a = BBody (1., BVector3 (0.5, 0., 0.0), BVector3 (1., 1., 1.));
+    body_a = BBody (BInertia(1., BVector3 (0.5, 0., 0.0), BVector3 (1., 1., 1.)));
     joint_a = BJoint(
                      BJoint::Revolute,
                      BVector3 (0., 0., 1.)
@@ -445,7 +496,7 @@ example1( void )
     
     body_a_id = model->addBody(0, arb::Xtrans(BVector3(0., 0., 0.)), joint_a, body_a);
     
-    body_b = BBody (1., BVector3 (0., 0.5, 0.), BVector3 (1., 1., 1.));
+    body_b = BBody (BInertia(1., BVector3 (0., 0.5, 0.), BVector3 (1., 1., 1.)));
     joint_b = BJoint (
                       BJoint::Revolute,
                       BVector3 (0., 0., 1.)
@@ -453,7 +504,7 @@ example1( void )
     
     body_b_id = model->addBody(body_a_id, arb::Xtrans(BVector3(1., 0., 0.)), joint_b, body_b);
     
-    body_c = BBody (0., BVector3 (0.5, 0., 0.), BVector3 (1., 1., 1.));
+    body_c = BBody (BInertia(0., BVector3 (0.5, 0., 0.), BVector3 (1., 1., 1.)));
     joint_c = BJoint (
                       BJoint::Revolute,
                       BVector3 (0., 0., 1.)
@@ -519,20 +570,20 @@ example2( void )
     
     
     BJoint joint_a = BJoint( BJoint::FloatingBase );
-    BBody body_a = BBody(massA, glm::dvec3(com_a[0], com_a[1], com_a[2]), BVector3(10.0, 10.0, 10.0));
+    BBody body_a = BBody(BInertia(massA, glm::dvec3(com_a[0], com_a[1], com_a[2]), BVector3(10.0, 10.0, 10.0)));
     int body_a_id = model->addBody(0, arb::Xtrans(BVector3(trans_a[0],trans_a[1],trans_a[2])), joint_a, body_a);
 
     BVector6 helical(0.25, 0.25, 0.25, 0.25, 0.25, 0.0); 
     BJoint joint_b = BJoint( helical );
-    BBody body_b = BBody(5.0, glm::dvec3(0.0, 0.75, 0.0), BVector3(2.0, 2.0, 2.0));
+    BBody body_b = BBody(BInertia(5.0, glm::dvec3(0.0, 0.75, 0.0), BVector3(2.0, 2.0, 2.0)));
     int body_b_id = model->addBody(body_a_id, arb::Xtrans(BVector3(1.0, 0.0, 0.0)), joint_b, body_b);
     
     BJoint joint_c = BJoint( BJoint::Spherical ); 
-    BBody body_c  = BBody(massC, BVector3(com_c[0], com_c[1], com_c[2]), BVector3(2.0, 2.0, 2.0));
+    BBody body_c  = BBody(BInertia(massC, BVector3(com_c[0], com_c[1], com_c[2]), BVector3(2.0, 2.0, 2.0)));
     int body_c_id = model->addBody(body_b_id, arb::Xtrans(BVector3(trans_c[0], trans_c[1], trans_c[2])), joint_c, body_c);
     
     BJoint joint_d = BJoint( BJoint::Revolute, BVector3(0.0, 0.0, 1.0));
-    BBody body_d = BBody(10.0, BVector3 (0.5, 0.0, 0.0), BVector3(2.0, 2.0, 2.0));
+    BBody body_d = BBody(BInertia(10.0, BVector3 (0.5, 0.0, 0.0), BVector3(2.0, 2.0, 2.0)));
     int   body_d_id = model->addBody(body_c_id, arb::Xtrans(BVector3(1.0, 1.0, 0.0)), joint_d, body_d);
     
 
@@ -581,7 +632,7 @@ single_body( void )
   
     // set up single body -- i.e. a spaceship 
     // floating base only used for first body in model.
-    BBody spaceship = BBody(10.0,  B_ZERO_3, BVector3(1.0, 1.0, 1.0));
+    BBody spaceship = BBody(BInertia(10.0,  B_ZERO_3, BVector3(1.0, 1.0, 1.0)));
     BJoint joint = BJoint( BJoint::FloatingBase );
     BBodyId spaceshipId = model->addBody(0, arb::Xtrans(B_ZERO_3), joint, spaceship);
     
@@ -771,6 +822,7 @@ main()
     std::cout.setf( std::ios::fixed, std::ios::floatfield );
     
     std::cout << "\nARB Demo\n" << std::endl;
+
 
     // internal consistency checks 
     check();

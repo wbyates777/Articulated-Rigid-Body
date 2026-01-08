@@ -47,6 +47,10 @@
 #include "BMatrix63.h"
 #endif
 
+#ifndef __BINERTIA_H__
+#include "BInertia.h"
+#endif
+
 #ifndef __BRBINERTIA_H__
 #include "BRBInertia.h"
 #endif

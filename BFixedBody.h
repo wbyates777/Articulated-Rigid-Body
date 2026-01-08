@@ -36,7 +36,7 @@ public:
     
     BFixedBody( void )=default;
     BFixedBody( const BBody &b ):  m_id(0), m_parentId(0), 
-                                   m_mass(b.I().mass()), m_com(b.I().com()), m_I_com(b.I().inertiaCom()), 
+                                   m_inertia(b.I().mass(), b.I().com(), b.I().Icom()), 
                                    m_parent(B_IDENTITY_TRANS), m_base(B_IDENTITY_TRANS) {} 
     ~BFixedBody( void )=default;
   
@@ -54,34 +54,23 @@ public:
     void
     movableParent( BBodyId bid ) { m_parentId = bid; }
     
-    
-    void 
-    setMass( BScalar m ) { m_mass = m; }
-    
-    BScalar 
-    mass( void ) const { return m_mass; }
 
-    // com - centre of mass
-    void
-    setCom( const BVector3 &c ) { m_com = c; }
+    BScalar 
+    mass( void ) const { return m_inertia.mass(); }
     
-    const BVector3& 
-    com( void ) const { return m_com; }
+    const BVector3 
+    com( void ) const { return m_inertia.com(); }
     
-    void 
-    setInertiaCom( const BMatrix3& I_com ) { m_I_com = I_com; }
-    
-    const BMatrix3& 
-    inertiaCom( void ) const { return m_I_com; } 
+ 
+    const BMatrix3 
+    inertiaCom( void ) const { return m_inertia.Icom(); } 
     
     void 
-    setBody( BScalar mass, const BVector3 &com, const BMatrix3 &I_com ) 
-    { 
-        m_mass = mass;  m_com = com; m_I_com = I_com;
-    }
+    set(const BInertia &I) { m_inertia = I; }
+
     
     BBody 
-    toBody( void ) const { return BBody(m_mass, m_com, m_I_com); }
+    toBody( void ) const { return BBody(m_inertia); }
     
     
     const BTransform& 
@@ -115,10 +104,8 @@ private:
     BBodyId m_id;
     BBodyId m_parentId;    // bid of the movable body that this fixed body is attached to.
     
-    BScalar  m_mass;
-    BVector3 m_com;        // position of the center of mass in body coordinates
-    BMatrix3 m_I_com;      // inertia matrix at the center of mass 
- 
+    BInertia  m_inertia;
+
     // transforms spatial quantities expressed for the parent to the fixed body.
     BTransform m_parent; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
     BTransform m_base;   // m_X_base   - transformation from the base  to this body's coordinate
@@ -130,9 +117,8 @@ operator<<( std::ostream &ostr, const BFixedBody &b )
     ostr << b.m_id << ' ';
     ostr << b.m_parentId << '\n';
     
-    ostr << b.m_mass << '\n';
-    ostr << b.m_com << '\n';
-    ostr << b.m_I_com << '\n';
+    ostr << b.m_inertia << '\n';
+
     
     ostr << b.m_parent << '\n';
     ostr << b.m_base << '\n';
@@ -146,10 +132,8 @@ operator>>( std::istream &istr, BFixedBody &b )
     istr >> b.m_id;
     istr >> b.m_parentId;
     
-    istr >> b.m_mass;
-    istr >> b.m_com;
-    istr >> b.m_I_com;
-    
+    istr >> b.m_inertia;
+   
     istr >> b.m_parent;
     istr >> b.m_base;
     

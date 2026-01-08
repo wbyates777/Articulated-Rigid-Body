@@ -110,16 +110,8 @@ public:
     
     // set a bodies parameters 
     void 
-    setMass( BBodyId bid, BScalar mass );
-    
-    void 
-    setCom( BBodyId bid, const BVector3 &com );
-   
-    void 
-    setInertiaCom( BBodyId bid, const BMatrix3 &I_com );
-    
-    void 
-    setBody( BBodyId bid, BScalar mass, const BVector3 &com, const BMatrix3 &I_com );
+    setBody( BBodyId bid, BInertia &inertia );
+
     //
     
     // set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()

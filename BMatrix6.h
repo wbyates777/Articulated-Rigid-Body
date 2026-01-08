@@ -13,36 +13,6 @@
  Represents 6D spatial matrix. 
  Can be used to represent spatial transform or spatial inertia.
 
- 
- 
- The following code for 3d matrix inverse is adapted from glm
- 
- inline const BMatrix3 
- inverse( const BMatrix3 &m ) 
- { 
-     constexpr BScalar ONE = static_cast<BScalar>(1);
-     
-     const BScalar a = (m[1][1] * m[2][2] - m[2][1] * m[1][2]);
-     const BScalar b = (m[0][1] * m[2][2] - m[2][1] * m[0][2]);
-     const BScalar c = (m[0][1] * m[1][2] - m[1][1] * m[0][2]);
-     
-     // ood stands for OneOverDeterminant
-     const BScalar ood = ONE / ( + (m[0][0] * a)  - (m[1][0] * b) + (m[2][0] * c) );
-
-     BMatrix3 inv;
-     inv[0][0] = + a * ood;
-     inv[1][0] = - (m[1][0] * m[2][2] - m[2][0] * m[1][2]) * ood;
-     inv[2][0] = + (m[1][0] * m[2][1] - m[2][0] * m[1][1]) * ood;
-     inv[0][1] = - b * ood;
-     inv[1][1] = + (m[0][0] * m[2][2] - m[2][0] * m[0][2]) * ood;
-     inv[2][1] = - (m[0][0] * m[2][1] - m[2][0] * m[0][1]) * ood;
-     inv[0][2] = + c * ood;
-     inv[1][2] = - (m[0][0] * m[1][2] - m[1][0] * m[0][2]) * ood;
-     inv[2][2] = + (m[0][0] * m[1][1] - m[1][0] * m[0][1]) * ood;
-
-     return inv;
- }
- 
 */
 
 
@@ -405,26 +375,6 @@ namespace arb
                  || isnan(m.botLeft()) || isnan(m.botRight())); 
     }
 
-
-    //  m^{-1} - see this header for comments
-    inline const BMatrix3 
-    inverse( const BMatrix3 &m ) 
-    { 
-        return glm::inverse(m);
-    }
-
-    //  m^T - style choice - I prefer arb::transpose(m) to m.transpose() 
-    inline const BMatrix3 
-    transpose( const BMatrix3 &m ) 
-    { 
-        return glm::transpose(m);
-        
-        //BMatrix3 retVal;
-        //for ( int i = 0; i < 3; ++i )
-        //    for ( int j = 0; j < 3; ++j )
-        //        retVal[i][j] = m[j][i];
-        //return retVal;  
-    }
 
     //  m^T  
     inline const BMatrix6
