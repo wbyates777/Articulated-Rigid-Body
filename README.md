@@ -42,9 +42,9 @@
 
     // set up single body - a sphere -  
     double mass = 100.0, radius = 0.5; 
-    BVector3 h(0.0);
     BMatrix3 I_o((2.0/5.0) * mass * (radius * radius)); 
-    BRBInertia I(mass, h,  I_o);
+   
+    BRBInertia I( BInertia(mass, I_o) );
     BMatrix6 invI = arb::inverse(I);
 
     // set initial position, velocity and acceleration
