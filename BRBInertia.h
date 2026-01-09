@@ -1,4 +1,4 @@
-/* BRBInertia 20/02/2024
+/* Rigid Body Spatial Inertia 20/02/2024
 
  $$$$$$$$$$$$$$$$$$$$
  $   BRBInertia.h   $
@@ -45,10 +45,9 @@
  5) arb::cross(m_h) * arb::cross(-m_h) != m_mass * arb::cross(m_com) * arb::cross(-m_com)
 
  
- https://en.wikipedia.org/wiki/Moment_(physics)
- 
+ https://en.wikipedia.org/wiki/Moment_(physics) 
+ https://en.wikipedia.org/wiki/Moment_of_inertia
  https://en.wikipedia.org/wiki/List_of_moments_of_inertia
- 
 
  
 */
@@ -77,40 +76,41 @@ class BRBInertia
 public:
 
     BRBInertia( void )=default;
-    // the moments of mass; zero, one, and two - note mass can be 0, I_o inertia at body frame origin
+    // the moments of mass; zero, one, and two - note mass can be 0
     constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o ): m_mass(mass), m_h(h), m_I(I_o) {}
+    
     BRBInertia( const BInertia &I ): m_mass(I.mass()), m_h(I.h()), m_I(I.I()) {} 
-    BRBInertia( const BMatrix6 &I ) { set(I); }     
+    
+    explicit BRBInertia( const BMatrix6 &I ) { set(I); }     
+    
     ~BRBInertia( void )=default;
     
     void
-    clear( void ) {  m_mass = 0.0; m_h = B_ZERO_3; m_I = B_ZERO_3x3; }
+    clear( void ) { m_mass = 0.0; m_h = B_ZERO_3; m_I = B_ZERO_3x3; }
     
     void 
     set( const BInertia &I ) { m_mass = I.mass(); m_h = I.h(); m_I = I.I(); }
     
     void 
-    set( const BMatrix6 &I )     
+    set( const BMatrix6 &I ) 
     {
-        m_mass = I[3][3]; 
-        m_h    = BVector3(-I[1][5], I[0][5], -I[0][4]); 
-        m_I    = I.topLeft();
+        m_mass = I[3][3]; m_h = BVector3(-I[1][5], I[0][5], -I[0][4]); m_I = I.topLeft();
     }
 
-  
+
     // RBDA, Section 2.13, eqn 2.63, page 33.
     operator BMatrix6( void ) const 
     { 
-        return BMatrix6( m_I, arb::cross(m_h), arb::cross(-m_h),  BMatrix3(m_mass) );
+        return BMatrix6( m_I, arb::cross(m_h), arb::cross(-m_h), BMatrix3(m_mass) );
     }
     
-    // zeroth moment of mass
+    // total mass; zeroth moment of mass
     BScalar
     mass( void ) const { return m_mass; }
-  
-    // magnitude and direction of linear momentum; first moment of mass 
-    const BVector3
-    h( void ) const {  return m_h; }
+
+    //  magnitude and direction of linear momentum; first moment of mass
+    const BVector3&
+    h( void ) const { return m_h; }
     
     // rotational inertia at body frame origin; second moment of mass
     const BMatrix3& 
@@ -120,35 +120,41 @@ public:
     const BMatrix3 
     Icom( void ) const { return m_I - m_mass * arb::crosst(com()); } 
  
-    
     // centre of mass in body coordinates
     const BVector3
     com( void ) const { assert(m_mass != 0); return  m_h / m_mass; }
     
-   // const BVector3 // some virtual bodies have mass 0
-   // com( void ) const { return (m_mass) ? (m_h / m_mass) : B_ZERO_3; }
-      
+    //const BVector3
+    //com( void ) const { return (m_mass > 1E-6) ? (m_h / m_mass) : B_ZERO_3; }
+
+    
+    const BRBInertia
+    operator*( BScalar s ) const { return BRBInertia( m_mass * s, m_h * s, m_I * s ); }
+    
+    const BRBInertia&
+    operator*=( BScalar s )
+    {
+        m_mass *= s; m_h *= s; m_I *= s;
+        return *this; 
+    }
+    
+    const BRBInertia
+    operator/( BScalar s ) const { return BRBInertia( m_mass / s, m_h / s, m_I / s ); }
+    
+    const BRBInertia&
+    operator/=( BScalar s )
+    {
+        m_mass /= s; m_h /= s; m_I /= s;
+        return *this; 
+    }
     
     const BRBInertia
     operator-( void ) const { return BRBInertia(-m_mass, -m_h, -m_I); }
     
     const BRBInertia 
-    operator+( const BRBInertia &rhs ) const
-    {
-        return BRBInertia( m_mass + rhs.m_mass, m_h + rhs.m_h, m_I + rhs.m_I );
-    }
-    
-    const BRBInertia 
     operator-( const BRBInertia &rhs ) const
     {
         return BRBInertia( m_mass - rhs.m_mass, m_h - rhs.m_h, m_I - rhs.m_I );
-    }
-    
-    const BRBInertia&
-    operator+=( const BRBInertia &rhs )
-    {
-        m_mass += rhs.m_mass; m_h += rhs.m_h; m_I += rhs.m_I;
-        return *this; 
     }
     
     const BRBInertia& 
@@ -158,13 +164,16 @@ public:
         return *this; 
     }
     
-    const BRBInertia
-    operator*( BScalar s ) const { return  BRBInertia( s * m_mass, s * m_h, s * m_I ); }
+    const BRBInertia 
+    operator+( const BRBInertia &rhs ) const
+    {
+        return BRBInertia( m_mass + rhs.m_mass, m_h + rhs.m_h, m_I + rhs.m_I );
+    }
     
     const BRBInertia&
-    operator*=( const BScalar s )
+    operator+=( const BRBInertia &rhs )
     {
-        m_mass *= s; m_h *= s; m_I *= s;
+        m_mass += rhs.m_mass; m_h += rhs.m_h; m_I += rhs.m_I;
         return *this; 
     }
     
@@ -173,16 +182,15 @@ public:
     {
         //const BVector3 ang(arb::cross(m_h, v.lin()) + (m_I * v.ang()));
         //const BVector3 lin(m_mass * v.lin() - arb::cross(m_h, v.ang()));
-        // return BVector6( ang, lin );
-    
-        return BVector6((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
-                              (m_h[2] * v[3] - v[5] * m_h[0]) + (m_I[0][1] * v[0])  +  (m_I[1][1] * v[1]) + (m_I[2][1] * v[2]),
-                              (m_h[0] * v[4] - v[3] * m_h[1]) + (m_I[0][2] * v[0])  +  (m_I[1][2] * v[1]) + (m_I[2][2] * v[2]),
-                           
-                              (m_mass * v[3])  -  (m_h[1] * v[2] - v[1] * m_h[2]),
-                              (m_mass * v[4])  -  (m_h[2] * v[0] - v[2] * m_h[0]),
-                              (m_mass * v[5])  -  (m_h[0] * v[1] - v[0] * m_h[1]) );
+        //return BVector6( ang, lin );
         
+        return BVector6((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
+                        (m_h[2] * v[3] - v[5] * m_h[0]) + (m_I[0][1] * v[0])  +  (m_I[1][1] * v[1]) + (m_I[2][1] * v[2]),
+                        (m_h[0] * v[4] - v[3] * m_h[1]) + (m_I[0][2] * v[0])  +  (m_I[1][2] * v[1]) + (m_I[2][2] * v[2]),
+                       
+                        (m_mass * v[3])  -  (m_h[1] * v[2] - v[1] * m_h[2]),
+                        (m_mass * v[4])  -  (m_h[2] * v[0] - v[2] * m_h[0]),
+                        (m_mass * v[5])  -  (m_h[0] * v[1] - v[0] * m_h[1]) );
     }
     
     
@@ -198,6 +206,7 @@ public:
         return (m_mass != v.m_mass) || (m_h != v.m_h) || (m_I != v.m_I);
     }
     
+    
     friend std::ostream&
     operator<<( std::ostream &ostr, const BRBInertia &m );
     
@@ -206,18 +215,10 @@ public:
     
 private:
 
-
     BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
-    BVector3 m_h;    // magnitude and direction of linear momentum h = m_com * m_mass; first moment of mass 
+    BVector3 m_h;    // linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
     BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0); second moment of mass 
-    
 };
-
-
-// scalar multiplication
-inline const BRBInertia 
-operator*( BScalar s, const BRBInertia &m ) { return m * s; }
-
 
 #ifndef GLM_FORCE_INTRINSICS
 constexpr BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
@@ -225,22 +226,25 @@ constexpr BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 const BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 #endif
 
+// scalar multiplication
+inline const BRBInertia 
+operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 
 namespace arb
 {
+
     inline const BMatrix6 
     inverse( const BRBInertia &I ) 
-    // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
-    // see RBDA, Section 2.15, eqn 2.74,  page 36
+    // Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
+    // https://en.wikipedia.org/wiki/Schur_complement
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 invI(arb::inverse(I.Icom()));
         const BMatrix3 invM(1.0 / I.mass());
         const BVector3 com(I.com());
-
+        
         return BMatrix6(           invI,                       arb::cross(-com) * invI,  
                         invI * arb::cross(com),  invM + arb::cross(-com) * invI * arb::cross(com) );
-        
     } 
 }
 

@@ -1,4 +1,4 @@
-/* BMatrix6 20/02/2024
+/* Spatial Matrix  20/02/2024
 
  $$$$$$$$$$$$$$$$$$
  $   BMatrix6.h   $
@@ -13,6 +13,24 @@
  Represents 6D spatial matrix. 
  Can be used to represent spatial transform or spatial inertia.
 
+
+    M = | A B |
+        | C D |
+
+    N = | E F |
+        | G H |
+
+    M * N = | (AE + BG)  (AF + BH) |
+            | (CE + DG)  (CF + DH) |
+     
+     
+    V = | X |
+        | Y |
+      
+    M * V =  | AX + BY |
+             | CX + DY |
+  
+
 */
 
 
@@ -24,7 +42,6 @@
 #endif
 
 
-
 class BMatrix6
 {
 
@@ -33,49 +50,49 @@ public:
     BMatrix6( void )=default;
     
     constexpr BMatrix6( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
-    explicit BMatrix6( const std::vector<std::vector<BScalar>> &d ) { set(d); }
+    explicit BMatrix6( const std::vector<std::vector<BScalar>> &d )  { set(d); }
     
     constexpr explicit BMatrix6( BScalar s ) :  m_data 
-                                                {
-                                                    s,  s,  s,  s,  s,  s,
-                                                    s,  s,  s,  s,  s,  s,
-                                                    s,  s,  s,  s,  s,  s,
-                                                    s,  s,  s,  s,  s,  s,
-                                                    s,  s,  s,  s,  s,  s,
-                                                    s,  s,  s,  s,  s,  s
-                                                } {}
-
+    {
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s,
+        s,  s,  s,  s,  s,  s
+    } {}
+    
     constexpr BMatrix6( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
-                          BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
-                          BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25,
-                          BScalar m30, BScalar m31, BScalar m32, BScalar m33, BScalar m34, BScalar m35,
-                          BScalar m40, BScalar m41, BScalar m42, BScalar m43, BScalar m44, BScalar m45,
-                          BScalar m50, BScalar m51, BScalar m52, BScalar m53, BScalar m54, BScalar m55 ) 
-                          : m_data 
-                          {
-                              m00,  m01,  m02,  m03,  m04,  m05,
-                              m10,  m11,  m12,  m13,  m14,  m15,
-                              m20,  m21,  m22,  m23,  m24,  m25,
-                              m30,  m31,  m32,  m33,  m34,  m35,
-                              m40,  m41,  m42,  m43,  m44,  m45,
-                              m50,  m51,  m52,  m53,  m54,  m55
-                          } {}
+                        BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
+                        BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25,
+                        BScalar m30, BScalar m31, BScalar m32, BScalar m33, BScalar m34, BScalar m35,
+                        BScalar m40, BScalar m41, BScalar m42, BScalar m43, BScalar m44, BScalar m45,
+                        BScalar m50, BScalar m51, BScalar m52, BScalar m53, BScalar m54, BScalar m55 ) 
+    : m_data 
+    {
+        m00,  m01,  m02,  m03,  m04,  m05,
+        m10,  m11,  m12,  m13,  m14,  m15,
+        m20,  m21,  m22,  m23,  m24,  m25,
+        m30,  m31,  m32,  m33,  m34,  m35,
+        m40,  m41,  m42,  m43,  m44,  m45,
+        m50,  m51,  m52,  m53,  m54,  m55
+    } {}
     
     BMatrix6( const BMatrix3 &m0, const BMatrix3 &m1, 
-              const BMatrix3 &m2, const BMatrix3 &m3 ): m_data 
-                                                        {
-                                                            m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
-                                                            m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
-                                                            m0[2][0], m0[2][1], m0[2][2], m1[2][0], m1[2][1], m1[2][2],
-
-                                                            m2[0][0], m2[0][1], m2[0][2], m3[0][0], m3[0][1], m3[0][2],
-                                                            m2[1][0], m2[1][1], m2[1][2], m3[1][0], m3[1][1], m3[1][2],
-                                                            m2[2][0], m2[2][1], m2[2][2], m3[2][0], m3[2][1], m3[2][2],
-                                                        } {}
+              const BMatrix3 &m2, const BMatrix3 &m3 ) :  m_data 
+    {
+        m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
+        m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
+        m0[2][0], m0[2][1], m0[2][2], m1[2][0], m1[2][1], m1[2][2],
+        
+        m2[0][0], m2[0][1], m2[0][2], m3[0][0], m3[0][1], m3[0][2],
+        m2[1][0], m2[1][1], m2[1][2], m3[1][0], m3[1][1], m3[1][2],
+        m2[2][0], m2[2][1], m2[2][2], m3[2][0], m3[2][1], m3[2][2],
+    } {}
     
     ~BMatrix6( void )=default;
-
-
+    
+    
     void
     set( BScalar s ) 
     {
@@ -123,22 +140,23 @@ public:
             m50,  m51,  m52,  m53,  m54,  m55
         };
     }
-
-    void 
-    set( const BMatrix3 &m0, const BMatrix3 &m1, const BMatrix3 &m2, const BMatrix3 &m3 )
-    {
-        m_data = 
-        {
-            m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
-            m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
-            m0[2][0], m0[2][1], m0[2][2], m1[2][0], m1[2][1], m1[2][2],
-
-            m2[0][0], m2[0][1], m2[0][2], m3[0][0], m3[0][1], m3[0][2],
-            m2[1][0], m2[1][1], m2[1][2], m3[1][0], m3[1][1], m3[1][2],
-            m2[2][0], m2[2][1], m2[2][2], m3[2][0], m3[2][1], m3[2][2],
-        };
-    }
     
+
+     void 
+     set( const BMatrix3 &m0, const BMatrix3 &m1, const BMatrix3 &m2, const BMatrix3 &m3 )
+     {
+         m_data = 
+         {
+             m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
+             m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
+             m0[2][0], m0[2][1], m0[2][2], m1[2][0], m1[2][1], m1[2][2],
+
+             m2[0][0], m2[0][1], m2[0][2], m3[0][0], m3[0][1], m3[0][2],
+             m2[1][0], m2[1][1], m2[1][2], m3[1][0], m3[1][1], m3[1][2],
+             m2[2][0], m2[2][1], m2[2][2], m3[2][0], m3[2][1], m3[2][2],
+         };
+     }
+     
     std::array<BScalar, 6>&
     operator[]( int i ) { return m_data[i]; }
     
@@ -157,6 +175,7 @@ public:
     const std::array<std::array<BScalar, 6>, 6>&
     data( void ) const { return m_data; }
     
+    
     const BMatrix3
     topLeft( void ) const 
     {
@@ -164,6 +183,16 @@ public:
         for ( int i = 0; i < 3; ++i )
             for ( int j = 0; j < 3; ++j )
                 retVal[i][j] = m_data[i][j];
+        return retVal; 
+    }
+    
+    const BMatrix3
+    topLeftT( void ) const 
+    {
+        BMatrix3 retVal;
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[j][i] = m_data[i][j];
         return retVal; 
     }
     
@@ -175,6 +204,7 @@ public:
                 m_data[i][j] = m[i][j];
     }
     
+    
     const BMatrix3
     topRight( void ) const 
     {
@@ -182,6 +212,16 @@ public:
         for ( int i = 0; i < 3; ++i )
             for ( int j = 3; j < 6; ++j )
                 retVal[i][j-3] = m_data[i][j];
+        return retVal; 
+    }
+    
+    const BMatrix3
+    topRightT( void ) const 
+    {
+        BMatrix3 retVal;
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 3; j < 6; ++j )
+                retVal[j-3][i] = m_data[i][j];
         return retVal; 
     }
     
@@ -193,6 +233,7 @@ public:
                 m_data[i][j+3] = m[i][j];
     }
     
+    
     const BMatrix3
     botLeft( void ) const 
     {
@@ -200,6 +241,16 @@ public:
         for ( int i = 3; i < 6; ++i )
             for ( int j = 0; j < 3; ++j )
                 retVal[i-3][j] = m_data[i][j];
+        return retVal; 
+    }
+    
+    const BMatrix3
+    botLeftT( void ) const 
+    {
+        BMatrix3 retVal;
+        for ( int i = 3; i < 6; ++i )
+            for ( int j = 0; j < 3; ++j )
+                retVal[j][i-3] = m_data[i][j];
         return retVal; 
     }
     
@@ -211,6 +262,7 @@ public:
                 m_data[i+3][j] = m[i][j];
     }
     
+
     const BMatrix3
     botRight( void ) const 
     {
@@ -221,6 +273,16 @@ public:
         return retVal; 
     }
 
+    const BMatrix3
+    botRightT( void ) const 
+    {
+        BMatrix3 retVal;
+        for ( int i = 3; i < 6; ++i )
+            for ( int j = 3; j < 6; ++j )
+                retVal[j-3][i-3] = m_data[i][j];
+        return retVal; 
+    }
+    
     void
     botRight( const BMatrix3 &m )  
     {
@@ -229,26 +291,7 @@ public:
                 m_data[i+3][j+3] = m[i][j];
     }
     
-    const BMatrix6
-    operator-( void ) const
-    {
-        BMatrix6 retVal;
-        for ( int i = 0; i < 6; ++i )
-            for ( int j = 0; j < 6; ++j )
-                retVal[i][j] = -m_data[i][j];
-        return retVal;
-    }
-
-    const BMatrix6
-    operator/( BScalar s ) const
-    { 
-        BMatrix6 retVal;
-        for (int i = 0; i < 6; ++i)
-            for (int j = 0; j < 6; ++j)
-                retVal[i][j] = m_data[i][j] / s;
-        return retVal; 
-    }
-
+ 
     const BMatrix6
     operator*( BScalar s ) const
     { 
@@ -268,6 +311,16 @@ public:
         return *this;    
     }
 
+    const BMatrix6
+    operator/( BScalar s ) const
+    { 
+        BMatrix6 retVal;
+        for (int i = 0; i < 6; ++i)
+            for (int j = 0; j < 6; ++j)
+                retVal[i][j] = m_data[i][j] / s;
+        return retVal; 
+    }
+
     const BMatrix6&
     operator/=( BScalar s )
     {
@@ -278,15 +331,16 @@ public:
     }
 
     const BMatrix6
-    operator+( const BMatrix6 &m ) const
+    operator-( void ) const
     {
         BMatrix6 retVal;
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 6; ++j )
-                retVal[i][j] = m_data[i][j] + m[i][j];
+                retVal[i][j] = -m_data[i][j];
         return retVal;
     }
-    
+
+
     const BMatrix6
     operator-( const BMatrix6 &m ) const
     {
@@ -306,6 +360,16 @@ public:
         return *this;
     }
     
+    const BMatrix6
+    operator+( const BMatrix6 &m ) const
+    {
+        BMatrix6 retVal;
+        for ( int i = 0; i < 6; ++i )
+            for ( int j = 0; j < 6; ++j )
+                retVal[i][j] = m_data[i][j] + m[i][j];
+        return retVal;
+    }
+    
     const BMatrix6&
     operator+=( const BMatrix6 &m )
     {
@@ -316,33 +380,59 @@ public:
     }
 
     
-    const BVector6 
+    const BVector6  
     operator*( const BVector6 &v ) const 
     {    
-        BVector6 retVal(B_ZERO_6);
-        for ( int i = 0; i < 6; ++i )
-            for ( int j = 0; j < 6; ++j )
-                retVal[i] += m_data[i][j] * v[j];
+       // BVector6 retVal(B_ZERO_6);
+       // for ( int i = 0; i < 6; ++i )
+       //     for ( int j = 0; j < 6; ++j )
+       //         retVal[i] += m_data[i][j] * v[j];
+       // return retVal;
+        
+        // faster with SIMD
+        BVector6 retVal;
+        retVal.ang( (topLeftT() * v.ang()) + (topRightT() * v.lin()) );
+        retVal.lin( (botLeftT() * v.ang()) + (botRightT() * v.lin()) );
         return retVal;
     }
-        
+ 
+    
     const BMatrix6 
     operator*( const BMatrix6 &m ) const
     {   
-        BMatrix6 retVal(B_ZERO_6x6);
+        /*BMatrix6 retVal(B_ZERO_6x6);
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 6; ++j )
-                for ( int k = 0; k < 6; ++k )
+               for ( int k = 0; k < 6; ++k )
                     retVal[i][j] += m_data[i][k] * m[k][j];
-        return retVal;
+        return retVal;*/
+        
+        // faster with SIMD
+        BMatrix6 retVal;
+        const BMatrix3 tl1 = m.topLeft();
+        const BMatrix3 tr1 = m.topRight();
+        const BMatrix3 bl1 = m.botLeft();
+        const BMatrix3 br1 = m.botRight();
+        
+        const BMatrix3 tl2 = topLeft();
+        const BMatrix3 tr2 = topRight();
+        const BMatrix3 bl2 = botLeft();
+        const BMatrix3 br2 = botRight();
+        
+        retVal.topLeft( (tl1 * tl2) + (bl1 * tr2) );
+        retVal.topRight( (tr1 * tl2) + (br1 * tr2) );
+        
+        retVal.botLeft( (tl1 * bl2) + (bl1 * br2) );
+        retVal.botRight( (tr1 * bl2) + (br1 * br2) );
+        
+        return retVal; 
     }
     
     const BMatrix6& 
-    operator*=(const BMatrix6 &m)
+    operator*=(const BMatrix6 &rhs)
     {
-        return (*this = *this * m);
+        return (*this = *this * rhs);
     }
-    
 
     bool 
     operator==( const BMatrix6 &m ) const { return (m_data == m.m_data); }
@@ -361,6 +451,7 @@ operator*( BScalar s, const BMatrix6 &m ) { return m * s; }
 
 namespace arb
 {
+
     inline bool 
     nearZero( const BMatrix6 &m )  
     {  
@@ -375,8 +466,6 @@ namespace arb
                  || isnan(m.botLeft()) || isnan(m.botRight())); 
     }
 
-
-    //  m^T  
     inline const BMatrix6
     transpose( const BMatrix6 &m ) 
     { 
