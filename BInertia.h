@@ -17,13 +17,30 @@
  
  https://en.wikipedia.org/wiki/Parallel_axis_theorem
  
+ https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+ 
+ 
+ BInertia 
+ sphere( BScalar mass, BScalar radius )
+ {
+     return BInertia(mass, glm::dvec3((2.0/5.0) * mass * radius * radius));
+ }
+
+ BInertia 
+ rectangle( BScalar mass, BScalar height, BScalar width, BScalar depth )
+ {
+     glm::dvec3 diag;
+     diag[0] = (1.0/12.0) * mass * (depth * depth + height * height); // x-width
+     diag[1] = (1.0/12.0) * mass * (depth * depth + width * width);   // y-height
+     diag[2] = (1.0/12.0) * mass * (width * width + height * height); // z-depth
+     return BInertia(mass, diag);
+ }
  
 */
 
 
 #ifndef __BINERTIA_H__
 #define __BINERTIA_H__
-
 
 #ifndef __BSPATIALTYPES_H__
 #include "BSpatialTypes.h"
@@ -40,14 +57,20 @@ class BInertia
 public:
     
     BInertia( void )=default;
-    BInertia( BScalar m, const BMatrix3 &I_o ) : m_mass(m), m_h(0.0), m_I(I_o) {} 
-    constexpr BInertia( BScalar m, const BVector3 &com, const BMatrix3 &Icom )  : m_mass(m), 
-                                                                                  m_h(m * com), 
-                                                                                  m_I(Icom + m * arb::crosst(com)) {}
+    constexpr BInertia( BScalar m, const BMatrix3 &I_o ) : m_mass(m), m_h(B_ZERO_3), m_I(I_o) {} 
+    BInertia( BScalar m, const BVector3 &com, const BMatrix3 &Icom )  : m_mass(m), 
+                                                                        m_h(m * com), 
+                                                                        m_I(Icom + m * arb::crosst(com)) {}
+    
     BInertia( BScalar m, const BVector3 &com, const BVector3 &diag ) : m_mass(m), m_h(m * com), m_I(B_ZERO_3x3)
     {
         m_I[0][0] = diag[0];  m_I[1][1] = diag[1];  m_I[2][2] = diag[2]; 
         m_I += m_mass * arb::crosst(com);
+    }
+    
+    BInertia( BScalar m, const BVector3 &diag ) : m_mass(m), m_h(B_ZERO_3), m_I(B_ZERO_3x3)
+    {
+        m_I[0][0] = diag[0];  m_I[1][1] = diag[1];  m_I[2][2] = diag[2]; 
     }
     ~BInertia( void )=default;
     
@@ -66,8 +89,7 @@ public:
     
     
     operator const BMatrix3&( void ) const { return m_I; } // inertia at origin
-
-    
+ 
     BScalar 
     mass( void ) const { return m_mass; } 
     
@@ -83,6 +105,7 @@ public:
     const BVector3
     com( void ) const { return (m_mass < 1E-6) ? B_ZERO_3 : m_h / m_mass; }  
  
+    
     void
     rotate( const BMatrix3 &R ) 
     {
@@ -91,15 +114,13 @@ public:
     }
     
     void 
-    shift( const BVector3 &p )  
+    shift( const BVector3 &p ) // parallel axis theorem 
     {
         const BVector3 h_new = m_h + (m_mass * -p);
-        
         const BMatrix3 px = arb::cross(-p); 
         const BMatrix3 hx = arb::cross(m_h);   
         const BMatrix3 hx_new = arb::cross(h_new);
         
-        //m_I = m_I - (px * hx) - (hx_new * px);
         m_I -= (px * hx) + (hx_new * px);
         m_h = h_new;
     }
@@ -232,17 +253,21 @@ public:
 private:
     
     BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
-    BVector3 m_h;    // first moment of mass h = m_com * m_mass - (see RBDA, Section 2.12, page 31)
-    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0,0); second moment of mass 
+    BVector3 m_h;    // h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
+    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0); second moment of mass 
  
 };
-
 
 
 // scalar multiplication
 inline const BInertia 
 operator*( BScalar s, const BInertia &m ) { return m * s; }
 
+#ifndef GLM_FORCE_INTRINSICS
+constexpr BInertia B_ZERO_INERTIA(0.0, B_ZERO_3x3);
+#else
+const BInertia B_ZERO_INERTIA(0.0, B_ZERO_3x3);
+#endif
 
 inline std::ostream&
 operator<<( std::ostream &ostr, const BInertia &I )
