@@ -300,26 +300,26 @@ public:
     const BVector6 
     operator*( const BVector3 &v ) const 
     {
-        /*BVector6 retVal2(B_ZERO_6);
+        BVector6 retVal(B_ZERO_6);
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 3; ++j )
-                retVal2[i] += m_data[i][j] * v[j];  
-        return retVal2; */
- 
-        return BVector6(topT() * v, botT() * v);
+                retVal[i] += m_data[i][j] * v[j];  
+        return retVal; 
+
+        //return BVector6(topT() * v, botT() * v);
     }
 
     const BMatrix63 
     operator*( const BMatrix3 &m ) const
     {
-        /* BMatrix63 retVal(B_ZERO_6x3);
+        BMatrix63 retVal(B_ZERO_6x3);
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 3; ++j ) 
                 for ( int k = 0; k < 3; ++k )
                     retVal[i][j] += m_data[i][k] * m[k][j];
-        return retVal; */
-
-        return BMatrix63(m * top(), m * bot());
+        return retVal;
+        
+        //return BMatrix63(m * top(), m * bot());
     }
     
     
@@ -619,26 +619,26 @@ public:
     const BVector3
     operator*( const BVector6 &v ) const 
     {
-        /* BVector3 retVal(B_ZERO_3);
+        BVector3 retVal(B_ZERO_3);
         for ( int i = 0; i < 3; ++i )
             for ( int j = 0; j < 6; ++j )
                 retVal[i] += m_data[i][j] * v[j];
-        return retVal; */ 
- 
-        return (leftT() * v.ang()) + (rightT() * v.lin());
+        return retVal; 
+        
+        //return (leftT() * v.ang()) + (rightT() * v.lin());
     }
 
     const BMatrix3 
     operator*( const BMatrix63 &m ) const  
     { 
-        /*BMatrix3 retVal(B_ZERO_3x3);
+        BMatrix3 retVal(B_ZERO_3x3);
         for ( int i = 0; i < 3; ++i )
             for ( int j = 0; j < 3; ++j )
                 for ( int k = 0; k < 6; ++k )
                     retVal[i][j] += m_data[i][k] * m[k][j];
-        return retVal;*/
-
-        return (m.top() * left()) + (m.bot() * right());
+        return retVal;
+        
+       // return (m.top() * left()) + (m.bot() * right());
     }
 
     
@@ -662,30 +662,37 @@ operator*( BScalar s, const BMatrix36 &m ) { return m * s; }
 inline const BMatrix6 
 operator*( const BMatrix63 &m1, const BMatrix36 &m2 )  
 {
-    /*BMatrix6 retVal(B_ZERO_6x6);
+    BMatrix6 retVal(B_ZERO_6x6);
     for ( int i = 0; i < 6; ++i )
         for ( int j = 0; j < 6; ++j )
             for ( int k = 0; k < 3; ++k )
                 retVal[i][j] += m1[i][k] * m2[k][j];
-    return retVal;*/
+    return retVal;
     
-    return BMatrix6(m2.left() * m1.top(), m2.right() * m1.top(),
-                    m2.left() * m1.bot(), m2.right() * m1.bot());
+   //BMatrix6 retVal;
+   // retVal.topLeft(  m2.left()  * m1.top() );
+   // retVal.topRight( m2.right() * m1.top());
+   // retVal.botLeft(  m2.left()  * m1.bot() );
+   // retVal.botRight( m2.right() * m1.bot());
+   // return retVal;
     
 }
 
 inline const BMatrix63 
 operator*( const BMatrix6 &m1, const BMatrix63 &m2 ) 
 {    
-    /*BMatrix63 retVal(B_ZERO_6x3);
+    BMatrix63 retVal(B_ZERO_6x3);
     for ( int i = 0; i < 6; ++i ) 
         for ( int j = 0; j < 3; ++j )
             for ( int k = 0; k < 6; ++k ) 
                 retVal[i][j] += m1[i][k] * m2[k][j];
-    return retVal;*/
+    return retVal;
     
-    return BMatrix63( (m2.top() * m1.topLeft()) + (m2.bot() * m1.topRight()), 
-                      (m2.top() * m1.botLeft()) + (m2.bot() * m1.botRight()) );
+   // BMatrix63 retVal;
+  //  retVal.top( (m2.top() * m1.topLeft() ) + ( m2.bot() * m1.topRight() ) );
+   // retVal.bot((m2.top() * m1.botLeft()) + (m2.bot() * m1.botRight()));
+   // return retVal;
+     
 }
 
 inline std::ostream&
