@@ -94,7 +94,7 @@ public:
     void 
     set( const BMatrix6 &I ) 
     {
-        m_mass = I[3][3]; m_h = BVector3(-I[1][5], I[0][5], -I[0][4]); m_I = I.topLeft();
+        m_mass = I[3][3]; m_h = arb::uncross(I.topRight()); m_I = I.topLeft();
     }
 
 
