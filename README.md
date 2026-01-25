@@ -78,9 +78,8 @@
 ## Implementation 
 
  The implementations presented here, are intended for use in computer graphics, and are 
- based on those in the RBDL library (see https://github.com/rbdl/rbdl).
- Alternative implementations can be found in the RBDyn library (see https://github.com/jrl-umi3218/RBDyn) and
- the Pinocchio library (see https://stack-of-tasks.github.io/pinocchio/).
+ based on those in the RBDL library.
+ Alternative implementations can be found in the RBDyn library, and the Pinocchio library (see below for links).
  We intentionally use similar variable names and the same object structure and hierarchy as RBDL. This facillitates comparison testing. 
  Some variables have been moved to their appropriate classes and accessor methods 
  have been added throughout. This improves encapsulation and readability.
@@ -88,12 +87,9 @@
 
  RBDL, RBDyn, and Pinocchio employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
- This code does not depend on Eigen3, and instead relies on the light-weight, header only, GLM library 
- for simple 3D-linear algebra types and operations (see https://github.com/g-truc/glm). 
-
- As the GLM library does not support 6D vectors and matricies, the code for RBDL custom
- joint types is not implemented.
-
+ This code does not depend on Eigen3, and instead relies on the light-weight, header-only GLM library. 
+ GLM (OpenGL Mathematics) provides a highly optimized implementation of 3D linear algebra primitives. 
+ 
  The spatial algebra implementation (though not the algorithms) is also header only, and depends solely on STL and the 3D GLM types: 
  
  ```glm::vec3, glm::mat3, glm::quat```, 
@@ -103,7 +99,7 @@
  ```glm::cross(v1, v2), glm::dot(v1, v2), glm::outerProduct(v1, v2), glm::transpose(m), glm::inverse(m), glm::toMat3(q)```.
  
  It is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3 and GLM differences), or  replace GLM with some other simple
+ the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
  linear algebra library.
 
  ## Build Instructions
@@ -117,3 +113,14 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
  ```cmake ..```
  
  ```make```
+
+ ## Libraries
+ 
+ GLM       - https://github.com/g-truc/glm
+ 
+ RBDL      - https://github.com/rbdl/rbdl
+ 
+ RBDyn     - https://github.com/jrl-umi3218/RBDyn
+ 
+ Pinocchio - https://stack-of-tasks.github.io/pinocchio/
+ 
