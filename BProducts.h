@@ -52,7 +52,12 @@ namespace arb
                          v[2],   0.0, -v[0],
                         -v[1],  v[0],   0.0 );
     }
- 
+
+    // extracts the 3D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra
+    inline constexpr BVector3 
+    uncross( const BMatrix3 &m ) { return BVector3(-m[1][2], m[0][2], m[1][0]); }
+
+
     // return arb::cross(v) * arb::cross(-v)
     inline constexpr BMatrix3 
     crosst( const BVector3 &v ) 
