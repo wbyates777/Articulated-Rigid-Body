@@ -168,8 +168,8 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     m_dof3_Dinv.resize(N_B);
     m_dof3_u.resize(N_B);
     
-    m_IA.resize(N_B);
-    m_pA.resize(N_B);
+    m_IA.resize(N_B, B_ZERO_ABI);
+    m_pA.resize(N_B, B_ZERO_6);
     
     // reset the velocity of the root body
     // $v_0 = 0$
