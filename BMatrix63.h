@@ -164,16 +164,7 @@ public:
         return retVal; 
     }
     
-    BMatrix3
-    topT( void ) const 
-    {
-        BMatrix3 retVal;
-        for ( int i = 0; i < 3; ++i )
-            for ( int j = 0; j < 3; ++j )
-                retVal[j][i] = m_data[i][j];
-        return retVal; 
-    }
-    
+
     void
     top( const BMatrix3 &m )  
     {
@@ -191,17 +182,7 @@ public:
                 retVal[i-3][j] = m_data[i][j];
         return retVal; 
     }
-    
-    BMatrix3
-    botT( void ) const 
-    {
-        BMatrix3 retVal; 
-        for ( int i = 3; i < 6; ++i )
-            for ( int j = 0; j < 3; ++j )
-                retVal[j][i-3] = m_data[i][j];
-        return retVal; 
-    }
-    
+
     void
     bot( const BMatrix3 &m )  
     {
@@ -483,16 +464,6 @@ public:
         return retVal; 
     }
     
-    BMatrix3
-    leftT( void ) const 
-    {
-        BMatrix3 retVal;
-        for ( int i = 0; i < 3; ++i )
-            for ( int j = 0; j < 3; ++j )
-                retVal[j][i] = m_data[i][j];
-        return retVal; 
-    }
-    
     void
     left( const BMatrix3 &m )  
     {
@@ -508,16 +479,6 @@ public:
         for ( int i = 0; i < 3; ++i )
             for ( int j = 3; j < 6; ++j )
                 retVal[i][j-3] = m_data[i][j];
-        return retVal; 
-    }
-    
-    BMatrix3
-    rightT( void ) const 
-    {
-        BMatrix3 retVal; 
-        for ( int i = 0; i < 3; ++i )
-            for ( int j = 3; j < 6; ++j )
-                retVal[j-3][i] = m_data[i][j];
         return retVal; 
     }
     

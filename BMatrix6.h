@@ -186,16 +186,6 @@ public:
         return retVal; 
     }
     
-    BMatrix3
-    topLeftT( void ) const 
-    {
-        BMatrix3 retVal;
-        for ( int i = 0; i < 3; ++i )
-            for ( int j = 0; j < 3; ++j )
-                retVal[j][i] = m_data[i][j];
-        return retVal; 
-    }
-    
     void
     topLeft( const BMatrix3 &m )  
     {
@@ -203,7 +193,6 @@ public:
             for ( int j = 0; j < 3; ++j )
                 m_data[i][j] = m[i][j];
     }
-    
     
     BMatrix3
     topRight( void ) const 
@@ -215,16 +204,6 @@ public:
         return retVal; 
     }
     
-    BMatrix3
-    topRightT( void ) const 
-    {
-        BMatrix3 retVal;
-        for ( int i = 0; i < 3; ++i )
-            for ( int j = 3; j < 6; ++j )
-                retVal[j-3][i] = m_data[i][j];
-        return retVal; 
-    }
-    
     void
     topRight( const BMatrix3 &m )  
     {
@@ -232,7 +211,6 @@ public:
             for ( int j = 0; j < 3; ++j )
                 m_data[i][j+3] = m[i][j];
     }
-    
     
     BMatrix3
     botLeft( void ) const 
@@ -244,16 +222,6 @@ public:
         return retVal; 
     }
     
-    BMatrix3
-    botLeftT( void ) const 
-    {
-        BMatrix3 retVal;
-        for ( int i = 3; i < 6; ++i )
-            for ( int j = 0; j < 3; ++j )
-                retVal[j][i-3] = m_data[i][j];
-        return retVal; 
-    }
-    
     void
     botLeft( const BMatrix3 &m )  
     {
@@ -262,7 +230,6 @@ public:
                 m_data[i+3][j] = m[i][j];
     }
     
-
     BMatrix3
     botRight( void ) const 
     {
@@ -273,16 +240,6 @@ public:
         return retVal; 
     }
 
-    BMatrix3
-    botRightT( void ) const 
-    {
-        BMatrix3 retVal;
-        for ( int i = 3; i < 6; ++i )
-            for ( int j = 3; j < 6; ++j )
-                retVal[j-3][i-3] = m_data[i][j];
-        return retVal; 
-    }
-    
     void
     botRight( const BMatrix3 &m )  
     {
@@ -389,8 +346,8 @@ public:
        //         retVal[i] += m_data[i][j] * v[j];
        // return retVal;
         
-        return BVector6( (topLeftT() * v.ang()) + (topRightT() * v.lin()),
-                         (botLeftT() * v.ang()) + (botRightT() * v.lin()) );
+        return BVector6( (arb::transpose(topLeft()) * v.ang()) + (arb::transpose(topRight()) * v.lin()),
+                         (arb::transpose(botLeft()) * v.ang()) + (arb::transpose(botRight()) * v.lin()) );
     }
  
     
@@ -495,5 +452,6 @@ operator>>( std::istream &istr, BMatrix6 &m )
 
 
 #endif
+
 
 
