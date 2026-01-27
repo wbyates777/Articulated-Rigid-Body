@@ -690,9 +690,10 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         BScalar s2 = std::sin(q2);
         BScalar c2 = std::cos(q2);
         
-        m_X_lambda = BTransform( BMatrix3( -s0 * s1 * s2 + c0 * c2, s0 * c2 + s1 * s2 * c0, -s2 * c1,
-                                                -s0 * c1, c0 * c1, s1,
-                                                s0 * s1 * c2 + s2 * c0, s0 * s2 - s1 * c0 * c2, c1 * c2 )) * m_X_T;
+        m_X_J = BTransform( BMatrix3( -s0 * s1 * s2 + c0 * c2,  s0 * c2 + s1 * s2 * c0,  -s2 * c1,
+                                      -s0 * c1,                        c0 * c1,             s1,
+                                       s0 * s1 * c2 + s2 * c0,  s0 * s2 - s1 * c0 * c2,  c1 * c2   ));
+        m_X_lambda = m_X_J * m_X_T;
         
         m_S = m_ZERO_6x3;
         BMatrix63 MS(B_ZERO_6x3);
