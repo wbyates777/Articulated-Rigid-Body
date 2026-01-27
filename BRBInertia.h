@@ -117,67 +117,67 @@ public:
     I( void ) const { return m_I; } 
     
     // rotational inertia at com; second moment of mass
-    const BMatrix3 
+    BMatrix3 
     Icom( void ) const { return m_I - m_mass * arb::crosst(com()); } 
  
     // centre of mass in body coordinates
-    const BVector3
+    BVector3
     com( void ) const { assert(m_mass != 0); return  m_h / m_mass; }
     
-    //const BVector3
+    //BVector3
     //com( void ) const { return (m_mass > 1E-6) ? (m_h / m_mass) : B_ZERO_3; }
 
     
-    const BRBInertia
+    BRBInertia
     operator*( BScalar s ) const { return BRBInertia( m_mass * s, m_h * s, m_I * s ); }
     
-    const BRBInertia&
+    BRBInertia&
     operator*=( BScalar s )
     {
         m_mass *= s; m_h *= s; m_I *= s;
         return *this; 
     }
     
-    const BRBInertia
+    BRBInertia
     operator/( BScalar s ) const { return BRBInertia( m_mass / s, m_h / s, m_I / s ); }
     
-    const BRBInertia&
+    BRBInertia&
     operator/=( BScalar s )
     {
         m_mass /= s; m_h /= s; m_I /= s;
         return *this; 
     }
     
-    const BRBInertia
+    BRBInertia
     operator-( void ) const { return BRBInertia(-m_mass, -m_h, -m_I); }
     
-    const BRBInertia 
+    BRBInertia 
     operator-( const BRBInertia &rhs ) const
     {
         return BRBInertia( m_mass - rhs.m_mass, m_h - rhs.m_h, m_I - rhs.m_I );
     }
     
-    const BRBInertia& 
+    BRBInertia& 
     operator-=( const BRBInertia &rhs )
     {
         m_mass -= rhs.m_mass; m_h -= rhs.m_h; m_I -= rhs.m_I;
         return *this; 
     }
     
-    const BRBInertia 
+    BRBInertia 
     operator+( const BRBInertia &rhs ) const
     {
         return BRBInertia( m_mass + rhs.m_mass, m_h + rhs.m_h, m_I + rhs.m_I );
     }
     
-    const BRBInertia&
+    BRBInertia&
     operator+=( const BRBInertia &rhs )
     {
         m_mass += rhs.m_mass; m_h += rhs.m_h; m_I += rhs.m_I;
         return *this; 
     }
     
-    const BVector6 
+    BVector6 
     operator*( const BVector6 &v ) const
     {
         //const BVector3 ang(arb::cross(m_h, v.lin()) + (m_I * v.ang()));
@@ -227,16 +227,17 @@ const BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 #endif
 
 // scalar multiplication
-inline const BRBInertia 
+inline BRBInertia 
 operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 
 namespace arb
 {
 
-    inline const BMatrix6 
+    inline  constexpr BMatrix6 
     inverse( const BRBInertia &I ) 
     // Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
     // https://en.wikipedia.org/wiki/Schur_complement
+    // WARNING: ensure arb::inverses exist
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 invI(arb::inverse(I.Icom()));

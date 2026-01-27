@@ -84,7 +84,7 @@ public:
     void
     ang( const BVector3 &v ) { m_data[0] = v[0]; m_data[1] = v[1]; m_data[2] = v[2]; }
 
-    const BVector3
+    BVector3
     ang( void ) const { return BVector3(m_data[0], m_data[1], m_data[2]); }
 
     // linear
@@ -97,7 +97,7 @@ public:
     void
     lin( const BVector3 &v ) { m_data[3] = v[0]; m_data[4] = v[1]; m_data[5] = v[2]; }
     
-    const BVector3
+    BVector3
     lin( void ) const { return BVector3(m_data[3], m_data[4], m_data[5]); }
     
     BScalar&
@@ -117,21 +117,21 @@ public:
     
     operator const std::array<BScalar, 6>&( void ) const { return  m_data; }
     
-    const BVector6
+    BVector6
     operator-( void ) const
     {
         return BVector6(-m_data[0], -m_data[1], -m_data[2], 
-                              -m_data[3], -m_data[4], -m_data[5]);
+                        -m_data[3], -m_data[4], -m_data[5]);
     }
   
-    const BVector6
+    BVector6
     operator/( BScalar s ) const
     {
         return BVector6(m_data[0] / s, m_data[1] / s, m_data[2] / s, 
-                              m_data[3] / s, m_data[4] / s, m_data[5] / s);
+                        m_data[3] / s, m_data[4] / s, m_data[5] / s);
     }
     
-    const BVector6&
+    BVector6&
     operator/=( BScalar s )
     {
         m_data[0] /= s; m_data[1] /= s; m_data[2] /= s;
@@ -139,14 +139,14 @@ public:
         return *this;
     }
     
-    const BVector6
+    BVector6
     operator*( BScalar s ) const
     { 
         return BVector6(m_data[0] * s, m_data[1] * s, m_data[2] * s, 
-                              m_data[3] * s, m_data[4] * s, m_data[5] * s); 
+                        m_data[3] * s, m_data[4] * s, m_data[5] * s); 
     }
     
-    const BVector6&
+    BVector6&
     operator*=( BScalar s )
     {
         m_data[0] *= s; m_data[1] *= s; m_data[2] *= s;
@@ -154,14 +154,14 @@ public:
         return *this;
     }
     
-    const BVector6
+    BVector6
     operator+( const BVector6 &v ) const
     {
         return BVector6(m_data[0] + v[0], m_data[1] + v[1], m_data[2] + v[2], 
-                              m_data[3] + v[3], m_data[4] + v[4], m_data[5] + v[5]);
+                        m_data[3] + v[3], m_data[4] + v[4], m_data[5] + v[5]);
     }
     
-    const BVector6&
+    BVector6&
     operator+=( const BVector6 &v )
     {
         m_data[0] += v[0]; m_data[1] += v[1]; m_data[2] += v[2];
@@ -169,14 +169,14 @@ public:
         return *this;
     }
     
-    const BVector6
+    BVector6
     operator-( const BVector6 &v ) const
     {
         return BVector6(m_data[0] - v[0], m_data[1] - v[1], m_data[2] - v[2], 
-                              m_data[3] - v[3], m_data[4] - v[4], m_data[5] - v[5]);
+                        m_data[3] - v[3], m_data[4] - v[4], m_data[5] - v[5]);
     }
     
-    const BVector6&
+    BVector6&
     operator-=( const BVector6 &v )
     {
         m_data[0] -= v[0]; m_data[1] -= v[1]; m_data[2] -= v[2];
@@ -196,7 +196,7 @@ private:
 };
 
 // scalar multiplication
-inline const BVector6 
+inline BVector6 
 operator*( BScalar s, const BVector6 &v ) { return v * s; } 
 
 
@@ -209,21 +209,21 @@ namespace arb
     inline bool 
     isnan( const BVector6 &v ) { return (isnan(v.lin()) || isnan(v.ang())); }
     
-    inline const BVector6 
+    inline constexpr BVector6 
     min(const BVector6 &v1, const BVector6 &v2) 
     { 
         return BVector6(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]), 
                         std::min(v1[3],v2[3]), std::min(v1[4],v2[4]), std::min(v1[5],v2[5]));
     }
     
-    inline const BVector6 
+    inline constexpr BVector6 
     max(const BVector6 &v1, const BVector6 &v2)
     { 
         return BVector6(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]), 
                         std::max(v1[3],v2[3]), std::max(v1[4],v2[4]), std::max(v1[5],v2[5]));
     }
     
-    inline const BVector6 
+    inline constexpr BVector6 
     clamp(const BVector6 &v, const BVector6 &lo, const BVector6 &hi) 
     { 
         return BVector6(std::clamp(v[0], lo[0], hi[0]), std::clamp(v[1], lo[1], hi[1]), std::clamp(v[2], lo[2], hi[2]), 

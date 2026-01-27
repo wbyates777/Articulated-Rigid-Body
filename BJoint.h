@@ -198,7 +198,7 @@ class BJoint
 
 public:
       
-    enum BJointType 
+    enum JType 
     {
         UNDEFINED = 0,
         
@@ -234,10 +234,10 @@ public:
     
     BJoint( void )=default;
 
-    BJoint( BJointType joint_type );
+    BJoint( JType joint_type );
     
     // only joint_type BRevolute or BPrismatic; joint_axis is axis of rotation or translation
-    BJoint( BJointType joint_type, const BVector3 &joint_axis);
+    BJoint( JType joint_type, const BVector3 &joint_axis);
     
     // constructs a 1-6 DoF joint with the given motion subspaces.
     BJoint( const BVector6 &axis_0 );
@@ -281,7 +281,7 @@ public:
     int
     DoFCount( void ) const { return (int) m_axis.size(); }
     
-    BJointType 
+    JType 
     jtype( void ) const { return m_jtype; }
     
     // calculate [X_lambda, X_J, S_i, v_J, c_J] = jcalc(jtype(i), q, qdot, i) (see RBDA, Section 4.4) 
@@ -349,7 +349,7 @@ public:
     void
     windex( int w ) { m_widx = w; }
 
-    const BQuat
+    BQuat
     getQuat( const std::vector<BScalar> &q ) const;
     
     void 
@@ -371,7 +371,7 @@ public:
     
     
     static std::string 
-    toString( BJointType jt );
+    toString( JType jt );
     
     
 private:
@@ -398,7 +398,7 @@ private:
 
     int          m_qidx;
     int          m_widx; // if joint is spherical - index of quaternion $w$ variable (at end of $q$-vector)
-    BJointType   m_jtype; 
+    JType   m_jtype; 
 
   
     // $s^X_p$ = rot(E) xlt(r) - rotation(E) * translate(r) - translate br $r$ then rotate by $E$
@@ -455,7 +455,7 @@ operator>>( std::istream &istr, BJoint &j )
     
     int jt;
     istr >> jt;
-    j.m_jtype = BJoint::BJointType(jt);
+    j.m_jtype = BJoint::JType(jt);
     
     istr >> j.m_X_lambda;
     istr >> j.m_X_J;

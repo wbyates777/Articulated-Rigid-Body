@@ -140,13 +140,13 @@ public:
     r( const BVector3 &v ) { m_r = v; }
     
  
-    const BTransform 
+    BTransform 
     operator*( const BTransform &rhs ) const 
     {
         return BTransform(rhs.m_E * m_E, rhs.m_r + (rhs.m_E * m_r));
     }
     
-    const BTransform& 
+    BTransform& 
     operator*=( const BTransform &rhs ) 
     {
         m_E *= rhs.m_E;
@@ -154,14 +154,14 @@ public:
         return *this;
     }
     
-    const BMatrix6 
+    BMatrix6 
     operator*( const BMatrix6 &rhs ) const 
     {
         return BMatrix6(*this) * rhs;
     }
     
     // In RBDL called SpatialRigidBodyInertia::apply(const SpatialVector &v_sp)
-    const BVector6 
+    BVector6 
     operator*( const BVector6 &v ) const 
     // return X * v
     {
@@ -184,10 +184,10 @@ public:
         // return BVector6(ang, lin);
     }
 
-    const BVector6 
+    BVector6 
     apply( const BVector6 &v ) const { return operator*(v); }
 
-    const BVector6 
+    BVector6 
     applyTranspose( const BVector6 &f ) const
     // returns X^T * f 
     {
@@ -213,14 +213,14 @@ public:
     }
 
     // transform 3D point p to/from coordinate frame 
-    const BVector3 
+    BVector3 
     apply( const BVector3 &p ) const { return m_E * (p - m_r); }
     
-    const BVector3 
+    BVector3 
     applyTranspose( const BVector3 &p ) const { return m_r + (arb::transpose(m_E) * p); }
 
     
-    const BRBInertia 
+    BRBInertia 
     apply( const BRBInertia &rbi ) const
     // returns  X^* I X^{-1}
     {
@@ -232,7 +232,7 @@ public:
         return BRBInertia( rbi.mass(), h, I );
     }
     
-    const BRBInertia 
+    BRBInertia 
     applyTranspose( const BRBInertia &rbi ) const 
     // returns X^T I X 
     {
@@ -245,7 +245,7 @@ public:
     }
     
     
-    const BABInertia 
+    BABInertia 
     apply( const BABInertia &abi ) const  
     // returns  X^* I X^{-1} 
     {
@@ -256,7 +256,7 @@ public:
         return BABInertia( ET * abi.M() * m_E,  ET * H * m_E,  ET * I * m_E );
     }
     
-    const BABInertia
+    BABInertia
     applyTranspose( const BABInertia &abi ) const   
     // returns X^T I X
     {
@@ -302,7 +302,7 @@ const BTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
 namespace arb
 {
     // X^T - style choice - I prefer arb::transpose(m) to m.transpose()  
-    inline const BMatrix6 
+    inline constexpr BMatrix6 
     transpose( const BTransform &m ) 
     { 
         const BMatrix3 ET = arb::transpose(m.E());
@@ -310,7 +310,7 @@ namespace arb
     }
 
     // X^{-1}
-    inline const BTransform 
+    inline constexpr BTransform 
     inverse( const BTransform &m )  
     { 
         const BMatrix3 ET = arb::transpose(m.E()); 
@@ -318,14 +318,14 @@ namespace arb
     }
 
     // dual is $X^* = X^{-T}$ 
-    inline const BMatrix6 
+    inline constexpr BMatrix6 
     dual( const BTransform &m ) 
     { 
         return BMatrix6( m.E(), arb::cross(-m.r()) * m.E(), B_ZERO_3x3, m.E() );
     }
 
     // all angles in radians
-    inline const BTransform 
+    inline BTransform 
     Xrot( BScalar angle, const BVector3 &axis ) // WARNING - axis *must* be normalized
     {
         const BScalar s = std::sin(angle);
@@ -345,7 +345,7 @@ namespace arb
     }
 
     // RBDA, Section 2.8, table, 2.2, page 23
-    inline const BTransform 
+    inline BTransform 
     Xrotx( BScalar xrot ) 
     {
         const BScalar s = std::sin(xrot);
@@ -355,7 +355,7 @@ namespace arb
                                       0.0,  -s,   c ) );
     }
 
-    inline const BTransform 
+    inline BTransform 
     Xroty( BScalar yrot ) 
     {
         const BScalar s = std::sin(yrot);
@@ -365,7 +365,7 @@ namespace arb
                                        s, 0.0,   c ) ); 
     }
 
-    inline const BTransform 
+    inline BTransform 
     Xrotz( BScalar zrot ) 
     {
         const BScalar s = std::sin(zrot);
@@ -375,7 +375,7 @@ namespace arb
                                     0.0, 0.0, 1.0 ) );
     }
 
-    inline const BTransform 
+    inline BTransform 
     Xtrans( const BVector3 &r ) 
     {
         return BTransform( B_IDENTITY_3x3, r ); 

@@ -78,8 +78,8 @@ public:
         m50,  m51,  m52,  m53,  m54,  m55
     } {}
     
-    BMatrix6( const BMatrix3 &m0, const BMatrix3 &m1, 
-              const BMatrix3 &m2, const BMatrix3 &m3 ) :  m_data 
+    constexpr BMatrix6( const BMatrix3 &m0, const BMatrix3 &m1, 
+                        const BMatrix3 &m2, const BMatrix3 &m3 ) :  m_data 
     {
         m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
         m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
@@ -141,21 +141,21 @@ public:
         };
     }
     
-
-     void 
-     set( const BMatrix3 &m0, const BMatrix3 &m1, const BMatrix3 &m2, const BMatrix3 &m3 )
-     {
-         m_data = 
-         {
-             m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
-             m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
-             m0[2][0], m0[2][1], m0[2][2], m1[2][0], m1[2][1], m1[2][2],
-
-             m2[0][0], m2[0][1], m2[0][2], m3[0][0], m3[0][1], m3[0][2],
-             m2[1][0], m2[1][1], m2[1][2], m3[1][0], m3[1][1], m3[1][2],
-             m2[2][0], m2[2][1], m2[2][2], m3[2][0], m3[2][1], m3[2][2],
-         };
-     }
+    
+    void 
+    set( const BMatrix3 &m0, const BMatrix3 &m1, const BMatrix3 &m2, const BMatrix3 &m3 )
+    {
+        m_data = 
+        {
+            m0[0][0], m0[0][1], m0[0][2], m1[0][0], m1[0][1], m1[0][2],
+            m0[1][0], m0[1][1], m0[1][2], m1[1][0], m1[1][1], m1[1][2],
+            m0[2][0], m0[2][1], m0[2][2], m1[2][0], m1[2][1], m1[2][2],
+            
+            m2[0][0], m2[0][1], m2[0][2], m3[0][0], m3[0][1], m3[0][2],
+            m2[1][0], m2[1][1], m2[1][2], m3[1][0], m3[1][1], m3[1][2],
+            m2[2][0], m2[2][1], m2[2][2], m3[2][0], m3[2][1], m3[2][2],
+        };
+    }
      
     std::array<BScalar, 6>&
     operator[]( int i ) { return m_data[i]; }
@@ -176,7 +176,7 @@ public:
     data( void ) const { return m_data; }
     
     
-    const BMatrix3
+    BMatrix3
     topLeft( void ) const 
     {
         BMatrix3 retVal;
@@ -186,7 +186,7 @@ public:
         return retVal; 
     }
     
-    const BMatrix3
+    BMatrix3
     topLeftT( void ) const 
     {
         BMatrix3 retVal;
@@ -205,7 +205,7 @@ public:
     }
     
     
-    const BMatrix3
+    BMatrix3
     topRight( void ) const 
     {
         BMatrix3 retVal;
@@ -215,7 +215,7 @@ public:
         return retVal; 
     }
     
-    const BMatrix3
+    BMatrix3
     topRightT( void ) const 
     {
         BMatrix3 retVal;
@@ -234,7 +234,7 @@ public:
     }
     
     
-    const BMatrix3
+    BMatrix3
     botLeft( void ) const 
     {
         BMatrix3 retVal;
@@ -244,7 +244,7 @@ public:
         return retVal; 
     }
     
-    const BMatrix3
+    BMatrix3
     botLeftT( void ) const 
     {
         BMatrix3 retVal;
@@ -263,7 +263,7 @@ public:
     }
     
 
-    const BMatrix3
+    BMatrix3
     botRight( void ) const 
     {
         BMatrix3 retVal;
@@ -273,7 +273,7 @@ public:
         return retVal; 
     }
 
-    const BMatrix3
+    BMatrix3
     botRightT( void ) const 
     {
         BMatrix3 retVal;
@@ -292,7 +292,7 @@ public:
     }
     
  
-    const BMatrix6
+    BMatrix6
     operator*( BScalar s ) const
     { 
         BMatrix6 retVal;
@@ -302,7 +302,7 @@ public:
         return retVal; 
     }
     
-    const BMatrix6&
+    BMatrix6&
     operator*=( BScalar s )
     {
         for ( int i = 0; i < 6; ++i )
@@ -311,7 +311,7 @@ public:
         return *this;    
     }
 
-    const BMatrix6
+    BMatrix6
     operator/( BScalar s ) const
     { 
         BMatrix6 retVal;
@@ -321,7 +321,7 @@ public:
         return retVal; 
     }
 
-    const BMatrix6&
+    BMatrix6&
     operator/=( BScalar s )
     {
         for ( int i = 0; i < 6; ++i )
@@ -330,7 +330,7 @@ public:
         return *this;    
     }
 
-    const BMatrix6
+    BMatrix6
     operator-( void ) const
     {
         BMatrix6 retVal;
@@ -341,7 +341,7 @@ public:
     }
 
 
-    const BMatrix6
+    BMatrix6
     operator-( const BMatrix6 &m ) const
     {
         BMatrix6 retVal;
@@ -351,7 +351,7 @@ public:
         return retVal;
     }
  
-    const BMatrix6&
+    BMatrix6&
     operator-=( const BMatrix6 &m )
     {
         for ( int i = 0; i < 6; ++i )
@@ -360,7 +360,7 @@ public:
         return *this;
     }
     
-    const BMatrix6
+    BMatrix6
     operator+( const BMatrix6 &m ) const
     {
         BMatrix6 retVal;
@@ -370,7 +370,7 @@ public:
         return retVal;
     }
     
-    const BMatrix6&
+    BMatrix6&
     operator+=( const BMatrix6 &m )
     {
         for ( int i = 0; i < 6; ++i )
@@ -380,7 +380,7 @@ public:
     }
 
     
-    const BVector6  
+    BVector6  
     operator*( const BVector6 &v ) const 
     {    
        // BVector6 retVal(B_ZERO_6);
@@ -389,15 +389,12 @@ public:
        //         retVal[i] += m_data[i][j] * v[j];
        // return retVal;
         
-        // faster with SIMD
-        BVector6 retVal;
-        retVal.ang( (topLeftT() * v.ang()) + (topRightT() * v.lin()) );
-        retVal.lin( (botLeftT() * v.ang()) + (botRightT() * v.lin()) );
-        return retVal;
+        return BVector6( (topLeftT() * v.ang()) + (topRightT() * v.lin()),
+                         (botLeftT() * v.ang()) + (botRightT() * v.lin()) );
     }
  
     
-    const BMatrix6 
+    BMatrix6 
     operator*( const BMatrix6 &m ) const
     {   
         /*BMatrix6 retVal(B_ZERO_6x6);
@@ -407,8 +404,6 @@ public:
                     retVal[i][j] += m_data[i][k] * m[k][j];
         return retVal;*/
         
-        // faster with SIMD
-        BMatrix6 retVal;
         const BMatrix3 tl1 = m.topLeft();
         const BMatrix3 tr1 = m.topRight();
         const BMatrix3 bl1 = m.botLeft();
@@ -419,16 +414,11 @@ public:
         const BMatrix3 bl2 = botLeft();
         const BMatrix3 br2 = botRight();
         
-        retVal.topLeft( (tl1 * tl2) + (bl1 * tr2) );
-        retVal.topRight( (tr1 * tl2) + (br1 * tr2) );
-        
-        retVal.botLeft( (tl1 * bl2) + (bl1 * br2) );
-        retVal.botRight( (tr1 * bl2) + (br1 * br2) );
-        
-        return retVal; 
+        return BMatrix6( (tl1 * tl2) + (bl1 * tr2), (tr1 * tl2) + (br1 * tr2),
+                         (tl1 * bl2) + (bl1 * br2), (tr1 * bl2) + (br1 * br2) );
     }
     
-    const BMatrix6& 
+    BMatrix6& 
     operator*=(const BMatrix6 &rhs)
     {
         return (*this = *this * rhs);
@@ -446,7 +436,7 @@ private:
 };
 
 // scalar multiplication
-inline const BMatrix6 
+inline BMatrix6 
 operator*( BScalar s, const BMatrix6 &m ) { return m * s; } 
 
 namespace arb
@@ -466,7 +456,7 @@ namespace arb
                  || isnan(m.botLeft()) || isnan(m.botRight())); 
     }
 
-    inline const BMatrix6
+    inline constexpr BMatrix6
     transpose( const BMatrix6 &m ) 
     { 
         BMatrix6 retVal;

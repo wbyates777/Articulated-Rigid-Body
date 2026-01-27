@@ -58,11 +58,11 @@ public:
     BScalar 
     mass( void ) const { return m_inertia.mass(); }
     
-    const BVector3 
+    BVector3 
     com( void ) const { return m_inertia.com(); }
     
  
-    const BMatrix3 
+    BMatrix3 
     inertiaCom( void ) const { return m_inertia.Icom(); } 
     
     void 

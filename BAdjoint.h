@@ -76,7 +76,7 @@
 namespace arb
 {
 
-    inline const BMatrix6 
+    inline BMatrix6 
     toAdjoint( const BTransform &X )  
     // Ad_X - forward motion
     {
@@ -84,7 +84,7 @@ namespace arb
         return BMatrix6( X.E(), Erx, B_ZERO_3x3, X.E() );
     }
 
-    inline const BVector6
+    inline BVector6
     applyAdjoint(const BTransform &X, const BVector6 &f)   
     // Ad_X - forward motion
     {
@@ -95,7 +95,7 @@ namespace arb
     }
 
 
-    inline const BMatrix6 
+    inline BMatrix6 
     toAdjointTranspose( const BTransform &X )  
     // Ad_X^T - forward force
     {
@@ -103,7 +103,7 @@ namespace arb
         return BMatrix6( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
     }
 
-    inline const BVector6 
+    inline BVector6 
     applyAdjointTranspose( const BTransform &X, const BVector6 &f ) 
     // Ad_X^T - forward force
     {
@@ -113,7 +113,7 @@ namespace arb
     }
 
 
-    inline const BMatrix6 
+    inline BMatrix6 
     toAdjointInverse( const BTransform &X )  
     // Ad_X^{-1} - inverse motion
     {
@@ -121,7 +121,7 @@ namespace arb
         return BMatrix6( ET, ET * arb::cross(X.r()), B_ZERO_3x3 , ET );
     }
 
-    inline const BVector6 
+    inline BVector6 
     applyAdjointInverse( const BTransform &X, const BVector6 &v ) 
     // Ad_X^{-1} - inverse motion
     {
@@ -131,14 +131,14 @@ namespace arb
     }
 
 
-    inline const BMatrix6 
+    inline BMatrix6 
     toAdjointDual( const BTransform &X )  
     // Ad_X^{-T} or Ad_X^* - inverse force
     {
         return BMatrix6( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E() , X.E() );
     }
 
-    inline const BVector6 
+    inline BVector6 
     applyAdjointDual( const BTransform &X, const BVector6 &f )  
     // Ad_X^{-T} or Ad_X^* - inverse force
     {

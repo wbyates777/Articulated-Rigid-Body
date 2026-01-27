@@ -99,10 +99,10 @@ public:
     const BMatrix3& 
     I( void ) const { return m_I; }  // inertia at origin
 
-    const BMatrix3 
+    BMatrix3 
     Icom( void ) const { return (m_mass < 1E-6) ? m_I : m_I - (arb::crosst(m_h) / m_mass); }  // inertia at com
     
-    const BVector3
+    BVector3
     com( void ) const { return (m_mass < 1E-6) ? B_ZERO_3 : m_h / m_mass; }  
  
     
@@ -134,7 +134,7 @@ public:
     }
 
     
-    const BInertia
+    BInertia
     operator*( BScalar s ) const 
     { 
         BInertia retVal(*this);
@@ -142,14 +142,14 @@ public:
         return retVal; 
     }
     
-    const BInertia&
+    BInertia&
     operator*=( BScalar s )
     {
         m_mass *= s; m_h *= s; m_I *= s;
         return *this; 
     }
     
-    const BInertia
+    BInertia
     operator/( BScalar s ) const 
     {        
         BInertia retVal(*this);
@@ -157,14 +157,14 @@ public:
         return retVal; 
     }
     
-    const BInertia&
+    BInertia&
     operator/=( BScalar s )
     {
         m_mass /= s; m_h /= s; m_I /= s;
         return *this; 
     }
     
-    const BInertia
+    BInertia
     operator-( void ) const 
     { 
         BInertia retVal;
@@ -172,7 +172,7 @@ public:
         return retVal; 
     }
     
-    const BInertia 
+    BInertia 
     operator-( const BInertia &rhs ) const
     {
         BInertia retVal(*this);
@@ -180,14 +180,14 @@ public:
         return retVal;
     }
     
-    const BInertia& 
+    BInertia& 
     operator-=( const BInertia &rhs )
     {
         m_mass -= rhs.m_mass; m_h -= rhs.m_h; m_I -= rhs.m_I;
         return *this; 
     }
     
-    const BInertia 
+    BInertia 
     operator+( const BInertia &rhs ) const
     {
         BInertia retVal(*this);
@@ -195,7 +195,7 @@ public:
         return retVal;
     }
     
-    const BInertia&
+    BInertia&
     operator+=( const BInertia &rhs )
     {
         m_mass += rhs.m_mass; m_h += rhs.m_h; m_I += rhs.m_I;
@@ -260,7 +260,7 @@ private:
 
 
 // scalar multiplication
-inline const BInertia 
+inline BInertia 
 operator*( BScalar s, const BInertia &m ) { return m * s; }
 
 #ifndef GLM_FORCE_INTRINSICS

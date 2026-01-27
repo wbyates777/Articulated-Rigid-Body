@@ -119,25 +119,25 @@ public:
     setJointFrame( BBodyId bid, const BTransform &transform );
     
     // joint frame transformtion, i.e. X_T, the second argument to BModel::addBody()
-    const BTransform 
+    BTransform 
     getJointFrame( BBodyId bid ) const;
     
     // return base coordinates of body_pos where body_pos is expressed in body $bid$ coordinates 
-    const BVector3
+    BVector3
     toBasePos( BBodyId bid, const BVector3 &body_pos = B_ZERO_3 ) const;
     
     // return body $bid$ coordinates of base_pos where base_pos is expressed in base coordinates 
-    const BVector3 
+    BVector3 
     toBodyPos( BBodyId bid,  const BVector3 &base_pos ) const;
 
     // return orientation of body $bid$
-    const BMatrix3 
+    BMatrix3 
     orient( BBodyId bid ) const;
 
-    const BVector6  
+    BVector6  
     pointVel( BBodyId bid, const BVector3 &body_pos );
     
-    const BVector6
+    BVector6
     pointAcc( BBodyId bid, const BVector3 &body_pos );
     //
 
@@ -146,11 +146,11 @@ public:
     mass( BBodyId bid ) const; 
     
     // centre of mass of body $bid$ and all children bodies  (subtree)
-    const BVector3 
+    BVector3 
     com( BBodyId bid ) const; 
     
     // inertia of body $bid$ and all children bodies  (subtree)
-    const BRBInertia 
+    BRBInertia 
     inertia( BBodyId bid ) const;
     
     // size of the $\mathbf{q}$-vector.
@@ -185,7 +185,7 @@ public:
     BBodyId 
     getBodyId( const std::string &body_name ) const;
 
-    const std::string 
+    std::string 
     getBodyName( BBodyId bid ) const;
 
     // returns the id of the actual non-virtual parent body.

@@ -119,7 +119,6 @@ namespace arb
 
 
     // motion vector operator $v\times$, see RBDA, Section 2.9, eqn 2.31, page 25
-    // WBY unused so far
     inline constexpr BMatrix6 
     crossm( const BVector6 &v ) 
     {
@@ -133,7 +132,6 @@ namespace arb
     }
 
     // force vector operator $v\times^*$, see RBDA, Section 2.9, eqn 2.32, page 25
-    // WBY unused so far  
     inline constexpr BMatrix6 
     crossf( const BVector6 &v ) 
     {
@@ -163,8 +161,8 @@ namespace arb
         //        + (v1[3] * v2[3]) + (v1[4] * v2[4]) + (v1[5] * v2[5]);
     }
 
-
-    inline constexpr BMatrix3  // Euclidian outer product a⨂b
+    // Euclidian outer product a⨂b
+    inline constexpr BMatrix3  
     outer( const BVector3 &a, const BVector3 &b )
     { 
         return glm::outerProduct(b,a);

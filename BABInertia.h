@@ -82,10 +82,8 @@ public:
     {
         const BMatrix3 U_top  = U.top();   
         const BMatrix3 U_topT = arb::transpose(U_top);
-        
         const BMatrix3 U_bot  = U.bot(); 
         const BMatrix3 U_botT = arb::transpose(U_bot);
-        
         const BMatrix3 UD_top = Dinv * U_top;
         const BMatrix3 UD_bot = Dinv * U_bot;
 
@@ -139,16 +137,16 @@ public:
     I( void ) const { return m_I; } 
     
 
-    const BABInertia
+    BABInertia
     operator-( void ) const { return BABInertia(-m_M, -m_H, -m_I); }
     
-    const BABInertia 
+    BABInertia 
     operator-( const BABInertia &rhs ) const
     {
         return BABInertia( m_M - rhs.m_M, m_H - rhs.m_H, m_I - rhs.m_I );
     }  
     
-    const BABInertia& 
+    BABInertia& 
     operator-=( const BABInertia &rhs )
     {
         m_M -= rhs.m_M; m_H -= rhs.m_H; m_I -= rhs.m_I;
@@ -156,23 +154,23 @@ public:
     }
     
     
-    const BABInertia 
+    BABInertia 
     operator+( const BABInertia &rhs ) const
     {
         return BABInertia( m_M + rhs.m_M, m_H + rhs.m_H, m_I + rhs.m_I );
     }
     
-    const BABInertia&
+    BABInertia&
     operator+=( const BABInertia &rhs )
     {
         m_M += rhs.m_M; m_H += rhs.m_H; m_I += rhs.m_I;
         return *this; 
     }
     
-    const BABInertia
+    BABInertia
     operator*( BScalar s ) const { return BABInertia( s * m_M, s * m_H, s * m_I ); }
     
-    const BABInertia&
+    BABInertia&
     operator*=( BScalar s )
     {
         m_M *= s; m_H *= s; m_I *= s;
@@ -180,7 +178,7 @@ public:
     }
     
     // SpaceAlgVec::Operators.h; pass a motion vector returns a force vector
-    const BVector6 
+    BVector6 
     operator*( const BVector6 &v ) const
     {
         //const BVector3 ang((m_I * v.ang()) + (arb::transpose(m_H) * v.lin()));
@@ -197,7 +195,7 @@ public:
     }
     
     
-    const BMatrix63 
+    BMatrix63 
     operator*( const BMatrix63 &m ) const  
     {
         return BMatrix63((m_I[0][0] * m[0][0]) + (m_I[1][0] * m[1][0]) + (m_I[2][0] * m[2][0])  +  (m_H[0][0] * m[3][0]) + (m_H[0][1] * m[4][0]) + (m_H[0][2] * m[5][0]), 
@@ -239,7 +237,7 @@ public:
         return retVal; */
     }
     
-    const BABInertia  
+    BABInertia  
     operator+(const BRBInertia &rbi) const
     // returns Ia + I
     {
@@ -249,7 +247,7 @@ public:
         return BABInertia(M_, H_, I_);
     }
 
-    const BABInertia  
+    BABInertia  
     operator-(const BRBInertia &rbi) const
     // returns Ia - I
     {
@@ -259,7 +257,7 @@ public:
         return BABInertia(M_, H_, I_);
     }
 
-    const BABInertia& 
+    BABInertia& 
     operator+=(const BRBInertia &rbi)
     // returns Ia += I
     {
@@ -269,7 +267,7 @@ public:
         return *this;
     }
 
-    const BABInertia& 
+    BABInertia& 
     operator-=(const BRBInertia &rbi)
     // returns Ia -= I
     {
@@ -307,7 +305,7 @@ private:
 
 
 // scalar multiplication
-inline const BABInertia 
+inline BABInertia 
 operator*( BScalar s, const BABInertia &m ) { return m * s; }
 
 
@@ -320,9 +318,10 @@ const BABInertia B_ZERO_ABI(B_ZERO_3x3, B_ZERO_3x3, B_ZERO_3x3);
 
 namespace arb
 {
-    inline const BMatrix6 
+    inline constexpr BMatrix6 
     inverse( const BABInertia &abi ) 
     // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
+    // WARNING: ensure arb::inverses exist
     {  
         const BMatrix3 invM = arb::inverse(abi.M());
         const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();

@@ -80,14 +80,14 @@ constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 namespace arb {
 
     //  m^{-1} -
-    inline const BMatrix3 
+    inline constexpr BMatrix3 
     inverse( const BMatrix3 &m ) 
     { 
         return glm::inverse(m);
     }
 
     //  m^T - style choice - I prefer arb::transpose(m) to m.transpose() 
-    inline const BMatrix3 
+    inline constexpr BMatrix3 
     transpose( const BMatrix3 &m ) 
     { 
         return glm::transpose(m);
@@ -117,16 +117,16 @@ namespace arb {
     isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
 
     
-    inline BScalar 
+    inline constexpr BScalar 
     min(BScalar v1, BScalar v2) { return std::min(v1, v2); }
     
-    inline const BVector3 
+    inline constexpr BVector3 
     min(const BVector3 &v1, BScalar v2) { return min(v1, BVector3(v2)); }
     
-    inline const BVector3 
+    inline constexpr BVector3 
     min(BScalar v1, const BVector3 &v2) { return min(BVector3(v1), v2); }
     
-    inline const BVector3 
+    inline constexpr BVector3 
     min(const BVector3 &v1, const BVector3 &v2) 
     { 
         return glm::min(v1, v2);
@@ -134,33 +134,33 @@ namespace arb {
     }
     
     
-    inline BScalar 
+    inline constexpr BScalar 
     max(BScalar v1, BScalar v2) { return std::max(v1, v2); }
     
-    inline const BVector3 
+    inline constexpr BVector3 
     max(const BVector3 &v1, BScalar v2) { return max(v1, BVector3(v2)); }
     
-    inline const BVector3 
+    inline constexpr BVector3 
     max(BScalar v1, const BVector3 &v2) { return max(BVector3(v1), v2); }
     
-    inline const BVector3 
+    inline constexpr BVector3 
     max(const BVector3 &v1, const BVector3 &v2)
     { 
         return glm::max(v1, v2);
         //return BVector3(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]));
     }
     
-    inline BScalar 
+    inline constexpr BScalar 
     clamp(BScalar v, BScalar lo, BScalar hi) { return std::clamp(v, lo, hi); }
      
-    inline const BVector3 
+    inline constexpr BVector3 
     clamp(const BVector3 &v, BScalar min, BScalar max) 
     { 
         return glm::clamp(v, min, max);
         //return BVector3(std::clamp(v[0], min, max), std::clamp(v[1], min, max), std::clamp(v[2], min, max));
     }
     
-    inline const BVector3 
+    inline constexpr BVector3 
     clamp(const BVector3 &v, const BVector3 &lo, const BVector3 &hi) 
     { 
         return glm::clamp(v, lo, hi);
