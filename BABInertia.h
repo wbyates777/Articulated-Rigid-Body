@@ -70,15 +70,33 @@ public:
     
     BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {} 
     
-    explicit BABInertia( const BMatrix6 &I ) { set(I); }    
+    explicit BABInertia( const BMatrix6 &I ) { set(I); }  
     
-    // called from SDynamics
+    // called from BDynamics  (U * Dinv * U^T) for 1-dof
     explicit BABInertia( const BVector6 &a, const BVector6 &b ): m_M(arb::outer(a.lin(), b.lin())), 
                                                                  m_H(arb::outer(a.ang(), b.lin())),
                                                                  m_I(arb::outer(a.ang(), b.ang()))  {}
+    // called from BDynamics
+    BABInertia( const BMatrix63 &U, const BMatrix3 &Dinv ) 
+    // (U * Dinv * U^T) for 3-dof
+    {
+        const BMatrix3 U_top  = U.top();   
+        const BMatrix3 U_topT = arb::transpose(U_top);
+        
+        const BMatrix3 U_bot  = U.bot(); 
+        const BMatrix3 U_botT = arb::transpose(U_bot);
+        
+        const BMatrix3 UD_top = Dinv * U_top;
+        const BMatrix3 UD_bot = Dinv * U_bot;
+
+        m_M = U_botT * UD_bot;
+        m_H = U_botT * UD_top;
+        m_I = U_topT * UD_top;
+    }
     
     BABInertia( const BRBInertia &I ):  m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {}
     
+
     ~BABInertia( void )=default;
 
   

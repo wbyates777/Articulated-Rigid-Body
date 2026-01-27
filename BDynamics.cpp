@@ -222,13 +222,6 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     // second  pass (leaves to root) to calculate  articulated intertia of bodies   
     // 'm_IA' and the spatial bias force 'm_pA' using intermediate results U_i, D_i, and u_i
     // see RBDA, Section 7.3, equations 7.43, 7.44, 7.45, 7.47, 7.48
-    // $U_i = I_i^A S_i$ 
-    // $D_i = S_i^T U_i$ 
-    // $u_i = \tau_i - S_i^T p^a_i$  
-    // $I^a = I^A_i - (U_i D_i^{-1} U_i^T)$
-    // $p^a = p^A_i + (I^a c_i) + (U_i D_i^{-1} u_i)$
-    // $I^A_{\lambda(i)} += {\lambda(i)}^X^{*}_i I^a {i}^X_{\lambda(i)}$
-    // $p^A_{\lambda(i)} += {\lambda(i)}^X^{*}_i p^a$
     
     for (int i = N_B - 1; i > 0; --i) 
     {
@@ -248,10 +241,11 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         }
         else if (dofCount == 1) 
         {
-            BVector6 S(m.joint(i).S());
+            const BVector6 S(m.joint(i).S());
             
+            // S^T * I * S,
             m_U[i] = m_IA[i] * S;                       
-            m_d[i] = arb::dot(S, m_U[i]);  // $S_i^T U_i$                    
+            m_d[i] = arb::dot(S, m_U[i]);
             m_u[i] = tau[qidx] - arb::dot(S, m_pA[i]); 
             
             if (lambda != 0) 
@@ -265,21 +259,21 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         } 
         else if (dofCount == 3) 
         {
-            BMatrix63 S(m.joint(i).S());
-        
-            BVector3 tau_tmp(tau[qidx], tau[qidx + 1], tau[qidx + 2]); 
+            const BMatrix63 S(m.joint(i).S());
+            const BVector3 res(tau[qidx], tau[qidx + 1], tau[qidx + 2]); 
             
-            m_dof3_U[i]    = m_IA[i] * S;
-            m_dof3_Dinv[i] = arb::inverse(arb::transpose(S) * m_dof3_U[i]);
-            m_dof3_u[i]    = tau_tmp - (arb::transpose(S) * m_pA[i]);
-     
+            // S^T * I * S,
+            m_dof3_U[i] = m_IA[i] * S;
+            const BMatrix3 aux = m_dof3_U[i].top() * arb::transpose(S.top()) + m_dof3_U[i].bot() * arb::transpose(S.bot());
+            m_dof3_Dinv[i] = arb::inverse(aux);
+            m_dof3_u[i] = res - (S.top() * m_pA[i].ang() + S.bot() * m_pA[i].lin());
+            
             if (lambda != 0) 
             {
-                BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
-                
-                BABInertia Ia = m_IA[i] - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
+                const BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
+                const BABInertia Ia = m_IA[i] - BABInertia(m_dof3_U[i], m_dof3_Dinv[i]); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
-                BVector6 pa(m_pA[i] + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
+                const BVector6 pa(m_pA[i] + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
                 m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
@@ -307,21 +301,21 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         {
             qddot[qidx] = (1.0 / m_d[i]) * (m_u[i] - arb::dot(m_U[i], m.body(i).a()));
             
-            BVector6 S(m.joint(i).S());
+            const BVector6 S(m.joint(i).S());
             
             m.body(i).a() += S * qddot[qidx];
         } 
         else if (dofCount == 3) 
         {
-            BVector3 tmp(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * m.body(i).a())));
+            const BVector3 res(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * m.body(i).a())));
     
-            qddot[qidx]     = tmp[0];
-            qddot[qidx + 1] = tmp[1];
-            qddot[qidx + 2] = tmp[2];
+            qddot[qidx]     = res[0];
+            qddot[qidx + 1] = res[1];
+            qddot[qidx + 2] = res[2];
             
-            BMatrix63 S(m.joint(i).S());
+            const BMatrix63 S(m.joint(i).S());
             
-            m.body(i).a() += S * tmp;
+            m.body(i).a() += S * res;
         } 
     }
 }
@@ -333,8 +327,8 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
 // The reverse calculation, that computes the joint forces that achieve a specified arm position, 
 // see RBDA, Table 5.1
 {
-    const std::vector<BScalar> &q     = qstate.q; // pos
-    const std::vector<BScalar> &qdot  = qstate.qdot; // vel 
+    const std::vector<BScalar> &q     = qstate.q;     // pos
+    const std::vector<BScalar> &qdot  = qstate.qdot;  // vel 
     const std::vector<BScalar> &qddot = qstate.qddot; // acc 
    
     
@@ -372,14 +366,14 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         } 
         else if (dofCount == 1) 
         {
-            BVector6 S(m.joint(i).S());
+            const BVector6 S(m.joint(i).S());
             m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * qddot[qidx];
         } 
         else if (dofCount == 3) 
         {
-            BMatrix63 S(m.joint(i).S());
-            BVector3 tmp(qddot[qidx], qddot[qidx + 1], qddot[qidx + 2]);
-            m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * tmp;
+            const BMatrix63 S(m.joint(i).S());
+            const BVector3 acc(qddot[qidx], qddot[qidx + 1], qddot[qidx + 2]);
+            m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * acc;
         }
 
         if (!m.body(i).isVirtual()) 
@@ -418,17 +412,18 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         
         if (dofCount == 1) 
         {
-            BVector6 S(m.joint(i).S());
+            const BVector6 S(m.joint(i).S());
             tau[qidx] = arb::dot(S, m_f[i]);
         } 
         else if (dofCount == 3) 
         {
-            BMatrix63 S(m.joint(i).S());
-            BVector3 tmp = arb::transpose(S) * m_f[i];
-
-            tau[qidx]     = tmp[0];
-            tau[qidx + 1] = tmp[1];
-            tau[qidx + 2] = tmp[2];
+            const BMatrix63 S(m.joint(i).S());
+            //const BVector3 res = arb::transpose(S) * m_f[i];
+            const BVector3 res = S.top() * m_f[i].ang() + S.bot() * m_f[i].lin();
+        
+            tau[qidx]     = res[0];
+            tau[qidx + 1] = res[1];
+            tau[qidx + 2] = res[2];
         }
 
         if (lambda != 0) 
