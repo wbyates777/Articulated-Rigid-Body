@@ -76,7 +76,7 @@ public:
     
     
     void
-    clear( void ) { m_mass = 0.0;  m_h = B_ZERO_3;  m_I = B_IDENTITY_3x3; }
+    clear( void ) { m_mass = 0.0;  m_h = B_ZERO_3;  m_I = B_ZERO_3x3; }
     
     void
     set( BScalar m, const BMatrix3 &I_o ) { m_mass = m;  m_h = B_ZERO_3;  m_I = I_o; }

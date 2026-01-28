@@ -420,6 +420,8 @@ private:
     static const std::vector<std::vector<BScalar>> m_ZERO_6x3;
     static const std::vector<std::vector<BScalar>> m_ZERO_1x6;
     static const std::vector<std::vector<BScalar>> m_ZERO_6x6;
+    static const std::vector<std::vector<BScalar>> m_ONE_TOP_6x3;
+    static const std::vector<std::vector<BScalar>> m_ONE_BOT_6x3;
 };
 
 

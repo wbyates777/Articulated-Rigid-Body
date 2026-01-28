@@ -16,6 +16,7 @@
 #endif
 
 
+
 #include <glm/geometric.hpp>       // for glm::length 
 
 
@@ -23,20 +24,38 @@ const std::vector<std::vector<BScalar>> BJoint::m_ZERO_6x3(6, {0.0, 0.0, 0.0});
 const std::vector<std::vector<BScalar>> BJoint::m_ZERO_1x6(1, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
 const std::vector<std::vector<BScalar>> BJoint::m_ZERO_6x6(6, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
 
-
-BJoint::BJoint(JType joint_type) : m_id(0),
-                                        m_qidx(0),
-                                        m_widx(0),
-                                        m_jtype(joint_type),
-                                        m_X_lambda(B_IDENTITY_TRANS),
-                                        m_X_J(B_IDENTITY_TRANS),
-                                        m_X_T(B_IDENTITY_TRANS),
-                                        m_v_J(B_ZERO_6),
-                                        m_c_J(B_ZERO_6),
-                                        m_S(m_ZERO_1x6),
-                                        m_axis(1)
+const std::vector<std::vector<BScalar>> BJoint::m_ONE_TOP_6x3
 {
-    
+    { 1.0, 0.0, 0.0 }, 
+    { 0.0, 1.0, 0.0 },
+    { 0.0, 0.0, 1.0 }, 
+    { 0.0, 0.0, 0.0 },
+    { 0.0, 0.0, 0.0 }, 
+    { 0.0, 0.0, 0.0 }
+};
+
+const std::vector<std::vector<BScalar>> BJoint::m_ONE_BOT_6x3
+{
+    { 0.0, 0.0, 0.0 }, 
+    { 0.0, 0.0, 0.0 },
+    { 0.0, 0.0, 0.0 }, 
+    { 1.0, 0.0, 0.0 },
+    { 0.0, 1.0, 0.0 }, 
+    { 0.0, 0.0, 1.0 }
+};
+
+BJoint::BJoint(JType joint_type)  : m_id(0),
+                                    m_qidx(0),
+                                    m_widx(0),
+                                    m_jtype(joint_type),
+                                    m_X_lambda(B_IDENTITY_TRANS),
+                                    m_X_J(B_IDENTITY_TRANS),
+                                    m_X_T(B_IDENTITY_TRANS),
+                                    m_v_J(B_ZERO_6),
+                                    m_c_J(B_ZERO_6),
+                                    m_S(m_ZERO_1x6),
+                                    m_axis(1)
+{
     if (m_jtype == JType::RevoluteX) 
     {
         m_axis[0] = BVector6(B_XAXIS, B_ZERO_3);
@@ -48,13 +67,6 @@ BJoint::BJoint(JType joint_type) : m_id(0),
     else if (m_jtype == JType::RevoluteZ) 
     {
         m_axis[0] = BVector6(B_ZAXIS, B_ZERO_3);
-    } 
-    else if (m_jtype == JType::Spherical) 
-    {
-        m_axis.resize(3);
-        m_axis[0] = BVector6(B_ZAXIS, B_ZERO_3);
-        m_axis[1] = BVector6(B_YAXIS, B_ZERO_3);
-        m_axis[2] = BVector6(B_XAXIS, B_ZERO_3);
     } 
     else if (m_jtype == JType::EulerZYX) 
     {
@@ -84,12 +96,19 @@ BJoint::BJoint(JType joint_type) : m_id(0),
         m_axis[1] = BVector6(B_XAXIS, B_ZERO_3);
         m_axis[2] = BVector6(B_YAXIS, B_ZERO_3);
     } 
+    else if (m_jtype == JType::Spherical) 
+    {
+        m_axis.resize(3);
+        m_axis[0] = BVector6(B_ZAXIS, B_ZERO_3);
+        m_axis[1] = BVector6(B_YAXIS, B_ZERO_3);
+        m_axis[2] = BVector6(B_XAXIS, B_ZERO_3);
+    } 
     else if (m_jtype == JType::TranslationXYZ) 
     {
         m_axis.resize(3);
         m_axis[0] = BVector6(B_ZERO_3, B_XAXIS);
         m_axis[1] = BVector6(B_ZERO_3, B_YAXIS);
-        m_axis[2] = BVector6(B_ZERO_3, B_ZAXIS);
+        m_axis[2] = BVector6(B_ZERO_3, B_ZAXIS);     
     } 
     else if (m_jtype >= JType::J1DoF && m_jtype <= JType::J6DoF) 
     {
@@ -104,7 +123,7 @@ BJoint::BJoint(JType joint_type) : m_id(0),
     }
     else if (m_jtype != JType::Fixed1 && m_jtype != JType::FloatingBase) 
     {
-        std::cout << "Error: Invalid use of Joint constructor Joint(JType type). Only allowed when type == BFixed or BSpherical." << std::endl;
+        std::cout << "Error: Invalid use of constructor Joint(JType type). Only allowed when type == BFixed or BSpherical." << std::endl;
         exit(EXIT_FAILURE);
     }
     
@@ -117,17 +136,17 @@ BJoint::BJoint(JType joint_type) : m_id(0),
 
 
 // only joint_type  BRevolute or BPrismatic
-BJoint::BJoint( JType joint_type, const BVector3 &joint_axis ) : m_id(0),
-                                                                      m_qidx(0),
-                                                                      m_widx(0),
-                                                                      m_jtype(joint_type),
-                                                                      m_X_lambda(B_IDENTITY_TRANS),
-                                                                      m_X_J(B_IDENTITY_TRANS),
-                                                                      m_X_T(B_IDENTITY_TRANS),
-                                                                      m_v_J(B_ZERO_6),
-                                                                      m_c_J(B_ZERO_6),
-                                                                      m_S(m_ZERO_1x6),
-                                                                      m_axis(1)
+BJoint::BJoint( JType joint_type, const BVector3 &joint_axis )  : m_id(0),
+                                                                  m_qidx(0),
+                                                                  m_widx(0),
+                                                                  m_jtype(joint_type),
+                                                                  m_X_lambda(B_IDENTITY_TRANS),
+                                                                  m_X_J(B_IDENTITY_TRANS),
+                                                                  m_X_T(B_IDENTITY_TRANS),
+                                                                  m_v_J(B_ZERO_6),
+                                                                  m_c_J(B_ZERO_6),
+                                                                  m_S(m_ZERO_1x6),
+                                                                  m_axis(1)
 {
     // Only rotation around the Z-axis
     assert( joint_type == JType::Revolute || joint_type == JType::Prismatic );
@@ -159,17 +178,17 @@ BJoint::BJoint( JType joint_type, const BVector3 &joint_axis ) : m_id(0),
  *
  * \param axis_0 Motion subspace for axis 0
  */
-BJoint::BJoint( const BVector6 &axis_0 ): m_id(0),
-                                                m_qidx(0),
-                                                m_widx(0),
-                                                m_jtype(JType::UNDEFINED),
-                                                m_X_lambda(B_IDENTITY_TRANS),
-                                                m_X_J(B_IDENTITY_TRANS),
-                                                m_X_T(B_IDENTITY_TRANS),
-                                                m_v_J(B_ZERO_6),
-                                                m_c_J(B_ZERO_6),
-                                                m_S(m_ZERO_1x6),
-                                                m_axis(1, axis_0)
+BJoint::BJoint( const BVector6 &axis_0 )  : m_id(0),
+                                            m_qidx(0),
+                                            m_widx(0),
+                                            m_jtype(JType::UNDEFINED),
+                                            m_X_lambda(B_IDENTITY_TRANS),
+                                            m_X_J(B_IDENTITY_TRANS),
+                                            m_X_T(B_IDENTITY_TRANS),
+                                            m_v_J(B_ZERO_6),
+                                            m_c_J(B_ZERO_6),
+                                            m_S(m_ZERO_1x6),
+                                            m_axis(1, axis_0)
 {
     setJointSpace(m_axis[0]);
     m_v_J = m_axis[0];
@@ -200,34 +219,34 @@ BJoint::BJoint( const BVector6 &axis_0 ): m_id(0),
 }
 
 BJoint::BJoint( const BVector6 &axis_0, 
-                const BVector6 &axis_1) : m_id(0),
-                                                m_qidx(0),
-                                                m_widx(0),
-                                                m_jtype(JType::UNDEFINED),
-                                                m_X_lambda(B_IDENTITY_TRANS),
-                                                m_X_J(B_IDENTITY_TRANS),
-                                                m_X_T(B_IDENTITY_TRANS),
-                                                m_v_J(B_ZERO_6),
-                                                m_c_J(B_ZERO_6),
-                                                m_S(m_ZERO_1x6),
-                                                m_axis()
+                const BVector6 &axis_1 ) :  m_id(0),
+                                            m_qidx(0),
+                                            m_widx(0),
+                                            m_jtype(JType::UNDEFINED),
+                                            m_X_lambda(B_IDENTITY_TRANS),
+                                            m_X_J(B_IDENTITY_TRANS),
+                                            m_X_T(B_IDENTITY_TRANS),
+                                            m_v_J(B_ZERO_6),
+                                            m_c_J(B_ZERO_6),
+                                            m_S(m_ZERO_1x6),
+                                            m_axis()
 {
     setJoint({axis_0, axis_1}); 
 }
 
 BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_1,
-                const BVector6 &axis_2 ): m_id(0), 
-                                                m_qidx(0),
-                                                m_widx(0),
-                                                m_jtype(JType::UNDEFINED),
-                                                m_X_lambda(B_IDENTITY_TRANS),
-                                                m_X_J(B_IDENTITY_TRANS),
-                                                m_X_T(B_IDENTITY_TRANS),
-                                                m_v_J(B_ZERO_6),
-                                                m_c_J(B_ZERO_6),
-                                                m_S(m_ZERO_1x6),
-                                                m_axis()
+                const BVector6 &axis_2 )  : m_id(0), 
+                                            m_qidx(0),
+                                            m_widx(0),
+                                            m_jtype(JType::UNDEFINED),
+                                            m_X_lambda(B_IDENTITY_TRANS),
+                                            m_X_J(B_IDENTITY_TRANS),
+                                            m_X_T(B_IDENTITY_TRANS),
+                                            m_v_J(B_ZERO_6),
+                                            m_c_J(B_ZERO_6),
+                                            m_S(m_ZERO_1x6),
+                                            m_axis()
 {
     setJoint({axis_0, axis_1, axis_2}); 
 }
@@ -235,17 +254,17 @@ BJoint::BJoint( const BVector6 &axis_0,
 BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_1,
                 const BVector6 &axis_2,
-                const BVector6 &axis_3 ): m_id(0),
-                                                m_qidx(0),
-                                                m_widx(0),
-                                                m_jtype(JType::UNDEFINED),
-                                                m_X_lambda(B_IDENTITY_TRANS),
-                                                m_X_J(B_IDENTITY_TRANS),
-                                                m_X_T(B_IDENTITY_TRANS),
-                                                m_v_J(B_ZERO_6),
-                                                m_c_J(B_ZERO_6),
-                                                m_S(m_ZERO_1x6),
-                                                m_axis()
+                const BVector6 &axis_3 ) :  m_id(0),
+                                            m_qidx(0),
+                                            m_widx(0),
+                                            m_jtype(JType::UNDEFINED),
+                                            m_X_lambda(B_IDENTITY_TRANS),
+                                            m_X_J(B_IDENTITY_TRANS),
+                                            m_X_T(B_IDENTITY_TRANS),
+                                            m_v_J(B_ZERO_6),
+                                            m_c_J(B_ZERO_6),
+                                            m_S(m_ZERO_1x6),
+                                            m_axis()
 {
     setJoint({axis_0, axis_1, axis_2, axis_3}); 
 }
@@ -254,17 +273,17 @@ BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_1,
                 const BVector6 &axis_2,
                 const BVector6 &axis_3,
-                const BVector6 &axis_4 ): m_id(0),
-                                                m_qidx(0),
-                                                m_widx(0),
-                                                m_jtype(JType::UNDEFINED),
-                                                m_X_lambda(B_IDENTITY_TRANS),
-                                                m_X_J(B_IDENTITY_TRANS),
-                                                m_X_T(B_IDENTITY_TRANS),
-                                                m_v_J(B_ZERO_6),
-                                                m_c_J(B_ZERO_6),
-                                                m_S(m_ZERO_1x6),
-                                                m_axis()
+                const BVector6 &axis_4 ) :  m_id(0),
+                                            m_qidx(0),
+                                            m_widx(0),
+                                            m_jtype(JType::UNDEFINED),
+                                            m_X_lambda(B_IDENTITY_TRANS),
+                                            m_X_J(B_IDENTITY_TRANS),
+                                            m_X_T(B_IDENTITY_TRANS),
+                                            m_v_J(B_ZERO_6),
+                                            m_c_J(B_ZERO_6),
+                                            m_S(m_ZERO_1x6),
+                                            m_axis()
 {
     setJoint({axis_0, axis_1, axis_2, axis_3, axis_4}); 
 }
@@ -274,17 +293,17 @@ BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_2,
                 const BVector6 &axis_3,
                 const BVector6 &axis_4,
-                const BVector6 &axis_5 ): m_id(0),
-                                                m_qidx(0),
-                                                m_widx(0),
-                                                m_jtype(JType::UNDEFINED),
-                                                m_X_lambda(B_IDENTITY_TRANS),
-                                                m_X_J(B_IDENTITY_TRANS),
-                                                m_X_T(B_IDENTITY_TRANS),
-                                                m_v_J(B_ZERO_6),
-                                                m_c_J(B_ZERO_6),
-                                                m_S(m_ZERO_1x6),
-                                                m_axis()
+                const BVector6 &axis_5 )  : m_id(0),
+                                            m_qidx(0),
+                                            m_widx(0),
+                                            m_jtype(JType::UNDEFINED),
+                                            m_X_lambda(B_IDENTITY_TRANS),
+                                            m_X_J(B_IDENTITY_TRANS),
+                                            m_X_T(B_IDENTITY_TRANS),
+                                            m_v_J(B_ZERO_6),
+                                            m_c_J(B_ZERO_6),
+                                            m_S(m_ZERO_1x6),
+                                            m_axis()
 {
     setJoint({axis_0, axis_1, axis_2, axis_3, axis_4, axis_5}); 
 }
@@ -526,26 +545,13 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         const BScalar Jqd = qdot[m_qidx];
         m_v_J = MS * Jqd;
 
-        BVector3 c = arb::cross(ang, strans); 
-        c *= -Jqd * Jqd;
+        const BVector3 c = arb::cross(ang, strans) * (-Jqd * Jqd); 
+
         m_c_J = BVector6(B_ZERO_3, c);
         
         m_X_lambda = m_X_J * m_X_T;
 
         setJointSpace(MS);
-    } 
-    else if (m_jtype == JType::Spherical) // 3 DoF
-    {
-        m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
-        m_v_J = BVector6( BVector3(qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2]), B_ZERO_3 );
-       
-        m_X_lambda = m_X_J * m_X_T;
-        
-        m_S = m_ZERO_6x3;
-        
-        m_S[0][0] = 1.0;
-        m_S[1][1] = 1.0;
-        m_S[2][2] = 1.0;
     } 
     else if (m_jtype == JType::EulerZYX)  // 3 DoF
     {
@@ -561,8 +567,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         const BScalar c2 = std::cos(q2);
         
         m_X_J = BTransform(BMatrix3( c0 * c1, s0 * c1, -s1,
-                                            c0 * s1 * s2 - s0 * c2, s0 * s1 * s2 + c0 * c2, c1 * s2,
-                                            c0 * s1 * c2 + s0 * s2, s0 * s1 * c2 - c0 * s2, c1 * c2 ));
+                                     c0 * s1 * s2 - s0 * c2, s0 * s1 * s2 + c0 * c2, c1 * s2,
+                                     c0 * s1 * c2 + s0 * s2, s0 * s1 * c2 - c0 * s2, c1 * c2 ));
         
         m_S = m_ZERO_6x3;
         BMatrix63 MS(B_ZERO_6x3);
@@ -603,8 +609,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         const BScalar c2 = std::cos(q2);
         
         m_X_J = BTransform(BMatrix3( c2 * c1, s2 * c0 + c2 * s1 * s0, s2 * s0 - c2 * s1 * c0,
-                                           -s2 * c1, c2 * c0 - s2 * s1 * s0, c2 * s0 + s2 * s1 * c0,
-                                            s1, -c1 * s0, c1 * c0 ));
+                                    -s2 * c1, c2 * c0 - s2 * s1 * s0, c2 * s0 + s2 * s1 * c0,
+                                     s1, -c1 * s0, c1 * c0 ));
         
         m_S = m_ZERO_6x3;
         BMatrix63 MS(B_ZERO_6x3);
@@ -645,8 +651,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         const BScalar c2 = std::cos(q2);
         
         m_X_J = BTransform(BMatrix3( c2 * c0 + s2 * s1 * s0, s2 * c1, -c2 * s0 + s2 * s1 * c0,
-                                           -s2 * c0 + c2 * s1 * s0, c2 * c1,  s2 * s0 + c2 * s1 * c0,
-                                            c1 * s0, -s1, c1 * c0 )); 
+                                    -s2 * c0 + c2 * s1 * s0, c2 * c1,  s2 * s0 + c2 * s1 * c0,
+                                     c1 * s0, -s1, c1 * c0 )); 
         
         m_S = m_ZERO_6x3;
         BMatrix63 MS(B_ZERO_6x3);
@@ -667,9 +673,9 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_v_J = MS * BVector3(qdot0, qdot1, qdot2);
         
         m_c_J.set( c2*c1*qdot2*qdot0 - s2*s1*qdot1*qdot0 - s2*qdot2*qdot1,
-                 -s2*c1*qdot2*qdot0 - c2*s1*qdot1*qdot0 - c2*qdot2*qdot1,
-                 -c1*qdot1*qdot0,
-                 0.0, 0.0, 0.0 );
+                  -s2*c1*qdot2*qdot0 - c2*s1*qdot1*qdot0 - c2*qdot2*qdot1,
+                  -c1*qdot1*qdot0,
+                   0.0, 0.0, 0.0 );
         
         m_X_lambda = m_X_J * m_X_T;
     } 
@@ -710,25 +716,28 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_v_J = MS * BVector3(qdot0, qdot1, qdot2);
         
         m_c_J.set((-c1 * c2 * qdot2 + s1 * s2 * qdot1) * qdot0 - s2 * qdot1 * qdot2,
-                  c1 * qdot1 * qdot0,
-                  (-s1 * c2 * qdot1 - c1 * s2 * qdot2) * qdot0 + c2 * qdot2 * qdot1,
-                  0.0, 0.0, 0.0);
+                   c1 * qdot1 * qdot0,
+                   (-s1 * c2 * qdot1 - c1 * s2 * qdot2) * qdot0 + c2 * qdot2 * qdot1,
+                   0.0, 0.0, 0.0);
+    } 
+    else if (m_jtype == JType::Spherical) // 3 DoF
+    {
+        m_v_J.ang( BVector3(qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2]) );
+        
+        m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
+        m_X_lambda = m_X_J * m_X_T;
+        
+        m_S = m_ONE_TOP_6x3;
     } 
     else if (m_jtype == JType::TranslationXYZ)  // 3 DoF
     {
-        m_S = m_ZERO_6x3;
-        BMatrix63 MS(B_ZERO_6x3);
-        
-        m_S[3][0] = MS[3][0] = 1.0;
-        m_S[4][1] = MS[4][1] = 1.0;
-        m_S[5][2] = MS[5][2] = 1.0;
-        
-        m_v_J = MS * BVector3(qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2]);
-        
+        m_v_J.lin(BVector3(qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2]));
         m_c_J = B_ZERO_6;
         
         m_X_lambda.E( m_X_T.E() );
         m_X_lambda.r( m_X_T.r() + glm::transpose(m_X_T.E()) * BVector3(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]));
+        
+        m_S = m_ONE_BOT_6x3;
     } 
     else 
     {
