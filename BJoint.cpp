@@ -453,8 +453,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::RevoluteX)  // 1 DoF 
     {
-        BScalar s = std::sin(q[m_qidx]);
-        BScalar c = std::cos(q[m_qidx]);
+        const BScalar s = std::sin(q[m_qidx]);
+        const BScalar c = std::cos(q[m_qidx]);
         
         const BMatrix3 &E = m_X_T.E();
         
@@ -468,8 +468,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::RevoluteY) // 1 DoF 
     {
-        BScalar s = std::sin(q[m_qidx]);
-        BScalar c = std::cos(q[m_qidx]);
+        const BScalar s = std::sin(q[m_qidx]);
+        const BScalar c = std::cos(q[m_qidx]);
         
         const BMatrix3 &E = m_X_T.E();
         
@@ -483,8 +483,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::RevoluteZ) // 1 DoF
     {
-        BScalar s = std::sin(q[m_qidx]);
-        BScalar c = std::cos(q[m_qidx]);
+        const BScalar s = std::sin(q[m_qidx]);
+        const BScalar c = std::cos(q[m_qidx]);
         
         const BMatrix3 &E = m_X_T.E();
         
@@ -500,7 +500,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_X_J = arb::Xrot(q[m_qidx], m_axis[0].ang());
    
         // Note m_S should be non-zero here
-        BVector6 MS(m_S);
+        const BVector6 MS(m_S);
         
         m_v_J = MS * qdot[m_qidx]; 
         m_X_lambda = m_X_J * m_X_T;
@@ -510,24 +510,24 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_X_J = arb::Xtrans(m_axis[0].lin() * q[m_qidx]);
 
         // Note m_S should be non-zero here
-        BVector6 MS(m_S);
+        const BVector6 MS(m_S);
         
         m_v_J = MS * qdot[m_qidx]; 
         m_X_lambda = m_X_J * m_X_T;
     } 
     else if (m_jtype == JType::Helical) // 1 DoF
     {
-        BVector3 ang(m_axis[0].ang());
-        BVector3 lin(m_axis[0].lin());
+        const BVector3 ang(m_axis[0].ang());
+        const BVector3 lin(m_axis[0].lin());
         
-        BTransform jrot   = arb::Xrot(q[m_qidx], ang);
-        BTransform jtrans = arb::Xtrans(lin * q[m_qidx]);
+        const BTransform jrot   = arb::Xrot(q[m_qidx], ang);
+        const BTransform jtrans = arb::Xtrans(lin * q[m_qidx]);
         m_X_J = jrot * jtrans;
         
-        BVector3 strans = glm::transpose(m_X_J.E()) * lin; 
-        BVector6 MS(ang, strans);
+        const BVector3 strans = glm::transpose(m_X_J.E()) * lin; 
+        const BVector6 MS(ang, strans);
         
-        BScalar Jqd = qdot[m_qidx];
+        const BScalar Jqd = qdot[m_qidx];
         m_v_J = MS * Jqd;
 
         BVector3 c = arb::cross(ang, strans); 
@@ -553,16 +553,16 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::EulerZYX)  // 3 DoF
     {
-        BScalar q0 = q[m_qidx];
-        BScalar q1 = q[m_qidx + 1];
-        BScalar q2 = q[m_qidx + 2];
+        const BScalar q0 = q[m_qidx];
+        const BScalar q1 = q[m_qidx + 1];
+        const BScalar q2 = q[m_qidx + 2];
         
-        BScalar s0 = std::sin(q0);
-        BScalar c0 = std::cos(q0);
-        BScalar s1 = std::sin(q1);
-        BScalar c1 = std::cos(q1);
-        BScalar s2 = std::sin(q2);
-        BScalar c2 = std::cos(q2);
+        const BScalar s0 = std::sin(q0);
+        const BScalar c0 = std::cos(q0);
+        const BScalar s1 = std::sin(q1);
+        const BScalar c1 = std::cos(q1);
+        const BScalar s2 = std::sin(q2);
+        const BScalar c2 = std::cos(q2);
         
         m_X_J = BTransform(BMatrix3( c0 * c1, s0 * c1, -s1,
                                             c0 * s1 * s2 - s0 * c2, s0 * s1 * s2 + c0 * c2, c1 * s2,
@@ -580,9 +580,9 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_S[2][0] = MS[2][0] = c1 * c2;
         m_S[2][1] = MS[2][1] = - s2;
         
-        BScalar qdot0 = qdot[m_qidx];
-        BScalar qdot1 = qdot[m_qidx + 1];
-        BScalar qdot2 = qdot[m_qidx + 2];
+        const BScalar qdot0 = qdot[m_qidx];
+        const BScalar qdot1 = qdot[m_qidx + 1];
+        const BScalar qdot2 = qdot[m_qidx + 2];
         
         m_v_J = MS * BVector3(qdot0, qdot1, qdot2);
 
@@ -595,16 +595,16 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::EulerXYZ) // 3 DoF
     {
-        BScalar q0 = q[m_qidx];
-        BScalar q1 = q[m_qidx + 1];
-        BScalar q2 = q[m_qidx + 2];
+        const BScalar q0 = q[m_qidx];
+        const BScalar q1 = q[m_qidx + 1];
+        const BScalar q2 = q[m_qidx + 2];
         
-        BScalar s0 = std::sin(q0);
-        BScalar c0 = std::cos(q0);
-        BScalar s1 = std::sin(q1);
-        BScalar c1 = std::cos(q1);
-        BScalar s2 = std::sin(q2);
-        BScalar c2 = std::cos(q2);
+        const BScalar s0 = std::sin(q0);
+        const BScalar c0 = std::cos(q0);
+        const BScalar s1 = std::sin(q1);
+        const BScalar c1 = std::cos(q1);
+        const BScalar s2 = std::sin(q2);
+        const BScalar c2 = std::cos(q2);
         
         m_X_J = BTransform(BMatrix3( c2 * c1, s2 * c0 + c2 * s1 * s0, s2 * s0 - c2 * s1 * c0,
                                            -s2 * c1, c2 * c0 - s2 * s1 * s0, c2 * s0 + s2 * s1 * c0,
@@ -622,9 +622,9 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_S[2][0] = MS[2][0] = s1;
         m_S[2][2] = MS[2][2] = 1.0;
         
-        BScalar qdot0 = qdot[m_qidx];
-        BScalar qdot1 = qdot[m_qidx + 1];
-        BScalar qdot2 = qdot[m_qidx + 2];
+        const BScalar qdot0 = qdot[m_qidx];
+        const BScalar qdot1 = qdot[m_qidx + 1];
+        const BScalar qdot2 = qdot[m_qidx + 2];
         
         m_v_J = MS * BVector3(qdot0, qdot1, qdot2);
         
@@ -637,16 +637,16 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::EulerYXZ) // 3 DoF
     {
-        BScalar q0 = q[m_qidx];
-        BScalar q1 = q[m_qidx + 1];
-        BScalar q2 = q[m_qidx + 2];
+        const BScalar q0 = q[m_qidx];
+        const BScalar q1 = q[m_qidx + 1];
+        const BScalar q2 = q[m_qidx + 2];
 
-        BScalar s0 = std::sin(q0);
-        BScalar c0 = std::cos(q0);
-        BScalar s1 = std::sin(q1);
-        BScalar c1 = std::cos(q1);
-        BScalar s2 = std::sin(q2);
-        BScalar c2 = std::cos(q2);
+        const BScalar s0 = std::sin(q0);
+        const BScalar c0 = std::cos(q0);
+        const BScalar s1 = std::sin(q1);
+        const BScalar c1 = std::cos(q1);
+        const BScalar s2 = std::sin(q2);
+        const BScalar c2 = std::cos(q2);
         
         m_X_J = BTransform(BMatrix3( c2 * c0 + s2 * s1 * s0, s2 * c1, -c2 * s0 + s2 * s1 * c0,
                                            -s2 * c0 + c2 * s1 * s0, c2 * c1,  s2 * s0 + c2 * s1 * c0,
@@ -664,9 +664,9 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_S[2][0] = MS[2][0] = -s1;
         m_S[2][2] = MS[2][2] = 1.0;
         
-        BScalar qdot0 = qdot[m_qidx];
-        BScalar qdot1 = qdot[m_qidx + 1];
-        BScalar qdot2 = qdot[m_qidx + 2];
+        const BScalar qdot0 = qdot[m_qidx];
+        const BScalar qdot1 = qdot[m_qidx + 1];
+        const BScalar qdot2 = qdot[m_qidx + 2];
         
         m_v_J = MS * BVector3(qdot0, qdot1, qdot2);
         
@@ -679,16 +679,16 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::EulerZXY) // 3 DoF 
     {
-        BScalar q0 = q[m_qidx];
-        BScalar q1 = q[m_qidx + 1];
-        BScalar q2 = q[m_qidx + 2];
+        const BScalar q0 = q[m_qidx];
+        const BScalar q1 = q[m_qidx + 1];
+        const BScalar q2 = q[m_qidx + 2];
         
-        BScalar s0 = std::sin(q0);
-        BScalar c0 = std::cos(q0);
-        BScalar s1 = std::sin(q1);
-        BScalar c1 = std::cos(q1);
-        BScalar s2 = std::sin(q2);
-        BScalar c2 = std::cos(q2);
+        const BScalar s0 = std::sin(q0);
+        const BScalar c0 = std::cos(q0);
+        const BScalar s1 = std::sin(q1);
+        const BScalar c1 = std::cos(q1);
+        const BScalar s2 = std::sin(q2);
+        const BScalar c2 = std::cos(q2);
         
         m_X_J = BTransform( BMatrix3( -s0 * s1 * s2 + c0 * c2,  s0 * c2 + s1 * s2 * c0,  -s2 * c1,
                                       -s0 * c1,                        c0 * c1,             s1,
@@ -707,9 +707,9 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_S[2][0] = MS[2][0] = c1 * c2;
         m_S[2][1] = MS[2][1] = s2;
         
-        BScalar qdot0 = qdot[m_qidx];
-        BScalar qdot1 = qdot[m_qidx + 1];
-        BScalar qdot2 = qdot[m_qidx + 2];
+        const BScalar qdot0 = qdot[m_qidx];
+        const BScalar qdot1 = qdot[m_qidx + 1];
+        const BScalar qdot2 = qdot[m_qidx + 2];
         
         m_v_J = MS * BVector3(qdot0, qdot1, qdot2);
         
