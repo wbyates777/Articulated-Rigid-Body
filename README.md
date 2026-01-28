@@ -96,7 +96,7 @@
  
  and the GLM functions:
  
- ```glm::cross(v1, v2), glm::dot(v1, v2), glm::outerProduct(v1, v2), glm::transpose(m), glm::inverse(m), glm::toMat3(q)```.
+ ```glm::cross(v1, v2), glm::dot(v1, v2), glm::outerProduct(v1, v2), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q)```.
  
  It is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
