@@ -202,24 +202,24 @@ public:
     {
         UNDEFINED = 0,
         
-        // Emulated 2-6 DoF joint.
+        // emulated 2-6 DoF joint.
         // values here are important - do not change
         J1DoF = 1, J2DoF = 2, J3DoF = 3, J4DoF = 4, J5DoF = 5, J6DoF = 6, 
         
-        Prismatic, // 1 DoF - Sliding joint
+        Prismatic, // 1-DoF - sliding joint
 
-        Revolute, RevoluteX, RevoluteY, RevoluteZ,  // 1 DoF - Hinge joint
+        Revolute, RevoluteX, RevoluteY, RevoluteZ,  // 1-DoF - hinge joint
         
-        // 3 DoF joint that uses Euler conventions (faster than emulated multi DoF joints).
+        // 3-DoF joint that uses Euler conventions (faster than emulated multi DoF joints).
         EulerZYX,  EulerXYZ,  EulerYXZ,   EulerZXY,  
         
-        // Spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
-        // 3 DoF joint using quaternions for joint positional and angular velocity variables.
+        // spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
+        // 3-DoF joint using quaternions for joint positional and angular velocity variables.
         Spherical, 
         
-        TranslationXYZ, // 3 DoF joint
+        TranslationXYZ, // 3-DoF joint
         
-        // A 6-DoF joint for floating-base systems.  
+        // 6-DoF joint for floating-base systems i.e a drone, or game vehicle  
         // modeled internally by a TranslationXYZ and a Spherical joint. 
         // use this joint for first body added to model (see RBDA, section 4.1, page 66).
         FloatingBase, 
@@ -234,10 +234,10 @@ public:
     
     BJoint( void )=default;
 
-    BJoint( JType joint_type );
+    BJoint( JType jtype );
     
     // only joint_type BRevolute or BPrismatic; joint_axis is axis of rotation or translation
-    BJoint( JType joint_type, const BVector3 &joint_axis);
+    BJoint( JType jtype, const BVector3 &jaxis);
     
     // constructs a 1-6 DoF joint with the given motion subspaces.
     BJoint( const BVector6 &axis_0 );
@@ -296,25 +296,24 @@ public:
         jcalc(zero, zero);
     }
 
-    // the spatial axis i of the joint
+    // i-th spatial axis of the joint
     const BVector6&
     axis( int i ) const { return m_axis[i]; }
 
-    // the spatial axes of the joint
+    // spatial axes of the joint
     const std::vector<BVector6>&
     axes( void ) const { return m_axis; }
     
-    // the transformation from the parent body frame $\lambda(i)$ to body $i$ 
+    // transform from the parent body frame $\lambda(i)$ to joint $i$ 
     // ${i}^X_{\lambda(i)} = X_J * X_T(i)$
     const BTransform& 
     X_lambda( void ) const { return m_X_lambda; }
    
-    // the action of the joint - typically a function of the joint's type m_jtype and state $q = (pos,vel,acc,tau)$     
-    // $X_J = (E,r)$ (see RBDA, Table 4.1)
+    // the action of the joint - typically a function of the joint's type m_jtype and state $q$  (see RBDA, Table 4.1)    
     const BTransform& 
     X_J( void ) const { return m_X_J; } 
     
-    // transformation from the parent body $\lambda(i)$ to the origin 
+    // transform from the parent body $\lambda(i)$ to the origin 
     // of the joint frame in body $i$ (see RBDA, Section 4.2, page 73). 
     // $X_T$ locates the joint's coordinate frame origin in body $i$.
     // Set by BModel::addBody(). 
@@ -379,8 +378,8 @@ private:
     void
     setJointSpace( const BJointSpace &m ) { m_S = m; }
     
-    inline void
-    setJointSpace( const BVector6 &v );
+    void
+    setJointSpace( const BVector6 &v ) { m_S = {{v[0], v[1], v[2], v[3], v[4], v[5] }}; }
     
     void
     setJointSpace( const BMatrix63 &m );
@@ -398,30 +397,23 @@ private:
 
     int          m_qidx;
     int          m_widx; // if joint is spherical - index of quaternion $w$ variable (at end of $q$-vector)
-    JType   m_jtype; 
+    JType        m_jtype; 
 
   
-    // $s^X_p$ = rot(E) xlt(r) - rotation(E) * translate(r) - translate br $r$ then rotate by $E$
     BTransform m_X_lambda;  // ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
-    BTransform m_X_J;       // see RBDA Section 4.4 and Table 4.1
-    BTransform m_X_T;       // $X_T$ transform from parent frame to joint position (see RBDA, Section 4.2)
+    BTransform m_X_J;       // action/movement of the joint (see RBDA Section 4.4 and Table 4.1)
+    BTransform m_X_T;       // transform from parent frame to joint frame origin - the joint's position (see RBDA, Section 4.2)
     
-    // joint state variables - joint spatial velocity and spatial acceleration (see RBDA, Section 4.4)
-    BVector6    m_v_J;     
-    BVector6    m_c_J;       
+    // joint state variables - spatial velocity and spatial acceleration (see RBDA, Section 4.4)
+    BVector6   m_v_J;     
+    BVector6   m_c_J;       
    
     // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)
-    BJointSpace       m_S; 
+    BJointSpace m_S; 
 
     // spatial axes of the joint; 1 for each degree of freedom
     std::vector<BVector6> m_axis;
     
-    // motion subspace constants -- note type here is std::vector not std::array
-    static const std::vector<std::vector<BScalar>> m_ZERO_6x3;
-    static const std::vector<std::vector<BScalar>> m_ZERO_1x6;
-    static const std::vector<std::vector<BScalar>> m_ZERO_6x6;
-    static const std::vector<std::vector<BScalar>> m_ONE_TOP_6x3;
-    static const std::vector<std::vector<BScalar>> m_ONE_BOT_6x3;
 };
 
 
