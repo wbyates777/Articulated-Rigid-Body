@@ -598,7 +598,7 @@ BModel::calcDoF( void )
 
 
 void 
-BModel::setBody(BBodyId bid, BInertia &inertia)
+BModel::setBody(BBodyId bid, const BInertia &inertia)
 {
     if (isFixedBodyId(bid))
     {

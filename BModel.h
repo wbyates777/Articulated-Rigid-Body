@@ -110,7 +110,7 @@ public:
     
     // set a bodies parameters 
     void 
-    setBody( BBodyId bid, BInertia &inertia );
+    setBody( BBodyId bid, const BInertia &inertia );
 
     //
     
