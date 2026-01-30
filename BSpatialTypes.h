@@ -44,7 +44,7 @@ typedef glm::tvec3<BScalar>   BVector3;
 typedef glm::tmat3x3<BScalar> BMatrix3; 
 typedef glm::tquat<BScalar>   BQuat;
 
-typedef std::vector<std::vector<BScalar>> BJointSpace;
+typedef std::vector<BScalar>  BMotionSpace;
 
 
 //
@@ -61,7 +61,8 @@ typedef std::vector<std::vector<BScalar>> BJointSpace;
     const BVector3 B_ONE_3(1.0);
     const BMatrix3 B_IDENTITY_3x3(1.0);
     const BMatrix3 B_ZERO_3x3(0.0);
-    const BQuat B_IDENTITY_QUAT(glm::identity<BQuat>());
+
+    const BQuat    B_IDENTITY_QUAT(glm::identity<BQuat>());
 #else
     constexpr BVector3 B_XAXIS(1.0, 0.0, 0.0);
     constexpr BVector3 B_YAXIS(0.0, 1.0, 0.0);
@@ -71,7 +72,8 @@ typedef std::vector<std::vector<BScalar>> BJointSpace;
     constexpr BVector3 B_ONE_3(1.0);
     constexpr BMatrix3 B_IDENTITY_3x3(1.0);
     constexpr BMatrix3 B_ZERO_3x3(0.0);
-    constexpr BQuat B_IDENTITY_QUAT(glm::identity<BQuat>());
+
+    constexpr BQuat    B_IDENTITY_QUAT(glm::identity<BQuat>());
 #endif
 
 
@@ -79,14 +81,14 @@ constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 
 namespace arb {
 
-    //  m^{-1} -
+    //  m^{-1} - style choice - I prefer arb::inverse(m) to m.transpose()
     inline constexpr BMatrix3 
     inverse( const BMatrix3 &m ) 
     { 
         return glm::inverse(m);
     }
 
-    //  m^T - style choice - I prefer arb::transpose(m) to m.transpose() 
+    //  m^{T} - style choice - I prefer arb::transpose(m) to m.transpose() 
     inline constexpr BMatrix3 
     transpose( const BMatrix3 &m ) 
     { 
@@ -208,8 +210,6 @@ constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
     0.0, 0.0, 0.0
 };
 
-
-
 //
 // my glm template stream operators -- customise spatial algebra output
 //
@@ -220,7 +220,7 @@ namespace  glm
     template<typename T> inline std::ostream&
     operator<<( std::ostream &ostr, const  glm::tvec3<T> &v )
     {
-        ostr << v.x << ", " << v.y << ", " << v.z << ' ';
+        ostr << v.x << ',' << v.y << ',' << v.z << ' ';
         return ostr;
     }
 

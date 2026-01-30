@@ -51,6 +51,7 @@ public:
     
     constexpr BMatrix6( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
     explicit BMatrix6( const std::vector<std::vector<BScalar>> &d )  { set(d); }
+    explicit BMatrix6( const std::vector<BScalar> &d ) { set(d); }
     
     constexpr explicit BMatrix6( BScalar s ) :  m_data 
     {
@@ -120,6 +121,21 @@ public:
             d[4][0],  d[4][1],  d[4][2],  d[4][3],  d[4][4],  d[4][5],
             d[5][0],  d[5][1],  d[5][2],  d[5][3],  d[5][4],  d[5][5]
         };
+    }
+    
+    void
+    set( const std::vector<BScalar> &d )
+    {
+        assert(m_data.size() == 36);  
+        m_data = 
+        {
+             d[0],   d[1],   d[2],   d[3],   d[4],   d[5],
+             d[6],   d[7],   d[8],   d[9],  d[10],  d[11],
+            d[12],  d[13],  d[14],  d[15],  d[16],  d[17],
+            d[18],  d[19],  d[20],  d[21],  d[22],  d[23],
+            d[24],  d[25],  d[26],  d[27],  d[28],  d[29],
+            d[30],  d[31],  d[32],  d[33],  d[34],  d[35]
+        }; 
     }
     
     void 
@@ -248,7 +264,7 @@ public:
                 m_data[i+3][j+3] = m[i][j];
     }
     
- 
+
     BMatrix6
     operator*( BScalar s ) const
     { 

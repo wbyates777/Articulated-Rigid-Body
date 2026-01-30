@@ -53,7 +53,7 @@ BJoint::BJoint( const BVector6 &axis_0 )  : m_id(0),
                                             m_S(),
                                             m_axis(1, axis_0)
 {
-    setJointSpace(m_axis[0]);
+    setMotionSpace(m_axis[0]);
     m_v_J = m_axis[0];
     
     // TODO: this has to be properly determined AND test case. Try Matt's dot product idea
@@ -255,21 +255,21 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
     {
         m_axis[0] = BVector6(B_XAXIS, B_ZERO_3);
         
-        setJointSpace(m_axis[0]);
+        setMotionSpace(m_axis[0]);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::RevoluteY) 
     {
         m_axis[0] = BVector6(B_YAXIS, B_ZERO_3);
         
-        setJointSpace(m_axis[0]);
+        setMotionSpace(m_axis[0]);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::RevoluteZ) 
     {
         m_axis[0] = BVector6(B_ZAXIS, B_ZERO_3);
         
-        setJointSpace(m_axis[0]);
+        setMotionSpace(m_axis[0]);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::EulerZYX) 
@@ -279,7 +279,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         m_axis[1] = BVector6(B_YAXIS, B_ZERO_3);
         m_axis[2] = BVector6(B_XAXIS, B_ZERO_3);
         
-        setJointSpace(B_ZERO_6x3);
+        setMotionSpace(B_ZERO_6x3);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::EulerXYZ) 
@@ -289,7 +289,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         m_axis[1] = BVector6(B_YAXIS, B_ZERO_3);
         m_axis[2] = BVector6(B_ZAXIS, B_ZERO_3);
         
-        setJointSpace(B_ZERO_6x3);
+        setMotionSpace(B_ZERO_6x3);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::EulerYXZ) 
@@ -299,7 +299,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         m_axis[1] = BVector6(B_XAXIS, B_ZERO_3);
         m_axis[2] = BVector6(B_ZAXIS, B_ZERO_3);
         
-        setJointSpace(B_ZERO_6x3);
+        setMotionSpace(B_ZERO_6x3);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::EulerZXY) 
@@ -309,7 +309,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         m_axis[1] = BVector6(B_XAXIS, B_ZERO_3);
         m_axis[2] = BVector6(B_YAXIS, B_ZERO_3);
 
-        setJointSpace(B_ZERO_6x3);
+        setMotionSpace(B_ZERO_6x3);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::Spherical) 
@@ -319,7 +319,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         m_axis[1] = BVector6(B_YAXIS, B_ZERO_3);
         m_axis[2] = BVector6(B_XAXIS, B_ZERO_3);
         
-        setJointSpace(B_ONE_ZERO_6x3);
+        setMotionSpace(B_ONE_ZERO_6x3);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::TranslationXYZ) 
@@ -329,7 +329,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         m_axis[1] = BVector6(B_ZERO_3, B_YAXIS);
         m_axis[2] = BVector6(B_ZERO_3, B_ZAXIS); 
         
-        setJointSpace(B_ZERO_ONE_6x3);
+        setMotionSpace(B_ZERO_ONE_6x3);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype >= JType::J1DoF && m_jtype <= JType::J6DoF) 
@@ -339,12 +339,12 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         int DoF_count = m_jtype - J1DoF + 1; 
         m_axis.resize(DoF_count, B_ZERO_6); 
 
-        setJointSpace(m_axis[0]);
+        setMotionSpace(m_axis[0]);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::Fixed2)
     {
-        m_axis.clear(); // DoF = 0
+        m_axis.clear(); // ensure DoF = 0
     }
     else if (m_jtype != JType::FloatingBase && m_jtype != JType::Fixed1) 
     {
@@ -375,7 +375,7 @@ BJoint::BJoint( JType jtype, const BVector3 &jaxis ) :  m_id(0),
         // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
         m_axis[0].set( jaxis, B_ZERO_3  );
         
-        setJointSpace(m_axis[0]);
+        setMotionSpace(m_axis[0]);
         m_v_J = m_axis[0];
     } 
     else if (m_jtype == JType::Prismatic) 
@@ -384,7 +384,7 @@ BJoint::BJoint( JType jtype, const BVector3 &jaxis ) :  m_id(0),
         // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
         m_axis[0].set( B_ZERO_3, jaxis );
         
-        setJointSpace(m_axis[0]);
+        setMotionSpace(m_axis[0]);
         m_v_J = m_axis[0];
     }
 }
@@ -430,26 +430,24 @@ BJoint::setQuat(const BQuat &quat, std::vector<BScalar> &q) const
     q[m_qidx+2] = quat.z;
 }
 
-
 void
-BJoint::setJointSpace( const BMatrix63 &m )
+BJoint::setMotionSpace( const BMatrix63 &m )
 {
-    m_S.resize(6, std::vector<BScalar>(3));
-    const std::array<std::array<BScalar, 3>, 6>& d(m.data());
-    for (int i = 0; i < 6; ++i)
-        for (int j = 0; j < 3; ++j)
-            m_S[i][j] = d[i][j];
+    m_S.resize(18);
+    // WARNING: assumes std::array<std::array<BScalar, 3>, 6> is contiguous memory
+    const BScalar* src_ptr = reinterpret_cast<const BScalar*>(m.data().data());
+    std::copy_n(src_ptr, 18, m_S.begin());
 }
 
 void
-BJoint::setJointSpace( const BMatrix6 &m )
+BJoint::setMotionSpace( const BMatrix6 &m )
 {
-    m_S.resize(6, std::vector<BScalar>(6));
-    const std::array<std::array<BScalar, 6>, 6>& d(m.data());
-    for (int i = 0; i < 6; ++i)
-        for (int j = 0; j < 6; ++j)
-            m_S[i][j] = d[i][j];
+    m_S.resize(36);
+    // WARNING: assumes std::array<std::array<BScalar, 6>, 6> is contiguous memory
+    const BScalar* src_ptr = reinterpret_cast<const BScalar*>(m.data().data());
+    std::copy_n(src_ptr, 36, m_S.begin());
 }
+
 
 
 /** \brief Computes all variables for a joint model
@@ -467,9 +465,21 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     if (m_jtype == JType::Fixed2)  // 0-DoF 
     {
         m_X_lambda = m_X_T; 
-        //m_S        = m_ZERO_1x6;
-        //m_v_J      = B_ZERO_6;
-        //m_c_J      = B_ZERO_6;
+    } 
+    else if (m_jtype == JType::Spherical) // 3-DoF
+    {
+        m_v_J = BVector6( BVector3(qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2]), B_ZERO_3 );
+        
+        m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
+        m_X_lambda = m_X_J * m_X_T;
+    } 
+    else if (m_jtype == JType::TranslationXYZ)  // 3-DoF
+    {
+        m_v_J = BVector6( B_ZERO_3, BVector3(qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2]) );
+        m_c_J = B_ZERO_6;
+        
+        m_X_lambda.E( m_X_T.E() );
+        m_X_lambda.r( m_X_T.r() + glm::transpose(m_X_T.E()) * BVector3(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]));
     } 
     else if (m_jtype == JType::RevoluteX)  // 1-DoF 
     {
@@ -556,7 +566,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         m_X_lambda = m_X_J * m_X_T;
 
-        setJointSpace(MS);
+        setMotionSpace(MS);
     } 
     else if (m_jtype == JType::EulerZYX)  // 3-DoF
     {
@@ -577,14 +587,14 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         BMatrix63 MS(B_ZERO_6x3);
         
-        m_S[0][0] = MS[0][0] = -s1;
-        m_S[0][2] = MS[0][2] = 1.0;
+        m_S[0] = MS[0][0] = -s1;       
+        m_S[2] = MS[0][2] = 1.0;      
         
-        m_S[1][0] = MS[1][0] = c1 * s2;
-        m_S[1][1] = MS[1][1] = c2;
+        m_S[3] = MS[1][0] = c1 * s2;   
+        m_S[4] = MS[1][1] = c2;        
         
-        m_S[2][0] = MS[2][0] = c1 * c2;
-        m_S[2][1] = MS[2][1] = - s2;
+        m_S[6] = MS[2][0] = c1 * c2;   
+        m_S[7] = MS[2][1] = - s2;      
         
         const BScalar qdot0 = qdot[m_qidx];
         const BScalar qdot1 = qdot[m_qidx + 1];
@@ -618,14 +628,14 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         BMatrix63 MS(B_ZERO_6x3);
         
-        m_S[0][0] = MS[0][0] = c2 * c1;
-        m_S[0][1] = MS[0][1] = s2;
+        m_S[0] = MS[0][0] = c2 * c1;          
+        m_S[1] = MS[0][1] = s2;               
         
-        m_S[1][0] = MS[1][0] = -s2 * c1;
-        m_S[1][1] = MS[1][1] = c2;
+        m_S[3] = MS[1][0] = -s2 * c1;         
+        m_S[4] = MS[1][1] = c2;              
         
-        m_S[2][0] = MS[2][0] = s1;
-        m_S[2][2] = MS[2][2] = 1.0;
+        m_S[6] = MS[2][0] = s1;              
+        m_S[8] = MS[2][2] = 1.0;            
         
         const BScalar qdot0 = qdot[m_qidx];
         const BScalar qdot1 = qdot[m_qidx + 1];
@@ -658,15 +668,15 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
                                      c1 * s0, -s1, c1 * c0 )); 
         
         BMatrix63 MS(B_ZERO_6x3);
+   
+        m_S[0] = MS[0][0] = s2 * c1;       
+        m_S[1] = MS[0][1] = c2;            
         
-        m_S[0][0] = MS[0][0] = s2 * c1;
-        m_S[0][1] = MS[0][1] = c2;
+        m_S[3] = MS[1][0] = c2 * c1;       
+        m_S[4] = MS[1][1] = -s2;           
         
-        m_S[1][0] = MS[1][0] = c2 * c1;
-        m_S[1][1] = MS[1][1] = -s2;
-        
-        m_S[2][0] = MS[2][0] = -s1;
-        m_S[2][2] = MS[2][2] = 1.0;
+        m_S[6] = MS[2][0] = -s1;           
+        m_S[8] = MS[2][2] = 1.0;           
         
         const BScalar qdot0 = qdot[m_qidx];
         const BScalar qdot1 = qdot[m_qidx + 1];
@@ -701,14 +711,14 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         
         BMatrix63 MS(B_ZERO_6x3);
         
-        m_S[0][0] = MS[0][0] = -s2 * c1;
-        m_S[0][1] = MS[0][1] = c2;
+        m_S[0] = MS[0][0] = -s2 * c1;     
+        m_S[1] = MS[0][1] = c2;           
         
-        m_S[1][0] = MS[1][0] = s1;
-        m_S[1][2] = MS[1][2] = 1;
-        
-        m_S[2][0] = MS[2][0] = c1 * c2;
-        m_S[2][1] = MS[2][1] = s2;
+        m_S[3] = MS[1][0] = s1;           
+        m_S[5] = MS[1][2] = 1;             
+         
+        m_S[6] = MS[2][0] = c1 * c2;       
+        m_S[7] = MS[2][1] = s2;            
         
         const BScalar qdot0 = qdot[m_qidx];
         const BScalar qdot1 = qdot[m_qidx + 1];
@@ -720,21 +730,6 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
                    c1 * qdot1 * qdot0,
                    (-s1 * c2 * qdot1 - c1 * s2 * qdot2) * qdot0 + c2 * qdot2 * qdot1,
                    0.0, 0.0, 0.0);
-    } 
-    else if (m_jtype == JType::Spherical) // 3-DoF
-    {
-        m_v_J = BVector6( BVector3(qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2]), B_ZERO_3 );
-        
-        m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
-        m_X_lambda = m_X_J * m_X_T;
-    } 
-    else if (m_jtype == JType::TranslationXYZ)  // 3-DoF
-    {
-        m_v_J = BVector6( B_ZERO_3, BVector3(qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2]) );
-        m_c_J = B_ZERO_6;
-        
-        m_X_lambda.E( m_X_T.E() );
-        m_X_lambda.r( m_X_T.r() + glm::transpose(m_X_T.E()) * BVector3(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]));
     } 
     else 
     {

@@ -302,7 +302,7 @@ public:
 
     // spatial axes of the joint
     const std::vector<BVector6>&
-    axes( void ) const { return m_axis; }
+    axis( void ) const { return m_axis; }
     
     // transform from the parent body frame $\lambda(i)$ to joint $i$ 
     // ${i}^X_{\lambda(i)} = X_J * X_T(i)$
@@ -320,13 +320,16 @@ public:
     const BTransform& 
     X_T( void ) const { return m_X_T; }
     
+    BTransform& 
+    X_T( void ) { return m_X_T; }
+    
     void 
     X_T( const BTransform &b )  { m_X_T = b; }
     
     
     // a joint's motion subspace $S$ (see RBDA, Table 4.1) - depends on type of joint 
     // when DoF=1 $S$=SpatialVector, DoF=3 $S$=Matrix63, DoF=6 $S$=SpatialMatrix
-    const BJointSpace& 
+    const BMotionSpace& 
     S( void ) const { return m_S; }
 
 
@@ -376,16 +379,16 @@ public:
 private:
     
     void
-    setJointSpace( const BJointSpace &m ) { m_S = m; }
+    setMotionSpace( const BMotionSpace &m ) { m_S = m; }
     
     void
-    setJointSpace( const BVector6 &v ) { m_S = {{v[0], v[1], v[2], v[3], v[4], v[5] }}; }
+    setMotionSpace( const BVector6 &v )  { m_S = {v[0], v[1], v[2], v[3], v[4], v[5]};  }
     
     void
-    setJointSpace( const BMatrix63 &m );
+    setMotionSpace( const BMatrix63 &m );
   
     void
-    setJointSpace( const BMatrix6 &m );
+    setMotionSpace( const BMatrix6 &m );
     
     static bool 
     validate_spatial_axis( const BVector6 &axis );
@@ -396,7 +399,7 @@ private:
     BJointId     m_id;
 
     int          m_qidx;
-    int          m_widx; // if joint is spherical - index of quaternion $w$ variable (at end of $q$-vector)
+    int          m_widx;    // if joint is spherical - index of quaternion $w$ variable (at end of $q$-vector)
     JType        m_jtype; 
 
   
@@ -409,7 +412,7 @@ private:
     BVector6   m_c_J;       
    
     // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)
-    BJointSpace m_S; 
+    BMotionSpace m_S; 
 
     // spatial axes of the joint; 1 for each degree of freedom
     std::vector<BVector6> m_axis;

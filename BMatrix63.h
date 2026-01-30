@@ -25,6 +25,8 @@
 #include "BProducts.h"
 #endif
 
+
+
 class BMatrix63
 {
     
@@ -33,7 +35,8 @@ public:
     BMatrix63( void )=default;
     constexpr BMatrix63( const std::array<std::array<BScalar, 3>, 6> &d): m_data(d) {}
     explicit BMatrix63( const std::vector<std::vector<BScalar>> &d ) { set(d); }
-    
+    explicit BMatrix63( const std::vector<BScalar> &d ) { set(d); }
+
     constexpr explicit BMatrix63( BScalar s ) : m_data 
                                                 {   
                                                     s,  s,  s, 
@@ -98,6 +101,21 @@ public:
             d[3][0],  d[3][1],  d[3][2], 
             d[4][0],  d[4][1],  d[4][2], 
             d[5][0],  d[5][1],  d[5][2] 
+        };
+    }
+    
+    void
+    set( const std::vector<BScalar> &d )   
+    {
+        assert(d.size() == 18);
+        m_data = 
+        {   
+            d[0],    d[1],   d[2], 
+            d[3],    d[4],   d[5], 
+            d[6],    d[7],   d[8], 
+            d[9],   d[10],  d[11], 
+            d[12],  d[13],  d[14], 
+            d[15],  d[16],  d[17]
         };
     }
     
