@@ -81,7 +81,7 @@ constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 
 namespace arb {
 
-    //  m^{-1} - style choice - I prefer arb::inverse(m) to m.transpose()
+    //  m^{-1} - style choice - I prefer arb::inverse(m) to m.inverse()
     inline constexpr BMatrix3 
     inverse( const BMatrix3 &m ) 
     { 
