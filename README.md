@@ -116,6 +116,8 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
  
  ```make```
 
+Minimum compiler requirement is c++20. 
+
  ## Libraries
  
  GLM       - https://github.com/g-truc/glm
