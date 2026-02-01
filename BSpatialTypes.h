@@ -111,6 +111,8 @@ namespace arb {
     inline bool 
     nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
 
+    inline bool 
+    nearZero( const BQuat &q )  { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
 
     inline bool 
     isnan(const BVector3 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
@@ -118,7 +120,10 @@ namespace arb {
     inline bool 
     isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
 
-    
+    inline bool 
+    isnan( const BQuat &q )  { return (isnan(q.w) || isnan(q.x) || isnan(q.y) || isnan(q.z)); }
+
+
     inline constexpr BScalar 
     min(BScalar v1, BScalar v2) { return std::min(v1, v2); }
     
