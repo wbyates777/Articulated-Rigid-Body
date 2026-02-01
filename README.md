@@ -34,7 +34,8 @@
  3D angular aspects of rigid-body motion.
  Linear and angular velocities (or accelerations) are
  combined to form  _spatial_ _motion_ vectors, while linear forces and torques are combined
- to form  _spatial_ _force_ vectors.
+ to form  _spatial_ _force_ vectors.  By convention, spatial velocity vectors are called _twists_, 
+ while spatial force vectors are called _wrenches_.
  
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
@@ -80,7 +81,8 @@
  The implementations presented here, are intended for use in computer graphics, and are 
  based on those in the RBDL library.
  Alternative implementations can be found in the RBDyn library, and the Pinocchio library (see below for links).
- We intentionally use similar variable names and the same object structure and hierarchy as RBDL. This facillitates comparison testing. 
+ We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
+ This facillitates numerical comparison testing. 
  Some variables have been moved to their appropriate classes and accessor methods 
  have been added throughout. This improves encapsulation and readability.
  
