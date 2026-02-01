@@ -121,7 +121,7 @@ namespace arb {
     isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
 
     inline bool 
-    isnan( const BQuat &q )  { return (isnan(q.w) || isnan(q.x) || isnan(q.y) || isnan(q.z)); }
+    isnan( const BQuat &q )  { return (std::isnan(q.w) || std::isnan(q.x) || std::isnan(q.y) || std::isnan(q.z)); }
 
 
     inline constexpr BScalar 
