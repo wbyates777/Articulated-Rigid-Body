@@ -468,14 +468,14 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::Spherical) // 3-DoF
     {
-        m_v_J = BVector6( BVector3(qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2]), B_ZERO_3 );
+        m_v_J = BVector6( qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2], B_ZERO_3 );
         
         m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
         m_X_lambda = m_X_J * m_X_T;
     } 
     else if (m_jtype == JType::TranslationXYZ)  // 3-DoF
     {
-        m_v_J = BVector6( B_ZERO_3, BVector3(qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2]) );
+        m_v_J = BVector6( B_ZERO_3, qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2] );
         m_c_J = B_ZERO_6;
         
         m_X_lambda.E( m_X_T.E() );
