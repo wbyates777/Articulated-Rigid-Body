@@ -569,7 +569,7 @@ example2( void )
     model->gravity( BVector3(0.0, -9.81, 0.0));
     
     
-    BJoint joint_a = BJoint( BJoint::FloatingBase );
+    BJoint joint_a = BJoint( BJoint::FloatBase );
     BBody body_a = BBody(BInertia(massA, glm::dvec3(com_a[0], com_a[1], com_a[2]), BVector3(10.0, 10.0, 10.0)));
     int body_a_id = model->addBody(0, arb::Xtrans(BVector3(trans_a[0],trans_a[1],trans_a[2])), joint_a, body_a);
 
@@ -633,7 +633,7 @@ single_body( void )
     // set up single body -- i.e. a spaceship 
     // floating base only used for first body in model.
     BBody spaceship = BBody(BInertia(10.0,  B_ZERO_3, BVector3(1.0, 1.0, 1.0)));
-    BJoint joint = BJoint( BJoint::FloatingBase );
+    BJoint joint = BJoint( BJoint::FloatBase );
     BBodyId spaceshipId = model->addBody(0, arb::Xtrans(B_ZERO_3), joint, spaceship);
     
     // control -- apply myforce to whole spaceship model -- 100 Newtons along z axis
