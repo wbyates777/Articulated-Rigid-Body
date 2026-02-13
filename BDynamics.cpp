@@ -25,20 +25,20 @@
  //
  
  The implementations presented here are based on those in the RBDL library ( see https://github.com/rbdl/rbdl ).
- We use similar variable names and the same object hierarchy. Some variables have been moved to apprpriate classes and 
- accessor methods have been added throughout. This improves encapsulation and readability.
+ We use similar variable names and the same object hierarchy. This facilitates numerical coparison testing. 
+ Some variables have been moved to apprpriate classes and accessor methods have been added throughout. 
+ This improves encapsulation and readability.
 
  RBDL depends on the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
  This code does not depend on Eigen3, and instead relies on the lighter-weight GLM library 
- for simple 3D-linear algebra types and operations. As the GLM library does not support 
- 6D vectors and matricies, the code for custom joint types is not implemented.
-
+ for simple 3D-linear algebra types and operations. 
+ 
  This code depends on the 3D GLM types: glm::dvec3, glm::dmat3, glm::dquat, 
- and functions: glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::toMat3(q).
+ and functions: glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::mat3_cast(q).
  
  It should be relatively straightforward to convert back to Eigen3 (although see 
- the note below on Eigen3 and GLM differences), or  replace GLM with some other simple
+ the note below on Eigen3 and GLM row-major/column-major differences), or  replace GLM with some other simple
  linear algebra library.
 
  
@@ -66,7 +66,7 @@
  
  The psuedo LaTeX used to express a leading superscipt can be converted to working LaTeX using the following mapping
  ${\lambda(i)}^X_i$ --> ${}^{\lambda(i)}\!X_i$
- This will typeset the leading superscript $\lambda(i)$ properly
+ This will typeset the leading superscript $\lambda(i)$ properly i.e $\mysup{B}{X}{A}$
  
  \makeatletter
  \newcommand*\mysup[3]{%
@@ -168,8 +168,8 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     m_dof3_Dinv.resize(N_B);
     m_dof3_u.resize(N_B);
     
-    m_IA.resize(N_B, B_ZERO_ABI);
-    m_pA.resize(N_B, B_ZERO_6);
+    m_IA.resize(N_B);
+    m_pA.resize(N_B);
     
     // reset the velocity of the root body
     // $v_0 = 0$
@@ -177,6 +177,8 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     m.body(0).v(B_ZERO_6);
     m.body(0).a().set(B_ZERO_3, -m.gravity());
     
+    m_IA[0] = B_ZERO_ABI;
+    m_pA[0] = B_ZERO_6;
     
     // first pass (root to leaves) to calculate velocity and bias terms 
     // $v_i   = {i}^X_{\lambda(i)}  v_{\lambda(i)} + v_J$ (RBDA, equation 7.34)
@@ -278,6 +280,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             }
         } 
     }
+
     
     // third (and final) pass (root to leaves) to calculate the acceleration $a_i$ for each body $i$ and joint qddot
     // $a^{'} = {i}^X_{\lambda(i)} a_{\lambda(i)} + c_i$
@@ -307,15 +310,15 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         } 
         else if (dofCount == 3) 
         {
-            const BVector3 res(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * m.body(i).a())));
+            const BVector3 acc(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * m.body(i).a())));
     
-            qddot[qidx]     = res[0];
-            qddot[qidx + 1] = res[1];
-            qddot[qidx + 2] = res[2];
+            qddot[qidx]     = acc[0];
+            qddot[qidx + 1] = acc[1];
+            qddot[qidx + 2] = acc[2];
             
             const BMatrix63 S(m.joint(i).S());
             
-            m.body(i).a() += S * res;
+            m.body(i).a() += S * acc;
         } 
     }
 }

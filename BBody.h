@@ -92,7 +92,7 @@ public:
     
     
     void 
-    setBody( const BInertia &inertia, bool isVirtual = false )
+    set( const BInertia &inertia, bool isVirtual = false )
     {
         m_v = m_a = m_c = B_ZERO_6; 
         m_I.set(inertia);
@@ -139,6 +139,9 @@ public:
     // transformation from the base (world) frame to this body's coordinate frame
     const BTransform& 
     X_base( void ) const { return m_X_base; }
+    
+    BTransform& 
+    X_base( void ) { return m_X_base; }
     
     void
     X_base( const BTransform &b )  { m_X_base = b; }

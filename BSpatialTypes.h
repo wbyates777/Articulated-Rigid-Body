@@ -88,6 +88,12 @@ namespace arb {
         return glm::inverse(m);
     }
 
+    inline bool
+    isinvertible( const BMatrix3 &m )
+    {
+        return (std::abs(glm::determinant(m)) > std::numeric_limits<BScalar>::epsilon());
+    }
+    
     //  m^{T} - style choice - I prefer arb::transpose(m) to m.transpose() 
     inline constexpr BMatrix3 
     transpose( const BMatrix3 &m ) 
@@ -109,21 +115,24 @@ namespace arb {
     nearZero( const BVector3 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
 
     inline bool 
+    nearZero( const BQuat &q )  { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
+    
+    inline bool 
     nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
 
-    inline bool 
-    nearZero( const BQuat &q )  { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
-
+    
+ 
     inline bool 
     isnan(const BVector3 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
 
     inline bool 
-    isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
-
-    inline bool 
     isnan( const BQuat &q )  { return (std::isnan(q.w) || std::isnan(q.x) || std::isnan(q.y) || std::isnan(q.z)); }
-
-
+    
+    inline bool 
+    isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
+    
+ 
+    
     inline constexpr BScalar 
     min(BScalar v1, BScalar v2) { return std::min(v1, v2); }
     
@@ -158,7 +167,7 @@ namespace arb {
     }
     
     inline constexpr BScalar 
-    clamp(BScalar v, BScalar lo, BScalar hi) { return std::clamp(v, lo, hi); }
+    clamp(BScalar v, BScalar min, BScalar max) { return std::clamp(v, min, max); }
      
     inline constexpr BVector3 
     clamp(const BVector3 &v, BScalar min, BScalar max) 
@@ -168,10 +177,10 @@ namespace arb {
     }
     
     inline constexpr BVector3 
-    clamp(const BVector3 &v, const BVector3 &lo, const BVector3 &hi) 
+    clamp(const BVector3 &v, const BVector3 &min, const BVector3 &max) 
     { 
-        return glm::clamp(v, lo, hi);
-        //return BVector3(std::clamp(v[0], lo[0], hi[0]), std::clamp(v[1], lo[1], hi[1]), std::clamp(v[2], lo[2], hi[2]));
+        return glm::clamp(v, min, max);
+        //return BVector3(std::clamp(v[0], min[0], max[0]), std::clamp(v[1], min[1], max[1]), std::clamp(v[2], min[2], max[2]));
     }
 }
 

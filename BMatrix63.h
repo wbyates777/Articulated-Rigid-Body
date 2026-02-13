@@ -8,6 +8,7 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
+ Key type for simulating 3-dof joints
  
 */
 

@@ -326,7 +326,7 @@ namespace arb
 
     // all angles in radians
     inline BTransform 
-    Xrot( BScalar angle, const BVector3 &axis ) // WARNING - axis *must* be normalized
+    Xrot( BScalar angle, const BVector3 &axis ) // WARNING: axis *must* be normalized
     {
         const BScalar s = std::sin(angle);
         const BScalar c = std::cos(angle);

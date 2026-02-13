@@ -322,7 +322,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         setMotionSpace(B_ONE_ZERO_6x3);
         m_v_J = m_axis[0];
     } 
-    else if (m_jtype == JType::TranslationXYZ) 
+    else if (m_jtype == JType::TransXYZ) 
     {
         m_axis.resize(3);
         m_axis[0] = BVector6(B_ZERO_3, B_XAXIS);
@@ -346,7 +346,7 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
     {
         m_axis.clear(); // ensure DoF = 0
     }
-    else if (m_jtype != JType::FloatingBase && m_jtype != JType::Fixed1) 
+    else if (m_jtype != JType::FloatBase && m_jtype != JType::Fixed1) 
     {
         std::cout << "Error: Invalid constructor Joint(" << toString(m_jtype) << ")." << std::endl;
         exit(EXIT_FAILURE);
@@ -434,7 +434,7 @@ void
 BJoint::setMotionSpace( const BMatrix63 &m )
 {
     m_S.resize(18);
-    // WARNING: assumes std::array<std::array<BScalar, 3>, 6> is contiguous memory
+    // WARNING: assumes std::array<std::array<BScalar, 3>, 6> is contiguous memory - no padding
     const BScalar* src_ptr = reinterpret_cast<const BScalar*>(m.data().data());
     std::copy_n(src_ptr, 18, m_S.begin());
 }
@@ -443,7 +443,7 @@ void
 BJoint::setMotionSpace( const BMatrix6 &m )
 {
     m_S.resize(36);
-    // WARNING: assumes std::array<std::array<BScalar, 6>, 6> is contiguous memory
+    // WARNING: assumes std::array<std::array<BScalar, 6>, 6> is contiguous memory - no padding
     const BScalar* src_ptr = reinterpret_cast<const BScalar*>(m.data().data());
     std::copy_n(src_ptr, 36, m_S.begin());
 }
@@ -473,13 +473,12 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
         m_X_lambda = m_X_J * m_X_T;
     } 
-    else if (m_jtype == JType::TranslationXYZ)  // 3-DoF
+    else if (m_jtype == JType::TransXYZ)  // 3-DoF
     {
         m_v_J = BVector6( B_ZERO_3, qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2] );
-        m_c_J = B_ZERO_6;
-        
+ 
         m_X_lambda.E( m_X_T.E() );
-        m_X_lambda.r( m_X_T.r() + glm::transpose(m_X_T.E()) * BVector3(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]));
+        m_X_lambda.r( m_X_T.r() + arb::transpose(m_X_T.E()) * BVector3(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]));
     } 
     else if (m_jtype == JType::RevoluteX)  // 1-DoF 
     {
@@ -554,7 +553,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         const BTransform jtrans = arb::Xtrans(lin * q[m_qidx]);
         m_X_J = jrot * jtrans;
         
-        const BVector3 strans = glm::transpose(m_X_J.E()) * lin; 
+        const BVector3 strans = arb::transpose(m_X_J.E()) * lin; 
         const BVector6 MS(ang, strans);
         
         const BScalar Jqd = qdot[m_qidx];
@@ -594,7 +593,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_S[4] = MS[1][1] = c2;        
         
         m_S[6] = MS[2][0] = c1 * c2;   
-        m_S[7] = MS[2][1] = - s2;      
+        m_S[7] = MS[2][1] = -s2;      
         
         const BScalar qdot0 = qdot[m_qidx];
         const BScalar qdot1 = qdot[m_qidx + 1];
@@ -757,21 +756,21 @@ BJoint::toString( JType jt )
         case JType::EulerXYZ:       return "EulerXYZ"; break;
         case JType::EulerYXZ:       return "EulerYXZ"; break;
         case JType::EulerZXY:       return "EulerZXY"; break;
-        case JType::TranslationXYZ: return "TranslationXYZ"; break;
+        case JType::TransXYZ:       return "TransXYZ"; break;
             
-        case JType::J1DoF:           return "1DoF"; break;
-        case JType::J2DoF:           return "2DoF"; break;
-        case JType::J3DoF:           return "3DoF"; break;
-        case JType::J4DoF:           return "4DoF"; break;
-        case JType::J5DoF:           return "5DoF"; break;
-        case JType::J6DoF:           return "6DoF"; break;
+        case JType::J1DoF:          return "1DoF"; break;
+        case JType::J2DoF:          return "2DoF"; break;
+        case JType::J3DoF:          return "3DoF"; break;
+        case JType::J4DoF:          return "4DoF"; break;
+        case JType::J5DoF:          return "5DoF"; break;
+        case JType::J6DoF:          return "6DoF"; break;
             
-        case JType::FloatingBase:    return "FloatingBase"; break;
-        case JType::Fixed1:          return "Fixed1"; break;
-        case JType::Fixed2:          return "Fixed2"; break;
-        case JType::Helical:         return "Helical"; break;
+        case JType::FloatBase:      return "FloatBase"; break;
+        case JType::Fixed1:         return "Fixed1"; break;
+        case JType::Fixed2:         return "Fixed2"; break;
+        case JType::Helical:        return "Helical"; break;
             
-        case JType::MAXJOINT:        return "MAXJOINT"; break;
+        case JType::MAXJOINT:       return "MAXJOINT"; break;
   
         default: exit(EXIT_FAILURE); break;
     }

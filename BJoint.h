@@ -79,7 +79,7 @@
  RBDL has highly efficient implementations for the following three degree
  of freedom joints:
  <ul>
-     <li>\ref TranslationXYZ which first translates along X, then
+     <li>\ref TransXYZ which first translates along X, then
      Y, and finally Z.</li>
      <li>\ref EulerZYX which first rotates around Z, then Y, and
      then X.</li>
@@ -106,9 +106,9 @@
  \section joint_floatingbase Floating-Base Joint (a.k.a. Freeflyer Joint)
  
  RBDL has a special joint type for floating-base systems that uses the
- enum FloatingBase. The first three DoF are translations along
+ enum FloatBase. The first three DoF are translations along
  X,Y, and Z. For the rotational part it uses a Spherical joint.
- It is internally modeled by a TranslationXYZ and a
+ It is internally modeled by a TransXYZ and a
  Spherical joint. It is recommended to only use this joint for
  the very first body added to the model.
  
@@ -217,12 +217,12 @@ public:
         // 3-DoF joint using quaternions for joint positional and angular velocity variables.
         Spherical, 
         
-        TranslationXYZ, // 3-DoF joint
+        TransXYZ, // TranslationXYZ - linear translation (XYZ) 3-DoF joint
         
         // 6-DoF joint for floating-base systems i.e a drone, or game vehicle  
-        // modeled internally by a TranslationXYZ and a Spherical joint. 
+        // modeled internally by a TransXYZ and a Spherical joint. 
         // use this joint for first body added to model (see RBDA, section 4.1, page 66).
-        FloatingBase, 
+        FloatBase, 
         
         Fixed1,        // Fixed1 joint which causes the inertial properties to be merged with the parent body.
         Fixed2,        // Fixed2 joint which adds a distinct child body (with inertia etc) to parent body.
@@ -292,7 +292,7 @@ public:
     void
     jcalc( void )
     {
-        const std::vector<BScalar> zero(std::max(m_qidx + 3, m_widx + 1), 0.0); 
+        const std::vector<BScalar> zero(std::max(m_qidx + 6, m_widx + 1), 0.0); 
         jcalc(zero, zero);
     }
 
@@ -389,12 +389,12 @@ private:
   
     void
     setMotionSpace( const BMatrix6 &m );
+
+    void
+    setJoint( const std::vector<BVector6> &axes );
     
     static bool 
     validate_spatial_axis( const BVector6 &axis );
-    
-    void
-    setJoint( const std::vector<BVector6> &axes );
     
     BJointId     m_id;
 

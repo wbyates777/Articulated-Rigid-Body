@@ -58,17 +58,17 @@ public:
     
     BInertia( void )=default;
     constexpr BInertia( BScalar m, const BMatrix3 &I_o ) : m_mass(m), m_h(B_ZERO_3), m_I(I_o) {} 
-    BInertia( BScalar m, const BVector3 &com, const BMatrix3 &Icom )  : m_mass(m), 
+    constexpr BInertia( BScalar m, const BVector3 &com, const BMatrix3 &Icom )  : m_mass(m), 
                                                                         m_h(m * com), 
                                                                         m_I(Icom + m * arb::crosst(com)) {}
     
-    BInertia( BScalar m, const BVector3 &com, const BVector3 &diag ) : m_mass(m), m_h(m * com), m_I(B_ZERO_3x3)
+    constexpr BInertia( BScalar m, const BVector3 &com, const BVector3 &diag ) : m_mass(m), m_h(m * com), m_I(B_ZERO_3x3)
     {
         m_I[0][0] = diag[0];  m_I[1][1] = diag[1];  m_I[2][2] = diag[2]; 
         m_I += m_mass * arb::crosst(com);
     }
     
-    BInertia( BScalar m, const BVector3 &diag ) : m_mass(m), m_h(B_ZERO_3), m_I(B_ZERO_3x3)
+    constexpr BInertia( BScalar m, const BVector3 &diag ) : m_mass(m), m_h(B_ZERO_3), m_I(B_ZERO_3x3)
     {
         m_I[0][0] = diag[0];  m_I[1][1] = diag[1];  m_I[2][2] = diag[2]; 
     }

@@ -79,7 +79,7 @@ public:
     // the moments of mass; zero, one, and two - note mass can be 0
     constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o ): m_mass(mass), m_h(h), m_I(I_o) {}
     
-    BRBInertia( const BInertia &I ): m_mass(I.mass()), m_h(I.h()), m_I(I.I()) {} 
+    constexpr BRBInertia( const BInertia &I ): m_mass(I.mass()), m_h(I.h()), m_I(I.I()) {} 
     
     explicit BRBInertia( const BMatrix6 &I ) { set(I); }     
     
@@ -217,7 +217,7 @@ private:
 
     BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
     BVector3 m_h;    // linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
-    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0); second moment of mass 
+    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0,0); second moment of mass 
 };
 
 #ifndef GLM_FORCE_INTRINSICS
@@ -237,7 +237,7 @@ namespace arb
     inverse( const BRBInertia &I ) 
     // Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
     // https://en.wikipedia.org/wiki/Schur_complement
-    // WARNING: ensure arb::inverses exist
+    // WARNING: ensure arb::inverses(m) exist i.e. arb::isinvertible(m) 
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 invI(arb::inverse(I.Icom()));

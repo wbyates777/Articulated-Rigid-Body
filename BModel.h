@@ -8,7 +8,10 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
  
+ 
  Note: The following comments has been copied from the RBDL code.
+ 
+ 
  
  \brief Contains all information about the rigid body model
 
@@ -49,7 +52,7 @@ class BModel
 
 public:
 
-    BModel( int expected_dof = 5 );
+    BModel( int expected_dof = 3 );
     ~BModel( void )=default;
 
     void 
@@ -218,11 +221,11 @@ private:
 
     
     BBodyId
-    addFloatingBaseJoint( BBodyId parent_id,
-                          const BTransform &joint_frame,
-                          const BJoint &joint,
-                          const BBody &body,
-                          const std::string &body_name = "" );
+    addFloatBaseJoint( BBodyId parent_id,
+                       const BTransform &joint_frame,
+                       const BJoint &joint,
+                       const BBody &body,
+                       const std::string &body_name = "" );
     
     void
     calcDoF( void );

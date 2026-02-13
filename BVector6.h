@@ -13,8 +13,8 @@
  Represents a 6D spatial vector, Could be a motion vector $m \in M^6$ 
  or a force vector $f \in F^6$.
  
- Colloquially, a spatial velocity vector is called a 'twist', 
- while a spatial force vector is called a 'wrench'.
+ By convention, spatial velocity vectors are called twists, 
+ and spatial force vectors are called wrenches.
  
  It should be noted that we employ an (ang, lin) represenation, following Featherstone and RBDL.
  
@@ -224,10 +224,10 @@ namespace arb
     }
     
     inline constexpr BVector6 
-    clamp(const BVector6 &v, const BVector6 &lo, const BVector6 &hi) 
+    clamp(const BVector6 &v, const BVector6 &min, const BVector6 &max) 
     { 
-        return BVector6(std::clamp(v[0], lo[0], hi[0]), std::clamp(v[1], lo[1], hi[1]), std::clamp(v[2], lo[2], hi[2]), 
-                        std::clamp(v[3], lo[3], hi[3]), std::clamp(v[4], lo[4], hi[4]), std::clamp(v[5], lo[5], hi[5]));
+        return BVector6(std::clamp(v[0], min[0], max[0]), std::clamp(v[1], min[1], max[1]), std::clamp(v[2], min[2], max[2]), 
+                        std::clamp(v[3], min[3], max[3]), std::clamp(v[4], min[4], max[4]), std::clamp(v[5], min[5], max[5]));
     }
 }
 

@@ -123,18 +123,20 @@ private:
     //
     // forward algorithm
     //
-    // temporary variables U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
+    // transient variables for joints with 1 degrees of freedom 
+    // U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
     std::vector<BVector6> m_U;        // $U_i = I_i^A  S_i$ 
     std::vector<BScalar>  m_d;        // $d_i = S_i^T U_i$
     std::vector<BScalar>  m_u;        // $u_i = \tau_i − S_i^T p_i^A$
    
-    // temporary variables for joints with 3 degrees of freedom
+    // transient variables for joints with 3 degrees of freedom
     std::vector<BMatrix63> m_dof3_U;
     std::vector<BMatrix3>  m_dof3_Dinv;
     std::vector<BVector3>  m_dof3_u;
     
+    // transient variables for bodies
     std::vector<BABInertia> m_IA;  // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
-    std::vector<BVector6> m_pA;    // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
+    std::vector<BVector6>   m_pA;  // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
     
     //
     // inverse algorithm

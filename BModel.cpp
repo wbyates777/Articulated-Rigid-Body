@@ -315,7 +315,7 @@ BModel::mass( BBodyId bid ) const
     std::set<BBodyId> children = {bid};
     for (int i = 1; i < m_body.size(); ++i)
     {
-        if (children.contains(m_lambda[i]))
+        if (children.contains(m_lambda[i])) // if c++17 use if (children.count(m_lambda[i])) 
         {
             mass += m_body[i].I().mass();
             children.insert(i);
@@ -339,7 +339,7 @@ BModel::com( BBodyId bid ) const
     std::set<BBodyId> children = {bid};
     for (int i = 1; i < m_body.size(); ++i)
     {
-        if (children.contains(m_lambda[i]) && m_body[i].I().mass() > 0.0)
+        if (children.contains(m_lambda[i]) && m_body[i].I().mass() > 0.0) // if c++17 use children.count(m_lambda[i])
         {
             m += m_body[i].I().mass();
             sum  += m_body[i].I().mass() * m_body[i].X_base().applyTranspose(m_body[i].I().com());
@@ -361,7 +361,7 @@ BModel::inertia( BBodyId bid ) const
     std::set<BBodyId> children = {bid};
     for (int i = 1; i < m_lambda.size(); ++i)
     {
-        if (children.contains(m_lambda[i]))
+        if (children.contains(m_lambda[i])) // if c++17 use if (children.count(m_lambda[i]))
         {       
             I += m_body[i].X_base().applyTranspose(m_body[i].I());
             children.insert(i);
@@ -423,22 +423,22 @@ BModel::addFixedJoint( const BBodyId parent_id,
 }
 
 BBodyId
-BModel::addFloatingBaseJoint( BBodyId parent_id,
-                              const BTransform &joint_frame,
-                              const BJoint &joint,
-                              const BBody &body,
-                              const std::string &body_name )
+BModel::addFloatBaseJoint( BBodyId parent_id,
+                           const BTransform &joint_frame,
+                           const BJoint &joint,
+                           const BBody &body,
+                           const std::string &body_name )
 {
     
     BBody null_body(BInertia(0.0, B_ZERO_3, B_ZERO_3x3), true);
     
     BBodyId null_parent = addBody(parent_id,
                           joint_frame,
-                          BJoint::TranslationXYZ,
+                          BJoint::TransXYZ,
                           null_body);
     
     return addBody(null_parent,
-                   BTransform(B_IDENTITY_TRANS),
+                   B_IDENTITY_TRANS,
                    BJoint::Spherical,
                    body,
                    body_name);
@@ -454,7 +454,7 @@ BModel::addMultiDofJoint( BBodyId parent_id,
     // Here we emulate multi DoF joints by simply adding nullbodies. This
     // allows us to use fixed size elements for S,v,a, etc. which is very
     // fast in Eigen.
-    assert (joint.jtype() >= BJoint::J1DoF && joint.jtype() <= BJoint::J6DoF);
+    assert(joint.jtype() >= BJoint::J1DoF && joint.jtype() <= BJoint::J6DoF);
     
     int joint_count =  joint.jtype(); // 1-6
     
@@ -520,8 +520,8 @@ BModel::addBody( BBodyId parent_id,
     if (joint.jtype() == BJoint::Fixed1) 
         return addFixedJoint( parent_id, joint_frame, joint, body, body_name );
     
-    if (joint.jtype() == BJoint::FloatingBase) 
-        return addFloatingBaseJoint(parent_id, joint_frame, joint, body, body_name);
+    if (joint.jtype() == BJoint::FloatBase) 
+        return addFloatBaseJoint(parent_id, joint_frame, joint, body, body_name);
     
     if ((joint.jtype() >= BJoint::J1DoF) && (joint.jtype() <= BJoint::J6DoF)) 
         return addMultiDofJoint( parent_id, joint_frame, joint, body, body_name );

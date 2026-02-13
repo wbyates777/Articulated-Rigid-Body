@@ -68,17 +68,17 @@ public:
     // inertia I_o at body frame origin
     constexpr BABInertia( const BMatrix3 &M, const BMatrix3 &H, const BMatrix3 &I_o ): m_M(M), m_H(H), m_I(I_o) {}
     
-    BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {} 
+    constexpr BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {} 
     
     explicit BABInertia( const BMatrix6 &I ) { set(I); }  
     
-    // called from BDynamics  (U * Dinv * U^T) for 1-dof
+    // called from BDynamics  (U * Dinv * U^T) for 1-DoF
     explicit BABInertia( const BVector6 &a, const BVector6 &b ): m_M(arb::outer(a.lin(), b.lin())), 
                                                                  m_H(arb::outer(a.ang(), b.lin())),
                                                                  m_I(arb::outer(a.ang(), b.ang()))  {}
     // called from BDynamics
     BABInertia( const BMatrix63 &U, const BMatrix3 &Dinv ) 
-    // (U * Dinv * U^T) for 3-dof
+    // (U * Dinv * U^T) for 3-DoF
     {
         const BMatrix3 U_top  = U.top();   
         const BMatrix3 U_topT = arb::transpose(U_top);
@@ -321,7 +321,7 @@ namespace arb
     inline constexpr BMatrix6 
     inverse( const BABInertia &abi ) 
     // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
-    // WARNING: ensure arb::inverses exist
+    // WARNING: ensure arb::inverses(m) exist i.e.  i.e. arb::isinvertible(m)
     {  
         const BMatrix3 invM = arb::inverse(abi.M());
         const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();
