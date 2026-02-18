@@ -128,3 +128,6 @@ Minimum compiler requirement is c++20.
  
  Pinocchio - https://stack-of-tasks.github.io/pinocchio/
  
+## Next Steps
+
+Please report any errors, omissions, or suggested extensions to the email above.
