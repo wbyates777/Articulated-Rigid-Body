@@ -130,4 +130,4 @@ Minimum compiler requirement is c++20.
  
 ## Next Steps
 
-Please report any errors, omissions, or suggested extensions to the email above.
+Please send any questions or report any errors, omissions, or suggested extensions to the email above.
