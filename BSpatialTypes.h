@@ -81,6 +81,13 @@ constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 
 namespace arb {
 
+    inline BScalar
+    length( const BVector3 &v ) 
+    { 
+        return glm::length(v);
+        //return std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); 
+    }
+
     //  m^{-1} - style choice - I prefer arb::inverse(m) to m.inverse()
     inline constexpr BMatrix3 
     inverse( const BMatrix3 &m ) 
@@ -106,8 +113,8 @@ namespace arb {
         //        retVal[i][j] = m[j][i];
         //return retVal;  
     }
-    
-    
+
+
     inline bool 
     nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }
 
@@ -232,14 +239,14 @@ namespace  glm
 {
 
     template<typename T> inline std::ostream&
-    operator<<( std::ostream &ostr, const  glm::tvec3<T> &v )
+    operator<<( std::ostream &ostr, const  glm::vec<3,T> &v )
     {
         ostr << v.x << ',' << v.y << ',' << v.z << ' ';
         return ostr;
     }
 
     template<typename T> inline std::istream&
-    operator>>( std::istream &istr, glm::tvec3<T> &v )
+    operator>>( std::istream &istr, glm::vec<3,T> &v )
     {
         char delim;
         istr >> v.x >> delim >> v.y >> delim >> v.z;
@@ -248,7 +255,7 @@ namespace  glm
 
 
     template<typename T> inline std::ostream&
-    operator<<( std::ostream &ostr, const glm::tmat3x3<T> &m )
+    operator<<( std::ostream &ostr, const glm::mat<3,3,T> &m )
     {
         ostr << m[0][0] << ' ' << m[0][1] << ' ' << m[0][2] << '\n'
              << m[1][0] << ' ' << m[1][1] << ' ' << m[1][2] << '\n'
@@ -257,7 +264,7 @@ namespace  glm
     }
 
     template<typename T> inline std::istream&
-    operator>>( std::istream &istr, glm::tmat3x3<T> &m )
+    operator>>( std::istream &istr, glm::mat<3,3,T> &m )
     {
         istr >> m[0][0] >> m[0][1] >> m[0][2] 
              >> m[1][0] >> m[1][1] >> m[1][2]
@@ -267,14 +274,14 @@ namespace  glm
 
    
     template<typename T> inline  std::ostream&
-    operator<<( std::ostream &ostr, const glm::tquat<T> &q )
+    operator<<( std::ostream &ostr, const glm::qua<T> &q )
     {
         ostr << q.w << ' ' << q.x << ' ' << q.y << ' ' << q.z << ' ';
         return ostr;
     }
 
     template<typename T> inline std::istream&
-    operator>>( std::istream &istr, glm::tquat<T> &q )
+    operator>>( std::istream &istr, glm::qua<T> &q )
     {
         istr >> q.w >> q.x >> q.y >> q.z;
         return istr;
