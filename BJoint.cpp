@@ -16,8 +16,6 @@
 #endif
 
 
-#include <glm/geometric.hpp>       // for glm::length 
-
 
 constexpr std::array<std::array<BScalar, 3>, 6> B_ONE_ZERO_6x3
 {
@@ -213,8 +211,8 @@ BJoint::validate_spatial_axis( const BVector6 &axis )
 
     const BScalar SMALL_VALUE = 1E-8;
     
-    BScalar rot_len   = glm::length(rot);
-    BScalar trans_len = glm::length(trans);
+    BScalar rot_len   = arb::length(rot);
+    BScalar trans_len = arb::length(trans);
     
     if (rot_len > SMALL_VALUE) 
     {
