@@ -40,9 +40,9 @@ typedef double                BScalar;
 typedef unsigned int          BJointId;
 typedef unsigned int          BBodyId;
 
-typedef glm::tvec3<BScalar>   BVector3; 
-typedef glm::tmat3x3<BScalar> BMatrix3; 
-typedef glm::tquat<BScalar>   BQuat;
+typedef glm::vec<3,BScalar>   BVector3; 
+typedef glm::mat<3,3,BScalar> BMatrix3; 
+typedef glm::qua<BScalar>     BQuat;
 
 typedef std::vector<BScalar>  BMotionSpace;
 
