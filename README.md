@@ -90,7 +90,8 @@
  RBDL, RBDyn, and Pinocchio employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
  This code does not depend on Eigen3, and instead relies on the light-weight, header-only GLM library. 
- GLM (OpenGL Mathematics) provides a highly optimized implementation of 3D linear algebra primitives. 
+ GLM (OpenGL Mathematics) is  based on the OpenGL Shading Language (GLSL) specifications, and
+ provides a highly optimized implementation of 3D linear algebra primitives. 
  
  The spatial algebra implementation (though not the algorithms) is also header only, and depends solely on STL and the 3D GLM types: 
  
@@ -104,7 +105,7 @@
  the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
  linear algebra library.
 
- This library also supports _Automatic_ _Differentiation_ (AD) via the autodiff library.
+ This library also supports _Automatic_ _Differentiation_ (AD) via the header-only autodiff library (see below).
  In order to use AD it is suffcient to #include "BAutodiff.h" in the BSpatialTypes.h file.
  This enables the automatic computation of derivatives in an efficient and intuitive manner.
  It should be noted that the calculated derivatives are
@@ -113,7 +114,7 @@
  Adding automatic differentiation to the spatial algebra library means that 
  the algebra, the ABA, and the RNEA are completely differentiable. 
  This end-to-end differentiability facilitates the application of more advanced optimization and machine learning techniques
- such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-gased trajectory optimization
+ such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-based trajectory optimization
    (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
  
  ## Build Instructions
