@@ -19,6 +19,7 @@
 #ifndef __BSPATIALALGEBRA_H__
 #define __BSPATIALALGEBRA_H__
 
+
 #ifndef __BSPATIALTYPES_H__
 #include "BSpatialTypes.h"
 #endif

@@ -167,7 +167,7 @@ public:
     BInertia
     operator-( void ) const 
     { 
-        BInertia retVal;
+        BInertia retVal(*this);
         retVal.m_mass = -m_mass; retVal.m_h = -m_h; retVal.m_I = -m_I;
         return retVal; 
     }

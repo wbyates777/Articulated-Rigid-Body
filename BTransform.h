@@ -328,8 +328,11 @@ namespace arb
     inline BTransform 
     Xrot( BScalar angle, const BVector3 &axis ) // WARNING: axis *must* be normalized
     {
-        const BScalar s = std::sin(angle);
-        const BScalar c = std::cos(angle);
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(angle);
+        const BScalar c = cos(angle);
   
         return BTransform(BMatrix3( axis[0] * axis[0] * (1.0 - c) + c,
                                     axis[1] * axis[0] * (1.0 - c) + axis[2] * s,
@@ -348,8 +351,11 @@ namespace arb
     inline BTransform 
     Xrotx( BScalar xrot ) 
     {
-        const BScalar s = std::sin(xrot);
-        const BScalar c = std::cos(xrot);
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(xrot);
+        const BScalar c = cos(xrot);
         return BTransform ( BMatrix3( 1.0, 0.0, 0.0,
                                       0.0,   c,   s,
                                       0.0,  -s,   c ) );
@@ -358,8 +364,11 @@ namespace arb
     inline BTransform 
     Xroty( BScalar yrot ) 
     {
-        const BScalar s = std::sin(yrot);
-        const BScalar c = std::cos(yrot);
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(yrot);
+        const BScalar c = cos(yrot);
         return BTransform( BMatrix3(   c, 0.0,  -s,
                                      0.0, 1.0, 0.0,
                                        s, 0.0,   c ) ); 
@@ -368,8 +377,11 @@ namespace arb
     inline BTransform 
     Xrotz( BScalar zrot ) 
     {
-        const BScalar s = std::sin(zrot);
-        const BScalar c = std::cos(zrot);
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(zrot);
+        const BScalar c = cos(zrot);
         return BTransform( BMatrix3(  c,   s, 0.0,
                                      -s,   c, 0.0,
                                     0.0, 0.0, 1.0 ) );

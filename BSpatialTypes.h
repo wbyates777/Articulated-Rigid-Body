@@ -1,4 +1,4 @@
-/* BSpatialTypes 21/02/2024
+/* BSpatialTypes 19/02/2026
 
  $$$$$$$$$$$$$$$$$$$$$$$
  $   BSpatialTypes.h   $
@@ -13,8 +13,8 @@
 */
 
 
-#ifndef __BSPATIALTYPES_H__
-#define __BSPATIALTYPES_H__
+#ifndef __BSPATIALTYPESDIFF_H__
+#define __BSPATIALTYPESDIFF_H__
 
 #include <map>
 #include <string>
@@ -26,6 +26,19 @@
 #include <cmath>
 #include <cassert>
 
+
+//                  
+// to use Automatic Differentiation (AD) via autodiff, uncomment this
+//
+#ifndef __BAUTODIFF_H__
+#include "BAutodiff.h"
+#endif
+//
+// and comment out this bit
+// typedef double BScalar;
+//
+
+
 #include <glm/vec3.hpp> 
 #include <glm/mat3x3.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -34,8 +47,6 @@
 //
 // vector and matrix types
 //
-
-typedef double                BScalar;
 
 typedef unsigned int          BJointId;
 typedef unsigned int          BBodyId;
@@ -79,119 +90,6 @@ typedef std::vector<BScalar>  BMotionSpace;
 
 constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 
-namespace arb {
-
-    inline BScalar
-    length( const BVector3 &v ) 
-    { 
-        return glm::length(v);
-        //return std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); 
-    }
-
-    //  m^{-1} - style choice - I prefer arb::inverse(m) to m.inverse()
-    inline constexpr BMatrix3 
-    inverse( const BMatrix3 &m ) 
-    { 
-        return glm::inverse(m);
-    }
-
-    inline bool
-    isinvertible( const BMatrix3 &m )
-    {
-        return (std::abs(glm::determinant(m)) > std::numeric_limits<BScalar>::epsilon());
-    }
-    
-    //  m^{T} - style choice - I prefer arb::transpose(m) to m.transpose() 
-    inline constexpr BMatrix3 
-    transpose( const BMatrix3 &m ) 
-    { 
-        return glm::transpose(m);
-        
-        //BMatrix3 retVal;
-        //for ( int i = 0; i < 3; ++i )
-        //    for ( int j = 0; j < 3; ++j )
-        //        retVal[i][j] = m[j][i];
-        //return retVal;  
-    }
-
-
-    inline bool 
-    nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }
-
-    inline bool 
-    nearZero( const BVector3 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
-
-    inline bool 
-    nearZero( const BQuat &q )  { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
-    
-    inline bool 
-    nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
-
-    
- 
-    inline bool 
-    isnan(const BVector3 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
-
-    inline bool 
-    isnan( const BQuat &q )  { return (std::isnan(q.w) || std::isnan(q.x) || std::isnan(q.y) || std::isnan(q.z)); }
-    
-    inline bool 
-    isnan(const BMatrix3 &m) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
-    
- 
-    
-    inline constexpr BScalar 
-    min(BScalar v1, BScalar v2) { return std::min(v1, v2); }
-    
-    inline constexpr BVector3 
-    min(const BVector3 &v1, BScalar v2) { return min(v1, BVector3(v2)); }
-    
-    inline constexpr BVector3 
-    min(BScalar v1, const BVector3 &v2) { return min(BVector3(v1), v2); }
-    
-    inline constexpr BVector3 
-    min(const BVector3 &v1, const BVector3 &v2) 
-    { 
-        return glm::min(v1, v2);
-        //return BVector3(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]));
-    }
-    
-    
-    inline constexpr BScalar 
-    max(BScalar v1, BScalar v2) { return std::max(v1, v2); }
-    
-    inline constexpr BVector3 
-    max(const BVector3 &v1, BScalar v2) { return max(v1, BVector3(v2)); }
-    
-    inline constexpr BVector3 
-    max(BScalar v1, const BVector3 &v2) { return max(BVector3(v1), v2); }
-    
-    inline constexpr BVector3 
-    max(const BVector3 &v1, const BVector3 &v2)
-    { 
-        return glm::max(v1, v2);
-        //return BVector3(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]));
-    }
-    
-    inline constexpr BScalar 
-    clamp(BScalar v, BScalar min, BScalar max) { return std::clamp(v, min, max); }
-     
-    inline constexpr BVector3 
-    clamp(const BVector3 &v, BScalar min, BScalar max) 
-    { 
-        return glm::clamp(v, min, max);
-        //return BVector3(std::clamp(v[0], min, max), std::clamp(v[1], min, max), std::clamp(v[2], min, max));
-    }
-    
-    inline constexpr BVector3 
-    clamp(const BVector3 &v, const BVector3 &min, const BVector3 &max) 
-    { 
-        return glm::clamp(v, min, max);
-        //return BVector3(std::clamp(v[0], min[0], max[0]), std::clamp(v[1], min[1], max[1]), std::clamp(v[2], min[2], max[2]));
-    }
-}
-
-
 constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6
 
 constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BMatrix6
@@ -230,6 +128,130 @@ constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
     0.0, 0.0, 0.0, 
     0.0, 0.0, 0.0
 };
+
+//
+// 3D functions
+//
+
+namespace arb {
+
+    inline BScalar
+    length( const BVector3 &v ) 
+    { 
+        using std::sqrt; return sqrt((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2])); 
+        //  return glm::length(v);
+    } 
+    
+    //  m^{-1} - style choice - I prefer arb::inverse(m) to m.inverse()
+    inline constexpr BMatrix3 
+    inverse( const BMatrix3 &m ) 
+    { 
+        return glm::inverse(m);
+    }
+    
+    inline constexpr BScalar 
+    determinant( const BMatrix3 &m ) 
+    { 
+        return glm::determinant(m);
+        //return   m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+        //       - m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1])
+        //       + m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
+    }
+    
+    inline bool
+    isinvertible( const BMatrix3 &m )
+    {
+        using std::abs; return abs(arb::determinant(m)) > std::numeric_limits<BScalar>::epsilon();
+    }
+    
+    //  m^{T} - style choice - I prefer arb::transpose(m) to m.transpose() 
+    inline constexpr BMatrix3 
+    transpose( const BMatrix3 &m ) 
+    { 
+        return glm::transpose(m);
+        //BMatrix3 retVal;
+        //for ( int i = 0; i < 3; ++i )
+        //    for ( int j = 0; j < 3; ++j )
+        //        retVal[i][j] = m[j][i];
+        //return retVal;  
+    }
+    
+    
+    inline bool 
+    nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }
+
+    inline bool 
+    nearZero( const BVector3 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
+
+    inline bool 
+    nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
+
+    inline bool 
+    nearZero( const BQuat &q ) { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
+    
+
+    inline bool 
+    isnan(const BVector3 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
+
+    inline bool 
+    isnan( const BQuat &q )  { return (std::isnan(q.w) || std::isnan(q.x) || std::isnan(q.y) || std::isnan(q.z)); }
+    
+    inline bool 
+    isnan( const BMatrix3 &m ) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
+    
+ 
+    inline constexpr BScalar 
+    min( BScalar v1, BScalar v2 ) { using std::min; return min(v1, v2); }
+    
+    inline constexpr BVector3 
+    min( const BVector3 &v1, BScalar v2 ) { return min(v1, BVector3(v2)); }
+    
+    inline constexpr BVector3 
+    min( BScalar v1, const BVector3 &v2 ) { return min(BVector3(v1), v2); }
+    
+    inline constexpr BVector3 
+    min( const BVector3 &v1, const BVector3 &v2 ) 
+    { 
+        return glm::min(v1, v2);
+        //return BVector3(min(v1[0],v2[0]), min(v1[1],v2[1]), min(v1[2],v2[2]));
+    }
+    
+    
+    inline constexpr BScalar 
+    max( BScalar v1, BScalar v2 ) { using std::max; return max(v1, v2); }
+    
+    inline constexpr BVector3 
+    max( const BVector3 &v1, BScalar v2 ) { return max(v1, BVector3(v2)); }
+    
+    inline constexpr BVector3 
+    max( BScalar v1, const BVector3 &v2 ) { return max(BVector3(v1), v2); }
+    
+    inline constexpr BVector3 
+    max( const BVector3 &v1, const BVector3 &v2 )
+    { 
+        return glm::max(v1, v2);
+        //return BVector3(max(v1[0],v2[0]), max(v1[1],v2[1]), max(v1[2],v2[2]));
+    }
+    
+    inline constexpr BScalar 
+    clamp( BScalar d, BScalar min, BScalar max ) 
+    {
+        return std::clamp(d,min,max);
+    }
+    
+    inline constexpr BVector3 
+    clamp( const BVector3 &v, BScalar min, BScalar max ) 
+    { 
+        return BVector3(clamp(v[0], min, max), clamp(v[1], min, max), clamp(v[2], min, max));
+    }
+    
+    inline constexpr BVector3 
+    clamp( const BVector3 &v, const BVector3 &min, const BVector3 &max ) 
+    { 
+        return BVector3(clamp(v[0], min[0], max[0]), clamp(v[1], min[1], max[1]), clamp(v[2], min[2], max[2]));
+    }
+    
+}
 
 //
 // my glm template stream operators -- customise spatial algebra output
@@ -308,7 +330,6 @@ operator>>(std::istream &istr, std::pair<T,U> &v)
     return istr;
 }
 
-// stream operators;
 template <typename T>
 std::ostream&
 operator<<( std::ostream &ostr, const std::vector<T> &v )

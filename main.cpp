@@ -16,12 +16,19 @@
 #include <fstream>
 #include <numeric>
 
-#define GLM_ENABLE_EXPERIMENTAL
+// for AD - autodiff
+//#define GLM_FORCE_PURE
+//#define GLM_FORCE_XYZW_ONLY
+#define GLM_FORCE_UNRESTRICTED_GENTYPE
+#define GLM_FORCE_CTOR_INIT
+
 
 // either
-#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+//#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 // or
 //#define GLM_FORCE_INTRINSICS
+
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include <glm/glm.hpp>
 #include <glm/gtx/euler_angles.hpp>
@@ -324,7 +331,7 @@ test_inverse( void )
     BRBInertia I(BInertia(mass, com, I_com));
     
     // world to body transform
-    BMatrix3 E = glm::rotate(glm::radians(-90.0), B_ZAXIS);
+    glm::dmat3 E = glm::rotate(glm::radians((-90.0)), glm::dvec3(0.0, 0.0, 1.0));
     BVector3 r(1.0, 0.0, 0.0);
     BTransform X_wb(E,r); 
     
@@ -528,7 +535,7 @@ example1( void )
     //
     //
     
-    std::cout << "\nStream operator test\n" << std::endl;
+    std::cout << "\nStream Operator Test\n" << std::endl;
     
     std::ostringstream outstr;
     outstr << *model;
@@ -546,6 +553,38 @@ example1( void )
     dyn.forward(model2, qinput);
     
     std::cout << qinput.qddot << std::endl;
+    
+    
+    std::cout << "\nRNEA Test\n" << std::endl;
+    qinput.q.assign(model2.qsize(),0.3);
+    qinput.qdot.assign(model2.qdotsize(), 1.1);
+    std::vector<BVector6> f_ext(model2.bodies(), B_ZERO_6);
+    f_ext[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
+    
+#ifdef __BAUTODIFF_H__
+    // for each input [i] set independent variables [i][1];  ensure all other gradients are zero
+    int bodyId = body_a_id;
+    for (int i = 0; i < qinput.q.size(); ++i) 
+        qinput.q[i][1] = 0.0;
+
+    qinput.q[bodyId][1] = 1.0; // set the independent variable 
+#endif
+    
+    dyn.inverse(model2, qinput);
+    // output should be -4.19437955 -1.22524168 0.00000000
+    std::cout << qinput.tau << std::endl; 
+    std::cout << std::endl;
+    
+#ifdef __BAUTODIFF_H__
+    // extract the sensitivities for force from the output
+    // sensitivities should be -0.38795170 -1.10311060  0.00000000
+    for(int i = 0; i < qinput.tau.size(); ++i) 
+    {
+        double sen = qinput.tau[i][1];
+        std::cout << "Sensitivity of output tau[" << i << "] with respect to input position q[" << bodyId << "]: " << sen << std::endl;
+    }
+#endif  
+    std::cout << std::endl;
 }
 
 void
@@ -611,10 +650,29 @@ example2( void )
     qinput.tau.resize(model->qdotsize(), 0.0);
     
     BDynamics dyn;
+    
+#ifdef __BAUTODIFF_H__
+    // set independent variables;  ensure all other gradients are zero
+    int bodyId = 3;
+    for(int i = 0; i < qinput.q.size(); ++i) 
+        qinput.q[i][1] = 0.0;
+
+    qinput.q[bodyId][1] = 1.0; // set the independent variable
+#endif
+    
     dyn.forward(*model, qinput, f_ext);
     
     std::cout << qinput.qddot << std::endl;
 
+#ifdef __BAUTODIFF_H__
+    // extract the acceleration sensitivities from the output
+    for(int i = 0; i < qinput.qddot.size(); ++i) 
+    {
+        double sen = qinput.qddot[i][1];
+        std::cout << "Sensitivity of output acc[" << i << "] with respect to input position q[" << bodyId << "]: " << sen << std::endl;
+    }
+#endif 
+    
     delete model;
 }
 
@@ -673,9 +731,9 @@ print( double T, const BVector6 &mv )
  
     BVector3 ang = mv.ang();
   
-    ang.x = std::remainder(ang.x, M_2PI);
-    ang.y = std::remainder(ang.y, M_2PI);
-    ang.z = std::remainder(ang.z, M_2PI);
+    ang.x = std::remainder((double) ang.x, M_2PI);
+    ang.y = std::remainder((double) ang.y, M_2PI);
+    ang.z = std::remainder((double) ang.z, M_2PI);
     ang  = glm::degrees(ang);
     
     std::cout << "orient( " <<  ang.x << "°, " <<  ang.y << "°, " <<  ang.z << "° )" << std::endl;

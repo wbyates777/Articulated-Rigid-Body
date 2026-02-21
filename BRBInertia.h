@@ -233,7 +233,7 @@ operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 namespace arb
 {
 
-    inline  constexpr BMatrix6 
+    inline   BMatrix6 
     inverse( const BRBInertia &I ) 
     // Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
     // https://en.wikipedia.org/wiki/Schur_complement

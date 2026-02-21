@@ -59,6 +59,9 @@
  Matrix3d m2(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
  std::cout << m2 * v2  << std::endl; 
  
+ see https://en.wikipedia.org/wiki/Row-_and_column-major_order
+ 
+ 
  
  //
  // LaTeX

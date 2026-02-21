@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 
 project(BDynamics LANGUAGES CXX)
 
-# this works too - set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Optional: Add warnings
 #add_compile_options(-Wall -Wextra)
+
 
 # --- Sources ---
 set(SOURCES
@@ -17,6 +17,7 @@ set(SOURCES
 )
 
 set(HEADERS
+    BAutodiff.h
     BAdjoint.h
     BInertia.h
     BJoint.h
@@ -27,7 +28,8 @@ set(HEADERS
     BSpatialAlgebra.h	
     BSpatialTypes.h
     BBody.h			
-    BProducts.h		
+    BProducts.h	
+    BProducts.h    
     BMatrix6.h	
     BVector6.h
     BMatrix63.h		
@@ -46,12 +48,31 @@ FetchContent_Declare(
     GIT_TAG        1.0.3
 )
 
+# AUTODIFF (header-only)
+FetchContent_Declare(
+    autodiff
+    GIT_REPOSITORY https://github.com/autodiff/autodiff.git
+    GIT_TAG        v1.1.2
+)
+
 # Populate (download + configure)
 FetchContent_MakeAvailable(glm)
 
-# --- Executable ---
+set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(AUTODIFF_BUILD_PYTHON OFF CACHE BOOL "" FORCE)
+set(AUTODIFF_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(AUTODIFF_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(autodiff)
+
+
+
 add_executable(dynamics_test ${SOURCES} ${HEADERS})
 
-# Include GLM headers
-target_include_directories(dynamics_test PRIVATE ${glm_SOURCE_DIR})
+target_compile_definitions(dynamics_test PRIVATE AUTODIFF_EIGEN_AVAILABLE=0)
+
+# Include headers
+target_include_directories(dynamics_test PRIVATE 
+    ${glm_SOURCE_DIR}
+    ${autodiff_SOURCE_DIR}
+)
 
