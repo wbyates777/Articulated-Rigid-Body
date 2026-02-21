@@ -105,12 +105,12 @@
  linear algebra library.
 
  This library also supports _Automatic_ _Differentiation_ (AD) via the autodiff library.
- In order to use AD it is suffcient to #include "BAutodiff.h" in the BSPatialTypes.h file.
+ In order to use AD it is suffcient to #include "BAutodiff.h" in the BSpatialTypes.h file.
  This enables the automatic computation of derivatives in an efficient and intuitive manner.
  It should be noted that the calculated derivatives are
  exact (to machine precision) and not approxiated, as is the case for finite difference methods.
 
- Integrating automatic differentiation into the spatial algebra library, ensures that 
+ Adding automatic differentiation to the spatial algebra library means that 
  the algebra, the ABA, and the RNEA are completely differentiable. 
  This end-to-end differentiability facilitates the application of more advanced optimization and machine learning techniques
  such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-gased trajectory optimization
