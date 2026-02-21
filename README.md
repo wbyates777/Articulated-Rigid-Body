@@ -129,7 +129,7 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
  
  ```make```
 
-Minimum compiler requirement is c++20. 
+Minimum compiler requirement is now c++23. If you do not use GLM_FORCE_INTRINSICS you can use c++20. 
 
  ## Libraries
  
