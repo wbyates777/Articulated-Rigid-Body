@@ -29,6 +29,9 @@
 #include "BSpatialTypes.h"
 #endif
 
+#ifndef __BFUNCTIONS_H__
+#include "BFunctions.h"
+#endif
 
 class BVector6
 {

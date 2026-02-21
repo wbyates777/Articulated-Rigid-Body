@@ -24,6 +24,10 @@
 #include "BSpatialTypes.h"
 #endif
 
+#ifndef __BFUNCTIONS_H__
+#include "BFunctions.h"
+#endif
+
 #ifndef __BVECTOR6_H__
 #include "BVector6.h"
 #endif

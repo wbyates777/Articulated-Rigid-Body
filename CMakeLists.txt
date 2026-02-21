@@ -28,7 +28,7 @@ set(HEADERS
     BSpatialAlgebra.h	
     BSpatialTypes.h
     BBody.h			
-    BProducts.h	
+    BFunctions.h	
     BProducts.h    
     BMatrix6.h	
     BVector6.h
