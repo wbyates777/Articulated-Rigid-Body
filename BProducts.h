@@ -19,8 +19,8 @@
 */
 
 
-#ifndef __BGENERICPRODUCTS_H__
-#define __BGENERICPRODUCTS_H__
+#ifndef __BPRODUCTS_H__
+#define __BPRODUCTS_H__
 
 
 #ifndef __BMATRIX6_H__
