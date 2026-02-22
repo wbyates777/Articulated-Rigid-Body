@@ -16,6 +16,10 @@
  These get used a lot -- good candidate for SIMD optimisation
 
  
+ The operator arb::cross (which constructs a skew-symmetric matrix $v\times$)
+ is implemented in RDBL as VectorCrossMatrix in SpatialAlgebraOperators.h
+ See Tensor section  in https://en.wikipedia.org/wiki/Angular_velocity
+ 
 */
 
 
@@ -33,10 +37,18 @@ namespace arb
     
     // standard dot or inner product a·b 
     inline BScalar 
-    dot(const BVector3 &v1, const BVector3 &v2) 
+    dot( const BVector3 &v1, const BVector3 &v2 ) 
     {
          return glm::dot(v1, v2);
+        
          //return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]);
+    }
+    
+    // spatial dot or inner product a·b
+    inline BScalar 
+    dot( const BVector6 &v1, const BVector6 &v2 )
+    {
+        return arb::dot(v1.ang(), v2.ang()) + arb::dot(v1.lin(), v2.lin());
     }
     
     // standard Euclidian cross product a⨉b
@@ -44,25 +56,16 @@ namespace arb
     cross( const BVector3 &x, const BVector3 &y )
     {
         return glm::cross(x, y);
+        
         // return BVector3( x[1] * y[2] - y[1] * x[2],
         //                  x[2] * y[0] - y[2] * x[0],
         //                  x[0] * y[1] - y[0] * x[1] );
-    }
-
-    
-    // spatial dot or inner product a·b
-    inline BScalar 
-    dot(const BVector6 &v1, const BVector6 &v2)
-    {
-        return arb::dot(v1.ang(), v2.ang()) + arb::dot(v1.lin(), v2.lin());
     }
 
     // The Euclidian cross product can be written as an equivalent matrix multiplication
     // The operator $v\times$ (pronounced ‘v-cross’) constructs a skew-symmetric matrix $m$ from vector $v$  
     // such that $m * a = v \times a$, (see RBDA, Section 2.8, eqn 2.23, page 21 and table 2.1, page 22).
     // note arb::cross(-v) = arb::transpose(arb::cross(v))
-    // implemented in RDBL as VectorCrossMatrix in SpatialAlgebraOperators.h
-    // see Tensor section  in https://en.wikipedia.org/wiki/Angular_velocity
     inline constexpr BMatrix3 
     cross( const BVector3 &v ) 
     {
@@ -76,7 +79,7 @@ namespace arb
     uncross( const BMatrix3 &m ) { return BVector3(-m[1][2], m[0][2], m[1][0]); }
     
     // return arb::cross(v) * arb::cross(-v)
-    inline BMatrix3 
+    inline  BMatrix3 
     crosst( const BVector3 &v ) 
     {
         const BScalar xx =  v[0] * v[0];
