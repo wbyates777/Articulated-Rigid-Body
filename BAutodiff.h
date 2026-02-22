@@ -9,7 +9,8 @@
  History:
  
  BAutodiff.h is a wrapper for autodiff; a c++17 library that facilitates automatic differentiation (AD).
- To enable AD ensure that the autodiff lib is installed, and that this file isincluded in BSpatialTypes.h
+ To enable AD ensure that the autodiff header-only lib is present, 
+ and that this file is included in BSpatialTypes.h
  
  https://en.wikipedia.org/wiki/Automatic_differentiation
 
@@ -47,19 +48,20 @@ namespace  glm {
 
 namespace std {
     
+    // v[0] is value and v[1] is gradient
     inline bool 
-    isnan(const autodiff::real &v) { return std::isnan(v.val()); }
+    isnan( const autodiff::real &v ) { return std::isnan(v[0]) || std::isnan(v[1]); }
     
     inline constexpr autodiff::real 
-    clamp(const autodiff::real &d, const autodiff::real &min, const autodiff::real &max) 
+    clamp( const autodiff::real &d, const autodiff::real &min, const autodiff::real &max ) 
     {
         const autodiff::real t = d < min ? min : d;
         return t > max ? max : t;
     }
     
-    // glm::dot and glm::cross have static asserts 
-    // static_assert(std::numeric_limits<T>::is_iec559, "'dot/cross' accepts only floating-point inputs");
-    // this gets round that
+    // some GLM functions i.e. glm::dot and glm::cross have static asserts 
+    // static_assert(std::numeric_limits<T>::is_iec559, "this function accepts only floating-point inputs");
+    // this ensures that autodiff::real is considered as a floating-point 
     template <>
     struct numeric_limits<autodiff::real> : public numeric_limits<double> 
     {
