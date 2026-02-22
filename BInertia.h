@@ -23,13 +23,13 @@
  BInertia 
  sphere( BScalar mass, BScalar radius )
  {
-     return BInertia(mass, glm::dvec3((2.0/5.0) * mass * radius * radius));
+     return BInertia(mass, BVector3((2.0/5.0) * mass * radius * radius));
  }
 
  BInertia 
  rectangle( BScalar mass, BScalar height, BScalar width, BScalar depth )
  {
-     glm::dvec3 diag;
+     BVector3 diag;
      diag[0] = (1.0/12.0) * mass * (depth * depth + height * height); // x-width
      diag[1] = (1.0/12.0) * mass * (depth * depth + width * width);   // y-height
      diag[2] = (1.0/12.0) * mass * (width * width + height * height); // z-depth
@@ -59,8 +59,8 @@ public:
     BInertia( void )=default;
     constexpr BInertia( BScalar m, const BMatrix3 &I_o ) : m_mass(m), m_h(B_ZERO_3), m_I(I_o) {} 
     constexpr BInertia( BScalar m, const BVector3 &com, const BMatrix3 &Icom )  : m_mass(m), 
-                                                                        m_h(m * com), 
-                                                                        m_I(Icom + m * arb::crosst(com)) {}
+                                                                                  m_h(m * com), 
+                                                                                  m_I(Icom + m * arb::crosst(com)) {}
     
     constexpr BInertia( BScalar m, const BVector3 &com, const BVector3 &diag ) : m_mass(m), m_h(m * com), m_I(B_ZERO_3x3)
     {
@@ -130,7 +130,7 @@ public:
     {
         // matches spatial transform X(E,r)
         shift(r);
-        rotate(glm::transpose(E));
+        rotate(arb::transpose(E));
     }
 
     
