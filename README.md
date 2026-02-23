@@ -1,4 +1,4 @@
-# Articulated Rigid Body (ARB)
+#  <img width="82" height="59" alt="mapache" src="https://github.com/user-attachments/assets/978c330e-5e1f-41c8-bf29-1ac2f812eaeb" /> Articulated Rigid Body (ARB)
 
 ## Overview
 
