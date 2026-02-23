@@ -8,6 +8,8 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
+ Basic demo. 
+ 
 */
 
 
@@ -26,7 +28,7 @@
 // either
 //#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 // or
-//#define GLM_FORCE_INTRINSICS
+//#define GLM_FORCE_INTRINSICS // needs c++23
 
 #define GLM_ENABLE_EXPERIMENTAL
 
@@ -62,12 +64,13 @@ test_adjoints( void )
         BVector6 x1 =  arb::applyAdjoint( X, force ); 
         BMatrix6 m1 =  arb::toAdjoint(X); 
         BVector6 x2 =  m1 * force;
-        //std::cout << x1 << std::endl;
-        //std::cout << x2 << std::endl;
+
         bool test1 = arb::nearZero(x1 - x2);
         bool test2 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjointInverse(X, force) ) - force);
         bool test3 = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjoint(arb::inverse(X), force) ) - force);
+        
         testsPassed += test1 + test2 + test3;
+        
         std::cout  << "Adjoint -- Ad_X -- Test1 is " << test1 << std::endl;
         std::cout  << "Adjoint -- Ad_X -- Test2 is " << test2 << std::endl;
         std::cout  << "Adjoint -- Ad_X -- Test3 is " << test3 << std::endl;
@@ -78,32 +81,27 @@ test_adjoints( void )
         BVector6 x1 =  arb::applyAdjointTranspose( X, force ); 
         BMatrix6 m1 =  arb::toAdjointTranspose(X);
         BVector6 x2 =  m1 * force;
-        //std::cout << x1 << std::endl;
-        //std::cout << x2 << std::endl;
+
         bool test1 = arb::nearZero(x1 - x2);
+        
         testsPassed += test1;
+        
         std::cout  << "Adjoint Transpose -- Ad_X^{T} -- Test1 is " << test1 << std::endl;
     }
     
     if (1)
     {
-        BVector6 x1 =  arb::applyAdjointInverse( X, force ); 
-        BMatrix6 m1 =  arb::toAdjointInverse(X);
-        BVector6 x2 =  m1 * force;
-        //std::cout << x1 << std::endl;
-        //std::cout << x2 << std::endl;
+        BVector6 x1 = arb::applyAdjointInverse( X, force ); 
+        BMatrix6 m1 = arb::toAdjointInverse(X);
+        BVector6 x2 = m1 * force;
+        BMatrix6 P  = arb::toAdjoint(X) *  arb::toAdjointInverse(X);
+        BMatrix6 Q  = arb::toAdjointInverse(X) * arb::toAdjoint(X);
+        
         bool test1 = arb::nearZero(x1 - x2);
-        testsPassed += test1;
-  
-        BMatrix6 P =  arb::toAdjoint(X) *  arb::toAdjointInverse(X);
-        //std::cout << P << std::endl;
         bool test2 = arb::nearZero(P - B_IDENTITY_6x6);
-        testsPassed += test2;
- 
-        BMatrix6 Q = arb::toAdjointInverse(X) * arb::toAdjoint(X);
-        //std::cout << Q << std::endl;
         bool test3 = arb::nearZero(Q - B_IDENTITY_6x6);
-        testsPassed += test3;
+        
+        testsPassed += test1 + test2 + test3;
         
         std::cout  << "Adjoint Inverse -- Ad_X^{-1} -- Test1 is " << test1 << std::endl;
         std::cout  << "Adjoint Inverse -- Ad_X^{-1} -- Test2 is " << test2 << std::endl;
@@ -115,10 +113,11 @@ test_adjoints( void )
         BVector6 x1 =  arb::applyAdjointDual( X, force ); 
         BMatrix6 m1 =  arb::toAdjointDual(X);
         BVector6 x2 =  m1 * force;
-        //std::cout << x1 << std::endl;
-        //std::cout << x2 << std::endl;
+
         bool test1 = arb::nearZero(x1 - x2);
+        
         testsPassed += test1;
+        
         std::cout  << "Adjoint Dual -- Ad_X^{-T} -- Test1 is " << test1 << std::endl;
     }
     
@@ -126,27 +125,25 @@ test_adjoints( void )
     {
         BTransform Y(X.E(), BVector3(0.1, 2.0, 0.3));
         BTransform Z = Y * arb::inverse(Y);
-        //std::cout << Z << std::endl;
+
         bool test1 = arb::nearZero(BMatrix6(Z) - B_IDENTITY_6x6);
+        
         testsPassed += test1;
+        
         std::cout  << "Inverse -- X^{-1}-- Test1 is " << test1 << std::endl;
     }
     
     if (1)
     {
-        BMatrix6 tmp4 = arb::toAdjointTranspose(X);
-        BMatrix6 tmp5 = arb::transpose(arb::toAdjoint(X)); 
-        //std::cout << tmp4 << std::endl;
-        //std::cout << tmp5 << std::endl;
-        bool test1 = arb::nearZero(tmp4 - tmp5);
-        testsPassed += test1;
+        BMatrix6 A = arb::toAdjointTranspose(X);
+        BMatrix6 B = arb::transpose(arb::toAdjoint(X)); 
+        BMatrix6 C =  arb::transpose(arb::toAdjointInverse(X)); 
+        BMatrix6 D = arb::toAdjointDual(X);
 
-        BMatrix6 tmp6 =  arb::transpose(arb::toAdjointInverse(X)); 
-        BMatrix6 tmp7 = arb::toAdjointDual(X);
-        //std::cout << tmp6 << std::endl;
-        //std::cout << tmp7 << std::endl;
-        bool test2 = arb::nearZero(tmp6 - tmp7);
-        testsPassed += test2;
+        bool test1 = arb::nearZero(A - B);
+        bool test2 = arb::nearZero(C - D);
+        
+        testsPassed += test1 + test2;
         
         std::cout  << "Transpose -- X^T -- Test1 is " << test1 << std::endl;
         std::cout  << "Transpose  -- X^T -- Test2 is " << test2 << std::endl;
@@ -178,38 +175,38 @@ test_rbinertia( void )
     
     if (1)
     {   
-        // basic inverse
-        bool test1 = arb::nearZero( (BMatrix6(I) * arb::inverse(I)) - B_IDENTITY_6x6 );
- 
         // world coords
         BMatrix6 I_w  = arb::transpose(X) * I * X; // inertia in word coords
-        //std::cout << m_I_w  << std::endl;
         BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::dual(X); // inverse inertia in word coords
-        //std::cout << m_invI_w  << std::endl; 
-        //std::cout << I_w * m_invI_w << std::endl;
+
+        // basic inverse
+        bool test1 = arb::nearZero( (BMatrix6(I) * arb::inverse(I)) - B_IDENTITY_6x6 );
         bool test2 = arb::nearZero( (I_w * invI_w) - B_IDENTITY_6x6 );
         
-        std::cout  << "RBInertia --  I_b * I_b^{-1} == IDENTITY_6x6 -- Test1 is " << test1 << std::endl;
-        std::cout  << "RBInertia --  I_w * I_w^{-1} == IDENTITY_6x6 -- Test2 is " << test2 << std::endl;
-        
         testsPassed += test1 + test2;
+        
+        std::cout  << "RBInertia --  I_b * I_b^{-1} == IDENTITY -- Test1 is " << test1 << std::endl;
+        std::cout  << "RBInertia --  I_w * I_w^{-1} == IDENTITY -- Test2 is " << test2 << std::endl;
     }
+    
     if (1)
     {   
         // Apply - X^* I X^{-1}
         BRBInertia I1 = X.apply( I ); 
         
-        BMatrix6 aux1 = arb::transpose(BMatrix6(arb::inverse(X))) * BMatrix6(I) * BMatrix6(arb::inverse(X));
-        BMatrix6 aux2 = arb::dual(X) * BMatrix6(I) * BMatrix6(arb::inverse(X));
-        BMatrix6 aux3 = arb::dual(X) * I * arb::inverse(X);
-        BMatrix6 aux4 = arb::transpose(arb::inverse(X)) * BMatrix6(I) * arb::inverse(X);
+        BMatrix6 A = arb::transpose(BMatrix6(arb::inverse(X))) * BMatrix6(I) * BMatrix6(arb::inverse(X));
+        BMatrix6 B = arb::dual(X) * BMatrix6(I) * BMatrix6(arb::inverse(X));
+        BMatrix6 C = arb::dual(X) * I * arb::inverse(X);
+        BMatrix6 D = arb::transpose(arb::inverse(X)) * BMatrix6(I) * arb::inverse(X);
+        BMatrix6 E = BMatrix6(I1);
         
+        bool test1 = arb::nearZero(A - E);
+        bool test2 = arb::nearZero(B - E);
+        bool test3 = arb::nearZero(C - E);
+        bool test4 = arb::nearZero(D - E);
         
-        bool test1 = arb::nearZero(aux1 - BMatrix6(I1));
-        bool test2 = arb::nearZero(aux2 - BMatrix6(I1));
-        bool test3 = arb::nearZero(aux3 - BMatrix6(I1));
-        bool test4 = arb::nearZero(aux4 - BMatrix6(I1));
         testsPassed += test1 + test2 + test3 + test4;
+        
         std::cout  << "RBInertia --  X^* I X^{-1} -- Test1 is " << test1 << std::endl;
         std::cout  << "RBInertia --  X^* I X^{-1} -- Test2 is " << test2 << std::endl;
         std::cout  << "RBInertia --  X^* I X^{-1} -- Test3 is " << test3 << std::endl;
@@ -220,13 +217,15 @@ test_rbinertia( void )
     {
         // ApplyTransposw -  X^T I X
         BRBInertia I2 = X.applyTranspose( I ); 
+        BMatrix6 A = arb::transpose(BMatrix6(X)) * BMatrix6(I) * BMatrix6(X);
+        BMatrix6 B = arb::transpose(X) * I * X;
+        BMatrix6 C = BMatrix6(I2);
         
-        BMatrix6 aux5 = arb::transpose(BMatrix6(X)) * BMatrix6(I) * BMatrix6(X);
-        BMatrix6 aux6 = arb::transpose(X) * I * X;
+        bool test5 =  arb::nearZero(A - C);
+        bool test6 =  arb::nearZero(B - C);
         
-        bool test5 =  arb::nearZero(aux5 - BMatrix6(I2));
-        bool test6 =  arb::nearZero(aux6 - BMatrix6(I2));
         testsPassed += test5 + test6;
+        
         std::cout  << "RBInertia --  X^T I X -- Test5 is " << test5 << std::endl;
         std::cout  << "RBInertia --  X^T I X -- Test6 is " << test6 << std::endl;
     }
@@ -261,55 +260,58 @@ test_abinertia(void)
     BTransform X(rot, trans);
 
     int testsPassed = 0;
+    
     if (1)
     {   
-        // basic inverse
-        bool test1 = arb::nearZero( (BMatrix6(abi) * arb::inverse(abi)) - B_IDENTITY_6x6 );
-        std::cout  << "ABInertia --  I_b * I_b^{-1} == IDENTITY_6x6 -- Test1 is " << test1 << std::endl;
-        
-        
         // world coords
         BMatrix6 I_w  = arb::transpose(X) * abi * X; // inertia in word coords
-        //std::cout << m_I_w  << std::endl;
-        
         BMatrix6 invI_w = arb::inverse(X) * arb::inverse(abi) * arb::dual(X); // inverse inertia in word coords
-        //std::cout << m_invI_w  << std::endl; 
         
-        //std::cout << I_w * m_invI_w << std::endl;
+        // basic inverse
+        bool test1 = arb::nearZero( (BMatrix6(abi) * arb::inverse(abi)) - B_IDENTITY_6x6 );
         bool test2 = arb::nearZero( (I_w * invI_w) - B_IDENTITY_6x6 );
-        std::cout  << "ABInertia --  I_w * I_w^{-1} == IDENTITY_6x6 -- Test2 is " << test2 << std::endl;
         
         testsPassed += test1 + test2;
+        
+        std::cout  << "ABInertia --  I_b * I_b^{-1} == IDENTITY -- Test1 is " << test1 << std::endl;
+        std::cout  << "ABInertia --  I_w * I_w^{-1} == IDENTITY -- Test2 is " << test2 << std::endl;
     }
+    
     if (1)
     {
         // Apply - X^* I X^{-1}
         BABInertia I1 = X.apply( abi ); 
-        //std::cout << std::endl << BMatrix6(I1) << std::endl << std::endl;
-        BMatrix6 aux1 = (arb::transpose(BMatrix6(arb::inverse(X))) * BMatrix6(abi)) * BMatrix6(arb::inverse(X));
-        BMatrix6 aux2 = (arb::transpose(arb::inverse(X)) * abi) * arb::inverse(X);
-        BMatrix6 aux3 = (arb::dual(X) * abi) * arb::inverse(X);
-        bool test2 = arb::nearZero(aux1 - BMatrix6(I1));
-        bool test3 = arb::nearZero(aux2 - BMatrix6(I1));
-        bool test4 = arb::nearZero(aux3 - BMatrix6(I1));
-        testsPassed += test2 + test3 + test4;
-        std::cout  << "ABInertia -- X^* I X^{-1} -- Test2 is " << test2 << std::endl;
-        std::cout  << "ABInertia -- X^* I X^{-1} -- Test3 is " << test3 << std::endl;
-        std::cout  << "ABInertia -- X^* I X^{-1} -- Test4 is " << test4 << std::endl;
+        BMatrix6 A = (arb::transpose(BMatrix6(arb::inverse(X))) * BMatrix6(abi)) * BMatrix6(arb::inverse(X));
+        BMatrix6 B = (arb::transpose(arb::inverse(X)) * abi) * arb::inverse(X);
+        BMatrix6 C = (arb::dual(X) * abi) * arb::inverse(X);
+ 
+        BMatrix6 D = BMatrix6(I1);
+        
+        bool test3 = arb::nearZero(A - D);
+        bool test4 = arb::nearZero(B - D);
+        bool test5 = arb::nearZero(C - D);
+       
+        testsPassed += test3 + test4 + test5;
+        
+        std::cout  << "ABInertia -- X^* I X^{-1} -- Test2 is " << test3 << std::endl;
+        std::cout  << "ABInertia -- X^* I X^{-1} -- Test3 is " << test4 << std::endl;
+        std::cout  << "ABInertia -- X^* I X^{-1} -- Test4 is " << test5 << std::endl;
     }
     if (1)
     {
         // ApplyTransposw -  X^T I X
         BABInertia I2 = X.applyTranspose( abi ); 
-        // std::cout << std::endl << BMatrix6(I2) << std::endl << std::endl;
-        BMatrix6 aux2 = arb::transpose(BMatrix6(X)) * BMatrix6(abi) * BMatrix6(X);
-        BMatrix6 aux3 = arb::transpose(X) * abi * X;
-        //std::cout  << aux2 << std::endl;
-        bool test5 = arb::nearZero(aux2 - BMatrix6(I2));
-        bool test6 = arb::nearZero(aux3 - BMatrix6(I2));
-        testsPassed += test5 + test6;
-        std::cout  << "ABInertia -- X^T I X -- Test5 is " << test5 << std::endl;
-        std::cout  << "ABInertia -- X^T I X -- Test6 is " << test6 << std::endl;
+        BMatrix6 A = arb::transpose(BMatrix6(X)) * BMatrix6(abi) * BMatrix6(X);
+        BMatrix6 B = arb::transpose(X) * abi * X;
+        BMatrix6 C = BMatrix6(I2);
+        
+        bool test6 = arb::nearZero(A - C);
+        bool test7 = arb::nearZero(B - C);
+        
+        testsPassed += test6 + test7;
+        
+        std::cout  << "ABInertia -- X^T I X -- Test5 is " << test6 << std::endl;
+        std::cout  << "ABInertia -- X^T I X -- Test6 is " << test7 << std::endl;
     }
     return testsPassed;
 }
@@ -341,22 +343,20 @@ test_inverse( void )
     {
         // BTransform identities 
         
-        // Identity 1
-        BMatrix6 M1(X_wb * arb::inverse(X_wb)); 
-        bool test1 = arb::nearZero(M1 - B_IDENTITY_6x6);
-        std::cout << "BTransform -- b^X_w * arb::inverse(b^X_w) == Identity -- Test1 is " << test1  << std::endl;
+        // Identities 1,2,3
+        BMatrix6 A(X_wb * arb::inverse(X_wb)); 
+        BMatrix6 B(arb::inverse(X_wb) * X_wb);
+        BMatrix6 C = arb::transpose(X_wb) * arb::dual(X_wb);
         
-        // Identity 2
-        BMatrix6 M2(arb::inverse(X_wb) * X_wb);
-        bool test2 = arb::nearZero(M2 - B_IDENTITY_6x6);
-        std::cout << "BTransform -- arb::inverse(b^X_w) * b^X_w == Identity -- Test2 is  " << test2  << std::endl;
-        
-        // Identity 3
-        BMatrix6 M3 = arb::transpose(X_wb) * arb::dual(X_wb);
-        bool test3 = arb::nearZero(M3 - B_IDENTITY_6x6);
-        std::cout << "BTransform -- arb::transpose(b^X_w) * arb::dual(b^X_w) == Identity -- Test3 is " << test3  << std::endl;
+        bool test1 = arb::nearZero(A - B_IDENTITY_6x6);
+        bool test2 = arb::nearZero(B - B_IDENTITY_6x6);
+        bool test3 = arb::nearZero(C - B_IDENTITY_6x6);
         
         testsPassed += test1 + test2 + test3;
+        
+        std::cout << "BTransform -- b^X_w * arb::inverse(b^X_w) == IDENTITY -- Test1 is " << test1  << std::endl;
+        std::cout << "BTransform -- arb::inverse(b^X_w) * b^X_w == IDENTITY -- Test2 is  " << test2  << std::endl;
+        std::cout << "BTransform -- arb::transpose(b^X_w) * arb::dual(b^X_w) == IDENTITY -- Test3 is " << test3  << std::endl;
     }
     
     if (1)
@@ -371,26 +371,19 @@ test_inverse( void )
         BVector6 v_b = arb::inverse(I) * h_b;  // RBDA, eqn 2.61, page 32.
         
         // world coords velocity
-        BVector6 v_w = arb::inverse(X_wb) * v_b;
-        
+        BVector6 v_w    = arb::inverse(X_wb) * v_b;
         BMatrix6 invI_w = arb::inverse(X_wb) * arb::inverse(I) * arb::dual(X_wb);  // RBDA, Table 2.5, page 34
-        
         BVector6 my_v_w = invI_w * h_w;  
-        
+   
         bool test1 = arb::nearZero(my_v_w - v_w);
-        std::cout << "Inverse Inertia -- Velocity -- Test1 is " << test1 << std::endl;
-        // std::cout << my_v_w << std::endl;
-        // std::cout << v_w << std::endl;
-        
-        
         // If a force f acts on a rigid body having a velocity v, then
         // the power delivered by the force is f \dot v (RDBA, Scalar Products, page 19). 
         bool test2 = arb::nearZero(arb::dot(h_w, v_w) - arb::dot(h_b, v_b));
-        std::cout << "Power -- Test2 is " << test2 << std::endl;
-        // std::cout << arb::dot(h_w, v_w) << std::endl;
-        // std::cout << arb::dot(h_b, v_b) << std::endl;
-        
+       
         testsPassed += test1 + test2;
+        
+        std::cout << "Inverse Inertia -- Velocity -- Test1 is " << test1 << std::endl;
+        std::cout << "Power -- Test2 is " << test2 << std::endl;
     }
     
     return testsPassed;
@@ -414,10 +407,10 @@ test_invertia( void )
     
     if (1)
     {
-        std::cout << I3 << std::endl;
-        bool test1 =  I3.valid();
         // check inertia at origin matches spatial inertia at origin
         BRBInertia I6(I3.mass(), I3.h(), I3.I());
+        
+        bool test1 = I3.valid();
         bool test2 = arb::nearZero(I6.I() - BMatrix3(I3.I()));
         
         // check inetia transform matches spatial transform
@@ -427,22 +420,19 @@ test_invertia( void )
         bool test3 = arb::nearZero(I6.Icom() - BMatrix3(I3.Icom()));
 
         BVector3 r(5.1, -4.2, 3.3);
-        //std::cout << I3 << std::endl;
         BInertia tmp = I3;
   
         I3.shift( r );  
-        //std::cout << I3 << std::endl;
         I3.shift( -r ); 
-        //std::cout << I3 << std::endl;
-        
+
         bool test4 = arb::nearZero(I3 - tmp);
+        
+        testsPassed += test1 + test2 + test3  + test4;
         
         std::cout  << "BInertia -- inertial is valid -- Test1 is " << test1 << std::endl;     
         std::cout  << "BInertia -- agreement with spatial inertia -- Test2 is " << test2 << std::endl; 
         std::cout  << "BInertia -- transform inertia -- Test3 is " << test3 << std::endl; 
         std::cout <<  "BInertia -- shift inertia -- Test4 is " << I3.valid() << std::endl;
-        
-        testsPassed += test1 + test2 + test3  + test4;
     }
     
     return testsPassed;
@@ -591,7 +581,7 @@ example1( void )
 #ifdef __BAUTODIFF_H__
     // extract the sensitivities for force from the output
     // sensitivities should be 3.30340671  1.62046474  0.00000000
-    for(int i = 0; i < qinput.tau.size(); ++i) 
+    for (int i = 0; i < qinput.tau.size(); ++i) 
     {
         double sen = qinput.tau[i][1];
         std::cout << "Sensitivity of output tau[" << i << "] with respect to input position q[" << bodyId << "]: " << sen << std::endl;
