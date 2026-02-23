@@ -531,7 +531,18 @@ example1( void )
     
     std::cout << qinput.qddot << std::endl;
     
-
+    std::cout << "\nRNEA Test I\n" << std::endl;
+    qinput.q.assign(model->qsize(),1.0);
+    qinput.qdot.assign(model->qdotsize(), 1.0);
+    qinput.qddot.assign(model->qdotsize(), 0.0);
+    qinput.tau.assign(model->qdotsize(), 0.0);
+    std::vector<BVector6> f_ext(model->bodies(), B_ZERO_6);
+    f_ext[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
+    
+    dyn.inverse(*model, qinput, f_ext);
+    // output should be 2.67999109 -4.18995273 0.00000000 
+    std::cout << qinput.tau << std::endl; 
+    std::cout  << std::endl; 
     //
     //
     
@@ -555,11 +566,13 @@ example1( void )
     std::cout << qinput.qddot << std::endl;
     
     
-    std::cout << "\nRNEA Test\n" << std::endl;
-    qinput.q.assign(model2.qsize(),0.3);
-    qinput.qdot.assign(model2.qdotsize(), 1.1);
-    std::vector<BVector6> f_ext(model2.bodies(), B_ZERO_6);
-    f_ext[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
+    std::cout << "\nRNEA Test II\n" << std::endl;
+    qinput.q.assign(model2.qsize(),1.0);
+    qinput.qdot.assign(model2.qdotsize(), 1.0);
+    qinput.qddot.assign(model2.qdotsize(), 0.0);
+    qinput.tau.assign(model2.qdotsize(), 0.0);
+    std::vector<BVector6> f_ext2(model2.bodies(), B_ZERO_6);
+    f_ext2[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
     
 #ifdef __BAUTODIFF_H__
     // for each input [i] set independent variables [i][1];  ensure all other gradients are zero
@@ -570,14 +583,14 @@ example1( void )
     qinput.q[bodyId][1] = 1.0; // set the independent variable 
 #endif
     
-    dyn.inverse(model2, qinput);
-    // output should be -4.19437955 -1.22524168 0.00000000
+    dyn.inverse(model2, qinput, f_ext2);
+    // output should be 2.67999109 -4.18995273 0.00000000 
     std::cout << qinput.tau << std::endl; 
     std::cout << std::endl;
     
 #ifdef __BAUTODIFF_H__
     // extract the sensitivities for force from the output
-    // sensitivities should be -0.38795170 -1.10311060  0.00000000
+    // sensitivities should be 3.30340671  1.62046474  0.00000000
     for(int i = 0; i < qinput.tau.size(); ++i) 
     {
         double sen = qinput.tau[i][1];
