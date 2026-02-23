@@ -73,6 +73,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
+ it also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
  For example, the following code excerpt performs Newton-Euler integration (see https://en.wikipedia.org/wiki/Newton–Euler_equations):
 
     // set up single body - a sphere -  
