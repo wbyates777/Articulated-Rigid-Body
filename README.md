@@ -1,5 +1,39 @@
+# Articulated Rigid Body (ARB)
 
- ## Forward and Inverse Dynamics of Kinematic Trees
+## Overview
+
+ARB is a compact implementation of _spatial_ _algebra_, and Featherstone's articulated-body algorithm (ABA) 
+and the recursive Newton-Euler algorithm (RNEA) with end-to-end automatic differentiability (AD). 
+The implementations presented here are based on the well known RBDL library, but are intended for use in computer graphics. 
+They allow a programmer to handle, in a physically consistent manner, rigid bodies and articulated rigid bodies.
+In the context of graphics these articulated bodies could be a humanoid character, 
+or a simple jointed mechanism such as a door. 
+ 
+ Spatial algebra combines the 3D-linear and 3D-angular components of rigid body physics
+ and provides a compact notation that significantly reduces the 
+"volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (Featherstone 2008).
+ Spatial algebra also significantly reduces the complexity of the implementation.
+ 
+ Automatic differentiation is provided by the autodiff libary.
+ Thus the algebra, the ABA, and the RNEA are completely differentiable. 
+ This end-to-end differentiability facilitates the application of 
+  advanced optimization and machine learning techniques.
+  
+This code is written in c++23 and depends on STL, GLM and autodiff libraries.
+
+ 
+### Key Features
+
+* Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
+* Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
+* Spatial algebra,
+* Automatic Differentiation (AD), 
+* Header only, and
+* Minimal depencencies STL, GLM, (autodiff optional).
+
+## Background
+
+ ### Forward and Inverse Dynamics of Kinematic Trees
 
  Trees (and chains) of kinematic equations are used in robotics, computer graphics, and animation.
  In robotics _forward kinematics_ refers to the use of kinematic equations to compute the position of 
@@ -27,7 +61,7 @@
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
-## Spatial Algebra
+### Spatial Algebra
 
  The algorithms are described and implemented using _spatial algebra_ (see RBDA, Chapter 2). 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
@@ -76,6 +110,15 @@
  The bias force represents an _inertial_ force; a so called fictitious force such as centrifugal, Coriolis, or Euler force. 
  The inertial force is necessary for describing motion correctly (see https://en.wikipedia.org/wiki/Fictitious_force).
  
+ ### Automatic Differentiation 
+
+ This library also supports _Automatic_ _Differentiation_ (AD) via the header-only autodiff library (see below).
+ Adding automatic differentiation to the spatial algebra library means that 
+ the algebra, the ABA, and the RNEA are completely differentiable. 
+ This end-to-end differentiability facilitates the application of more advanced optimization and machine learning techniques
+ such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-based trajectory optimization
+   (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
+   
 ## Implementation 
 
  The implementations presented here, are intended for use in computer graphics, and are 
@@ -105,17 +148,10 @@
  the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
  linear algebra library.
 
- This library also supports _Automatic_ _Differentiation_ (AD) via the header-only autodiff library (see below).
- In order to use AD it is suffcient to #include "BAutodiff.h" in the BSpatialTypes.h file.
+ In order to implement automatic differentiation it is suffcient to #include "BAutodiff.h" in the BSpatialTypes.h file.
  This enables the automatic computation of derivatives in an efficient and intuitive manner.
  It should be noted that the calculated derivatives are
  exact (to machine precision) and not approxiated, as is the case for finite difference methods.
-
- Adding automatic differentiation to the spatial algebra library means that 
- the algebra, the ABA, and the RNEA are completely differentiable. 
- This end-to-end differentiability facilitates the application of more advanced optimization and machine learning techniques
- such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-based trajectory optimization
-   (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
 
  
  ## Correctness and Validation
@@ -158,4 +194,4 @@ Minimum compiler requirement is now c++23. If you do not use GLM_FORCE_INTRINSIC
  
 ## Next Steps
 
-Please send any questions or report any errors, omissions, or suggested extensions to the email above.
+Please send any questions or report any errors, omissions, or suggested extensions to the email above. 
