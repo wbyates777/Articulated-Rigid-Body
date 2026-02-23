@@ -29,7 +29,7 @@
 
 ## Spatial Algebra
 
- The algorithms are described and implememted using _spatial algebra_ (see RBDA, Chapter 2). 
+ The algorithms are described and implemented using _spatial algebra_ (see RBDA, Chapter 2). 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
  Linear and angular velocities (or accelerations) are
@@ -116,10 +116,23 @@
  This end-to-end differentiability facilitates the application of more advanced optimization and machine learning techniques
  such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-based trajectory optimization
    (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
+
+ 
+ ## Correctness and Validation
+ 
+ This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. The results of test example 1 included in main.cpp and taken from the RBDL documentation are shown below. Notice that the forward and inverse dynamics results match to 8dp:
+
+   | Test | Value | RBDL | BDynamics |
+| :--- | :--- | :--- | :--- |
+| **Forward** | accel. | `-6.54000000 6.54000000 0.00000000` | `-6.54000000 6.54000000 0.00000000` |
+| **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
+
+ Furthermore, main.cpp also includes 35 identity tests that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self consistency.
  
  ## Build Instructions
+ 
 
-On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and:
+On a platform that supports cmake you can use the CMakeList.txt file included in this project. Sy cd to the directory where you have saved this project and:
 
  ```mkdir build```
  
