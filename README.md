@@ -28,7 +28,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra,
 * Automatic Differentiation (AD), 
-* Header only, and
+* Algebra is header-only, and
 * Minimal depencencies STL, GLM, (autodiff optional).
 
 ## Background
@@ -113,7 +113,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  
  ### Automatic Differentiation 
 
- This library also supports _Automatic_ _Differentiation_ (AD) via the header-only autodiff library (see below).
+ This library also supports _Automatic_ _Differentiation_ (AD).
  Adding automatic differentiation to the spatial algebra library means that 
  the algebra, the ABA, and the RNEA are completely differentiable. 
  This end-to-end differentiability facilitates the application of more advanced optimization and machine learning techniques
@@ -137,19 +137,20 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  GLM (OpenGL Mathematics) is  based on the OpenGL Shading Language (GLSL) specifications, and
  provides a highly optimized implementation of 3D linear algebra primitives. 
  
- The spatial algebra implementation (though not the algorithms) is also header only, and depends solely on STL and the 3D GLM types: 
+ The spatial algebra implementation (though not the algorithms) is also header-only, and depends solely on STL and the 3D GLM types: 
  
  ```glm::vec3, glm::mat3, glm::quat```, 
  
  and the GLM functions:
  
- ```glm::cross(v1, v2), glm::dot(v1, v2), glm::outerProduct(v1, v2), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q)```.
+ ```glm::cross(v1,v2), glm::dot(v1,v2), glm::outerProduct(v1,v2), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q)```.
  
  It is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
  linear algebra library.
 
  In order to implement automatic differentiation it is suffcient to #include "BAutodiff.h" in the BSpatialTypes.h file.
+ BAutodiff.h is a wrapper for the header-only autodiff library (see below).
  This enables the automatic computation of derivatives in an efficient and intuitive manner.
  It should be noted that the calculated derivatives are
  exact (to machine precision) and not approxiated, as is the case for finite difference methods.
@@ -169,7 +170,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  ## Build Instructions
  
 
-On a platform that supports cmake you can use the CMakeList.txt file included in this project. Sy cd to the directory where you have saved this project and:
+On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and:
 
  ```mkdir build```
  
