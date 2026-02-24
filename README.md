@@ -14,12 +14,12 @@ or a simple jointed mechanism such as a door.
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (Featherstone 2008).
  Spatial algebra also significantly reduces the complexity of the implementation.
  
- Automatic differentiation is provided by the autodiff libary.
+ Automatic differentiation is provided by the autodiff library.
  Thus the algebra, the ABA, and the RNEA are completely differentiable. 
  This end-to-end differentiability facilitates the application of 
-  advanced optimization and machine learning techniques.
+  advanced optimisation and machine learning techniques.
   
-This code is written in c++23 and depends on STL, GLM and autodiff libraries.
+This code is written in c++23 and depends on STL, and the header-ony GLM and autodiff libraries.
 
  
 ### Key Features
@@ -29,7 +29,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
 * Spatial algebra,
 * Automatic Differentiation (AD), 
 * Algebra is header-only, and
-* Minimal depencencies STL, GLM, (autodiff optional).
+* Minimal dependencies STL, GLM, (autodiff optional).
 
 ## Background
 
@@ -83,7 +83,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
     BRBInertia I( BInertia(mass, I_o) );
     BMatrix6 invI = arb::inverse(I);
 
-    // set initial position, velocity and acceleration
+    // set initial position, velocity and acceleration (angular, linear)
     BVector6 pos(B_ZERO_3, 20.0, 50.0, 3.0), vel(0.0), acc(0.0);
     
     // apply an angular force of 1.0 around Y axis and a linear force of 100.0 along Z axis
@@ -116,8 +116,10 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  This library also supports _Automatic_ _Differentiation_ (AD).
  Adding automatic differentiation to the spatial algebra library means that 
  the algebra, the ABA, and the RNEA are completely differentiable. 
- This end-to-end differentiability facilitates the application of more advanced optimization and machine learning techniques
- such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-based trajectory optimization
+ Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
+ AD uses the chain rule to propagate exact _analytical_ derivatives through the code at the machine level.
+ This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques
+ such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-based trajectory optimisation
    (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
    
 ## Implementation 
@@ -126,7 +128,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  based on those in the RBDL library.
  Alternative implementations can be found in the RBDyn library, and the Pinocchio library (see below for links).
  We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
- This facillitates numerical comparison testing. 
+ This facilitates numerical comparison testing. 
  Some variables have been moved to their appropriate classes and accessor methods 
  have been added throughout. This improves encapsulation and readability.
  
@@ -135,7 +137,7 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
  This code does not depend on Eigen3, and instead relies on the light-weight, header-only GLM library. 
  GLM (OpenGL Mathematics) is  based on the OpenGL Shading Language (GLSL) specifications, and
- provides a highly optimized implementation of 3D linear algebra primitives. 
+ provides a highly optimised implementation of 3D linear algebra primitives. 
  
  The spatial algebra implementation (though not the algorithms) is also header-only, and depends solely on STL and the 3D GLM types: 
  
@@ -149,11 +151,11 @@ This code is written in c++23 and depends on STL, GLM and autodiff libraries.
  the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
  linear algebra library.
 
- In order to implement automatic differentiation it is suffcient to #include "BAutodiff.h" in the BSpatialTypes.h file.
+ In order to implement automatic differentiation it is sufficient to #include "BAutodiff.h" in the BSpatialTypes.h file.
  BAutodiff.h is a wrapper for the header-only autodiff library (see below).
  This enables the automatic computation of derivatives in an efficient and intuitive manner.
  It should be noted that the calculated derivatives are
- exact (to machine precision) and not approxiated, as is the case for finite difference methods.
+ exact (to machine precision) and not approximated, as is the case for finite difference methods.
 
  
  ## Correctness and Validation
@@ -180,7 +182,11 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
  
  ```make```
 
-Minimum compiler requirement is now c++23. If you do not use GLM_FORCE_INTRINSICS you can use c++20. If you remove constexpr the code will 'almost' compile under c++17. See the source for details on the remianing minor changes. 
+Cmake will take care of installing the GLM and autodiff libaries. 
+If you are not using cmake these libraries can be downloaded directly from github (see links below).
+
+The minimum compiler requirement is now c++23. This is due to the improved constexpr handling in c++23. If you do not use GLM_FORCE_INTRINSICS you can use c++20.
+If you remove (some) constexpr definitions, the code will 'almost' compile under c++17.  See the source for details on the remaining minor changes. 
 
  ## Libraries
  
@@ -194,6 +200,7 @@ Minimum compiler requirement is now c++23. If you do not use GLM_FORCE_INTRINSIC
  
  Pinocchio - https://stack-of-tasks.github.io/pinocchio/
  
-## Next Steps
+## Notes
 
-Please send any questions or report any errors, omissions, or suggested extensions to the email above. 
+Please send any questions or report any errors, omissions, or suggested extensions to the email wbyates777@gmail.com. 
+
