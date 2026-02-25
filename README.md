@@ -1,4 +1,4 @@
-#  <img width="82" height="59" alt="mapache" src="https://github.com/user-attachments/assets/978c330e-5e1f-41c8-bf29-1ac2f812eaeb" /> Articulated Rigid Body (ARB)
+# <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" /> Articulated Rigid Body (ARB)
 
 ## Overview
 
@@ -160,9 +160,9 @@ This code is written in c++23 and depends on STL, and the header-ony GLM and aut
  
  ## Correctness and Validation
  
- This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. The results of test example 1 included in main.cpp and taken from the RBDL documentation are shown below. Notice that the forward and inverse dynamics results match to 8dp:
+ This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. The results of test example 1 included in main.cpp and taken from the RBDL documentation are shown below. Notice that the forward and inverse dynamics results match to 8 dp:
 
-   | Test | Value | RBDL | BDynamics |
+   | Test | Value | RBDL | ARB |
 | :--- | :--- | :--- | :--- |
 | **Forward** | accel. | `-6.54000000 6.54000000 0.00000000` | `-6.54000000 6.54000000 0.00000000` |
 | **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
@@ -186,7 +186,7 @@ Cmake will take care of installing the GLM and autodiff libaries.
 If you are not using cmake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now c++23. This is due to the improved constexpr handling in c++23. If you do not use GLM_FORCE_INTRINSICS you can use c++20.
-If you remove (some) constexpr definitions, the code will 'almost' compile under c++17.  See the source for details on the remaining minor changes. 
+If you remove (some) constexpr definitions, then my code will 'almost' compile under c++17. GLM and autodiff are both c++17 compliant.  See the source for details on the remaining minor changes. 
 
  ## Libraries
  
