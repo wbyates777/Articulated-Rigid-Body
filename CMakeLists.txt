@@ -13,13 +13,10 @@ set(SOURCES
     BJoint.cpp
     BModel.cpp
     BDynamics.cpp
-    BSpatialChecks.cpp
     main.cpp
 )
 
 set(HEADERS
-    URand.h
-    BSpatialChecks.h
     BAutodiff.h
     BAdjoint.h
     BInertia.h
