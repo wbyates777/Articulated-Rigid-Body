@@ -61,7 +61,8 @@ namespace std {
     
     // some GLM functions i.e. glm::dot and glm::cross have static asserts 
     // static_assert(std::numeric_limits<T>::is_iec559, "this function accepts only floating-point inputs");
-    // this ensures that autodiff::real is considered as a floating-point 
+    // this ensures that autodiff::real is considered as a floating-point input
+    // WARNING: always check that the glm function you are using preserves gradients
     template <>
     struct numeric_limits<autodiff::real> : public numeric_limits<double> 
     {
