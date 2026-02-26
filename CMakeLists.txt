@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.25...4.0)
 
 project(BDynamics LANGUAGES CXX)
 
@@ -13,10 +13,13 @@ set(SOURCES
     BJoint.cpp
     BModel.cpp
     BDynamics.cpp
+    BSpatialChecks.cpp
     main.cpp
 )
 
 set(HEADERS
+    URand.h
+    BSpatialChecks.h
     BAutodiff.h
     BAdjoint.h
     BInertia.h
@@ -72,11 +75,20 @@ FetchContent_MakeAvailable(autodiff)
 
 add_executable(dynamics_test ${SOURCES} ${HEADERS})
 
+# --- Target Properties ---
+# Use 'target_link_libraries' to pull in the header paths automatically
+target_link_libraries(dynamics_test
+    PRIVATE
+        glm::glm
+        autodiff::autodiff
+)
+
 target_compile_definitions(dynamics_test PRIVATE AUTODIFF_EIGEN_AVAILABLE=0)
 
-# Include headers
-target_include_directories(dynamics_test PRIVATE 
-    ${glm_SOURCE_DIR}
-    ${autodiff_SOURCE_DIR}
-)
+# Include headers -- if  Target Properties above fails do this 
+# target_include_directories(dynamics_test 
+#     PRIVATE 
+#         ${glm_SOURCE_DIR}
+#         ${autodiff_SOURCE_DIR}
+# )
 
