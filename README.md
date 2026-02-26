@@ -19,7 +19,7 @@ or a simple jointed mechanism such as a door.
  This end-to-end differentiability facilitates the application of 
   advanced optimisation and machine learning techniques.
   
-This code is written in c++23 and depends on STL, and the header-ony GLM and autodiff libraries.
+This code is written in c++23 and depends on STL, and the header-only GLM and autodiff libraries.
 
  
 ### Key Features
@@ -167,7 +167,7 @@ This code is written in c++23 and depends on STL, and the header-ony GLM and aut
 | **Forward** | accel. | `-6.54000000 6.54000000 0.00000000` | `-6.54000000 6.54000000 0.00000000` |
 | **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
 
- Furthermore, main.cpp also includes 35 identity tests that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self consistency.
+ Furthermore, Checks/BSpatialChecks.cpp also includes 36 consistency tests that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  
  ## Build Instructions
  
