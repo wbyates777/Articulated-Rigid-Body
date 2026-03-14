@@ -70,6 +70,9 @@ namespace arb {
     nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }
 
     inline bool 
+    nearZero( BScalar p, BScalar toll ) { return ((p > -toll) && (p < toll)); }
+    
+    inline bool 
     nearZero( const BVector3 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
 
     inline bool 

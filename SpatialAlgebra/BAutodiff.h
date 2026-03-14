@@ -8,9 +8,11 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
  
- BAutodiff.h is a wrapper for autodiff; a c++17 library that facilitates automatic differentiation (AD).
- To enable AD ensure that the autodiff header-only lib is present, 
- and that this file is included in BSpatialTypes.h
+ autodiff is a c++17 library that facilitates automatic differentiation (AD).
+ This file contains the function defs needed for autodiff to work with GLM
+ 
+ To enable AD ensure that glm and the autodiff header-only lib is present, 
+ and that this file is included in BSpatialTypes.h 
  
  https://en.wikipedia.org/wiki/Automatic_differentiation
 
@@ -23,17 +25,30 @@
 #ifndef __BAUTODIFF_H__
 #define __BAUTODIFF_H__
 
-
+#define ARB_USE_AUTODIFF
 
 #include <autodiff/forward/real.hpp>
 
-//#define GLM_FORCE_PURE          // disable SIMD (AutoDiff doesn't support it)
-//#define GLM_FORCE_XYZW_ONLY     // remove unions (Prevents internal layout errors)
-#define GLM_FORCE_UNRESTRICTED_GENTYPE
-#define GLM_FORCE_CTOR_INIT
+#define GLM_FORCE_UNRESTRICTED_GENTYPE  // required by GLM
+#define GLM_FORCE_CTOR_INIT             // required by GLM
+
+#include <glm/vec3.hpp> 
+
+// interoperability between glm and autodiff 
+inline glm::dvec3 
+operator+( const glm::vec<3,autodiff::real> &a, const glm::dvec3 &b ) 
+{
+    return glm::dvec3(a.x[0] + b.x, a.y[0] + b.y, a.z[0] + b.z); 
+}
+
+inline glm::dvec3 
+operator+( const glm::dvec3 &a, const glm::vec<3,autodiff::real> &b ) 
+{
+    return glm::dvec3(a.x + b.x[0], a.y + b.y[0], a.z + b.z[0]); 
+}
 
 
-// my stream operators need operator>>
+// my stream operators need operator>>()
 inline std::istream& 
 operator>>(std::istream& istr, autodiff::real& val) 
 {
@@ -41,14 +56,12 @@ operator>>(std::istream& istr, autodiff::real& val)
     return istr;
 }
 
-// glm stream operators also need operator>>
-namespace  glm {
-    using ::operator>>;
-}
+// glm stream operators also need operator>>()
+namespace  glm { using ::operator>>; }
 
 namespace std {
     
-    // v[0] is value and v[1] is gradient
+    // v[0] or autodiff::val(v) is value and v[1] or autodiff::derivative(v) is gradient 
     inline bool 
     isnan( const autodiff::real &v ) { return std::isnan(v[0]) || std::isnan(v[1]); }
     
@@ -71,7 +84,7 @@ namespace std {
 }
 
 
-typedef  autodiff::real BScalar;
+
 
 #endif
 

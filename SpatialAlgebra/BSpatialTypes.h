@@ -26,23 +26,53 @@
 #include <cmath>
 #include <cassert>
 
+//
+// GLM flags
+//
+// Best to experiment and see which combination suits you best
+// Note some combinations won't compile. See GLM documentation for details. 
+//
+// #define GLM_FORCE_XYZW_ONLY  // remove unions (can prevent internal layout errors)
+//
+// either
+// #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES 
+// or
+// #define GLM_FORCE_INTRINSICS // enable SIMD (needs c++23)
+// or
+// #define GLM_FORCE_PURE       // disable SIMD 
+//
+// or define none of the above 
+//
 
-//                  
-// to use Automatic Differentiation (AD) via autodiff, uncomment this
+// select basic underlying type
+#define ARB_USE_AUTODIFF
+
 //
-#ifndef __BAUTODIFF_H__
-#include "BAutodiff.h"
+// Basic Underlying Type BScalar
+//
+#if defined(ARB_USE_AUTODIFF)
+
+    #ifndef __BAUTODIFF_H__
+    #include "BAutodiff.h"
+    #endif
+
+    typedef  autodiff::real BScalar;
+
+#elif defined(ARB_USE_DOUBLE)
+
+    typedef double BScalar;
+
+#elif defined(ARB_USE_FLOAT)
+
+    // causes internal checks to fails due to prec - use B_NEAR_ZERO=1E-1
+    typedef float BScalar; 
+
 #endif
-//
-// and comment out this bit
-// typedef double BScalar;
-//
 
 
 #include <glm/vec3.hpp> 
 #include <glm/mat3x3.hpp>
 #include <glm/gtc/quaternion.hpp>
-
 
 //
 // vector and matrix types
@@ -61,8 +91,6 @@ typedef std::vector<BScalar>  BMotionSpace;
 //
 // vector and matrix constants
 //
-
-
 #ifdef GLM_FORCE_INTRINSICS
     const BVector3 B_XAXIS(1.0, 0.0, 0.0);
     const BVector3 B_YAXIS(0.0, 1.0, 0.0);
@@ -87,6 +115,19 @@ typedef std::vector<BScalar>  BMotionSpace;
     constexpr BQuat    B_IDENTITY_QUAT(glm::identity<BQuat>());
 #endif
 
+#if defined(ARB_USE_FLOAT)
+// interoperability between glm float and double 
+inline glm::dvec3 
+operator+( const glm::vec3 &a, const glm::dvec3 &b ) 
+{
+    return glm::dvec3(a.x + b.x, a.y + b.y, a.z + b.z); 
+}
+inline glm::dvec3 
+operator+( const glm::dvec3 &a, const glm::vec3 &b ) 
+{
+    return glm::dvec3(a.x + b.x, a.y + b.y, a.z + b.z); 
+}
+#endif
 
 constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 
@@ -231,7 +272,7 @@ operator>>( std::istream &istr, std::vector<T> &v )
     istr >> len;
     v.resize(len);
 
-    for (auto  i = v.begin(); i != v.end(); ++i)
+    for (auto i = v.begin(); i != v.end(); ++i)
     {
         istr >> *i;
     }
@@ -245,7 +286,7 @@ operator<<(std::ostream &ostr, const std::map<K,T> &m)
 {
     ostr << int(m.size()) << '\n';
 
-    for (auto  i = m.begin(); i != m.end(); ++i)
+    for (auto i = m.begin(); i != m.end(); ++i)
     {
         ostr << i->first << ' ' << i->second <<  '\n';
     }

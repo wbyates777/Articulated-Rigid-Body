@@ -10,10 +10,17 @@
  
  A compact, light-weight, header only impmemenation of spatial algebra as presented in:
 
- "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008 (see https://royfeatherstone.org). 
+ "Rigid Body Dynamics Algorithms" (RBDA), Featherstone, R., Springer, 2008 (see https://royfeatherstone.org). 
 
- Depends on the 3D GLM library (see https://github.com/g-truc/glm).
-
+ Depends on STL and the 3D GLM library (see https://github.com/g-truc/glm).
+ 
+ It should be noted that we employ an (angular, linear) ordered represenation, following 
+ Featherstone and the RBDL library.
+ 
+ For further mathematical background see
+ "Modern Robotics: Mechanics, Planning, and Control", Lynch K. M., Park F. C., 2017,  and
+ "A Mathematical Introduction to Robotic Manipulation", Murray, R.M., Li, Z., Shankar Sastry S. 1994. 
+ 
 */
 
 #ifndef __BSPATIALALGEBRA_H__
