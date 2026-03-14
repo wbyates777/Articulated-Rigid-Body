@@ -18,37 +18,32 @@
 #include <fstream>
 #include <numeric>
 
-// for AD - autodiff
-//#define GLM_FORCE_PURE
-//#define GLM_FORCE_XYZW_ONLY
-#define GLM_FORCE_UNRESTRICTED_GENTYPE
-#define GLM_FORCE_CTOR_INIT
 
+#ifndef __BSPATIALALGEBRA_H__
+#include "BSpatialAlgebra.h"
+#endif
 
-// either
-//#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
-// or
-//#define GLM_FORCE_INTRINSICS // needs c++23
-
-#define GLM_ENABLE_EXPERIMENTAL
-
-#include <glm/glm.hpp>
-
-
-#include <glm/gtx/euler_angles.hpp>
-#include <glm/gtx/transform.hpp> 
 
 #ifndef __BDYNAMICS_H__
 #include "BDynamics.h"
 #endif
 
-#ifndef __BADJOINT_H__
-#include "BAdjoint.h"
+#ifndef __BSPATIALCHECKS_H__
+#include "BSpatialChecks.h"
 #endif
 
-//#ifndef __BSPATIALCHECKS_H__
-//#include "BSpatialChecks.h"
+// needs ASSIMP library 
+//#ifndef __BPOLYTOPELOADER_H__
+//#include "BPolytopeLoader.h"
 //#endif
+
+#ifndef __BCONTACTMANAGER_H__
+#include "BContactManager.h"
+#endif
+
+#ifndef __CBODY_H__
+#include "CBody.h"
+#endif
 
 //
 //
@@ -149,7 +144,7 @@ example1( void )
     std::vector<BVector6> f_ext2(model2.bodies(), B_ZERO_6);
     f_ext2[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
     
-#ifdef __BAUTODIFF_H__
+#ifdef ARB_USE_AUTODIFF
     // for each input [i] set independent variables [i][1];  ensure all other gradients are zero
     int bodyId = body_a_id;
     for (int i = 0; i < qinput.q.size(); ++i) 
@@ -163,7 +158,7 @@ example1( void )
     std::cout << qinput.tau << std::endl; 
     std::cout << std::endl;
     
-#ifdef __BAUTODIFF_H__
+#ifdef ARB_USE_AUTODIFF
     // extract the sensitivities for force from the output
     // sensitivities should be 3.30340671  1.62046474  0.00000000
     for (int i = 0; i < qinput.tau.size(); ++i) 
@@ -174,6 +169,7 @@ example1( void )
 #endif  
     std::cout << std::endl;
 }
+
 
 void
 example2( void )
@@ -239,7 +235,7 @@ example2( void )
     
     BDynamics dyn;
     
-#ifdef __BAUTODIFF_H__
+#ifdef ARB_USE_AUTODIFF
     // set independent variables;  ensure all other gradients are zero
     int bodyId = 3;
     for(int i = 0; i < qinput.q.size(); ++i) 
@@ -252,7 +248,7 @@ example2( void )
     
     std::cout << qinput.qddot << std::endl;
 
-#ifdef __BAUTODIFF_H__
+#ifdef ARB_USE_AUTODIFF
     // extract the acceleration sensitivities from the output
     for(int i = 0; i < qinput.qddot.size(); ++i) 
     {
@@ -284,7 +280,7 @@ single_body( void )
     
     // control -- apply myforce to whole spaceship model -- 100 Newtons along z axis
     // body[0] is a header, body[1] is virtual, body[2] is the first, real body with mass
-    // for floating base we only need apply external force to body[2]
+    // for floating base we  only need to apply external force to body[2] (or body[spaceshipId])
     // external forces are assumed to be in world coordinates
     BVector6 myforce( B_ZERO_3, 0.0, 0.0, 100.0);
     BExtForce f_ext(model->bodies(), B_ZERO_6); 
@@ -292,6 +288,7 @@ single_body( void )
     
     BModelState qinput;
     
+    // this apply to 'internal' model joints/bodies
     qinput.q.resize(model->qsize(),0.0);
     qinput.qdot.resize(model->qdotsize(), 0.0);
     qinput.tau.resize(model->qdotsize(), 0.0);
@@ -307,25 +304,6 @@ single_body( void )
     delete model;
 }
 
-void
-print( double T, const BVector6 &mv )
-{
-    const double M_2PI = M_PI + M_PI;
-    
-    std::cout << T << ") ";
-    
-    BVector3 pos = mv.lin();
-    std::cout << " pos( " <<  pos.x << ", " <<  pos.y << ", " <<  pos.z  << " ) - ";
- 
-    BVector3 ang = mv.ang();
-  
-    ang.x = std::remainder((double) ang.x, M_2PI);
-    ang.y = std::remainder((double) ang.y, M_2PI);
-    ang.z = std::remainder((double) ang.z, M_2PI);
-    ang  = glm::degrees(ang);
-    
-    std::cout << "orient( " <<  ang.x << "°, " <<  ang.y << "°, " <<  ang.z << "° )" << std::endl;
-}
 
 BRBInertia
 sphere( double mass, double radius)
@@ -339,53 +317,6 @@ sphere( double mass, double radius)
     return BRBInertia(mass, h, I_o);
 }
 
-void
-newton_euler( void ) 
-// Spatial algebra test
-// https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-// https://en.wikipedia.org/wiki/Newton–Euler_equations
-{
-    std::cout << "\nARB Example 4 - Newton Euler\n" << std::endl;
-    // set up single body - a sphere -  
-    BRBInertia I = sphere(100.0, 0.5); 
-    BMatrix6 invI = arb::inverse(I);
-    
-    BVector6 force = B_ZERO_6;
-    BVector6 pos   = B_ZERO_6;
-    BVector6 vel   = B_ZERO_6;
-    BVector6 acc   = B_ZERO_6;
-    
-    // set some initial position
-    pos.lin( 20.0, 50.0, 3.0 );
-    
-    // apply some force
-    force[1] = 1.0;   // ang
-    force[5] = 100.0; // lin
-    
-    // over time
-    double dt = 0.1;
-    double T = 0.0;
-    int Iters = 100;
-    
-    for (int t = 0; t < Iters; ++t)
-    {
-        if (!(t % 10))
-            print( T, pos );
-
-        // Implicit Newton-Euler intergration 
-        // see Featherstone, Section 2.14, page 35
-        acc = invI * (force - arb::crossf(vel, I * vel)); 
-        vel += acc * dt;
-        pos += vel * dt;
-        //
-        //
-        
-        T += dt;
-        
-        if (t == 10) // switch off force after t = 10 time steps
-            force = B_ZERO_6;
-    }
-}
 
 BMatrix6 
 toWorldInvInertia( BBody &body )
@@ -408,7 +339,7 @@ impulse( void )
  the contact.''
  */
 {
-    std::cout << "\nARB Example 5 - Spatial Impulse\n" << std::endl;
+    std::cout << "\nARB Example 4 - Spatial Impulse\n" << std::endl;
     
     // body mass, radius
     BBody body1(sphere(100.0, 1.5));
@@ -461,6 +392,66 @@ impulse( void )
 }
 
 
+void
+collisions( void )
+{
+    std::cout << "\nARB Example 5 - Newton Euler and Collisions\n" << std::endl;
+    BContactManager contact_manager;
+    
+    double mass1 = 100.0, radius1 = 1.5; 
+    double mass2 = 80.0,  radius2 = 1.25;
+
+    std::vector<CBody> bodies(2);
+    bodies[0] = CBody(1, BBody(sphere(mass1, radius1)), BBox(radius1));
+    bodies[1] = CBody(2, BBody(sphere(mass2, radius2)), BBox(radius2));
+
+
+    bodies[0].pos(B_ZERO_3);
+    bodies[1].pos(BVector3(0.0, 4.0, 0.0));
+    
+    bodies[1].force(BVector6(B_ZERO_3, 0.0, -2000.0, 0.0));
+    
+    std::vector<ABody*> body_collisions = { &bodies[0], &bodies[1] };
+    
+    double dt = 0.1;
+    double T = 0.0;
+    std::cout << "time \t\t" << "pos body" << bodies[0].objId();
+    std::cout << "\t\t\t\t\t\t\t\t\tpos body" <<  bodies[1].objId() << std::endl;
+    
+    // semi-implicit Euler (integrate velocity first, then position)
+    for (int i = 0; i < 8; ++i)
+    {
+        for (CBody &cb : bodies) // update all velocities
+        {
+            cb.updateVelocity(dt);
+        }
+        
+        // check for collisions; resolve any that occur up by updating body velocities
+        int num_contact = contact_manager.resolve(dt, body_collisions);
+        
+        if (num_contact)
+        {
+            std::cout << std::endl;
+            std::cout << " >*BANG*< - Collision Detected!" << std::endl;
+            
+            //std::cout  <<  glm::degrees(bodies[0].v().ang()) << "\t"  <<  glm::degrees(bodies[1].v().ang()) << "\n";
+            //std::cout << bodies[0].v().lin() << "\t"  <<  bodies[1].v().lin() << "\n";
+            std::cout << std::endl;
+        }
+        
+        for (CBody &cb : bodies)
+        {
+            cb.updatePosition(dt);
+        }
+        
+        T += dt;
+        std::cout << T << "\t"  <<  bodies[0].pos() << "\t***\t\t";
+        std::cout << bodies[1].pos() << std::endl;
+    }
+}
+
+
+
 int 
 main()
 {
@@ -469,8 +460,8 @@ main()
     
     std::cout << "\nARB Demo\n" << std::endl;
 
-
-    //check(1000);
+    check(100);
+    
     
     // example1 is taken from RBDL library https://github.com/rbdl/rbdl
     // the output generated by RBDL is QDDot = { -6.54000000  6.54000000  0.00000000 }
@@ -483,7 +474,8 @@ main()
     
     single_body();
     
-    newton_euler();
-    
     impulse();
+    
+    collisions();
+
 }
