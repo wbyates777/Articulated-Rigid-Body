@@ -13,7 +13,7 @@
  A number of basic functions and consistency checks to help with debugging/maintanence
  You can use/improve these functions to build a more comprehensive test suite
  
- This keeps tests all tests in one place.
+ This keeps all tests in one place.
  
 */
 
