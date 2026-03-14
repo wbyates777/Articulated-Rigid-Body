@@ -28,7 +28,7 @@ to a simple hinged mechanism such as a door.
  by employing the physical concept of spatial impulse.  
 
  
-This code is written in c++23 and depends on STL, and the header-only GLM, autodiff, and libccd libraries.
+This code is written in c++23 and depends on STL, the header-only GLM, the header-only autodiff, and libccd shared libraries.
 
  
 ### Key Features
@@ -38,7 +38,7 @@ This code is written in c++23 and depends on STL, and the header-only GLM, autod
 * Collision detection and resolutiion,
 * Spatial algebra,  header-only,
 * Automatic Differentiation (AD),  header-only, and
-* Minimal dependencies STL, GLM, autodiff (optional), libccd (optional).
+* Minimal dependencies: STL, GLM, and autodiff (optional), libccd (optional).
 
 ## Background
 
@@ -72,24 +72,25 @@ This code is written in c++23 and depends on STL, and the header-only GLM, autod
 
 ### Collision Detection and Impulse Based Resolution
 
+ The BContactManager class can detect and resolve collisions between (pairs of)  rigid bodies.
 
  Collison detection can be subdivided into _broad phase_ and  _narrow phase_.
  Broad-phase consists of detecting intersections between bounding boxes (BB) using 
  the Separating Axis Theorem (SAT), 
  (see https://en.wikipedia.org/wiki/Hyperplane_separation_theorem).
- The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
+ The narrow-phase detects intersections between  _polytope_ meshes (or convex hulls), 
  using the GJK algorithm. This is very precise but computationally more expensive,
  (see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm).
 
  Collisons are resolved by calculating the
- _spatial impulses_ resulting from a contact and using these impulses to update the objects velocities
+ _spatial impulses_ resulting from a contact (and friction) and using these impulses to update the objects velocities
  so that they separate appropriately. (see RBDA, Section 11.7).
 
 
 
 ### Spatial Algebra
 
- The algorithms described above are described and implemented using _spatial algebra_ (see RBDA, Chapter 2). 
+ The algorithms described above are implemented using _spatial algebra_ (see RBDA, Chapter 2). 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
  Linear and angular velocities (or accelerations) are
@@ -186,7 +187,7 @@ This code is written in c++23 and depends on STL, and the header-only GLM, autod
 The collision detection component BContactManager depends on the external library _libccd_ (see below).
 Libccd is a C library for collision detection between convex shapes. It implements a variant 
 of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). 
-The implemenation also supports two standard collider shapes: sphere and box.
+In additiuon to general mesh polytopes, the implemenation also supports two standard collider shapes: sphere and box.
  
  ## Correctness and Validation
  
@@ -213,10 +214,11 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
  ```make```
 
 Cmake will take care of installing the GLM, autodiff, and libccd libraries. 
-If you are not using cmake these libraries can be downloaded directly from github (see links below).
+If you are not using cmake these libraries can be downloaded directly from github (see links below), and the relevant header/source files can be included 
+in the project directly.
 
 The minimum compiler requirement is now c++23. This is due to the improved constexpr handling in c++23. If you do not use GLM_FORCE_INTRINSICS you can use c++20.
-If you remove (some) constexpr definitions, then my code will 'almost' compile under c++17. GLM and autodiff are both c++17 compliant.  See the source for details on the remaining minor changes. 
+If you remove (some) constexpr definitions, then my code will compile with c++20, and 'almost' compile under c++17. GLM and autodiff are both c++17 compliant.  See the source for details on the remaining minor changes. 
 
  ## Libraries
  
