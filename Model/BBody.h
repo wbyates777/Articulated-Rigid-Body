@@ -206,9 +206,10 @@ private:
     BVector6  m_a;    // spatial acceleration of the body
     BVector6  m_c;    // spatial velocity-dependent acceleration term
 
-    BRBInertia m_I;   // spatial inertia at origin of the body (mass, com, rotational inertia)
-   
-    // transformation from the base frame to this body's coordinate frame  - set dynamically
+    BRBInertia m_I;          // spatial inertia at origin of the body (mass, com, rotational inertia)
+
+    // transform from base/world coordinate frame to this body's frame 
+    // the body's base/world position and orientation
     BTransform m_X_base;
     
     bool m_isVirtual;

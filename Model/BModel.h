@@ -37,6 +37,10 @@
 #ifndef __BMODEL_H__
 #define __BMODEL_H__
 
+#ifndef __BSPATIALTYPES_H__
+#include "BSpatialTypes.h"
+#endif
+
 #ifndef __BFIXEDBODY_H__
 #include "BFixedBody.h" 
 #endif

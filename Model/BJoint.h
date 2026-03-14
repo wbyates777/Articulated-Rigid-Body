@@ -179,6 +179,7 @@
 #define __BJOINT_H__
 
 
+
 #ifndef __BVECTOR6_H__
 #include "BVector6.h"
 #endif
