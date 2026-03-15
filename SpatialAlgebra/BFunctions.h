@@ -128,7 +128,8 @@ namespace arb {
     inline constexpr BScalar 
     clamp( BScalar d, BScalar min, BScalar max ) 
     {
-        return std::clamp(d,min,max);
+        using std::clamp;
+        return clamp(d,min,max);
     }
     
     inline constexpr BVector3 
