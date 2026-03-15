@@ -1,11 +1,12 @@
 # <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" /> Articulated Rigid Body (ARB)
 
+
 ## Overview
 
-ARB is a compact implementation of a _spatial_ _algebra_ with end-to-end automatic differentiability (AD). 
+ARB is a compact implementation of _spatial_ _algebra_ with end-to-end automatic differentiability (AD). 
 
-The algebra is used to implement two important rigid body dynamics algorithms: articulated-body algorithm (ABA) 
-and the recursive Newton-Euler algorithm (RNEA) (see Featherstone 2008).
+The spatial algebra is used to implement two important rigid body dynamics algorithms: articulated-body algorithm (ABA) 
+and the recursive Newton-Euler algorithm (RNEA)  (see Featherstone 2008).
 The algebra is also used to implement a _spatial impulse_ based, collision resolution algorithm.
 All three algorithms have beed tested extensively in a graphics environment.
 
@@ -20,25 +21,27 @@ to a simple hinged mechanism such as a door.
  Spatial algebra also significantly reduces the complexity of the implementation.
  
  Automatic differentiation is provided by the autodiff library.
- Thus the algebra, the ABA, and the RNEA are completely differentiable. 
+ Thus the algebra, the ABA,  the RNEA, and collision resolution are completely differentiable. 
  This end-to-end differentiability facilitates the application of 
-  advanced optimisation and machine learning techniques.
- 
+  advanced optimisation, machine learning techniques, and System Identification (SI).
+
   The BContactManager class can detect collisions between (pairs of) rigid bodies and can resolves any 'contacts' 
  by employing the physical concept of spatial impulse.  
 
  
-This code is written in c++23 and depends on STL, the header-only GLM, the header-only autodiff, and libccd shared libraries.
+This code is written in c++23 and depends primarily on STL and the header-only GLM. 
+Additionally, the header-only autodiff library is required for automatic differentiablity, and 
+ the libccd shared library for collision detection.
 
- 
+
 ### Key Features
 
 * Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
-* Collision detection and resolutiion,
-* Spatial algebra,  header-only,
-* Automatic Differentiation (AD),  header-only, and
-* Minimal dependencies: STL, GLM, and autodiff (optional), libccd (optional).
+* Spatial algebra implementation (header-only),
+* Automatic Differentiation (AD) (header-only),
+* Differentiable Collision Resolution – propagate gradients through spatial impulses and GJK/EPA contact manifolds.
+* Minimal dependencies STL, GLM, (autodiff and libccd optional).
 
 ## Background
 
@@ -52,7 +55,7 @@ This code is written in c++23 and depends on STL, the header-only GLM, the heade
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
  is known as _inverse kinematics_ (see https://en.wikipedia.org/wiki/Inverse_kinematics).
 
- BDynamics contains an implementation of:
+ BDynamics is an implementation of:
  
  - the articulated-body algorithm (ABA), and  
  - the recursive Newton-Euler algorithm (RNEA).
@@ -70,27 +73,26 @@ This code is written in c++23 and depends on STL, the header-only GLM, the heade
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
-### Collision Detection and Impulse Based Resolution
+### Collisions Detection and Impulse Based Resolution
 
- The BContactManager class can detect and resolve collisions between (pairs of)  rigid bodies.
 
  Collison detection can be subdivided into _broad phase_ and  _narrow phase_.
  Broad-phase consists of detecting intersections between bounding boxes (BB) using 
- the Separating Axis Theorem (SAT), 
- (see https://en.wikipedia.org/wiki/Hyperplane_separation_theorem).
- The narrow-phase detects intersections between  _polytope_ meshes (or convex hulls), 
- using the GJK algorithm. This is very precise but computationally more expensive,
- (see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm).
+ the Separating Axis Theorem (SAT).
+ See https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
+ The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
+ using the GJK algorithm. This is very precise but computationally more expensive.
+ See https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm.
 
  Collisons are resolved by calculating the
- _spatial impulses_ resulting from a contact (and friction) and using these impulses to update the objects velocities
+ _spatial impulses_ resulting from a contact and using these impulses to update the objects velocities
  so that they separate appropriately. (see RBDA, Section 11.7).
 
 
 
 ### Spatial Algebra
 
- The algorithms described above are implemented using _spatial algebra_ (see RBDA, Chapter 2). 
+ The algorithms described above are described and implemented using _spatial algebra_ (see RBDA, Chapter 2). 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
  Linear and angular velocities (or accelerations) are
@@ -146,9 +148,22 @@ This code is written in c++23 and depends on STL, the header-only GLM, the heade
  Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
  AD uses the chain rule to propagate exact _analytical_ derivatives through the code at the machine level.
  This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques
- such as real-time Model Predictive Control (MPC), analytical system identification, or gradient-based trajectory optimisation
+ such as real-time Model Predictive Control (MPC), gradient-based trajectory optimisation, or analytical System Identification (SI)
    (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
-   
+ 
+For example, consider  _System Identification_ (SI).
+System ID is the process of constructing a mathematical model of a dynamic system, 
+using analytical methods, based on observed input and output data. 
+While forward dynamics (ABA) predicts how a system moves given its physical parameters, 
+System ID reverses this process: 
+it can recover the underlying physical parameters (mass, center-of-mass, inertia tensor) of each body 
+by observing the system's motion (see ARB Example 6 in main.cpp).
+System ID allows researchers to synchronise a simulation with the real world.
+Additionally, SI can be used for the estimation of non-conservative forces such as joint friction and damping, 
+which are traditionally difficult to calibrate manually.
+
+
+  
 ## Implementation 
 
  The implementations presented here, are intended for use in computer graphics, and are 
@@ -184,10 +199,9 @@ This code is written in c++23 and depends on STL, the header-only GLM, the heade
  It should be noted that the calculated derivatives are
  exact (to machine precision) and not approximated, as is the case for finite difference methods.
 
-The collision detection component BContactManager depends on the external library _libccd_ (see below).
-Libccd is a C library for collision detection between convex shapes. It implements a variant 
+The collision detection component relies on the external library _libccd_ (see below).
+libccd is a C library for a collision detection between two convex shapes. It implements a variant 
 of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). 
-In additiuon to general mesh polytopes, the implemenation also supports two standard collider shapes: sphere and box.
  
  ## Correctness and Validation
  
@@ -213,21 +227,24 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
  
  ```make```
 
-Cmake will take care of installing the GLM, autodiff, and libccd libraries. 
-If you are not using cmake these libraries can be downloaded directly from github (see links below), and the relevant header/source files can be included 
-in the project directly.
+Cmake will take care of installing the GLM, autodiff, and libccd libaries. 
+If you are not using cmake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now c++23. This is due to the improved constexpr handling in c++23. If you do not use GLM_FORCE_INTRINSICS you can use c++20.
-If you remove (some) constexpr definitions, then my code will compile with c++20, and 'almost' compile under c++17. GLM and autodiff are both c++17 compliant.  See the source for details on the remaining minor changes. 
+If you remove (some) constexpr definitions, then my code will compile under c++20, and 'almost' compile under c++17. GLM and autodiff are both c++17 compliant.  See the source for details on the remaining minor c++17 changes. 
 
  ## Libraries
  
+   ### Dependencies
+   
  GLM       - https://github.com/g-truc/glm
  
  autodiff  - https://github.com/autodiff/autodiff
  
  CCD       - https://github.com/danfis/libccd
  
+  ### External 
+  
  RBDL      - https://github.com/rbdl/rbdl
  
  RBDyn     - https://github.com/jrl-umi3218/RBDyn
