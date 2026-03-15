@@ -215,22 +215,25 @@ namespace arb
     inline constexpr BVector6 
     min(const BVector6 &v1, const BVector6 &v2) 
     { 
-        return BVector6(std::min(v1[0],v2[0]), std::min(v1[1],v2[1]), std::min(v1[2],v2[2]), 
-                        std::min(v1[3],v2[3]), std::min(v1[4],v2[4]), std::min(v1[5],v2[5]));
+        using std::min;
+        return BVector6(min(v1[0],v2[0]), min(v1[1],v2[1]), min(v1[2],v2[2]), 
+                        min(v1[3],v2[3]), min(v1[4],v2[4]), min(v1[5],v2[5]));
     }
     
     inline constexpr BVector6 
     max(const BVector6 &v1, const BVector6 &v2)
     { 
-        return BVector6(std::max(v1[0],v2[0]), std::max(v1[1],v2[1]), std::max(v1[2],v2[2]), 
-                        std::max(v1[3],v2[3]), std::max(v1[4],v2[4]), std::max(v1[5],v2[5]));
+        using std::max;
+        return BVector6(max(v1[0],v2[0]), max(v1[1],v2[1]), max(v1[2],v2[2]), 
+                        max(v1[3],v2[3]), max(v1[4],v2[4]), max(v1[5],v2[5]));
     }
     
     inline constexpr BVector6 
     clamp(const BVector6 &v, const BVector6 &min, const BVector6 &max) 
     { 
-        return BVector6(std::clamp(v[0], min[0], max[0]), std::clamp(v[1], min[1], max[1]), std::clamp(v[2], min[2], max[2]), 
-                        std::clamp(v[3], min[3], max[3]), std::clamp(v[4], min[4], max[4]), std::clamp(v[5], min[5], max[5]));
+        using std::clamp;
+        return BVector6(clamp(v[0], min[0], max[0]), clamp(v[1], min[1], max[1]), clamp(v[2], min[2], max[2]), 
+                        clamp(v[3], min[3], max[3]), clamp(v[4], min[4], max[4]), clamp(v[5], min[5], max[5]));
     }
 }
 
