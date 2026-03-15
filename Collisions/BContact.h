@@ -62,7 +62,7 @@ struct BContact
     BVector6 dv_2;               // Δv_2 unit change in spatial velocity - motion vector
     
     BScalar  accJ;               // accumulated impulse 
-    BScalar  K;                  // 'effective' mass 
+    BScalar  invK;               // 1.0 / 'effective' mass 
     BScalar  depth;              // computed  penetration depth (always positive)
     BScalar  velBias;            // total "target" change in velocity
     
@@ -84,8 +84,8 @@ struct BContact
     BScalar  accJx;  // accumulated impulses (x-y axis)
     BScalar  accJy;
     
-    BScalar  K_x;    // 'effective' masses (x-y axis) 
-    BScalar  K_y;
+    BScalar  invK_x;    // 1.0 / 'effective' masses (x-y axis) 
+    BScalar  invK_y;
     
 };
 

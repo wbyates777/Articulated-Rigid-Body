@@ -191,7 +191,7 @@ BContactManager::prepare( BScalar dt )
         c.dv_2 = (b2->invI_base() * c.n_2); 
         
         // effective mass - how 'heavy' the collision 'feels' (denominator of (11.65))
-        c.K  = arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2);
+        c.invK  = BScalar(1.0) / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
  
         // ζ initial relative or separation velocity at contact c (eqn 11.62)
         const BScalar n_dot_relvel = arb::dot(c.n_2, b2->v() - b1->v()); 
@@ -233,8 +233,8 @@ BContactManager::prepare( BScalar dt )
             c.dvy_2 = b2->invI_base() * c.ny_2;                 
             
             // compute effective mass for x-y axis (K_x and K_y)
-            c.K_x = arb::dot(c.nx_1, c.dvx_1) +  arb::dot(c.nx_2, c.dvx_2);
-            c.K_y = arb::dot(c.ny_1, c.dvy_1) +  arb::dot(c.ny_2, c.dvy_2); 
+            c.invK_x = BScalar(1.0) / (arb::dot(c.nx_1, c.dvx_1) +  arb::dot(c.nx_2, c.dvx_2));
+            c.invK_y = BScalar(1.0) / (arb::dot(c.ny_1, c.dvy_1) +  arb::dot(c.ny_2, c.dvy_2)); 
         }
         //
         
@@ -247,8 +247,8 @@ BContactManager::prepare( BScalar dt )
         {
             BContact &oldc = fidx->second;
 
-            BScalar d = glm::distance2(c.pos, oldc.pos); // note distance 2
-            if (d < 0.005)  // if same point
+            BScalar d2 = glm::distance2(c.pos, oldc.pos); 
+            if (d2 < 0.005)  // if same point - note distance2
             {
                 // apply old solution impulse 
                 b1->v() += c.dv_1 * oldc.accJ;
@@ -286,7 +286,7 @@ BContactManager::solve( void )
             const BScalar n_dot_dvel = arb::dot(c.n_2, c.body2->v()) + arb::dot(c.n_1, c.body1->v());
             
             // how much more impulse j do we need to reach the target bias?
-            const BScalar j = (c.velBias - n_dot_dvel) / c.K;
+            const BScalar j = (c.velBias - n_dot_dvel) * c.invK;
             
             // clamping - Projected Gauss-Seidel (PGS)
             BScalar oldJ = c.accJ;
@@ -311,8 +311,8 @@ BContactManager::solve( void )
                     const BScalar dvy = arb::dot(c.ny_2, b2->v()) + arb::dot(c.ny_1, b1->v());
                     
                     // calculate the new total accumulated friction vector
-                    BScalar next_accJx = c.accJx + (-dvx / c.K_x);
-                    BScalar next_accJy = c.accJy + (-dvy / c.K_y);
+                    BScalar next_accJx = c.accJx + (-dvx * c.invK_x);
+                    BScalar next_accJy = c.accJy + (-dvy * c.invK_y);
                     
                     // circular clamping (friction cone)
                     BScalar maxFriction   = m_mu * c.accJ;
