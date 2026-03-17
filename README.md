@@ -40,7 +40,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * Automatic Differentiation (AD) (header-only),
-* Differentiable Collision Resolution – propagate gradients through spatial impulses and GJK/EPA contact manifolds.
+* Collision Resolution –  spatial impulses and GJK/EPA contact manifolds.
 * Minimal dependencies STL, GLM, (autodiff and libccd optional).
 
 ## Background
@@ -78,7 +78,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  Collison detection can be subdivided into _broad phase_ and  _narrow phase_.
  Broad-phase consists of detecting intersections between bounding boxes (BB) using 
- the Separating Axis Theorem (SAT).
+ the Separating Axis Theorem (SAT). Computationally, this is relatively efficient.
  See https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
  The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
  using the GJK algorithm. This is very precise but computationally more expensive.
