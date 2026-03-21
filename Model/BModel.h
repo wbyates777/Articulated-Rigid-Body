@@ -87,7 +87,7 @@ public:
     fixedBody( BBodyId bid ) const { return m_fixed[bid - m_fbd]; }
    
     size_t
-    bodies( void ) const { return m_body.size(); }     // $N_B$
+    numBody( void ) const { return m_body.size(); }     // $N_B$
         
     
     /** \brief Connects a given body to the model
@@ -141,11 +141,13 @@ public:
     BMatrix3 
     orient( BBodyId bid ) const;
 
+    // velocity at point
     BVector6  
-    pointVel( BBodyId bid, const BVector3 &body_pos );
+    v( BBodyId bid, const BVector3 &body_pos );
     
+    // acceleration at point 
     BVector6
-    pointAcc( BBodyId bid, const BVector3 &body_pos );
+    a( BBodyId bid, const BVector3 &body_pos );
     //
 
     // total mass of body $bid$ and all children bodies (subtree)
@@ -158,7 +160,7 @@ public:
     
     // inertia of body $bid$ and all children bodies  (subtree)
     BRBInertia 
-    inertia( BBodyId bid ) const;
+    I( BBodyId bid ) const;
     
     // size of the $\mathbf{q}$-vector.
     int  

@@ -261,7 +261,7 @@ BModel::orient(const BBodyId bid)  const
 }
 
 BVector6 
-BModel::pointVel( BBodyId bid, const BVector3 &body_pos ) 
+BModel::v( BBodyId bid, const BVector3 &body_pos ) 
 // RBDL Kinematics::CalcPointVelocity6D
 {
     BBodyId  ref_bid = bid;
@@ -281,7 +281,7 @@ BModel::pointVel( BBodyId bid, const BVector3 &body_pos )
 }
 
 BVector6 
-BModel::pointAcc( BBodyId bid,  const BVector3 &body_pos ) 
+BModel::a( BBodyId bid,  const BVector3 &body_pos ) 
 // RBDL Kinematics::CalcPointAcceleration6D
 {
     BBodyId  ref_bid = bid;
@@ -351,7 +351,7 @@ BModel::com( BBodyId bid ) const
 }
 
 BRBInertia  
-BModel::inertia( BBodyId bid ) const
+BModel::I( BBodyId bid ) const
 {
     if (isFixedBodyId(bid)) 
         bid = m_fixed[bid - m_fbd].movableParent();

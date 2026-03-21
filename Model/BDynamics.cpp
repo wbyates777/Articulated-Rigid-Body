@@ -88,16 +88,16 @@
 #include "BAdjoint.h"
 #endif
 
-BDynamics::BDynamics( int expected_dof ): m_U(),
-                                          m_d(),
-                                          m_u(), 
+BDynamics::BDynamics( int expected_dof ): m_dof1_U(),
+                                          m_dof1_d(),
+                                          m_dof1_u(), 
                                           m_dof3_U(),
                                           m_dof3_Dinv(),
                                           m_dof3_u() 
 {
-    m_U.reserve(expected_dof);
-    m_d.reserve(expected_dof);
-    m_u.reserve(expected_dof);
+    m_dof1_U.reserve(expected_dof);
+    m_dof1_d.reserve(expected_dof);
+    m_dof1_u.reserve(expected_dof);
 
     m_dof3_U.reserve(expected_dof);  
     m_dof3_Dinv.reserve(expected_dof);
@@ -115,7 +115,7 @@ BDynamics::update_X_base( BModel &m, const BModelState &qstate )
 {
     const std::vector<BScalar> qdot_zero(qstate.qdot.size(), 0.0);
     
-    for (int i = 1; i < m.bodies(); ++i) 
+    for (int i = 1; i < m.numBody(); ++i) 
     {
         m.joint(i).jcalc(qstate.q, qdot_zero);
         
@@ -133,7 +133,7 @@ BDynamics::update_velocity( BModel &m, const BModelState &qstate )
 // update kinematics - calculates velocities
 // based on UpdateKinematicsCustomin RBDL
 {
-    for (int i = 1; i < m.bodies(); ++i) 
+    for (int i = 1; i < m.numBody(); ++i) 
     {
         m.joint(i).jcalc(qstate.q, qstate.qdot);
         
@@ -161,11 +161,11 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     const std::vector<BScalar> &qdot = qstate.qdot; // vel 
     const std::vector<BScalar> &tau  = qstate.tau;  // force
     
-    const int N_B = (int) m.bodies();
+    const int N_B = (int) m.numBody();
     
-    m_U.resize(N_B);
-    m_d.resize(N_B);
-    m_u.resize(N_B);
+    m_dof1_U.resize(N_B);
+    m_dof1_d.resize(N_B);
+    m_dof1_u.resize(N_B);
     
     m_dof3_U.resize(N_B);
     m_dof3_Dinv.resize(N_B);
@@ -249,16 +249,16 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             const BVector6 S(m.joint(i).S());
             
             // S^T * I * S,
-            m_U[i] = m_IA[i] * S;                       
-            m_d[i] = arb::dot(S, m_U[i]);
-            m_u[i] = tau[qidx] - arb::dot(S, m_pA[i]); 
+            m_dof1_U[i] = m_IA[i] * S;                       
+            m_dof1_d[i] = arb::dot(S, m_dof1_U[i]);
+            m_dof1_u[i] = tau[qidx] - arb::dot(S, m_pA[i]); 
             
             if (lambda != 0) 
             {
-                BScalar Dinv = 1.0 / m_d[i];
-                BABInertia Ia = m_IA[i] - BABInertia(m_U[i], (m_U[i] * Dinv)); 
+                BScalar Dinv = 1.0 / m_dof1_d[i];
+                BABInertia Ia = m_IA[i] - BABInertia(m_dof1_U[i], (m_dof1_U[i] * Dinv)); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
-                BVector6 pa(m_pA[i] + (Ia * m.body(i).c()) + (m_U[i] * (m_u[i] * Dinv))); 
+                BVector6 pa(m_pA[i] + (Ia * m.body(i).c()) + (m_dof1_U[i] * (m_dof1_u[i] * Dinv))); 
                 m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
@@ -269,12 +269,17 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             
             // S^T * I * S,
             m_dof3_U[i] = m_IA[i] * S;
-            const BMatrix3 aux = m_dof3_U[i].top() * arb::transpose(S.top()) + m_dof3_U[i].bot() * arb::transpose(S.bot());
+            //m_dof3_Dinv[i] = arb::inverse(arb::transpose(S) * m_dof3_U[i]);
+            //m_dof3_u[i]    = res - (arb::transpose(S) * m_pA[i]);
+            const BMatrix3 aux = m_dof3_U[i].top() * arb::transpose(S.top()) 
+                                 + m_dof3_U[i].bot() * arb::transpose(S.bot());
             m_dof3_Dinv[i] = arb::inverse(aux);
             m_dof3_u[i] = res - (S.top() * m_pA[i].ang() + S.bot() * m_pA[i].lin());
             
             if (lambda != 0) 
             {
+                //const BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
+                //const BABInertia Ia = m_IA[i] - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
                 const BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
                 const BABInertia Ia = m_IA[i] - BABInertia(m_dof3_U[i], m_dof3_Dinv[i]); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
@@ -305,7 +310,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         
         if (dofCount == 1) 
         {
-            qddot[qidx] = (1.0 / m_d[i]) * (m_u[i] - arb::dot(m_U[i], m.body(i).a()));
+            qddot[qidx] = (1.0 / m_dof1_d[i]) * (m_dof1_u[i] - arb::dot(m_dof1_U[i], m.body(i).a()));
             
             const BVector6 S(m.joint(i).S());
             
@@ -344,7 +349,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     m.body(0).v(B_ZERO_6);
     m.body(0).a().set(B_ZERO_3, -m.gravity());
     
-    const int N_B = (int) m.bodies();
+    const int N_B = (int) m.numBody();
     
     m_f.assign(N_B, B_ZERO_6);
     

@@ -181,6 +181,10 @@ public:
     c( const BVector6 &sv ) { m_c = sv; } 
     
     
+  //  BScalar // use m_I_base as m_v is in world coordinates; else use m_I
+  //  kinetic_energy( void ) const  { return 0.5 * arb::dot(m_v, m_I_base * m_v); }
+
+    
     bool
     isVirtual( void ) const { return m_isVirtual; }
     
@@ -191,7 +195,7 @@ public:
     bool 
     operator!=( const BBody &v ) const { return (m_id != v.m_id); }
     
-    
+
     friend std::ostream&
     operator<<( std::ostream &ostr, const BBody &b );
     
