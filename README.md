@@ -39,7 +39,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
-* Automatic Differentiation (AD) (header-only),
+* End-to-end automatic differentiability using autodiff (header-only),
 * Collision Resolution –  spatial impulses and GJK/EPA contact manifolds.
 * Minimal dependencies STL, GLM, (autodiff and libccd optional).
 
@@ -73,7 +73,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
-### Collisions Detection and Impulse Based Resolution
+### Collision Detection and Impulse Based Resolution
 
 
  Collison detection can be subdivided into _broad phase_ and  _narrow phase_.
@@ -88,7 +88,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  _spatial impulses_ resulting from a contact and using these impulses to update the objects velocities
  so that they separate appropriately. (see RBDA, Section 11.7).
 
-
+ https://youtu.be/g1jMEpu1sl8
 
 ### Spatial Algebra
 
@@ -152,13 +152,13 @@ Additionally, the header-only autodiff library is required for automatic differe
    (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
  
 For example, consider  _System Identification_ (SI).
-System ID is the process of constructing a mathematical model of a dynamic system, 
+System Identification is the process of constructing a mathematical model of a dynamic system, 
 using analytical methods, based on observed input and output data. 
 While forward dynamics (ABA) predicts how a system moves given its physical parameters, 
-System ID reverses this process: 
+SI reverses this process: 
 it can recover the underlying physical parameters (mass, center-of-mass, inertia tensor) of each body 
 by observing the system's motion (see ARB Example 6 in main.cpp).
-System ID allows researchers to synchronise a simulation with the real world.
+SI allows researchers to synchronise a simulation with the real world.
 Additionally, SI can be used for the estimation of non-conservative forces such as joint friction and damping, 
 which are traditionally difficult to calibrate manually.
 
