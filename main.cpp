@@ -106,7 +106,7 @@ example1( void )
     qinput.qdot.assign(model->qdotsize(), 1.0);
     qinput.qddot.assign(model->qdotsize(), 0.0);
     qinput.tau.assign(model->qdotsize(), 0.0);
-    std::vector<BVector6> f_ext(model->bodies(), B_ZERO_6);
+    std::vector<BVector6> f_ext(model->numBody(), B_ZERO_6);
     f_ext[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
     
     dyn.inverse(*model, qinput, f_ext);
@@ -141,7 +141,7 @@ example1( void )
     qinput.qdot.assign(model2.qdotsize(), 1.0);
     qinput.qddot.assign(model2.qdotsize(), 0.0);
     qinput.tau.assign(model2.qdotsize(), 0.0);
-    std::vector<BVector6> f_ext2(model2.bodies(), B_ZERO_6);
+    std::vector<BVector6> f_ext2(model2.numBody(), B_ZERO_6);
     f_ext2[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
     
 #ifdef ARB_USE_AUTODIFF
@@ -283,7 +283,7 @@ single_body( void )
     // for floating base we  only need to apply external force to body[2] (or body[spaceshipId])
     // external forces are assumed to be in world coordinates
     BVector6 myforce( B_ZERO_3, 0.0, 0.0, 100.0);
-    BExtForce f_ext(model->bodies(), B_ZERO_6); 
+    BExtForce f_ext(model->numBody(), B_ZERO_6); 
     f_ext[spaceshipId] =  BVector6( myforce );
     
     BModelState qinput;
