@@ -232,7 +232,7 @@ The collision detection component relies on the external library _libccd_ (see b
 libccd is a C library for a collision detection between two convex shapes. It implements a variant 
 of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). 
  
- ## Correctness and Validation
+ ## Validation
  
  This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. The results of test example 1 included in main.cpp and taken from the RBDL documentation are shown below. Notice that the forward and inverse dynamics results match to 8 dp:
 
@@ -283,4 +283,6 @@ If you remove (some) constexpr definitions, then my code will compile under c++2
 ## Notes
 
 Please send any questions or report any errors, omissions, or suggested extensions to the email wbyates777@gmail.com. 
+
+This project is licensed under the MIT License.
 
