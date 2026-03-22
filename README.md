@@ -1,7 +1,36 @@
 # <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" /> Articulated Rigid Body (ARB)
 
+**Compact C++ articulated rigid body simulation library** implementing:
+
+- Forward dynamics via the Articulated Body Algorithm (ABA) —  $O(N_B)$,  
+- Inverse dynamics via the Recursive Newton–Euler Algorithm (RNEA) -  $O(N_B)$, 
+- Collision detection and spatial impulse-based contact resolution.  
+
+Includes **end-to-end automatic differentiation**, enabling system identification, optimization, and machine learning applications.
+
+---
+
+### Demo
+
+**Rigid body simulation using collision detection and contact resolution:**
+
+https://youtu.be/g1jMEpu1sl8
+
+---
 
 ## Overview
+
+ARB is a compact implementation of spatial algebra and rigid body dynamics, designed for use in computer graphics, simulation, and robotics.
+
+It combines:
+- Spatial algebra (6D motion and force vectors)
+- Efficient rigid body dynamics algorithms (ABA, RNEA)
+- Collision detection and physically consistent contact resolution  
+- Automatic differentiation across the full simulation pipeline  
+
+This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
+
+## Introduction
 
 ARB is a compact implementation of _spatial_ _algebra_ with end-to-end automatic differentiability (AD). 
 
