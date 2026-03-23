@@ -78,11 +78,18 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  Trees (and chains) of kinematic equations are used in robotics, computer graphics, and animation.
  In robotics _forward kinematics_ refers to the use of kinematic equations to compute the position of 
- an end-effector, such as a jointed robotic arm, from specified values for the joint parameters
+ an end-effector, such as a jointed robotic arm (see figure 1), from specified values for the joint parameters
  (see  https://en.wikipedia.org/wiki/Forward_kinematics).
 
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
  is known as _inverse kinematics_ (see https://en.wikipedia.org/wiki/Inverse_kinematics).
+
+ <p align="center">
+<img width="255" height="250" alt="robot_arm" src="https://github.com/user-attachments/assets/a51a097e-1480-4c3b-a724-2e5de4086daa"    />
+</p>
+ <p align="center">
+ Fig 1.  A simple jointed robot arm.
+ </p>
 
  BDynamics is an implementation of:
  
