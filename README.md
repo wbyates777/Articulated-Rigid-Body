@@ -115,7 +115,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  Collison detection can be subdivided into _broad phase_ and  _narrow phase_.
  Broad-phase consists of detecting intersections between bounding boxes (BB) using 
  the Separating Axis Theorem (SAT). Computationally, this is relatively efficient.
- See https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
+ See https://en.wikipedia.org/wiki/Hyperplane_separation_theorem.
  The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
  using the GJK algorithm. This is very precise but computationally more expensive.
  See https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm.
@@ -138,7 +138,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
- it also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
+ It also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
  For example, the following code excerpt performs Newton-Euler integration (see https://en.wikipedia.org/wiki/Newton–Euler_equations):
 
     // set up single body - a sphere -  
