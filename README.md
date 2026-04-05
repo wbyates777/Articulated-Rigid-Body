@@ -1,6 +1,6 @@
 # <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" /> Articulated Rigid Body (ARB)
 
-**Compact C++ articulated rigid body simulation library** implementing:
+**Compact C++ articulated rigid body simulation library implementing:**
 
 - Forward dynamics via the Articulated Body Algorithm (ABA) —  $O(N_B)$,  
 - Inverse dynamics via the Recursive Newton–Euler Algorithm (RNEA) -  $O(N_B)$, 
@@ -23,10 +23,10 @@ https://youtu.be/g1jMEpu1sl8
 ARB is a compact implementation of spatial algebra and rigid body dynamics, designed for use in computer graphics, simulation, and robotics.
 
 It combines:
-- Spatial algebra (6D motion and force vectors)
-- Efficient rigid body dynamics algorithms (ABA, RNEA)
-- Collision detection and physically consistent contact resolution  
-- Automatic differentiation across the full simulation pipeline  
+- Spatial algebra (6D motion and force vectors),
+- Efficient rigid body dynamics algorithms (ABA, RNEA),
+- Collision detection and physically consistent contact resolution, and  
+- Automatic differentiation across the full simulation pipeline.  
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
 
@@ -227,7 +227,7 @@ which are traditionally difficult to calibrate manually.
  
  It is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
- linear algebra library.
+ linear algebra library. 
 
  In order to implement automatic differentiation it is sufficient to #include "BAutodiff.h" in the BSpatialTypes.h file.
  BAutodiff.h is a wrapper for the header-only autodiff library (see below).
