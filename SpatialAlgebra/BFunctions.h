@@ -31,12 +31,22 @@ namespace arb {
         //  return glm::length(v);
     } 
     
+    inline BVector3
+    normalize( const BVector3 &v ) 
+    {
+        return v / length(v);
+        //return glm::normalize(v);
+    } 
+    
     //  m^{-1} - style choice - I prefer arb::inverse(m) to m.inverse()
     inline constexpr BMatrix3 
     inverse( const BMatrix3 &m ) 
     { 
         return glm::inverse(m);
     }
+    
+    inline BScalar
+    trace( const BMatrix3 &m )  {  return  m[0][0] + m[1][1] + m[2][2]; }
     
     inline constexpr BScalar 
     determinant( const BMatrix3 &m ) 
