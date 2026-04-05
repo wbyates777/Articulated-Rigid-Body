@@ -359,8 +359,7 @@ BContactManager::detect( const std::vector<ABody*> &body )
 
         //BScalar  range1_sq  = 20.0 * 20.0; // b1->range2();
         BScalar radius1    = b1->box().radius(); 
-        BScalar radius1_sq = b1->box().radius2(); 
-        
+
         for (int j = i+1; j < body.size(); ++j)    
         {
            ABody *b2 = body[j];
@@ -370,8 +369,7 @@ BContactManager::detect( const std::vector<ABody*> &body )
             
             //BScalar  range2_sq  = 20.0 * 20.0; //b2->range2();
             BScalar radius2    = b2->box().radius(); 
-            BScalar radius2_sq = b2->box().radius2(); 
-            
+              
             BScalar d2 = glm::distance2(b1->pos(), b2->pos());
             
             // proximity check
@@ -383,7 +381,7 @@ BContactManager::detect( const std::vector<ABody*> &body )
             
             // sphere intersection check
             // bool sphere_check = d < (1.0 + (radius1 + radius2)); 
-            bool sphere_check = d2 < (1.0 + ((radius1_sq + radius2_sq) + (2.0 * radius1 * radius2))); 
+            bool sphere_check = d2 < ((1.0 + radius1 + radius2) * (1.0 + radius1 + radius2));
            
             if (sphere_check) 
             {
