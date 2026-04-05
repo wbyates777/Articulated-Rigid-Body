@@ -336,6 +336,48 @@ test_adjoints( bool display )
         }
     }
     
+    if (1)
+    {
+        // adjoint proposition 3.21, pg 100, Modern Robotics
+        glm::dvec3 axis1 = arb::rndVec3();
+        if (axis1 == B_ZERO_3)
+            axis1 = arb::rndAxis();
+        axis1 = glm::normalize(axis1);
+        BTransform T1 = arb::Xrot(arb::rndFloat(-M_PI_2, M_PI_2), axis1);
+        
+        glm::dvec3 axis2 = arb::rndVec3();
+        if (axis2 == B_ZERO_3)
+            axis2 = arb::rndAxis();
+        axis2 = glm::normalize(axis2);
+        BTransform T2 = arb::Xrot(arb::rndFloat(-M_PI_2, M_PI_2), axis2);
+        
+        // adjoint
+        BVector6 v = arb::rndVec6();
+        BMatrix6 AdjT1 =  arb::toAdjoint(T1);
+        BMatrix6 AdjT2 =  arb::toAdjoint(T2);
+
+        BVector6 res1 = AdjT1 * AdjT2 * v;
+        BVector6 res2 = arb::toAdjoint(T1 * T2) * v;
+        bool test4 = arb::nearZero(res1 - res2);
+        
+        // dual adjoint
+        BMatrix6 AdjT3 =  arb::toAdjointDual(T1);
+        BMatrix6 AdjT4 =  arb::toAdjointDual(T2);
+
+        BVector6 res3 = AdjT3 * AdjT4 * v;
+        BVector6 res4 = arb::toAdjointDual(T1 * T2) * v;
+        bool test5 = arb::nearZero(res3 - res4);
+        
+        testsPassed.push_back(test4);
+        testsPassed.push_back(test5);
+        
+        if (display)
+        {
+            std::cout  << "Proposition -- adjoint is valid -- Test4 is " << test4 << std::endl; 
+            std::cout  << "Proposition -- adjoint dual is valid -- Test5 is " << test5 << std::endl; 
+        }
+    }
+    
     return  testsPassed;
 }
 
@@ -404,7 +446,7 @@ test_rbinertia( bool display )
     
     if (1)                                                      
     {
-        // ApplyTransposw -  X^T I X
+        // ApplyTranspose -  X^T I X
         BRBInertia I2 = X.applyTranspose( I ); 
         BMatrix6 A = arb::transpose(BMatrix6(X)) * BMatrix6(I) * BMatrix6(X);
         BMatrix6 B = arb::transpose(X) * I * X;
@@ -641,8 +683,7 @@ test_inertia( bool display )
 }
 
 std::vector<int>
-test_misc( bool display )
-// your tests go here!
+test_explog( bool display )
 {
     if (display)
     {
@@ -658,14 +699,68 @@ test_misc( bool display )
         
         bool test1  = (arb::cross(v) == -arb::transpose(arb::cross(v)));
         
+        
+        // 3D expSO3/logSO3 identity (see example 3.12, page 84, Modern Robotics)
+        BVector3 axis = arb::rndVec3();
+        if (axis == B_ZERO_3)
+            axis = arb::rndAxis();
+        BVector3 w = glm::normalize(axis);
+        BScalar theta = arb::rndFloat();
+        BVector3 v1 = w * theta;
+        BMatrix3 R = arb::exp( v1 );
+        BVector3 v2 = arb::log(R);
+        bool test2 = arb::nearZero(v1 - v2); // || arb::nearZero(v1 + v2)
+        
+        // 6D arb::exp/arb::log identity log(exp(v1)) == v1
+        BVector6 v3;
+        v3.ang( arb::rndVec3(-M_PI_2, M_PI_2));  // must keep angular variables in range here
+        v3.lin( arb::rndVec3());
+        BTransform X = arb::exp(v3);
+        BVector6 v4  = arb::log(X);
+        bool test3 = arb::nearZero(v3 - v4);
+        
         testsPassed.push_back(test1);
+        testsPassed.push_back(test2);
+        testsPassed.push_back(test3);
         
         if (display)
         {
-            std::cout  << "BProduct -- cross is valid -- Test1 is " << test1 << std::endl;     
+            std::cout  << "BExpLog -- arb::cross test is valid -- Test1 is " << test1 << std::endl; 
+            std::cout  << "BExpLog -- 3D exp/log identity is valid -- Test2 is " << test2 << std::endl; 
+            std::cout  << "BExpLog -- 6D exp/log identity is valid -- Test3 is " << test3 << std::endl;     
         }
-
     }
+    
+    if (1)
+    {
+        // Modern Robotics, eqn 3.89, page 106
+        glm::dvec3 axis1 = arb::rndVec3();
+        if (axis1 == B_ZERO_3)
+            axis1 = arb::rndAxis();
+        axis1 = glm::normalize(axis1);
+        
+        BVector6 v(B_ZERO_3, axis1);
+        BScalar theta = arb::rndFloat(-M_PI_2, M_PI_2);
+        BVector6 u = v * theta;
+        BTransform X1 = arb::exp( u );
+
+        bool test1 = arb::nearZero(BMatrix6(X1).botLeft() - arb::cross(theta * axis1));
+        bool test2 = arb::nearZero(BMatrix6(X1).topLeft() - B_IDENTITY_3x3);
+        
+        bool test3 = arb::nearZero(X1 * u - u);
+        
+        testsPassed.push_back(test1);
+        testsPassed.push_back(test2);
+        testsPassed.push_back(test3);
+        
+        if (display)
+        {
+            std::cout  << "BExpLog -- 6D exp test is valid -- Test1 is " << test1 << std::endl;   
+            std::cout  << "BExpLog -- 6D exp test is valid -- Test2 is " << test2 << std::endl; 
+            std::cout  << "BExpLog -- 6D exp axis invariance is valid -- Test3 is " << test3 << std::endl; 
+        }
+    }
+ 
     return testsPassed;
 }
 
@@ -703,7 +798,7 @@ check( int count, int seed )
         aux =  test_inertia( display );
         tests.insert(tests.end(), aux.begin(), aux.end());
         
-        aux =  test_misc( display );
+        aux =  test_explog( display );
         tests.insert(tests.end(), aux.begin(), aux.end());
         
         int correct = std::accumulate(tests.begin(), tests.end(), 0);
