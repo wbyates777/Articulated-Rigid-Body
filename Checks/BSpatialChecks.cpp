@@ -339,13 +339,13 @@ test_adjoints( bool display )
     if (1)
     {
         // adjoint proposition 3.21, pg 100, Modern Robotics
-        glm::dvec3 axis1 = arb::rndVec3();
+        BVector3 axis1 = arb::rndVec3();
         if (axis1 == B_ZERO_3)
             axis1 = arb::rndAxis();
         axis1 = glm::normalize(axis1);
         BTransform T1 = arb::Xrot(arb::rndFloat(-M_PI_2, M_PI_2), axis1);
         
-        glm::dvec3 axis2 = arb::rndVec3();
+        BVector3 axis2 = arb::rndVec3();
         if (axis2 == B_ZERO_3)
             axis2 = arb::rndAxis();
         axis2 = glm::normalize(axis2);
@@ -734,7 +734,7 @@ test_explog( bool display )
     if (1)
     {
         // Modern Robotics, eqn 3.89, page 106
-        glm::dvec3 axis1 = arb::rndVec3();
+        BVector3 axis1 = arb::rndVec3();
         if (axis1 == B_ZERO_3)
             axis1 = arb::rndAxis();
         axis1 = glm::normalize(axis1);
