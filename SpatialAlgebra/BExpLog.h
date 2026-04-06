@@ -10,11 +10,17 @@
  
  Rotational and spatial exponential and logarithmic maps
  
+ Handles motion vectors in either spatial/base/world coordinate frame or body coordinate frame
+ These are termed spatial twists and body twists
+ 
  see:
  
  "Modern Robotics", Lynch and Park, 2017.
  "Lie Groups for 2D and 3D Transformations", Ethan Earle, 2017.
  
+ Note
+ 
+ i) arb::cross(w) * arb::crosw(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
 */
 
 
@@ -38,7 +44,7 @@ namespace arb {
     inline BMatrix3 
     exp( const BVector3 &w )
     // expSO3 - see eqn 3.51, page 84, Modern Robotics.
-    // must keep angular variables in range [-M_PI_2, M_PI_2]
+    // best to keep angular variables in range [-M_PI_2, M_PI_2]
     {
         using std::sin;
         using std::cos;
@@ -58,7 +64,6 @@ namespace arb {
         
         return I + A * W + B * (W * W);
     }
-    
     
     inline BMatrix3 
     leftJacobian( const BVector3 &w )
@@ -80,10 +85,12 @@ namespace arb {
         
         return I + A * W + B * (W * W);
     }
-    
-    
+
+    inline BMatrix3 rightJacobian(const BVector3 &w) { return leftJacobian(-w); }
+
+
     inline BTransform 
-    exp( const BVector6 &vec ) // motion vector
+    expSpatial( const BVector6 &vec ) // motion vector must be a spatial twist
     {
         const BVector3 w = vec.ang();
         const BVector3 v = vec.lin();
@@ -100,7 +107,20 @@ namespace arb {
         
         return BTransform(E, r);
     }
+
+    inline 
+    BTransform expBody( const BVector6 &vec ) // motion vector must be a body twist
+    {
+        const BVector3 w = vec.ang();
+        const BVector3 v = vec.lin();
+
+        const BMatrix3 E = exp(w);           
+        const BMatrix3 Jr = rightJacobian(w); 
     
+        const BVector3 r = -Jr * v;
+
+        return BTransform(E, r);
+    }
     
     //
     // log
@@ -146,7 +166,7 @@ namespace arb {
         const BMatrix3 W = (R - arb::transpose(R)) * (0.5 * theta / sin(theta));
         return arb::uncross(W);
     }
-    
+
     inline BMatrix3 
     leftJacobianInverse( const BVector3 &w )
     {
@@ -166,10 +186,12 @@ namespace arb {
         
         return I - BScalar(0.5) * W + ((1.0 - half_theta * cot_half_theta) / (theta * theta)) * (W * W);
     }
-
+    
+    inline BMatrix3 rightJacobianInverse(const BVector3 &w) {  return leftJacobianInverse(-w); }
+    
     inline BVector6 
-    log( const BTransform &X )
-    // return the twist (motion vector) whose exponetial produces the given X
+    logSpatial( const BTransform &X )
+    // return the spatial twist (motion vector) whose exponetial produces the given X
     {
         const BMatrix3 &R = X.E();
         const BVector3  p = -(R * X.r());
@@ -183,6 +205,23 @@ namespace arb {
         
         return BVector6(w, v);
     }
+    
+    inline BVector6 
+    logBody( const BTransform &X )
+    // return the body twist (motion vector) whose exponential produces the given X
+    {
+        // Featherstone r is the world origin expressed in the body frame.
+        // the local displacement of the body origin is simply -r.
+        const BVector3 p_body = -X.r();
+        const BVector3 w = log(X.E());
+
+        // linear part - v = Jr^{-1}(w) * p_body
+        const BMatrix3 Jinv = rightJacobianInverse(w);
+        const BVector3 v = Jinv * p_body;
+
+        return BVector6(w, v);
+    }
+    
     
 }
 
