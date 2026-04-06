@@ -248,7 +248,7 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
 | **Forward** | accel. | `-6.54000000 6.54000000 0.00000000` | `-6.54000000 6.54000000 0.00000000` |
 | **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
 
- Furthermore, Checks/BSpatialChecks.cpp also includes 43 consistency checks tested on random examples that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+ Furthermore, Checks/BSpatialChecks.cpp also includes 51 consistency checks tested on random examples that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  
  ## Build Instructions
  
