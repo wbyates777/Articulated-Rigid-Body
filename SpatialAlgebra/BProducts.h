@@ -110,11 +110,11 @@ namespace arb
     inline constexpr BMatrix6
     outer( const BVector6 &a, const BVector6 &b )
     { 
-        return BMatrix6( arb::outer(a.ang(), b.ang()), arb::outer(a.lin(), b.ang()),
-                         arb::outer(a.ang(), b.lin()), arb::outer(a.ang(), b.ang()) );
-        
+        return BMatrix6( arb::outer(a.ang(), b.ang()), arb::outer(a.ang(), b.lin()),
+                         arb::outer(a.lin(), b.ang()), arb::outer(a.lin(), b.lin()) );
+
         //return BMatrix6( glm::outerProduct(b.ang(), a.ang()), glm::outerProduct(b.lin(), a.ang()),
-        //                 glm::outerProduct(b.ang(), a.lin()), glm::outerProduct(b.ang(), a.ang()) );
+        //                 glm::outerProduct(b.ang(), a.lin()), glm::outerProduct(b.lin(), a.lin()) );
         
         //return BMatrix6(a[0] * b[0], a[0] * b[1], a[0] * b[2],  a[0] * b[3], a[0] * b[4], a[0] * b[5], 
         //                a[1] * b[0], a[1] * b[1], a[1] * b[2],  a[1] * b[3], a[1] * b[4], a[1] * b[5], 
@@ -124,8 +124,8 @@ namespace arb
         //                a[4] * b[0], a[4] * b[1], a[4] * b[2],  a[4] * b[3], a[4] * b[4], a[4] * b[5], 
         //                a[5] * b[0], a[5] * b[1], a[5] * b[2],  a[5] * b[3], a[5] * b[4], a[5] * b[5]);
     }
-    
-    
+
+   
     // spatial cross product for 'motion cross motion' vectors $v$ and $m$
     // such that $\dot{m} = v \times m$, see RBDA, Section 2.9, eqn 2.29, page 23
     inline constexpr BVector6 
