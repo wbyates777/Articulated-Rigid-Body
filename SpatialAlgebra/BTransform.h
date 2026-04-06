@@ -146,14 +146,6 @@ public:
         return BTransform(rhs.m_E * m_E, rhs.m_r + (rhs.m_E * m_r));
     }
     
-    BTransform& 
-    operator*=( const BTransform &rhs ) 
-    {
-        m_E *= rhs.m_E;
-        m_r = rhs.m_r + (rhs.m_E * m_r);
-        return *this;
-    }
-    
     BMatrix6 
     operator*( const BMatrix6 &rhs ) const 
     {
