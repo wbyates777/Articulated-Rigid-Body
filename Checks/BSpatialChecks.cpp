@@ -807,21 +807,31 @@ test_misc( bool display )
         
         // 6D arb::exp/arb::log identity log(exp(v1)) == v1
         BVector6 v3;
-        v3.ang( arb::rndVec3(-M_PI_2, M_PI_2));  // must keep angular variables in range here
+        v3.ang( arb::rndVec3(-M_PI_2, M_PI_2));  
         v3.lin( arb::rndVec3());
-        BTransform X = arb::exp(v3);
-        BVector6 v4  = arb::log(X);
+        BTransform X = arb::expBody(v3);
+        BVector6 v4  = arb::logBody(X);
         bool test3 = arb::nearZero(v3 - v4);
+        
+        // 6D arb::exp/arb::log identity log(exp(v1)) == v1
+        BVector6 v5;
+        v5.ang( arb::rndVec3(-M_PI_2, M_PI_2));  
+        v5.lin( arb::rndVec3());
+        BTransform Y = arb::expSpatial(v5);
+        BVector6 v6  = arb::logSpatial(Y);
+        bool test4 = arb::nearZero(v5 - v6);
         
         testsPassed.push_back(test1);
         testsPassed.push_back(test2);
         testsPassed.push_back(test3);
+        testsPassed.push_back(test4);
         
         if (display)
         {
             std::cout  << "BExpLog -- arb::cross test is valid -- Test1 is " << test1 << std::endl; 
             std::cout  << "BExpLog -- 3D exp/log identity is valid -- Test2 is " << test2 << std::endl; 
-            std::cout  << "BExpLog -- 6D exp/log identity is valid -- Test3 is " << test3 << std::endl;     
+            std::cout  << "BExpLog -- 6D body exp/log identity is valid -- Test3 is " << test3 << std::endl;  
+            std::cout  << "BExpLog -- 6D spatial exp/log identity is valid -- Test3 is " << test3 << std::endl; 
         }
     }
     
@@ -838,7 +848,7 @@ test_misc( bool display )
         BVector6 v(B_ZERO_3, axis1);
         BScalar theta = arb::rndFloat(-M_PI_2, M_PI_2);
         BVector6 u = v * theta;
-        BTransform X1 = arb::exp( u );
+        BTransform X1 = arb::expSpatial( u );
 
         bool test1 = arb::nearZero(BMatrix6(X1).botLeft() - arb::cross(theta * axis1));
         bool test2 = arb::nearZero(BMatrix6(X1).topLeft() - B_IDENTITY_3x3);
