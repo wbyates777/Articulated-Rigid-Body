@@ -18,7 +18,24 @@
  
  Depends on the 3D GLM library (see https://github.com/g-truc/glm).
 
- 
+ ARB ALGEBRA CONVENTIONS
+
+ Underlying 3D matrix library: GLM
+
+ Conventions:
+ - Matrices are stored/accessed in GLM column-major form.
+ - Vectors are treated as column vectors.
+ - Matrix-vector multiplication A * x represents standard linear action on a column vector.
+ - Printed mathematical formulas in comments follow standard textbook block-matrix notation.
+ - Therefore, explicit arb::transpose() calls may be required in code to match textbook formulas.
+
+ IMPORTANT:
+ Do not validate matrix expressions by visual inspection alone.
+ Always validate using:
+     1) explicit block-matrix equivalence,
+     2) round-trip tests,
+     3) numerical regression tests.
+     
 */
 
 #ifndef __BSPATIALALGEBRA_H__
