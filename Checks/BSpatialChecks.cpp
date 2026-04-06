@@ -339,17 +339,11 @@ test_adjoints( bool display )
     if (1)
     {
         // adjoint proposition 3.21, pg 100, Modern Robotics
-        BVector3 axis1 = arb::rndVec3();
-        if (axis1 == B_ZERO_3)
-            axis1 = arb::rndAxis();
-        axis1 = glm::normalize(axis1);
-        BTransform T1 = arb::Xrot(arb::rndFloat(-M_PI_2, M_PI_2), axis1);
+        // Consider spatial vector v and transforms T1, T2. 
+        // test that Ad[T1](Ad[T2](v)) == Ad[T1*T2](v)
         
-        BVector3 axis2 = arb::rndVec3();
-        if (axis2 == B_ZERO_3)
-            axis2 = arb::rndAxis();
-        axis2 = glm::normalize(axis2);
-        BTransform T2 = arb::Xrot(arb::rndFloat(-M_PI_2, M_PI_2), axis2);
+        BTransform T1 = arb::rndTransform();
+        BTransform T2 = arb::rndTransform();
         
         // adjoint
         BVector6 v = arb::rndVec6();
@@ -378,6 +372,28 @@ test_adjoints( bool display )
         }
     }
     
+    if (1)
+    {
+        // power check -- power invariant to transformation 
+        BTransform X = arb::rndTransform();
+
+        // spatial motion [ω, v]
+        BVector6 v = arb::rndVec6();
+
+        // spatial force [τ, f]
+        BVector6 f = arb::rndVec6();
+
+        BVector6  Xv  = arb::applyAdjoint(X,v);       // X v
+        BVector6  Xsf = arb::applyAdjointDual(X,f);   // X^* f
+
+        // see Section 2.6, page 17, RBDA
+        BScalar power_original    = arb::dot(f, v); 
+        BScalar power_transformed = arb::dot(Xsf, Xv);
+
+        bool test1 = arb::nearZero( abs(power_original - power_transformed));
+        
+        testsPassed.push_back(test1);
+    }
     return  testsPassed;
 }
 
@@ -526,6 +542,7 @@ test_abinertia( bool display )
             std::cout  << "ABInertia -- X^* I X^{-1} -- Test5 is " << test5 << std::endl;
         }
     }
+    
     if (1)
     {
         // ApplyTransposw -  X^T I X
@@ -547,6 +564,85 @@ test_abinertia( bool display )
         }
     }
     
+    if (1) 
+    {
+        // ABI Projection Test (needed by ABA)
+        BABInertia Ia = arb::rndABInertia();
+        BVector6 S = arb::rndVec6(); // joint subspace
+        
+        BVector6 U = BMatrix6(Ia) * S;
+        BScalar D = arb::dot(S, U);
+        
+        // calculate projected inertia matrix
+        BMatrix6 Ia_next = BMatrix6(Ia) - (arb::outer(U, U) / D);
+        
+        // symmetry check: Ia_next == Ia_next^T
+        bool test1 = arb::nearZero(Ia_next - arb::transpose(Ia_next));
+        
+        testsPassed.push_back(test1);
+        
+        if (display) 
+        {
+            std::cout << "ABInertia Projection Symmetry -- Test1 is " << test1 << std::endl;
+        }
+    }
+    
+    if (1)
+    {
+        // numerical test - NB there is no random element here
+        BMatrix3 M(0.0);
+        M[0][0] = 4.0;
+        M[0][1] = 1.0;
+        M[0][2] = 0.0;
+        
+        M[1][0] = 1.0;
+        M[1][1] = 5.0;
+        M[1][2] = 2.0;
+        
+        M[2][0] = 0.0;
+        M[2][1] = 2.0;
+        M[2][2] = 6.0;
+
+        BMatrix3 H(0.0);
+        H[0][0] = 1.0;
+        H[0][1] = 2.0;
+        H[0][2] = 3.0;
+        
+        H[1][0] = 4.0;
+        H[1][1] = 5.0;
+        H[1][2] = 6.0;
+        
+        H[2][0] = 7.0;
+        H[2][1] = 8.0;
+        H[2][2] = 9.0;
+        
+        BMatrix3 I(0.0);
+        I[0][0] = 10.0;
+        I[0][1] = 1.0;
+        I[0][2] = 2.0;
+        
+        I[1][0] = 1.0;
+        I[1][1] = 11.0;
+        I[1][2] = 3.0;
+        
+        I[2][0] = 2.0;
+        I[2][1] = 3.0;
+        I[2][2] = 12.0;
+        
+        BVector6 v3(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+        
+        BABInertia ABI(M,H,I);
+
+        BVector6 a = ABI * v3;  
+       
+        // result should be
+        BVector6 b(50.0, 109.0, 166.0, 51.0, 77.0, 88.0); 
+        
+        bool test1 = arb::nearZero(a-b);
+        
+        testsPassed.push_back(test1);
+    }
+    
     return testsPassed;
 }
 
@@ -565,7 +661,6 @@ test_inverse( bool display )
     BRBInertia I = arb::rndRBInertia();
     // world to body transform
     BTransform X_wb = arb::rndTransform(); 
-    
     
     if (1)
     {
@@ -589,7 +684,6 @@ test_inverse( bool display )
             std::cout << "BTransform -- arb::transpose(b^X_w) * arb::dual(b^X_w) == Identity -- Test3 is " << test3  << std::endl;
         }
     }
-    
     
     if (1)
     {
@@ -683,7 +777,7 @@ test_inertia( bool display )
 }
 
 std::vector<int>
-test_explog( bool display )
+test_misc( bool display )
 {
     if (display)
     {
@@ -733,7 +827,9 @@ test_explog( bool display )
     
     if (1)
     {
-        // Modern Robotics, eqn 3.89, page 106
+        // spatial exponetial tests
+        // arb::exp(vec6) test - Modern Robotics, eqn 3.89, page 106
+        
         BVector3 axis1 = arb::rndVec3();
         if (axis1 == B_ZERO_3)
             axis1 = arb::rndAxis();
@@ -761,6 +857,61 @@ test_explog( bool display )
         }
     }
  
+    if (1) 
+    {
+        // spatial cross product tests
+        
+        BVector6 v = arb::rndVec6();
+        BVector6 w = arb::rndVec6();
+        
+        // (v \cross v) == 0 (use [u \cross v = - v \cross u] - Table 2.3, page 25, RBDA)
+        bool test1 = arb::nearZero(arb::crossm(v, v)); 
+        
+        // vx* == -vx^T (Table 2.3, page 25, RBDA)
+        BMatrix6 vx = BMatrix6(arb::crossm(v));
+        BMatrix6 vxf = BMatrix6(arb::crossf(v));
+        bool test2 = arb::nearZero(vxf + arb::transpose(vx));
+        
+        // scalar product derivative identity: d/dt(dot(f, v))
+        // arb::dot(vxf * f, v) + dot(f, vx * v) == 0 (since vx * v is 0)
+        bool test3 = arb::nearZero(arb::dot(arb::crossf(v, w), v)); 
+
+        testsPassed.push_back(test1);
+        testsPassed.push_back(test2);
+        testsPassed.push_back(test3);
+        
+        if (display) 
+        {
+            std::cout << "Spatial motion cross product -- Test1 is " << test1 << std::endl;
+            std::cout << "Spatial force cross product -- Test2 is " << test2 << std::endl;
+            std::cout << "Spatial scalar product derivative  -- Test3 is " << test3 << std::endl;
+        }
+    }
+
+    if (1)
+    {
+        // spatial triple product (the Jacobi identity)
+        // test u×(v×w) + v×(w×u) + w×(u×v) == 0
+        // https://en.wikipedia.org/wiki/Jacobi_identity
+        
+        BVector6 u = arb::rndVec6();
+        BVector6 v = arb::rndVec6();
+        BVector6 w = arb::rndVec6();
+        
+        BVector6 res = arb::crossm(u, arb::crossm(v, w)) + 
+                       arb::crossm(v, arb::crossm(w, u)) + 
+                       arb::crossm(w, arb::crossm(u, v));
+                       
+        bool test1 = arb::nearZero(res);
+        
+        testsPassed.push_back(test1);
+
+        if (display) 
+        {
+            std::cout << "Spatial Jacobi Identity -- Test1 is " << test1 << std::endl;
+        }
+    }
+    
     return testsPassed;
 }
 
@@ -798,7 +949,7 @@ check( int count, int seed )
         aux =  test_inertia( display );
         tests.insert(tests.end(), aux.begin(), aux.end());
         
-        aux =  test_explog( display );
+        aux =  test_misc( display );
         tests.insert(tests.end(), aux.begin(), aux.end());
         
         int correct = std::accumulate(tests.begin(), tests.end(), 0);
