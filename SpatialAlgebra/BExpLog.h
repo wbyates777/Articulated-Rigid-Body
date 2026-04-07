@@ -86,11 +86,9 @@ namespace arb {
         return I + A * W + B * (W * W);
     }
 
-    inline BMatrix3 rightJacobian(const BVector3 &w) { return leftJacobian(-w); }
-
 
     inline BTransform 
-    expSpatial( const BVector6 &vec ) // motion vector must be a spatial twist
+    exp( const BVector6 &vec ) // motion vector must be a spatial twist
     {
         const BVector3 w = vec.ang();
         const BVector3 v = vec.lin();
@@ -108,22 +106,7 @@ namespace arb {
         return BTransform(E, r);
     }
 
-    inline 
-    BTransform expBody( const BVector6 &vec ) // motion vector must be a body twist
-    {
-        const BVector3 w = vec.ang();
-        const BVector3 v = vec.lin();
-
-        const BMatrix3 E = exp(w);           
-        const BMatrix3 Jr = rightJacobian(w); 
-    
-        const BVector3 p_body = Jr * v;
-        
-        const BVector3 r = -(E * p_body);;
-
-        return BTransform(E, r);
-    }
-    
+ 
     //
     // log
     //
@@ -192,10 +175,9 @@ namespace arb {
         return I - BScalar(0.5) * W + (A * B) * (W * W);
     }
     
-    inline BMatrix3 rightJacobianInverse(const BVector3 &w) {  return leftJacobianInverse(-w); }
     
     inline BVector6 
-    logSpatial( const BTransform &X )
+    log( const BTransform &X )
     // return the spatial twist (motion vector) whose exponetial produces the given X
     {
         const BMatrix3 &R = X.E();
@@ -211,23 +193,6 @@ namespace arb {
         
         return BVector6(w, v);
     }
-    
-    inline BVector6 
-    logBody( const BTransform &X )
-    // return the body twist (motion vector) whose exponential produces the given X
-    {
-        // Featherstone r is the world origin expressed in the body frame.
-        // the local displacement of the body origin is simply -r.
-        const BVector3 p_body = -(arb::transpose(X.E()) * X.r());
-        const BVector3 w = log(X.E());
-
-        // linear part - v = Jr^{-1}(w) * p_body
-        const BMatrix3 Jinv = rightJacobianInverse(w);
-        const BVector3 v = Jinv * p_body;
-
-        return BVector6(w, v);
-    }
-    
     
 }
 
