@@ -181,7 +181,6 @@ namespace arb {
     // return the spatial twist (motion vector) whose exponetial produces the given X
     {
         const BMatrix3 &R = X.E();
-        //const BVector3  p = -(R * X.r());
         const BVector3  p =  -X.r();
         
         // angular part
