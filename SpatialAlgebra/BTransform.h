@@ -63,7 +63,10 @@
     When when transforming a spatial inertia I by a spatial transform X note:
     X.apply(I) returns I' = X^* I X^{-1} 
     X.applyTranspose(I) returns I' = X^T I X  
- 
+
+  8) As (A * B)^T == (B^T * A^T) and rx^T == -rx then (-E * rx)^T == rx * E^T
+    where the two negatives to cancel out
+    
  See also:
  
  https://en.wikipedia.org/wiki/Rotation_matrix
