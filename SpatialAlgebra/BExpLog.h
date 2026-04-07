@@ -100,10 +100,10 @@ namespace arb {
         
         // standard homogeneous translation
         const BMatrix3 J = leftJacobian(w);
-        const BVector3 p = J * v;
+        const BVector3 p = -(J * v);
         
         // convert homogeneous translation p into Featherstone r
-        const BVector3 r = -arb::transpose(E) * p;
+        const BVector3 r =  p;
         
         return BTransform(E, r);
     }
@@ -117,7 +117,9 @@ namespace arb {
         const BMatrix3 E = exp(w);           
         const BMatrix3 Jr = rightJacobian(w); 
     
-        const BVector3 r = -Jr * v;
+        const BVector3 p_body = Jr * v;
+        
+        const BVector3 r = -(E * p_body);;
 
         return BTransform(E, r);
     }
@@ -184,7 +186,10 @@ namespace arb {
         const BScalar half_theta = 0.5 * theta;
         const BScalar cot_half_theta = 1.0 / tan(half_theta);
         
-        return I - BScalar(0.5) * W + ((1.0 - half_theta * cot_half_theta) / (theta * theta)) * (W * W);
+        const BScalar A = (1.0 - half_theta * cot_half_theta);
+        const BScalar B = BScalar(1.0) / (theta * theta);
+        
+        return I - BScalar(0.5) * W + (A * B) * (W * W);
     }
     
     inline BMatrix3 rightJacobianInverse(const BVector3 &w) {  return leftJacobianInverse(-w); }
@@ -194,7 +199,8 @@ namespace arb {
     // return the spatial twist (motion vector) whose exponetial produces the given X
     {
         const BMatrix3 &R = X.E();
-        const BVector3  p = -(R * X.r());
+        //const BVector3  p = -(R * X.r());
+        const BVector3  p =  -X.r();
         
         // angular part
         const BVector3 w = log(R);
@@ -212,7 +218,7 @@ namespace arb {
     {
         // Featherstone r is the world origin expressed in the body frame.
         // the local displacement of the body origin is simply -r.
-        const BVector3 p_body = -X.r();
+        const BVector3 p_body = -(arb::transpose(X.E()) * X.r());
         const BVector3 w = log(X.E());
 
         // linear part - v = Jr^{-1}(w) * p_body
