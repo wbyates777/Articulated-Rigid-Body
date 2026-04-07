@@ -14,6 +14,7 @@
 
 add_library(Checks OBJECT
     BSpatialChecks.cpp
+    BSpatialRandom.cpp
 )
 
 target_include_directories(Checks PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
