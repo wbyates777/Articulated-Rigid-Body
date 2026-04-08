@@ -248,7 +248,15 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
 | **Forward** | accel. | `-6.54000000 6.54000000 0.00000000` | `-6.54000000 6.54000000 0.00000000` |
 | **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
 
+
  Furthermore, Checks/BSpatialChecks.cpp also includes 51 consistency checks tested on random examples that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+
+ The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
+ and so, given some accelerations qddot, their composition should yield the identity
+
+    ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot 
+ 
+The test ```dynamics_consistency_test``` in main.cpp demonstrates this.
  
  ## Build Instructions
  
