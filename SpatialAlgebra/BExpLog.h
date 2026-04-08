@@ -8,11 +8,26 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History: 
  
- Rotational and spatial exponential and logarithmic maps
+ Rotational and spatial exponential and logarithmic maps for motion vectors.
+
+ The exp function maps spatial motion vectors (twists) $v$ to their corresponding 
+ transformation $X = exp(v)$ in the SE(3) Lie group.
+ The transform $X = exp(v)$ represents the integrated displacement over a unit time step Δt. 
+ If $v$ is expressed in the base/world coordinate frame we have:
  
- Handles motion vectors in either spatial/base/world coordinate frame or body coordinate frame
- These are termed spatial twists and body twists
+    X(t + Δt) = X(t) exp(vΔt)  
  
+ or
+ 
+    X(t + Δt) = exp(vΔt) X(t) 
+ 
+ if $v$ is expressed in body frame coordinates.
+ 
+ The log mapping is the inverse of exp. In symbols:
+ 
+    log( exp(v) ) = v
+ 
+
  see:
  
  "Modern Robotics", Lynch and Park, 2017.
@@ -20,7 +35,10 @@
  
  Note
  
- i) arb::cross(w) * arb::crosw(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
+ 1) we use the Featherstone convention on transforms, i.e X(E,r) as opposed to the homogenous convention X = (R,p),
+    where E = R^T and r = -R^Tp
+ 2) arb::cross(w) * arb::crosw(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
+ 
 */
 
 
@@ -55,7 +73,7 @@ namespace arb {
         
         if (theta < 1E-8)
         {
-            // Rodrigues series near zero: $exp(w\times) ≈ I + w\times + 1/2 w\times^2$
+            // Rodrigues series near zero: $exp(cross(w)) ≈ I + cross(w) + 1/2 cross(w)^2$
             return I + W + BScalar(0.5) * (W * W);
         }
         
@@ -88,7 +106,7 @@ namespace arb {
 
 
     inline BTransform 
-    exp( const BVector6 &vec ) // motion vector must be a spatial twist
+    exp( const BVector6 &vec ) //  must be motion vector or twist
     {
         const BVector3 w = vec.ang();
         const BVector3 v = vec.lin();
@@ -98,15 +116,14 @@ namespace arb {
         
         // standard homogeneous translation
         const BMatrix3 J = leftJacobian(w);
-        const BVector3 p = -(J * v);
+        const BVector3 p = -(J * v); 
         
         // convert homogeneous translation p into Featherstone r
         const BVector3 r =  p;
         
         return BTransform(E, r);
     }
-
- 
+    
     //
     // log
     //
@@ -181,7 +198,7 @@ namespace arb {
     // return the spatial twist (motion vector) whose exponetial produces the given X
     {
         const BMatrix3 &R = X.E();
-        const BVector3  p =  -X.r();
+        const BVector3  p =  -X.r(); 
         
         // angular part
         const BVector3 w = log(R);
