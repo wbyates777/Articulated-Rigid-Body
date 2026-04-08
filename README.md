@@ -37,7 +37,7 @@ ARB is a compact implementation of _spatial_ _algebra_ with end-to-end automatic
 The spatial algebra is used to implement two important rigid body dynamics algorithms: articulated-body algorithm (ABA) 
 and the recursive Newton-Euler algorithm (RNEA)  (see Featherstone 2008).
 The algebra is also used to implement a _spatial impulse_ based, collision resolution algorithm.
-All three algorithms have beed tested extensively in a graphics environment.
+All three algorithms have been tested extensively in a graphics environment.
 
 The implementations of ABA and RNEA presented here are based on those in the well known robotics library RBDL, but are intended for use in computer graphics.
 They allow a programmer to handle, in a physically consistent manner, rigid bodies and articulated rigid bodies.
