@@ -32,6 +32,10 @@
 #include "BSpatialChecks.h"
 #endif
 
+#ifndef __BSPATIALRANDOM_H__
+#include "BSpatialRandom.h"
+#endif
+
 // needs ASSIMP library 
 //#ifndef __BPOLYTOPELOADER_H__
 //#include "BPolytopeLoader.h"
@@ -568,6 +572,84 @@ double_pendulum_system_id(void)
 }
 
 
+void 
+dynamics_consistency_test(void) 
+// This test demonstrates the numerical equivalence of the Recursive Newton-Euler Algorithm (RNEA) 
+// and the Articulated-Body Algorithm (ABA).
+// The identity is  ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot 
+// where qddot is the target accelerations
+// As RNEA is a linear mapping from accelerations to torques and ABA is the inverse mapping, 
+// their composition should be the identity. This test verifies that.
+{
+    using std::abs;
+    
+    BDynamics dynamics;
+    BModel m;
+    
+    //
+    // RDBL Example model
+    BBody body_a = BBody(BInertia(1., BVector3(0.5, 0., 0.0), BVector3(1., 1., 1.)));
+    BJoint joint_a = BJoint(BJoint::Revolute, BVector3(0., 0., 1.));
+    
+    BBodyId body_a_id = m.addBody(0, arb::Xtrans(BVector3(0., 0., 0.)), joint_a, body_a);
+    
+    BBody body_b = BBody(BInertia(1., BVector3(0., 0.5, 0.), BVector3(1., 1., 1.)));
+    BJoint joint_b = BJoint(BJoint::Revolute, BVector3(0., 0., 1.));
+    
+    BBodyId body_b_id = m.addBody(body_a_id, arb::Xtrans(BVector3(1., 0., 0.)), joint_b, body_b);
+    
+    BBody body_c = BBody(BInertia(0., BVector3(0.5, 0., 0.), BVector3(1., 1., 1.)));
+    BJoint joint_c = BJoint(BJoint::Revolute, BVector3(0., 0., 1.));
+    
+    BBodyId body_c_id = m.addBody(body_b_id, arb::Xtrans(BVector3(0., 1., 0.)), joint_c, body_c);
+    //
+
+
+    // set up random initial state for model, and choose a target acceleration 
+    BModelState qstate;
+    qstate.q.resize(m.qsize(),0.0);
+    qstate.qdot.resize(m.qdotsize(), 0.0);
+    qstate.tau.resize(m.qdotsize(), 0.0);
+    
+    int dof = m.DoFCount();
+    std::vector<BScalar> qddot_target(dof);
+    for(int i = 0; i < dof; ++i) 
+    {
+        qstate.q[i]    = arb::rndFloat(-M_PI, M_PI);
+        qstate.qdot[i] = arb::rndFloat(-10.0, 10.0);
+        
+        qddot_target[i] = arb::rndFloat(-20.0, 20.0);
+    }
+    
+    qstate.qddot = qddot_target;
+    
+    // inverse dynamics (RNEA) - calculate torques 'tau' 
+    dynamics.inverse( m, qstate ); 
+    
+    // keep the calculated tau, set output qddot to zero - just to be sure
+    std::vector<BScalar> tau_calculated = qstate.tau;
+    qstate.qddot.assign(m.qdotsize(), 0.0);
+    
+    // forward dynamics (ABA) - calculate accelerations 'qddot' using 'tau' 
+    dynamics.forward( m, qstate );
+    
+    // compare state.m_qddot with qddot_target
+    bool match = true;
+    BScalar max_err = 0;
+    for (int i = 0; i < dof; ++i) 
+    {
+        BScalar err = abs(qstate.qddot[i] - qddot_target[i]);
+        
+        if (err > 1E-9) 
+            match = false;
+        max_err = std::max(max_err, err);
+    }
+    
+    if (match)
+        std::cout << "RNEA-ABA Identity is true (max error is " << max_err << ")" << std::endl;
+    else  std::cout << "RNEA-ABA Identity is false" << std::endl;
+}
+
 int 
 main()
 {
@@ -594,5 +676,7 @@ main()
     collisions();
     
     double_pendulum_system_id();
+
+    dynamics_consistency_test();
 
 }
