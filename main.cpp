@@ -581,6 +581,9 @@ dynamics_consistency_test(void)
 // As RNEA is a linear mapping from accelerations to torques and ABA is the inverse mapping, 
 // their composition should be the identity. This test verifies that.
 {
+
+    std::cout << "\nARB Example 7 - Dynamics Consistency\n" << std::endl;
+    
     using std::abs;
     
     BDynamics dynamics;
