@@ -226,7 +226,7 @@ which are traditionally difficult to calibrate manually.
  ```glm::cross(v1,v2), glm::dot(v1,v2), glm::outerProduct(v1,v2), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q)```.
  
  It is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3's and GLM's row-major, column-major differences), or  
+ the note on Eigen3's and GLM's row-major, column-major differences), or 
  replace GLM with a high(er)-performance alternative, such as a custom std::simd 
  linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
  while remaining (mostly) agnostic about the underlying implemenation.
