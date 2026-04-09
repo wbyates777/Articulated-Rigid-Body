@@ -193,7 +193,7 @@ using analytical methods, based on observed input and output data.
 While forward dynamics (ABA) predicts how a system moves given its physical parameters, 
 SI reverses this process: 
 it can recover the underlying physical parameters (mass, center-of-mass, inertia tensor) of each body 
-by observing the system's motion (see ARB Example 6 in main.cpp).
+by observing the system's motion (see ARB example 6 in main.cpp).
 SI allows researchers to synchronise a simulation with the real world.
 Additionally, SI can be used for the estimation of non-conservative forces such as joint friction and damping, 
 which are traditionally difficult to calibrate manually.
@@ -226,8 +226,10 @@ which are traditionally difficult to calibrate manually.
  ```glm::cross(v1,v2), glm::dot(v1,v2), glm::outerProduct(v1,v2), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q)```.
  
  It is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3's and GLM's row-major, column-major differences), or  replace GLM with some other simple
- linear algebra library. 
+ the note on Eigen3's and GLM's row-major, column-major differences), or  
+ replace GLM with a high(er)-performance alternative, such as a custom std::simd 
+ linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
+ while remaining (mostly) agnostic about the underlying implemenation.
 
  In order to implement automatic differentiation it is sufficient to #include "BAutodiff.h" in the BSpatialTypes.h file.
  BAutodiff.h is a wrapper for the header-only autodiff library (see below).
@@ -249,27 +251,32 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
 | **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
 
 
- Furthermore, Checks/BSpatialChecks.cpp also includes 51 consistency checks tested on random examples that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+ Furthermore, Checks/BSpatialChecks.cpp also includes 52 consistency checks tested on random examples that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+ For example, in Lie group theory, the _Adjoint Identity_:
+ 
+         exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
+         
+for some transform $X$ and twist $u$, is a fundamental property that links adjoints, spatial transforms, and the exp mapping.
 
  The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
- and so, given some accelerations qddot, their composition should satisfy the identity
+ and so, given some accelerations qddot, their composition should satisfy the identity:
 
-    ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot 
+         ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
  
-The test ```dynamics_consistency_test``` in main.cpp demonstrates this.
+The test ```dynamics_consistency_test```  (example 7 in main.cpp) demonstrates this.
  
  ## Build Instructions
  
 
 On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and:
 
- ```mkdir build```
+  ```mkdir build```
  
- ```cd build```
+  ```cd build```
  
- ```cmake ..```
+  ```cmake ..```
  
- ```make```
+  ```make```
 
 Cmake will take care of installing the GLM, autodiff, and libccd libaries. 
 If you are not using cmake these libraries can be downloaded directly from github (see links below).
