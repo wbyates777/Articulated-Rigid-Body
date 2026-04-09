@@ -349,10 +349,28 @@ run_lie_group_tests(BSpatialChecks &st)
     st.expect(arb::nearZero(BMatrix6(arb::exp(-v)) - arb::inverse((arb::exp(v)))), "Lie", "exp mapping inverse");
     
     
-    BVector6 v1 = arb::log(X);
     // The Adjoint Identity is a fundamental properties of Lie theory
+    BVector6 v1 = arb::log(X);
     BMatrix6 x1 = BMatrix6(arb::exp(X * v1)) - X * arb::exp(v1) * arb::inverse(X);
-    st.expect(arb::nearZero( x1 ), "Lie", "Adjoint Identity");
+    
+    st.expect(arb::nearZero( x1 ), "Lie", "Adjoint Identity (a)");
+    
+    BTransform Z = arb::rndTransform();
+    BVector6 u   = arb::rndVec6();
+
+    // arb::toAdjoint() follows the RBDL/Featherstone convention, 
+    // where the primary transform is 'force-centric'.
+    // In Lie group theory, the identity 
+    //     exp(Ad_X * u) == X * exp(u) * X^{-1} 
+    // is defined for motion vectors (twists). 
+    // toAdjointDual(Z) is used here to provides the motion-space mapping required for this identity.
+    BMatrix6 AdX = arb::toAdjointDual(Z);
+    
+    BTransform lhs = arb::exp(AdX * u);
+    BTransform rhs = Z * arb::exp(u) * arb::inverse(Z);
+    bool match = arb::nearZero(BMatrix6(lhs) - BMatrix6(rhs));
+    
+    st.expect(match, "Lie", "Adjoint Identity (b)");
     
 }
 
