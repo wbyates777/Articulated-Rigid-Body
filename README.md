@@ -77,12 +77,12 @@ Additionally, the header-only autodiff library is required for automatic differe
  ### Forward and Inverse Dynamics of Kinematic Trees
 
  Trees (and chains) of kinematic equations are used in robotics, computer graphics, and animation.
- In robotics _forward kinematics_ refers to the use of kinematic equations to compute the position of 
- an end-effector, such as a jointed robotic arm (see figure 1), from specified values for the joint parameters
- (see  https://en.wikipedia.org/wiki/Forward_kinematics).
+ In robotics _[forward kinematics]_ refers to the use of kinematic equations to compute the position of 
+ an end-effector, such as a jointed robotic arm, from specified values for the joint parameters
+ (see figure 1).
 
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
- is known as _inverse kinematics_ (see https://en.wikipedia.org/wiki/Inverse_kinematics).
+ is known as _[inverse kinematics]_.
 
  <p align="center">
 <img width="255" height="250" alt="robot_arm" src="https://github.com/user-attachments/assets/a51a097e-1480-4c3b-a724-2e5de4086daa"    />
@@ -98,7 +98,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  Both of these algorithms are presented in:
 
- "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008 (see https://royfeatherstone.org). 
+ "Rigid Body Dynamics Algorithms" (RBDA), [R. Featherstone], Springer, 2008. 
 
  ABA is an example of a propagation algorithm, and it is the fastest known algorithm
  for calculating the forward dynamics of a kinematic tree with a computational complexity of $O(N_B)$,
@@ -111,14 +111,11 @@ Additionally, the header-only autodiff library is required for automatic differe
 
 ### Collision Detection and Impulse Based Resolution
 
-
- Collison detection can be subdivided into _broad phase_ and  _narrow phase_.
- Broad-phase consists of detecting intersections between bounding boxes (BB) using 
- the Separating Axis Theorem (SAT). Computationally, this is relatively efficient.
- See https://en.wikipedia.org/wiki/Hyperplane_separation_theorem.
+ The task of detecting collisions between rigid bodies can be subdivided into _broad phase_ and  _narrow phase_.
+ Broad-phase consists of detecting intersections between orientated bounding boxes (OBB) using 
+ the [Separating Axis Theorem] (SAT). Computationally, this is relatively efficient.
  The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
- using the GJK algorithm. This is very precise but computationally more expensive.
- See https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm.
+ using the [GJK algorithm]. This is very precise but computationally more expensive.
 
  Collisons are resolved by calculating the
  _spatial impulses_ resulting from a contact and using these impulses to update the objects velocities
@@ -128,7 +125,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 
 ### Spatial Algebra
 
- The algorithms described above are described and implemented using _spatial algebra_ (see RBDA, Chapter 2). 
+ The algorithms described above are formulated and implemented using _spatial algebra_ (see RBDA, Chapter 2). 
  Spatial algebra  employs 6D vectors that combine the 3D linear and
  3D angular aspects of rigid-body motion.
  Linear and angular velocities (or accelerations) are
@@ -139,7 +136,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
  It also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
- For example, the following code excerpt performs Newton-Euler integration (see https://en.wikipedia.org/wiki/Newton–Euler_equations):
+ For example, the following code excerpt performs [Newton-Euler] integration:
 
     // set up single body - a sphere -  
     double mass = 100.0, radius = 0.5; 
@@ -174,18 +171,18 @@ Additionally, the header-only autodiff library is required for automatic differe
  The acceleration due to an actual, physical force is calculated by the term ```acc = invI * force```.
  The extra term ```arb::crossf(vel, I * vel)``` is called the bias force.
  The bias force represents an _inertial_ force; a so called fictitious force such as centrifugal, Coriolis, or Euler force. 
- The inertial force is necessary for describing motion correctly (see https://en.wikipedia.org/wiki/Fictitious_force).
+ The [inertial force] is necessary for describing motion correctly.
  
  ### Automatic Differentiation 
 
- This library also supports _Automatic_ _Differentiation_ (AD).
+ This library also supports _[Automatic Differentiation]_ (AD).
  Adding automatic differentiation to the spatial algebra library means that 
  the algebra, the ABA, the RNEA, and collision resolution are completely differentiable. 
  Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
  AD uses the chain rule to propagate exact _analytical_ derivatives through the code at the machine level.
  This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques
- such as real-time Model Predictive Control (MPC), gradient-based trajectory optimisation, or analytical System Identification (SI)
-   (see  https://en.wikipedia.org/wiki/Automatic_differentiation). 
+ such as real-time [Model Predictive Control] (MPC), gradient-based trajectory optimisation, or analytical [System Identification]  (SI).
+   
  
 For example, consider  _System Identification_ (SI).
 System Identification is the process of constructing a mathematical model of a dynamic system, 
@@ -301,6 +298,17 @@ If you remove (some) constexpr definitions, then my code will compile under c++2
  RBDyn     - https://github.com/jrl-umi3218/RBDyn
  
  Pinocchio - https://stack-of-tasks.github.io/pinocchio/
+
+ [forward kinematics]: https://en.wikipedia.org/wiki/Forward_kinematics
+ [inverse kinematics]: https://en.wikipedia.org/wiki/Inverse_kinematics
+ [Separating Axis Theorem]: https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
+ [GJK algorithm]: https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
+ [R. Featherstone]:  https://royfeatherstone.org
+ [Newton-Euler]: https://en.wikipedia.org/wiki/Newton–Euler_equations
+ [inertial force]:  https://en.wikipedia.org/wiki/Fictitious_force
+ [Automatic Differentiation]: https://en.wikipedia.org/wiki/Automatic_differentiation 
+ [System Identification]:  https://en.wikipedia.org/wiki/System_identification
+ [Model Predictive Control]: https://en.wikipedia.org/wiki/Model_predictive_control
  
 ## Notes
 
