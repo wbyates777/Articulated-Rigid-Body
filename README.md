@@ -77,12 +77,12 @@ Additionally, the header-only autodiff library is required for automatic differe
  ### Forward and Inverse Dynamics of Kinematic Trees
 
  Trees (and chains) of kinematic equations are used in robotics, computer graphics, and animation.
- In robotics _[forward kinematics]_ refers to the use of kinematic equations to compute the position of 
+ In robotics [forward kinematics] refers to the use of kinematic equations to compute the position of 
  an end-effector, such as a jointed robotic arm, from specified values for the joint parameters
  (see figure 1).
 
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
- is known as _[inverse kinematics]_.
+ is known as [inverse kinematics].
 
  <p align="center">
 <img width="255" height="250" alt="robot_arm" src="https://github.com/user-attachments/assets/a51a097e-1480-4c3b-a724-2e5de4086daa"    />
@@ -170,12 +170,12 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  The acceleration due to an actual, physical force is calculated by the term ```acc = invI * force```.
  The extra term ```arb::crossf(vel, I * vel)``` is called the bias force.
- The bias force represents an _inertial_ force; a so called fictitious force such as centrifugal, Coriolis, or Euler force. 
- The [inertial force] is necessary for describing motion correctly.
+ The bias force represents an [inertial force]; a so called fictitious force such as centrifugal, Coriolis, or Euler force. 
+ The inertial force is necessary for describing motion correctly.
  
  ### Automatic Differentiation 
 
- This library also supports _[Automatic Differentiation]_ (AD).
+ This library also supports [Automatic Differentiation] (AD).
  Adding automatic differentiation to the spatial algebra library means that 
  the algebra, the ABA, the RNEA, and collision resolution are completely differentiable. 
  Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
@@ -248,15 +248,15 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
 | **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
 
 
- Furthermore, Checks/BSpatialChecks.cpp also includes 52 consistency checks tested on random examples that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
- For example, in Lie group theory, the _Adjoint Identity_:
+The file BSpatialChecks.cpp includes 51 consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+ For example, in Lie group theory, for some given transform $X$ and twist $u$, the _Adjoint Identity_
  
          exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
          
-for some transform $X$ and twist $u$, is a fundamental property that links adjoints, spatial transforms, and the exp mapping.
+is a fundamental property that links adjoints, spatial transforms, and the exp mapping.
 
  The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
- and so, given some accelerations qddot, their composition should satisfy the identity:
+ and so, given some accelerations $qddot$, their composition should satisfy the identity:
 
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
  
@@ -265,16 +265,10 @@ The test ```dynamics_consistency_test```  (example 7 in main.cpp) demonstrates t
  ## Build Instructions
  
 
-On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and:
+On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and enter:
 
-  ```mkdir build```
+  ```mkdir build ; cd build ; cmake .. ; make ```
  
-  ```cd build```
- 
-  ```cmake ..```
- 
-  ```make```
-
 Cmake will take care of installing the GLM, autodiff, and libccd libaries. 
 If you are not using cmake these libraries can be downloaded directly from github (see links below).
 
