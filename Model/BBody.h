@@ -120,7 +120,6 @@ public:
         if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_ZERO_3x3) 
             return;
         
-        assert(m_I.mass() + other_body.I().mass() != 0.0);
         m_I += X.applyTranspose(other_body.I()); 
     }
 
@@ -132,7 +131,6 @@ public:
         if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_ZERO_3x3) 
             return;
         
-        assert(m_I.mass() - other_body.I().mass() != 0.0);
         m_I -= X.applyTranspose(other_body.I()); 
     }
     
