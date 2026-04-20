@@ -117,7 +117,7 @@ public:
     void 
     join( const BTransform &X, const BBody &other_body )
     {
-        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_IDENTITY_3x3) 
+        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_ZERO_3x3) 
             return;
         
         assert(m_I.mass() + other_body.I().mass() != 0.0);
@@ -129,7 +129,7 @@ public:
     void 
     separate( const BTransform &X, const BBody &other_body )
     {
-        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_IDENTITY_3x3) 
+        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_ZERO_3x3) 
             return;
         
         assert(m_I.mass() - other_body.I().mass() != 0.0);
