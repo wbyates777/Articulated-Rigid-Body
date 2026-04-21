@@ -48,6 +48,8 @@ to a simple hinged mechanism such as a door.
  and provides a compact notation that significantly reduces the 
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (Featherstone 2008).
  Spatial algebra also significantly reduces the complexity of the implementation.
+
+
  
  Automatic differentiation is provided by the autodiff library.
  Thus the algebra, the ABA,  the RNEA, and collision resolution are completely differentiable. 
@@ -68,6 +70,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
+* Universal Robot Data Format (URDF) load and save,
 * End-to-end automatic differentiability using autodiff (header-only),
 * Collision Resolution –  spatial impulses and GJK/EPA contact manifolds.
 * Minimal dependencies STL, GLM, (autodiff and libccd optional).
@@ -240,15 +243,53 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
  
  ## Validation
  
- This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. The results of test example 1 included in main.cpp and taken from the RBDL documentation are shown below. Notice that the forward and inverse dynamics results match to 8 dp:
+ This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. 
+ARB has been tested against standard industrial robot models including: 
+  
+    ur5.urdf, iiwa7.urdf, iiwa14.urdf, go1.urdf, and tiago_dual-test.urdf
+  
+ The results of testing tiago_dual-test.urdf, a robotic arm with 74 components and 33 degrees of freedom (taken from the RBDL documentation) are shown
+ in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
+ Notice that the maximum difference across all components is 0.00022200.
 
-   | Test | Value | RBDL | ARB |
-| :--- | :--- | :--- | :--- |
-| **Forward** | accel. | `-6.54000000 6.54000000 0.00000000` | `-6.54000000 6.54000000 0.00000000` |
-| **Inverse** | tau | `2.67999109 -4.18995273 0.00000000` | `2.67999109 -4.18995273 0.00000000` |
+   | Component  | RBDL | ARB  | Error |
+| :---       | ---: | ---: | ---:  |
+| arm_left_1_link | 4.13177335 | 4.13177043 | 0.00000292 |
+| arm_left_2_link | 1.48244894 | 1.48248132 | 0.00003238 |
+| arm_left_3_link | 388.13203494 | 388.13200586 | 0.00002908 |
+| arm_left_4_link | 1.29921370 | 1.29936648 | 0.00015278 |
+| arm_left_5_link | 387.73189698 | 387.73192178 | 0.00002480 |
+| arm_left_6_link | 61.55706876 | 61.55699723 | 0.00007153 |
+| arm_left_7_link | 1221.30829365 | 1221.30817777 | 0.00011588 |
+| arm_right_1_link | 7.19101952 | 7.19101951 | 0.00000001 |
+| arm_right_2_link | 15.15036039 | 15.15037562 | 0.00001523 |
+| arm_right_3_link | 384.31035727 | 384.31037533 | 0.00001806 |
+| arm_right_4_link | 38.83648634 | 38.83657114 | 0.00008480 |
+| arm_right_5_link | 373.76654839 | 373.76653501 | 0.00001338 |
+| arm_right_6_link | 120.93222527 | 120.93236546 | 0.00014019 |
+| arm_right_7_link | 1274.68114277 | 1274.68093087 | 0.00021190 |
+| caster_back_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_back_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| caster_back_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_back_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| caster_front_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_front_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| caster_front_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_front_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| gripper_left_left_finger_link | -4.24368053 | -4.24382485 | 0.00014432 |
+| gripper_left_right_finger_link | 22.42880510 | 22.42894942 | 0.00014432 |
+| gripper_right_left_finger_link | 30.80009586 | 30.80031786 | **0.00022200** |
+| gripper_right_right_finger_link | -12.61497129 | -12.61519329 | **0.00022200** |
+| head_1_link | 53.72321252 | 53.72321253 | 0.00000001 |
+| head_2_link | 100.89176416 | 100.89176335 | 0.00000081 |
+| suspension_left_link | 0.08457647 | 0.08457647 | 0.00000000 |
+| suspension_right_link | 0.08457647 | 0.08457647 | 0.00000000 |
+| torso_lift_link | 0.74719650 | 0.74719666 | 0.00000016 |
+| wheel_left_link | 119.15547007 | 119.15547007 | 0.00000000 |
+| wheel_right_link | 119.15547007 | 119.15547007 | 0.00000000 |
 
 
-The file BSpatialChecks.cpp includes 51 consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+The file BSpatialChecks.cpp includes 52 consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
  
          exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
@@ -260,7 +301,7 @@ is a fundamental property that links adjoints, spatial transforms, and the exp m
 
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
  
-The test ```dynamics_consistency_test```  (example 7 in main.cpp) demonstrates this.
+The test ```dynamics_test```  (example 5 in main.cpp) demonstrates this.
  
  ## Build Instructions
  
