@@ -44,16 +44,28 @@ set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 
 FetchContent_MakeAvailable(glm autodiff ccd)
 
+
+# Create a 'virtual' target to hold includes
+add_library(model_headers INTERFACE)
+
+# Add BOTH directories to this interface
+target_include_directories(model_headers INTERFACE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/URDF
+    ${CMAKE_CURRENT_SOURCE_DIR}/Model
+)
+
+
 # --- Internal Modules ---
 # Order matters: SpatialAlgebra is the foundation
 add_subdirectory(SpatialAlgebra)
 add_subdirectory(Model)
+add_subdirectory(URDF)
 add_subdirectory(Collisions)
 add_subdirectory(Checks)
 
 # --- Main Executable ---
 add_executable(dynamics_test CBody.cpp main.cpp)
-target_link_libraries(dynamics_test PRIVATE Model Collisions Checks) 
+target_link_libraries(dynamics_test PRIVATE URDF Model Collisions Checks) 
 
 
 
