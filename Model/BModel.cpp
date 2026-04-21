@@ -18,16 +18,24 @@
 
 #include <set>
 
-
-BModel::BModel( int expected_dof ) :  m_dof_count(0), m_q_size(0), m_qdot_size(0), m_gravity(B_ZERO_3)
+BModel::BModel( int expected_dof ):  m_dof_count(0), 
+                                     m_q_size(0), 
+                                     m_qdot_size(0), 
+                                     m_fbd(0),
+                                     m_name("myrobot"),
+                                     m_gravity(B_ZERO_3),
+                                     m_lambda(),
+                                     m_joint(),
+                                     m_body(),
+                                     m_fixed(), 
+                                     m_bodyNameMap()
 {
-
+    m_fbd = std::numeric_limits<BBodyId>::max() / 2;
+    
+    m_lambda.reserve(expected_dof);
     m_joint.reserve(expected_dof);
     m_body.reserve(expected_dof);
-    m_lambda.reserve(expected_dof);
     m_fixed.reserve(expected_dof);
-    
-    m_fbd = std::numeric_limits<BBodyId>::max() / 2;
     
     init();
 }
@@ -39,8 +47,8 @@ BModel::clear( void )
     m_gravity = B_ZERO_3;
     
     m_lambda.clear();
-    m_body.clear();
     m_joint.clear();
+    m_body.clear();
     m_fixed.clear(); 
 
     m_bodyNameMap.clear();
@@ -60,7 +68,7 @@ BModel::init( void )
     m_joint.resize(1);
     m_joint[0].clear();
     
-    m_bodyNameMap["ROOT"] = 0;
+    m_bodyNameMap[BModel::ROOT()] = 0;
 }
 
 
@@ -121,7 +129,7 @@ BBodyId
 BModel::getParentBodyId( BBodyId bid ) const
 {
     if (isFixedBodyId(bid)) 
-        return fixedBody(bid).movableParent();
+        return fixedBody(bid).parentId();
     
     BBodyId parent_id = m_lambda[bid];
     
@@ -188,7 +196,7 @@ BModel::toBasePos( BBodyId bid,  const BVector3 &body_pos ) const
     if (isFixedBodyId(bid))
     {
         BBodyId fbody_id = bid - m_fbd;
-        BBodyId parent_id = m_fixed[fbody_id].movableParent();
+        BBodyId parent_id = m_fixed[fbody_id].parentId();
         
         const BTransform &X_parent = m_fixed[fbody_id].parentTrans();
         const BMatrix3 &fixed_rot  = arb::transpose(X_parent.E());
@@ -220,7 +228,7 @@ BModel::toBodyPos( BBodyId bid, const BVector3 &base_pos ) const
     if (isFixedBodyId(bid)) 
     {
         BBodyId fbody_id = bid - m_fbd;
-        BBodyId parent_id = m_fixed[fbody_id].movableParent();
+        BBodyId parent_id = m_fixed[fbody_id].parentId();
         
         const BTransform &X_parent = m_fixed[fbody_id].parentTrans();
         const BMatrix3 &fixed_rot = X_parent.E();
@@ -250,7 +258,7 @@ BModel::orient(const BBodyId bid)  const
     if (isFixedBodyId(bid)) 
     {
         BBodyId fbody_id = bid - m_fbd;
-        BBodyId parent_id    = m_fixed[fbody_id].movableParent();
+        BBodyId parent_id    = m_fixed[fbody_id].parentId();
         BTransform baseTrans = m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base();
         
         //  m_fixed[fbody_id].baseTrans( m_fixed[fbody_id].parentTrans() * m_body[parent_id].X_base() );
@@ -271,7 +279,7 @@ BModel::v( BBodyId bid, const BVector3 &body_pos )
     {
         BVector3 base_pos = toBasePos(bid, body_pos);
         
-        ref_bid = m_fixed[bid - m_fbd].movableParent();
+        ref_bid = m_fixed[bid - m_fbd].parentId();
         ref_pos = toBodyPos(ref_bid, base_pos);
     }
     
@@ -291,7 +299,7 @@ BModel::a( BBodyId bid,  const BVector3 &body_pos )
     {
         BVector3 base_pos = toBasePos(bid, body_pos);
         
-        ref_bid = m_fixed[bid - m_fbd].movableParent();
+        ref_bid = m_fixed[bid - m_fbd].parentId();
         ref_pos = toBodyPos(ref_bid, base_pos); 
     }
     
@@ -308,7 +316,7 @@ BScalar
 BModel::mass( BBodyId bid ) const 
 {
     if (isFixedBodyId(bid)) 
-        bid = m_fixed[bid - m_fbd].movableParent();
+        bid = m_fixed[bid - m_fbd].parentId();
     
     BScalar mass = 0.0;
     
@@ -329,7 +337,7 @@ BVector3
 BModel::com( BBodyId bid ) const 
 {
     if (isFixedBodyId(bid)) 
-        bid = m_fixed[bid - m_fbd].movableParent();
+        bid = m_fixed[bid - m_fbd].parentId();
 
     assert(m_body[bid].I().mass() > 0);
     
@@ -354,7 +362,7 @@ BRBInertia
 BModel::I( BBodyId bid ) const
 {
     if (isFixedBodyId(bid)) 
-        bid = m_fixed[bid - m_fbd].movableParent();
+        bid = m_fixed[bid - m_fbd].parentId();
     
     BRBInertia I(B_ZERO_RBI);
  
@@ -374,18 +382,21 @@ BModel::I( BBodyId bid ) const
 }
 
 void
-BModel::addName(  BBodyId bid, const std::string &body_name )
+BModel::addName( BBodyId bid, std::string body_name )
 {
-    // we could use body_name = std::to_string(bid)
-    if (!body_name.empty()) 
+    if (body_name.empty()) 
     {
-        if (m_bodyNameMap.find(body_name) != m_bodyNameMap.end()) 
-        {
-            std::cout << "Error: Body with name '" << body_name << "' already exists!\n" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-        m_bodyNameMap[body_name] = bid;
+        if (isFixedBodyId( bid ))
+            body_name = "fixed_body_" + std::to_string(bid - m_fbd);
+        else body_name = "body_" + std::to_string(bid);
+    }   
+    if (m_bodyNameMap.find(body_name) != m_bodyNameMap.end()) 
+    {
+        std::cout << "BModel::Error: Body with name '" << body_name << "' already exists!\n" << std::endl;
+        exit(EXIT_FAILURE);
     }
+    m_bodyNameMap[body_name] = bid;
+  
 }
 
 BBodyId 
@@ -397,20 +408,19 @@ BModel::addFixedJoint( const BBodyId parent_id,
 {
     BFixedBody fbody(body);
     
-    fbody.movableParent(parent_id);
+    fbody.parentId(parent_id);
     fbody.parentTrans(joint_frame); // like X_lambda = X_T * X_J -- only X_J = 1 fixed
     
     if (isFixedBodyId(parent_id)) 
     {
         const BFixedBody &fparent = m_fixed[parent_id - m_fbd];
-        fbody.movableParent( fparent.movableParent() );
+        fbody.parentId( fparent.parentId() );
         fbody.parentTrans( joint_frame * fparent.parentTrans() );
     }
     
     // add the fixed body mass tp moveable parent  body
-    BBody parent_body = m_body[fbody.movableParent()];
+    BBody &parent_body = m_body[fbody.parentId()];
     parent_body.join( fbody.parentTrans(), body );
-    m_body[fbody.movableParent()] = parent_body;
 
     BBodyId bid = (BBodyId) m_fixed.size() + m_fbd;
     fbody.setId(bid);
@@ -535,7 +545,7 @@ BModel::addBody( BBodyId parent_id,
     if (isFixedBodyId(parent_id)) 
     {
         const BFixedBody &fbody = m_fixed[parent_id - m_fbd];
-        movable_parent_id = fbody.movableParent();
+        movable_parent_id = fbody.parentId();
         movable_parent_transform = fbody.parentTrans();
     }
     
@@ -548,6 +558,7 @@ BModel::addBody( BBodyId parent_id,
     BBodyId bid = (int) m_body.size();
     m_body.push_back(body);
     m_body.back().setId( bid );
+
     addName(bid, body_name);
     
     //
@@ -603,9 +614,9 @@ BModel::setBody(BBodyId bid, const BInertia &inertia)
     if (isFixedBodyId(bid))
     {
         BFixedBody& fbody = m_fixed[bid - m_fbd];
-        m_body[fbody.movableParent()].separate(fbody.parentTrans(), fbody.toBody());
+        m_body[fbody.parentId()].separate(fbody.parentTrans(), fbody.toBody());
         fbody.set( inertia );
-        m_body[fbody.movableParent()].join(fbody.parentTrans(), fbody.toBody());
+        m_body[fbody.parentId()].join(fbody.parentTrans(), fbody.toBody());
     }
     else
     {

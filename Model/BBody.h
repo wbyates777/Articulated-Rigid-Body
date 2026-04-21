@@ -49,6 +49,12 @@
 #include "BRBInertia.h"
 #endif
 
+// auxiliary parameters not used by BModel or BDynamics
+#ifndef __URDFTYPES_H__
+#include "URDFTypes.h"  // definition of BBodyParams
+#endif
+
+
 
 class BBody
 {
@@ -56,14 +62,6 @@ class BBody
 public:
 
     BBody( void )=default; 
-    
-    BBody( const BInertia &I, bool isVirtual = false): m_id(0), 
-                                                       m_v(B_ZERO_6), 
-                                                       m_a(B_ZERO_6),
-                                                       m_c(B_ZERO_6),
-                                                       m_I(I),
-                                                       m_X_base(B_IDENTITY_TRANS), 
-                                                       m_isVirtual(isVirtual) {}
 
     explicit BBody( const BRBInertia &I, bool isVirtual = false ) : m_id(0), 
                                                                     m_v(B_ZERO_6), 
@@ -179,13 +177,15 @@ public:
     c( const BVector6 &sv ) { m_c = sv; } 
     
     
-  //  BScalar // use m_I_base as m_v is in world coordinates; else use m_I
-  //  kinetic_energy( void ) const  { return 0.5 * arb::dot(m_v, m_I_base * m_v); }
-
-    
     bool
     isVirtual( void ) const { return m_isVirtual; }
     
+    
+    BBodyParams& 
+    params( void ) { return m_params; }
+    
+    const BBodyParams& 
+    params( void ) const { return m_params; }
     
     bool 
     operator==( const BBody &v ) const { return (m_id == v.m_id); }
@@ -213,9 +213,10 @@ private:
     // transform from base/world coordinate frame to this body's frame 
     // the body's base/world position and orientation
     BTransform m_X_base;
-    
+    BBodyParams m_params; // auxiliary URDF parameters not used by BModel or BDynamics
     bool m_isVirtual;
 };
+
 
 
 inline std::ostream&
@@ -227,6 +228,7 @@ operator<<( std::ostream &ostr, const BBody &b )
     ostr << b.m_c << '\n';
     ostr << b.m_I << '\n';
     ostr << b.m_X_base << '\n';
+    ostr << b.m_params << '\n';
     ostr << b.m_isVirtual << '\n';
     
     return ostr;
@@ -241,6 +243,7 @@ operator>>( std::istream &istr, BBody &b )
     istr >> b.m_c;
     istr >> b.m_I;
     istr >> b.m_X_base;
+    istr >> b.m_params;
     istr >> b.m_isVirtual;
     
     return istr;

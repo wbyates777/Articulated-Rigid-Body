@@ -61,6 +61,16 @@
 
 struct BModelState 
 {
+    BModelState( void )=default;
+    BModelState( const BModel &model )
+    {
+        q.resize(model.qsize(),0.0);
+        qdot.resize(model.qdotsize(), 0.0);
+        qddot.resize(model.qdotsize(), 0.0);
+        tau.resize(model.qdotsize(), 0.0);
+    }
+    ~BModelState( void )=default;
+
     // joint parameters (joint space)
     std::vector<BScalar> q;     // positions
     std::vector<BScalar> qdot;  // velocities

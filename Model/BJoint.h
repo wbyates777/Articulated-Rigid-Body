@@ -192,6 +192,12 @@
 #include "BTransform.h"
 #endif
 
+// auxiliary parameters not used by BModel or BDynamics
+#ifndef __URDFTYPES_H__
+#include "URDFTypes.h"  // definition of BJointParams
+#endif
+
+
 
 
 class BJoint
@@ -316,8 +322,8 @@ public:
     
     // transform from the parent body $\lambda(i)$ to the origin 
     // of the joint frame in body $i$ (see RBDA, Section 4.2, page 73). 
-    // $X_T$ locates the joint's coordinate frame origin in body $i$.
-    // Set by BModel::addBody(). 
+    // $X_T$ locates the joint's coordinate frame origin in body $i$ 
+    // (position and orientation). Set by BModel::addBody(). 
     const BTransform& 
     X_T( void ) const { return m_X_T; }
     
@@ -358,6 +364,11 @@ public:
     void 
     setQuat( const BQuat &quat, std::vector<BScalar> &q ) const;
 
+    BJointParams& 
+    params( void ) { return m_params; }
+    
+    const BJointParams& 
+    params( void ) const { return m_params; }
     
     bool 
     operator==( const BJoint &v ) const { return (m_id == v.m_id); }
@@ -414,7 +425,8 @@ private:
    
     // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)
     BMotionSpace m_S; 
-
+    BJointParams m_params; // auxiliary URDF parameters not used by BModel or BDynamics
+    
     // spatial axes of the joint; 1 for each degree of freedom
     std::vector<BVector6> m_axis;
     
@@ -438,6 +450,8 @@ operator<<( std::ostream &ostr, const BJoint &j )
     ostr << j.m_c_J << '\n';
    
     ostr << j.m_S  << '\n';
+    ostr << j.m_params  << '\n';
+    
 
     ostr << j.m_axis << '\n';
     
@@ -461,9 +475,10 @@ operator>>( std::istream &istr, BJoint &j )
     
     istr >> j.m_v_J;
     istr >> j.m_c_J;
-   
+    
     istr >> j.m_S;
-
+    istr >> j.m_params;
+    
     istr >> j.m_axis;
     
     return istr;

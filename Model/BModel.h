@@ -56,6 +56,7 @@ class BModel
 
 public:
 
+    
     BModel( int expected_dof = 3 );
     ~BModel( void )=default;
 
@@ -65,6 +66,12 @@ public:
     void 
     clear( void );
 
+    const std::string&
+    name( void ) const { return m_name; }
+    
+    void
+    name( const std::string &n ) { m_name = n; }
+    
     BJoint&
     joint( BJointId jid ) { return m_joint[jid]; }
     
@@ -80,15 +87,18 @@ public:
     const BBody&
     body( BBodyId bid ) const { return m_body[bid]; }
     
+    size_t
+    numBody( void ) const { return m_body.size(); }     // $N_B$
+    
+    
     BFixedBody&
     fixedBody( BBodyId bid ) { return m_fixed[bid - m_fbd]; }
 
     const BFixedBody&
     fixedBody( BBodyId bid ) const { return m_fixed[bid - m_fbd]; }
    
-    size_t
-    numBody( void ) const { return m_body.size(); }     // $N_B$
-        
+    const std::vector<BFixedBody>&
+    fixedBody( void ) const { return m_fixed; }  
     
     /** \brief Connects a given body to the model
      *
@@ -209,6 +219,8 @@ public:
     friend std::istream& 
     operator>>( std::istream &istr, BModel &m );
     
+    static std::string ROOT(void) { return "ROOT"; } // root body name 
+    
 private:
 
     BBodyId 
@@ -237,7 +249,7 @@ private:
     calcDoF( void );
     
     void
-    addName( BBodyId bid, const std::string &body_name );
+    addName( BBodyId bid, std::string body_name );
     
     // number of degrees of freedoms of the model
     // general (joint) state (q), velocity (qdot), acceleration (qddot)
@@ -247,6 +259,7 @@ private:
     
     BBodyId m_fbd; // fixed_body_discriminator
 
+    std::string m_name;
     BVector3 m_gravity;
 
     // the id of the parent body
@@ -268,7 +281,8 @@ operator<<( std::ostream &ostr, const BModel &m )
     ostr << m.m_dof_count << ' ';
     ostr << m.m_q_size << ' ';
     ostr << m.m_qdot_size << ' ';
-    ostr << m.m_fbd << '\n';
+    ostr << m.m_fbd << ' ';
+    ostr << m.m_name << '\n';
     
     ostr << m.m_gravity << '\n';
     ostr << m.m_lambda << '\n';
@@ -289,6 +303,7 @@ operator>>( std::istream &istr, BModel &m )
     istr >> m.m_q_size;
     istr >> m.m_qdot_size;
     istr >> m.m_fbd;
+    istr >> m.m_name;
     
     istr >> m.m_gravity;
     istr >> m.m_lambda;

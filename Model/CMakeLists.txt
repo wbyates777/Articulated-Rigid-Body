@@ -18,7 +18,7 @@ add_library(Model
         BDynamics.cpp
 )
 
-target_include_directories( Model PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} )
+target_include_directories( Model  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}  )
 
-target_link_libraries( Model PUBLIC SpatialAlgebra )
+target_link_libraries( Model PUBLIC SpatialAlgebra PUBLIC model_headers)
 

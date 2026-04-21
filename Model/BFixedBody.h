@@ -37,7 +37,7 @@ public:
     BFixedBody( void )=default;
     BFixedBody( const BBody &b ):  m_id(0), m_parentId(0), 
                                    m_inertia(b.I().mass(), b.I().com(), b.I().Icom()), 
-                                   m_parent(B_IDENTITY_TRANS), m_base(B_IDENTITY_TRANS) {} 
+                                   m_parent(B_IDENTITY_TRANS) {} 
     ~BFixedBody( void )=default;
   
     
@@ -49,10 +49,10 @@ public:
     
     
     BBodyId
-    movableParent( void ) const { return m_parentId; }
+    parentId( void ) const { return m_parentId; }
     
     void
-    movableParent( BBodyId bid ) { m_parentId = bid; }
+    parentId( BBodyId bid ) { m_parentId = bid; }
     
 
     BScalar 
@@ -79,13 +79,7 @@ public:
     void 
     parentTrans( const BTransform &pt )  { m_parent = pt; }
     
-    const BTransform& 
-    baseTrans( void ) const { return m_base; }
-    
-    void 
-    baseTrans( const BTransform &bt ) { m_base = bt; }
-    
-    
+
 
     bool 
     operator==( const BFixedBody &v ) const { return (m_id == v.m_id); }
@@ -108,7 +102,7 @@ private:
 
     // transforms spatial quantities expressed for the parent to the fixed body.
     BTransform m_parent; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
-    BTransform m_base;   // m_X_base   - transformation from the base  to this body's coordinate
+
 };
 
 inline std::ostream&
@@ -116,12 +110,8 @@ operator<<( std::ostream &ostr, const BFixedBody &b )
 {
     ostr << b.m_id << ' ';
     ostr << b.m_parentId << '\n';
-    
     ostr << b.m_inertia << '\n';
-
-    
     ostr << b.m_parent << '\n';
-    ostr << b.m_base << '\n';
  
     return ostr;
 }
@@ -131,11 +121,9 @@ operator>>( std::istream &istr, BFixedBody &b )
 {
     istr >> b.m_id;
     istr >> b.m_parentId;
-    
     istr >> b.m_inertia;
-   
     istr >> b.m_parent;
-    istr >> b.m_base;
+
     
     return istr;
 }
