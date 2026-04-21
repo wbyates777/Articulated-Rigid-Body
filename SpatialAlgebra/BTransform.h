@@ -31,6 +31,26 @@
  and transformation of spatial vectors.
  
  
+ The BTransform class presented here has been tested against and matches
+ the Eigen3 RBDL function:
+ 
+ SpatialMatrix toMatrix () const {
+   Matrix3d _Erx =
+     E * Matrix3d (
+         0., -r[2], r[1],
+         r[2], 0., -r[0],
+         -r[1], r[0], 0.
+         );
+   SpatialMatrix result;
+   result.block<3,3>(0,0) = E;
+   result.block<3,3>(0,3) = Matrix3d::Zero();
+   result.block<3,3>(3,0) = -_Erx;
+   result.block<3,3>(3,3) = E;
+
+   return result;
+ }
+///
+ 
  Notes:
  
  1) All angles in radians
@@ -65,7 +85,7 @@
     X.applyTranspose(I) returns I' = X^T I X  
 
   8) As (A * B)^T == (B^T * A^T) and rx^T == -rx then (-E * rx)^T == rx * E^T
-    where the two negatives to cancel out
+     where the two negatives cancel out
     
  See also:
  

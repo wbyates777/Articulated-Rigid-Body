@@ -38,6 +38,8 @@
  1) we use the Featherstone convention on transforms, i.e X(E,r) as opposed to the homogenous convention X = (R,p),
     where E = R^T and r = -R^Tp
  2) arb::cross(w) * arb::crosw(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
+ 3) velocity vectors v are elements of a Lie algebra, transforms X are elements of a Lie group, exp:LieAlg --> LieGrp,
+    SE(3) lie group of rigid body transforms, se(3) tangent space at identity
  
 */
 
@@ -165,7 +167,7 @@ namespace arb {
             return arb::normalize(u) * theta;
         }
          
-        const BMatrix3 W = (R - arb::transpose(R)) * (0.5 * theta / sin(theta));
+        const BMatrix3 W = (R - arb::transpose(R)) * (BScalar(0.5) * theta / sin(theta));
         return arb::uncross(W);
     }
 
