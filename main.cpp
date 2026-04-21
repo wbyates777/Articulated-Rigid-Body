@@ -55,8 +55,8 @@
 
 URDFManager urdf;
 // your path here....
-std::string path = "/Users/bill/Projects/src/Graphics/ARB/ARB/URDF/Examples/";
-//std::string path = "./Examples/";
+//std::string path = "/Users/bill/Projects/src/Graphics/ARB/ARB/URDF/Examples/";
+std::string path = "../URDF/Examples/";
 
 #ifndef __BRESULTANALYSIS_H__
 #include "BResultAnalysis.h"
