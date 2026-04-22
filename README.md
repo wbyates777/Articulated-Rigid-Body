@@ -200,7 +200,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  Adding automatic differentiation to the spatial algebra library means that 
  the algebra, the ABA, the RNEA, and collision resolution are completely differentiable. 
  Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
- AD uses the chain rule to propagate exact _analytical_ derivatives through the code at the machine level.
+ AD uses the [chain rule] to propagate exact _analytical_ derivatives through the code at the machine level.
  This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques
  such as real-time [Model Predictive Control] (MPC), gradient-based trajectory optimisation, or analytical [System Identification]  (SI).
    
@@ -361,6 +361,7 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  [Newton-Euler]: https://en.wikipedia.org/wiki/Newton–Euler_equations
  [inertial force]:  https://en.wikipedia.org/wiki/Fictitious_force
  [Automatic Differentiation]: https://en.wikipedia.org/wiki/Automatic_differentiation 
+ [chain rule]: https://en.wikipedia.org/wiki/Chain_rule
  [System Identification]:  https://en.wikipedia.org/wiki/System_identification
  [Model Predictive Control]: https://en.wikipedia.org/wiki/Model_predictive_control
  
