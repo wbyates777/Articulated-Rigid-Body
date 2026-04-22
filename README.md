@@ -6,7 +6,7 @@
 - Inverse dynamics via the Recursive Newton–Euler Algorithm (RNEA) -  $O(N_B)$, 
 - Collision detection and spatial impulse-based contact resolution.  
 
-Includes **end-to-end automatic differentiation**, enabling system identification, optimization, and machine learning applications.
+Includes **end-to-end automatic differentiation**, enabling system identification, optimisation, and machine learning applications.
 
 ---
 
@@ -20,13 +20,14 @@ https://youtu.be/g1jMEpu1sl8
 
 ## Overview
 
-ARB is a compact implementation of spatial algebra and rigid body dynamics, designed for use in computer graphics, simulation, and robotics.
+ARB is a compact implementation of a differentiable spatial algebra designed for use in computer graphics, simulation, and robotics.
 
 It combines:
 - Spatial algebra (6D motion and force vectors),
-- Efficient rigid body dynamics algorithms (ABA, RNEA),
-- Collision detection and physically consistent contact resolution, and  
-- Automatic differentiation across the full simulation pipeline.  
+- Automatic differentiation across the full simulation pipeline,    
+- Efficient rigid body dynamics algorithms (ABA, RNEA), and
+- Collision detection and physically consistent contact resolution. 
+
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
 
@@ -56,12 +57,12 @@ to a simple hinged mechanism such as a door.
  This end-to-end differentiability facilitates the application of 
   advanced optimisation, machine learning techniques, and System Identification (SI).
 
-  The BContactManager class can detect collisions between (pairs of) rigid bodies and can resolves any 'contacts' 
+  The BContactManager class can detect collisions between (pairs of) rigid bodies and can resolves any 'contact' 
  by employing the physical concept of spatial impulse.  
 
  
-This code is written in c++23 and depends primarily on STL and the header-only GLM. 
-Additionally, the header-only autodiff library is required for automatic differentiablity, and 
+This code is written in C++23 and depends primarily on STL and the header-only GLM. 
+Additionally, the header-only autodiff library is required for automatic differentiability, and 
  the libccd shared library for collision detection.
 
 
@@ -70,8 +71,8 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
-* Universal Robot Data Format (URDF) load and save,
 * End-to-end automatic differentiability using autodiff (header-only),
+* Universal Robot Description Format (URDF) load and save,
 * Collision Resolution –  spatial impulses and GJK/EPA contact manifolds.
 * Minimal dependencies STL, GLM, (autodiff and libccd optional).
 
@@ -94,7 +95,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  Fig 1.  A simple jointed robot arm.
  </p>
 
- BDynamics is an implementation of:
+ The BDynamics class contains an implementation of:
  
  - the articulated-body algorithm (ABA), and  
  - the recursive Newton-Euler algorithm (RNEA).
@@ -112,16 +113,26 @@ Additionally, the header-only autodiff library is required for automatic differe
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
+### Unified Robot Description Format (URDF)
+
+  The Unified Robot Description Format (URDF) is an XML-based industry standard used to define the physical configuration of a robot, 
+  acting as the universal language for the [Robot Operating System] (ROS) ecosystem. It specifies  a 
+  robot’s kinematic tree, including the hierarchy of links, the types of joints connecting them, and their respective physical properties such as mass, centre of gravity, and inertia tensors.
+  
+  By supporting URDF, ARB can load complex, real-world robot models, such as the ur5 or tiago, directly from standard industry files. 
+  The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required 
+  for the ABA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.
+
 ### Collision Detection and Impulse Based Resolution
 
  The task of detecting collisions between rigid bodies can be subdivided into _broad phase_ and  _narrow phase_.
- Broad-phase consists of detecting intersections between orientated bounding boxes (OBB) using 
+ Broad-phase consists of detecting intersections between oriented bounding boxes (OBB) using 
  the [Separating Axis Theorem] (SAT). Computationally, this is relatively efficient.
  The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
  using the [GJK algorithm]. This is very precise but computationally more expensive.
 
- Collisons are resolved by calculating the
- _spatial impulses_ resulting from a contact and using these impulses to update the objects velocities
+ Collisions are resolved by calculating the
+ _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
  so that they separate appropriately. (see RBDA, Section 11.7).
 
  https://youtu.be/g1jMEpu1sl8
@@ -139,32 +150,39 @@ Additionally, the header-only autodiff library is required for automatic differe
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
  It also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
- For example, the following code excerpt performs [Newton-Euler] integration:
+ For example, the following 'hello world' program performs [Newton-Euler] integration:
 
-    // set up single body - a sphere -  
-    double mass = 100.0, radius = 0.5; 
-    BMatrix3 I_o((2.0/5.0) * mass * (radius * radius)); 
-   
-    BRBInertia I( BInertia(mass, I_o) );
-    BMatrix6 invI = arb::inverse(I);
-
-    // set initial position, velocity and acceleration (angular, linear)
-    BVector6 pos(B_ZERO_3, 20.0, 50.0, 3.0), vel(0.0), acc(0.0);
-    
-    // apply an angular force of 1.0 around Y axis and a linear force of 100.0 along Z axis
-    BVector6 force(0.0, 1.0, 0.0,  0.0, 0.0, 100.0);
-
-    double T = 0.0, dt = 0.01;
-    std::cout << T << " position is " << pos << std::endl;
-    for (int t = 0; t < 500; ++t)
+    #include "BSpatialAlgebra.h"
+     
+    int 
+    main( void )
     {
-        // Newton-Euler (see Featherstone, Section 2.15, eqn 2.72, page 36).
-        acc = invI * (force - arb::crossf(vel, I * vel)); 
-        vel += acc * dt;
-        pos += vel * dt;
-        T += dt;
+       // set up single body - a sphere -  
+       double mass = 100.0, radius = 0.5; 
+       BMatrix3 I_o((2.0/5.0) * mass * (radius * radius)); 
+      
+       BRBInertia I( BInertia(mass, I_o) );
+       BMatrix6 invI = arb::inverse(I);
+   
+       // set initial position, velocity and acceleration (angular, linear)
+       BVector6 pos(B_ZERO_3, 20.0, 50.0, 3.0), vel(0.0), acc(0.0);
+       
+       // apply an angular force of 1.0 around Y axis and a linear force of 100.0 along Z axis
+       BVector6 force(0.0, 1.0, 0.0,  0.0, 0.0, 100.0);
+   
+       double T = 0.0, dt = 0.01;
+       std::cout << T << " position is " << pos << std::endl;
+       for (int t = 0; t < 500; ++t)
+       {
+           // Newton-Euler (see Featherstone, Section 2.15, eqn 2.72, page 36).
+           acc = invI * (force - arb::crossf(vel, I * vel)); 
+           vel += acc * dt;
+           pos += vel * dt;
+           T += dt;
+       }
+       std::cout << T << " position is " << pos << std::endl; // angles in radians!
+       return EXIT_SUCCESS;
     }
-    std::cout << T << " position is " << pos << std::endl; // angles in radians!
 
  This produces the output:
 
@@ -192,7 +210,7 @@ System Identification is the process of constructing a mathematical model of a d
 using analytical methods, based on observed input and output data. 
 While forward dynamics (ABA) predicts how a system moves given its physical parameters, 
 SI reverses this process: 
-it can recover the underlying physical parameters (mass, center-of-mass, inertia tensor) of each body 
+it can recover the underlying physical parameters (mass, centre-of-mass, inertia tensor) of each body 
 by observing the system's motion (see ARB example 6 in main.cpp).
 SI allows researchers to synchronise a simulation with the real world.
 Additionally, SI can be used for the estimation of non-conservative forces such as joint friction and damping, 
@@ -229,7 +247,7 @@ which are traditionally difficult to calibrate manually.
  the note on Eigen3's and GLM's row-major, column-major differences), or 
  replace GLM with a high(er)-performance alternative, such as a custom std::simd 
  linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
- while remaining (mostly) agnostic about the underlying implemenation.
+ while remaining (mostly) agnostic about the underlying implementation.
 
  In order to implement automatic differentiation it is sufficient to #include "BAutodiff.h" in the BSpatialTypes.h file.
  BAutodiff.h is a wrapper for the header-only autodiff library (see below).
@@ -246,7 +264,7 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
  This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. 
 ARB has been tested against standard industrial robot models including: 
   
-    ur5.urdf, iiwa7.urdf, iiwa14.urdf, go1.urdf, and tiago_dual-test.urdf
+    ur5.urdf,  iiwa7.urdf,  iiwa14.urdf,  r1.urdf,  go1.urdf,  and  tiago_dual-test.urdf
   
  The results of testing tiago_dual-test.urdf, a robotic arm with 74 components and 33 degrees of freedom (taken from the RBDL documentation) are shown
  in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
@@ -297,7 +315,7 @@ The file BSpatialChecks.cpp includes 52 consistency checks, tested on random exa
 is a fundamental property that links adjoints, spatial transforms, and the exp mapping.
 
  The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
- and so, given some accelerations $qddot$, their composition should satisfy the identity:
+ and so, given some joint  accelerations $qddot$, their composition should satisfy the identity:
 
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
  
@@ -313,8 +331,8 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
 Cmake will take care of installing the GLM, autodiff, and libccd libaries. 
 If you are not using cmake these libraries can be downloaded directly from github (see links below).
 
-The minimum compiler requirement is now c++23. This is due to the improved constexpr handling in c++23. If you do not use GLM_FORCE_INTRINSICS you can use c++20.
-If you remove (some) constexpr definitions, then my code will compile under c++20, and 'almost' compile under c++17. GLM and autodiff are both c++17 compliant.  See the source for details on the remaining minor c++17 changes. 
+The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
+If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes. 
 
  ## Libraries
  
@@ -339,6 +357,7 @@ If you remove (some) constexpr definitions, then my code will compile under c++2
  [Separating Axis Theorem]: https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
  [GJK algorithm]: https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
  [R. Featherstone]:  https://royfeatherstone.org
+ [Robot Operating System]: https://en.wikipedia.org/wiki/Robot_Operating_System
  [Newton-Euler]: https://en.wikipedia.org/wiki/Newton–Euler_equations
  [inertial force]:  https://en.wikipedia.org/wiki/Fictitious_force
  [Automatic Differentiation]: https://en.wikipedia.org/wiki/Automatic_differentiation 
@@ -350,4 +369,3 @@ If you remove (some) constexpr definitions, then my code will compile under c++2
 Please send any questions or report any errors, omissions, or suggested extensions to the email wbyates777@gmail.com. 
 
 This project is licensed under the MIT License.
-
