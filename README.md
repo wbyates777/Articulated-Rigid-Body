@@ -109,7 +109,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  where $N_B$ is the number of bodies/joints. 
  This is the theoretical minimum for solving the forward dynamics problem (see RBDA, Section 7.3). 
  
- RNEA calculate the inverse dynamics of a kinematic tree. 
+ RNEA calculates the inverse dynamics of a kinematic tree. 
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
@@ -117,7 +117,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 
   The Unified Robot Description Format (URDF) is an XML-based industry standard used to define the physical configuration of a robot, 
   acting as the universal language for the [Robot Operating System] (ROS) ecosystem. It specifies  a 
-  robot’s kinematic tree, including the hierarchy of links, the types of joints connecting them, and their respective physical properties such as mass, centre of gravity, and inertia tensors.
+  robot’s kinematic tree, including the hierarchy of links, the types of joints connecting them, and their respective physical properties such as mass, centre of mass, and inertia tensors.
   
   By supporting URDF, ARB can load complex, real-world robot models, such as the ur5 or tiago, directly from standard industry files. 
   The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required 
@@ -315,7 +315,7 @@ The file BSpatialChecks.cpp includes 52 consistency checks, tested on random exa
 is a fundamental property that links adjoints, spatial transforms, and the exp mapping.
 
  The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
- and so, given some joint  accelerations $qddot$, their composition should satisfy the identity:
+ and so, given some joint  accelerations _qddot_, their composition should satisfy the identity:
 
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
  
@@ -328,7 +328,7 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
 
   ```mkdir build ; cd build ; cmake .. ; make ```
  
-Cmake will take care of installing the GLM, autodiff, and libccd libaries. 
+Cmake will take care of installing the GLM, autodiff, and libccd libraries. 
 If you are not using cmake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
