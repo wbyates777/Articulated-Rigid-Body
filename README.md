@@ -1,4 +1,4 @@
-# <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" /> Articulated Rigid Body (ARB)
+# <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" />  Articulated Rigid Body (ARB) 
 
 **Compact C++ articulated rigid body simulation library implementing:**
 
@@ -112,6 +112,18 @@ Additionally, the header-only autodiff library is required for automatic differe
  RNEA calculates the inverse dynamics of a kinematic tree. 
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
+
+ ARB supports the following articulations or _joints_:
+
+ | Joint Type | DOF  | Description | Representation | 
+| :---       | ---: | :---        | :---           |
+| Fixed1     |  0   |  Compressable rigid connection between links.  |  Identity Transform |
+| Fixed2     |  0   |  Uncompressable rigid connection between links.  |  Identity Transform |
+| Revolute   |  1   |  Rotation about a specified axis.  |  Scalar Angle  |
+| Prismatic  |  1   |  Translation along a specified axis.  |  Scalar Displacement  |
+| Helical    |  1   |  A 'screw' joint with both rotational and translational motion |  Scalar Angle/Displacement  |
+| Spherical  |  3   |  Full 3D rotation (ball-and-socket).  |  Quaternion  |
+| Floating Base  |  6  | Unconstrained 3D motion of the root.  |  Position + Quaternion |
 
 ### Unified Robot Description Format (URDF)
 
@@ -369,4 +381,8 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
 
 Please send any questions or report any errors, omissions, or suggested extensions to the email wbyates777@gmail.com. 
 
-This project is licensed under the MIT License.
+![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
+  are appreciated as they help others discover the project and they let me know I should keep maintaining it. 
+ 
+This project is licensed under the MIT License. 
+
