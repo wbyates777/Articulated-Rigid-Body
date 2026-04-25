@@ -84,7 +84,7 @@ URDFManager::toURDFJointType( BJoint::JType jtype ) const
         case BJoint::Fixed1     : mytype = URDFJointType::Fixed; break;
         case BJoint::Helical    : mytype = URDFJointType::Helical; break;
         case BJoint::Spherical  : mytype = URDFJointType::Spherical; break;
-        //case BJoint::Planar     : mytype = URDFJointType::Planar; break;
+        case BJoint::Planar     : mytype = URDFJointType::Planar; break;
         default : mytype = URDFJointType::UNDEFINED; break;
     }
     return mytype;
@@ -107,7 +107,7 @@ URDFManager::toURDFJoint( const BJoint &j ) const
     
     joint.type = toURDFJointType(j.jtype());
     
-    if (joint.type == URDFJointType::Planar || joint.type == URDFJointType::Helical)
+    if (joint.type == URDFJointType::Helical)
     {
         std::cout << "URDFManager::Error unsupported joint type " << toString(joint.type) << std::endl;
         exit(EXIT_FAILURE);
@@ -298,7 +298,7 @@ URDFManager::toBJointType( const URDFJoint &joint ) const
         case URDFJointType::Fixed      : mytype = BJoint::Fixed1; break;
         case URDFJointType::Floating   : mytype = BJoint::FloatBase; break;
         case URDFJointType::Helical    : mytype = BJoint::Helical; break;
-       // case URDFJointType::Planar     : mytype = BJoint::Planar ; break; 
+        case URDFJointType::Planar     : mytype = BJoint::Planar ; break; 
         default : mytype = BJoint::UNDEFINED; break;
     }
     return mytype;
@@ -345,19 +345,16 @@ URDFManager::toBJoint( const URDFJoint &joint ) const
     {
         retVal = BJoint(BJoint::Spherical);
     }
+    else if (joint.type == URDFJointType::Planar) 
+    {
+        retVal = BJoint(BJoint::Planar);
+    }
     else if (joint.type == URDFJointType::Helical) 
     {
         std::cout << "URDFManager::Error while processing joint: Helical joints not yet supported!" << std::endl;
         exit(EXIT_FAILURE);
         //retVal = BJoint(BVector6(axis1,axis2)); // Helical - axis normalized
     } 
-    else if (joint.type == URDFJointType::Planar) 
-    {
-        // todo: which two directions should be used that are perpendicular
-        // to the specified axis?
-        std::cout << "URDFManager::Error while processing joint: Planar joints not yet supported!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
     
     retVal.X_T( toBTransform(joint.origin) );    
     retVal.params().limit = joint.limit;

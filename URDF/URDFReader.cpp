@@ -240,6 +240,7 @@ URDFReader::readDynamics( const tinyxml2::XMLElement *xml, URDFDynamics &dynamic
     xml->QueryDoubleAttribute("friction", &dynamics.friction);
 }
 
+
 void
 URDFReader::readJoint( const XMLElement* xml, URDFJoint &joint ) const
 {

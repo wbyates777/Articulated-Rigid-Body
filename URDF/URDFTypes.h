@@ -25,10 +25,13 @@
  prismatic  — a sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.
  fixed      — this is not really a joint because it cannot move. All degrees of freedom are locked. 
               This type of joint does not require the <axis>, <calibration>, <dynamics>, <limits> or <safety_controller>.
- floating   — this joint allows motion for all 6 degrees of freedom. Must be first joint
+ floating   — 6-dof joint allows motion for all 6 degrees of freedom. Must be first joint
+ planar     - 3-dof joint allows motion x,y translation and z rotation
  
- Planar, and Helical are not supported as Helical joint not implemented in URDF, 
- and Planar joint not implemented in BModel.
+ Supports n0n-URDF Joint Types
+ ---------------------------
+ helical    - 1-dof joint 'screw' joint with both rotational and translational motion, axis, pitch 
+ spherical  - 3-dof spherical or 'ball and socket' joint
  
  
  Notes:
