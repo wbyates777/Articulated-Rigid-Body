@@ -92,10 +92,10 @@ run_adjoint_tests(BSpatialChecks &st)
     BVector6 v = arb::rndVec6();
     
     // test apply toMatrix
-    bool A = arb::nearZero(arb::applyAdjoint(X, f) - (arb::toAdjoint(X) * f));
-    bool B = arb::nearZero(arb::applyAdjointDual(X, f) - (arb::toAdjointDual(X) * f));
-    bool C = arb::nearZero(arb::applyAdjointInverse(X, f) - (arb::toAdjointInverse(X) * f));
-    bool D = arb::nearZero(arb::applyAdjointDual(X, f) - (arb::toAdjointDual(X) * f));
+    bool A = arb::nearZero(arb::applyForce(X, f) - (arb::toForce(X) * f));
+    bool B = arb::nearZero(arb::applyMotion(X, f) - (arb::toMotion(X) * f));
+    bool C = arb::nearZero(arb::applyForceInverse(X, f) - (arb::toForceInverse(X) * f));
+    bool D = arb::nearZero(arb::applyMotion(X, f) - (arb::toMotion(X) * f));
     
     st.expect(A, "Adjoint", "adjoint - apply vs toMatrix");
     st.expect(B, "Adjoint", "dual  - apply vs toMatrix");
@@ -103,10 +103,10 @@ run_adjoint_tests(BSpatialChecks &st)
     st.expect(D, "Adjoint", "transpose  - apply vs toMatrix");
     
     // inverse
-    bool E = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjointInverse(X, f)) - f);
-    bool F = arb::nearZero(arb::applyAdjoint(X, arb::applyAdjoint(arb::inverse(X), f) ) - f);
-    bool G = arb::nearZero(arb::toAdjoint(X) *  arb::toAdjointInverse(X) - B_IDENTITY_6x6);
-    bool H = arb::nearZero(arb::toAdjointInverse(X) * arb::toAdjoint(X) - B_IDENTITY_6x6);
+    bool E = arb::nearZero(arb::applyForce(X, arb::applyForceInverse(X, f)) - f);
+    bool F = arb::nearZero(arb::applyForce(X, arb::applyForce(arb::inverse(X), f) ) - f);
+    bool G = arb::nearZero(arb::toForce(X) *  arb::toForceInverse(X) - B_IDENTITY_6x6);
+    bool H = arb::nearZero(arb::toForceInverse(X) * arb::toForce(X) - B_IDENTITY_6x6);
     
     st.expect(E, "Adjoint", "inverse - Ad_X(Ad_invX) == Id");
     st.expect(F, "Adjoint", "inverse - Ad_X(Ad_X(invX)) == Id" );
@@ -114,8 +114,8 @@ run_adjoint_tests(BSpatialChecks &st)
     st.expect(H, "Adjoint", "inverse - Ad_invX * Ad_X == Id");
     
     // transpose 
-    bool I = arb::nearZero(arb::toAdjointTranspose(X) - arb::transpose(arb::toAdjoint(X)));
-    bool J = arb::nearZero(arb::transpose(arb::toAdjointInverse(X)) - arb::toAdjointDual(X));
+    bool I = arb::nearZero(arb::toMotionInverse(X) - arb::transpose(arb::toForce(X)));
+    bool J = arb::nearZero(arb::transpose(arb::toForceInverse(X)) - arb::toMotion(X));
     
     st.expect(I, "Adjoint", "transose - Ad_XT == (Ad_X)^T");
     st.expect(J, "Adjoint", "transpose - (Ad_invX)^T == Ad_X^*");
@@ -124,15 +124,15 @@ run_adjoint_tests(BSpatialChecks &st)
     BTransform T1 = arb::rndTransform();
     BTransform T2 = arb::rndTransform();
     
-    bool K = arb::nearZero((arb::toAdjoint(T1) * arb::toAdjoint(T2)) - arb::toAdjoint(T1 * T2));
-    bool L = arb::nearZero((arb::toAdjointDual(T1) * arb::toAdjointDual(T2)) - arb::toAdjointDual(T1 * T2)); 
+    bool K = arb::nearZero((arb::toForce(T1) * arb::toForce(T2)) - arb::toForce(T1 * T2));
+    bool L = arb::nearZero((arb::toMotion(T1) * arb::toMotion(T2)) - arb::toMotion(T1 * T2)); 
     
     st.expect(K, "Adjoint", "Prop 3.21 - composition chain");
     st.expect(L, "Adjoint", "Prop 3.21 - dual composition chain");
     
     // power invariance (RBDA Section 2.6, page 17)
     BScalar p_orig = arb::dot(f, v);
-    BScalar p_tran = arb::dot(arb::applyAdjointDual(X, f), arb::applyAdjoint(X, v));
+    BScalar p_tran = arb::dot(arb::applyMotion(X, f), arb::applyForce(X, v));
     
     st.expect(arb::nearZero(p_orig - p_tran), "Adjoint", "physics - power invariance under X");
 }
@@ -186,7 +186,7 @@ run_rbinertia_tests(BSpatialChecks &st)
     // world inverse
 
     BMatrix6 I_w  = arb::transpose(X) * I * X; // inertia in word coords
-    BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::dual(X); // inverse inertia in word coords
+    BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::toForce(X); // inverse inertia in word coords
     
     bool T = arb::nearZero((I_w * invI_w) - B_IDENTITY_6x6);
     
@@ -195,13 +195,13 @@ run_rbinertia_tests(BSpatialChecks &st)
     
     // apply: I' = X^* * I * X^-1
     BRBInertia I_apply = X.apply(I);
-    BMatrix6 I_expected = arb::dual(X) * BMatrix6(I) * arb::inverse(X);
+    BMatrix6 I_expected = arb::toForce(X) * BMatrix6(I) * arb::inverse(X);
     st.expect(arb::nearZero(BMatrix6(I_apply) - I_expected), "BRBInertia", "I' = X^* * I * X^-1");
     
     // variants : I' = X^* * I * X^-1
     BMatrix6 A = arb::transpose(BMatrix6(arb::inverse(X))) * BMatrix6(I) * BMatrix6(arb::inverse(X));
-    BMatrix6 B = arb::dual(X) * BMatrix6(I) * BMatrix6(arb::inverse(X));
-    BMatrix6 C = arb::dual(X) * I * arb::inverse(X);
+    BMatrix6 B = arb::toForce(X) * BMatrix6(I) * BMatrix6(arb::inverse(X));
+    BMatrix6 C = arb::toForce(X) * I * arb::inverse(X);
     BMatrix6 D = arb::transpose(arb::inverse(X)) * BMatrix6(I) * arb::inverse(X);
     BMatrix6 E = BMatrix6(I_apply);
     
@@ -250,13 +250,13 @@ run_abinertia_tests(BSpatialChecks &st)
     
     // world inverse
     BMatrix6 I_w  = arb::transpose(X) * I * X; // inertia in word coords
-    BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::dual(X); // inverse inertia in word coords
+    BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::toForce(X); // inverse inertia in word coords
     st.expect(arb::nearZero((I_w * invI_w) - B_IDENTITY_6x6), "BABInertia", "I_w * I_w^-1 == Id");
     
     // apply - X^* * I * X^{-1}
     BABInertia I1 = X.apply( I ); 
 
-    BMatrix6 A = (arb::dual(X) * I) * arb::inverse(X);
+    BMatrix6 A = (arb::toForce(X) * I) * arb::inverse(X);
     BMatrix6 B = (arb::transpose(arb::inverse(X)) * I) * arb::inverse(X);
     BMatrix6 C = (arb::transpose(BMatrix6(arb::inverse(X))) * BMatrix6(I)) * BMatrix6(arb::inverse(X));
     BMatrix6 D = BMatrix6(I1);
@@ -290,7 +290,7 @@ run_transform_tests(BSpatialChecks &st)
     // BTransform Identities 1,2,3
     BMatrix6 A = X_wb * arb::inverse(X_wb); 
     BMatrix6 B = arb::inverse(X_wb) * X_wb;
-    BMatrix6 C = arb::transpose(X_wb) * arb::dual(X_wb);
+    BMatrix6 C = arb::transpose(X_wb) * arb::toForce(X_wb);
         
     st.expect(arb::nearZero(A - B_IDENTITY_6x6), "Transform", "inverse - X * X^{-1} == Identity");
     st.expect(arb::nearZero(B - B_IDENTITY_6x6), "Transform", "inverse - X^{-1} * X == Identity");
@@ -299,12 +299,12 @@ run_transform_tests(BSpatialChecks &st)
     BVector6 h_w = arb::rndVec6();  // momentum is a force vector
     
     // body coords momentum and velocity
-    BVector6 h_b = arb::dual(X_wb) * h_w; 
+    BVector6 h_b = arb::toForce(X_wb) * h_w; 
     BVector6 v_b = arb::inverse(I) * h_b;  // RBDA, eqn 2.61, page 32.
     
     // world coords velocity
     BVector6 v_w    = arb::inverse(X_wb) * v_b;
-    BMatrix6 invI_w = arb::inverse(X_wb) * arb::inverse(I) * arb::dual(X_wb);  // RBDA, Table 2.5, page 34
+    BMatrix6 invI_w = arb::inverse(X_wb) * arb::inverse(I) * arb::toForce(X_wb);  // RBDA, Table 2.5, page 34
     BVector6 my_v_w = invI_w * h_w;  
     BMatrix6 invI_b = (X_wb * invI_w * arb::transpose(X_wb));  
     st.expect(arb::nearZero(my_v_w - v_w), "Transform", "world/base coords and velocity");
@@ -369,11 +369,10 @@ run_lie_group_tests(BSpatialChecks &st)
     BVector6 u   = arb::rndVec6();
 
     // Note RBDL methods follow Featherstone's definitions, 
-    // The arb::toAdjoint() and BTransform classes match  
+    // The arb::totoMotion() and BTransform classes match  
     // toMatrixAdjoint() and SpatialTransform (from RBDL) numerically.
 
-    // toAdjointDual(Z) works here (not sure why its not toAdjoint)
-    BMatrix6 AdZ = arb::toAdjointDual(Z);
+    BMatrix6 AdZ = arb::toMotion(Z);
     BTransform lhs = arb::exp(AdZ * u);
     BTransform rhs = Z * arb::exp(u) * arb::inverse(Z);
     bool match = arb::nearZero(BMatrix6(lhs) - BMatrix6(rhs));
