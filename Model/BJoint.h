@@ -236,6 +236,8 @@ public:
         
         Helical,       // A 1-DoF 'screw' joint with both rotational and translational motion.
         
+        Planar,        // Planar Joint (3-DOF: x,y translation and z rotation)
+
         MAXJOINT    
     };
     

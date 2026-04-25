@@ -37,6 +37,17 @@ constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_ONE_6x3
     0.0, 0.0, 1.0 
 };
 
+// S matrix for Planar: [x_trans, y_trans, z_rot]
+// Columns: 0=TransX, 1=TransY, 2=RotZ
+constexpr std::array<std::array<BScalar, 3>, 6> B_PLANAR_6x3
+{
+    0.0, 0.0, 0.0,  
+    0.0, 0.0, 0.0,  
+    0.0, 0.0, 1.0,  // ang z (rot Z)
+    1.0, 0.0, 0.0,  // lin x (trans X)
+    0.0, 1.0, 0.0,  // lin y (trans Y)
+    0.0, 0.0, 0.0   
+};
 
 // constructs a 1-DoF joint with the given motion subspaces
 BJoint::BJoint( const BVector6 &axis_0 )  : m_id(0),
@@ -270,6 +281,16 @@ BJoint::BJoint(JType jtype ) :  m_id(0),
         setMotionSpace(m_axis[0]);
         m_v_J = m_axis[0];
     } 
+    else if (m_jtype == JType::Planar) 
+    {
+        m_axis.resize(3);
+        m_axis[0] = BVector6(B_ZERO_3, B_XAXIS); 
+        m_axis[1] = BVector6(B_ZERO_3, B_YAXIS); 
+        m_axis[2] = BVector6(B_ZAXIS, B_ZERO_3); 
+        
+        setMotionSpace(B_PLANAR_6x3);
+        m_v_J = m_axis[0]; 
+    }
     else if (m_jtype == JType::EulerZYX) 
     {
         m_axis.resize(3);
@@ -467,19 +488,20 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     {
         m_X_lambda = m_X_T; 
     } 
-    else if (m_jtype == JType::Spherical) // 3-DoF
-    {
-        m_v_J = BVector6( qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2], B_ZERO_3 );
-        
-        m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
-        m_X_lambda = m_X_J * m_X_T;
-    } 
+
     else if (m_jtype == JType::TransXYZ)  // 3-DoF
     {
         m_v_J = BVector6( B_ZERO_3, qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2] );
  
         m_X_lambda.E( m_X_T.E() );
         m_X_lambda.r( m_X_T.r() + arb::transpose(m_X_T.E()) * BVector3(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]));
+    } 
+    else if (m_jtype == JType::Spherical) // 3-DoF
+    {
+        m_v_J = BVector6( qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2], B_ZERO_3 );
+        
+        m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
+        m_X_lambda = m_X_J * m_X_T;
     } 
     else if (m_jtype == JType::RevoluteX)  // 1-DoF 
     {
@@ -568,6 +590,29 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
 
         setMotionSpace(MS);
     } 
+    else if (m_jtype == JType::Planar) // 3-DoF 
+    {
+        const BScalar q0 = q[m_qidx];     // x
+        const BScalar q1 = q[m_qidx + 1]; // y
+        const BScalar q2 = q[m_qidx + 2]; // theta
+        
+        const BScalar qd0 = qdot[m_qidx];
+        const BScalar qd1 = qdot[m_qidx + 1];
+        const BScalar qd2 = qdot[m_qidx + 2];
+
+        // RBDA, Table 4.1 page 79
+        const BScalar s = sin(q2);
+        const BScalar c = cos(q2);
+        const BScalar b0 = c*q0 - s*q1; // arb::transpose(rotz) 
+        const BScalar b1 = s*q0 + c*q1;
+        
+        m_X_J = BTransform(arb::rotz(q2), BVector3(b0, b1, 0.0));
+   
+        m_X_lambda = m_X_J * m_X_T; 
+        
+        // spatial velocity v_J = S * qdot and c_J = 0
+        m_v_J.set(0.0, 0.0, qd2, qd0, qd1, 0.0); 
+    }
     else if (m_jtype == JType::EulerZYX)  // 3-DoF
     {
         const BScalar q0 = q[m_qidx];
@@ -770,7 +815,7 @@ BJoint::toString( JType jt )
         case JType::Fixed1:         return "Fixed1"; break;
         case JType::Fixed2:         return "Fixed2"; break;
         case JType::Helical:        return "Helical"; break;
-            
+        case JType::Planar:         return "Planar"; break;
         case JType::MAXJOINT:       return "MAXJOINT"; break;
   
         default: exit(EXIT_FAILURE); break;
