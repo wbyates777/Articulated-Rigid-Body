@@ -24,6 +24,9 @@
 #include "CBody.h"
 #endif
 
+#ifndef __BADJOINT_H__
+#include "BAdjoint.h"
+#endif
 
 #include <iostream>
 
@@ -117,7 +120,7 @@ CBody::updateBaseInertia( void )
 { 
     const BTransform X(m_body.X_base().E()); // world to body
     m_I_base = X.applyTranspose(m_body.I());
-    m_invI_base = arb::inverse(X) * m_invI * arb::dual(X);
+    m_invI_base = arb::inverse(X) * m_invI * arb::toForce(X);
 }
 
 void 
