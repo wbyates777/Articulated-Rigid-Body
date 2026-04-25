@@ -219,7 +219,6 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         { 
             // external forces are assumed to be in world coordinates
             // forces must be applied in body coordinates to each body.
-            // we use adjoint here - it is equivalent to arb::dual(X_base)
             m_pA[i] -= arb::applyForce(m.body(i).X_base(), f_ext[i]);
         }
     }
@@ -278,9 +277,8 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             
             if (lambda != 0) 
             {
-                //const BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
-                //const BABInertia Ia = m_IA[i] - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
                 const BMatrix63 UDinv_tmp(m_dof3_U[i] * m_dof3_Dinv[i]);
+                //const BABInertia Ia = m_IA[i] - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
                 const BABInertia Ia = m_IA[i] - BABInertia(m_dof3_U[i], m_dof3_Dinv[i]); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
                 const BVector6 pa(m_pA[i] + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
