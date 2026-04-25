@@ -75,6 +75,73 @@ namespace arb {
         //return retVal;  
     }
     
+    // 3D rotations - all angles in radians
+    
+    inline BMatrix3 
+    rot( BScalar theta, const BVector3 &axis ) 
+    // WARNING: axis *must* be normalized
+    {
+        assert(arb::length(axis) - 1.0 < 1E-8);
+        
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(theta);
+        const BScalar c = cos(theta);
+  
+        return BMatrix3( axis[0] * axis[0] * (1.0 - c) + c,
+                         axis[1] * axis[0] * (1.0 - c) + axis[2] * s,
+                         axis[0] * axis[2] * (1.0 - c) - axis[1] * s,
+                      
+                         axis[0] * axis[1] * (1.0 - c) - axis[2] * s,
+                         axis[1] * axis[1] * (1.0 - c) + c,
+                         axis[1] * axis[2] * (1.0 - c) + axis[0] * s,
+                      
+                         axis[0] * axis[2] * (1.0 - c) + axis[1] * s,
+                         axis[1] * axis[2] * (1.0 - c) - axis[0] * s,
+                         axis[2] * axis[2] * (1.0 - c) + c);
+    }
+    
+    
+    inline BMatrix3 
+    rotx( BScalar theta ) 
+    {
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(theta);
+        const BScalar c = cos(theta);
+        return BMatrix3( 1.0, 0.0, 0.0,
+                         0.0,   c,   s,
+                         0.0,  -s,   c );
+    }
+    
+    inline BMatrix3 
+    roty( BScalar theta ) 
+    {
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(theta);
+        const BScalar c = cos(theta);
+        return BMatrix3(   c, 0.0,  -s,
+                         0.0, 1.0, 0.0,
+                           s, 0.0,   c ); 
+    }
+    
+    inline BMatrix3 
+    rotz( BScalar theta ) 
+    {
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(theta);
+        const BScalar c = cos(theta);
+        return  BMatrix3(  c,   s, 0.0,
+                          -s,   c, 0.0,
+                         0.0, 0.0, 1.0 );
+    }
+    
     
     inline bool 
     nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }

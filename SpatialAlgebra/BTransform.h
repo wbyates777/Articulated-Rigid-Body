@@ -77,7 +77,7 @@
  X^*  =     | E  -rx * E |
             | 0      E   |
  
- Note  X^* = X^{-T} and  X^* == Ad_X (compare BAdjoint.h)
+ Note  X^* = X^{-T} 
  
  7) Transform of inertia see RBDA, eqn 2.66, page 34.
     When when transforming a spatial inertia I by a spatial transform X note:
@@ -125,10 +125,10 @@ public:
     clear( void ) {  m_E = B_IDENTITY_3x3; m_r = B_ZERO_3; }
 
     operator BMatrix6( void ) const 
+    // to motion transform matrix
     {
         return BMatrix6( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
     }
-    
     
     void
     set( const BMatrix3 &E, const BVector3 &r = B_ZERO_3 ) 
@@ -316,14 +316,6 @@ const BTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
 
 namespace arb
 {
-    // X^T - style choice - I prefer arb::transpose(m) to m.transpose()  
-    inline constexpr BMatrix6 
-    transpose( const BTransform &m ) 
-    { 
-        const BMatrix3 ET = arb::transpose(m.E());
-        return BMatrix6( ET, ET * arb::cross(m.r()), B_ZERO_3x3, ET );
-    }
-
     // X^{-1}
     inline constexpr BTransform 
     inverse( const BTransform &m )  
@@ -331,82 +323,24 @@ namespace arb
         const BMatrix3 ET = arb::transpose(m.E()); 
         return BTransform(ET, -ET * m.r()); 
     }
-
-    // dual is $X^* = X^{-T}$ 
-    inline constexpr BMatrix6 
-    dual( const BTransform &m ) 
-    { 
-        return BMatrix6( m.E(), arb::cross(-m.r()) * m.E(), B_ZERO_3x3, m.E() );
-    }
-
-    // all angles in radians
+    
+    // rotations, see RBDA, Section 2.8, table, 2.2, page 23
+    // all angles in radians, axis *must* be normalised
     inline BTransform 
-    Xrot( BScalar angle, const BVector3 &axis ) // WARNING: axis *must* be normalized
-    {
-        using std::sin;
-        using std::cos;
-        
-        const BScalar s = sin(angle);
-        const BScalar c = cos(angle);
-  
-        return BTransform(BMatrix3( axis[0] * axis[0] * (1.0 - c) + c,
-                                    axis[1] * axis[0] * (1.0 - c) + axis[2] * s,
-                                    axis[0] * axis[2] * (1.0 - c) - axis[1] * s,
-                                  
-                                    axis[0] * axis[1] * (1.0 - c) - axis[2] * s,
-                                    axis[1] * axis[1] * (1.0 - c) + c,
-                                    axis[1] * axis[2] * (1.0 - c) + axis[0] * s,
-                                  
-                                    axis[0] * axis[2] * (1.0 - c) + axis[1] * s,
-                                    axis[1] * axis[2] * (1.0 - c) - axis[0] * s,
-                                    axis[2] * axis[2] * (1.0 - c) + c) );
-    }
-
-    // RBDA, Section 2.8, table, 2.2, page 23
+    Xrot( BScalar theta, const BVector3 &axis ) { return BTransform(rot(theta, axis)); }
+   
     inline BTransform 
-    Xrotx( BScalar xrot ) 
-    {
-        using std::sin;
-        using std::cos;
-        
-        const BScalar s = sin(xrot);
-        const BScalar c = cos(xrot);
-        return BTransform ( BMatrix3( 1.0, 0.0, 0.0,
-                                      0.0,   c,   s,
-                                      0.0,  -s,   c ) );
-    }
+    Xrotx( BScalar theta ) { return BTransform(rotx(theta)); }
 
     inline BTransform 
-    Xroty( BScalar yrot ) 
-    {
-        using std::sin;
-        using std::cos;
-        
-        const BScalar s = sin(yrot);
-        const BScalar c = cos(yrot);
-        return BTransform( BMatrix3(   c, 0.0,  -s,
-                                     0.0, 1.0, 0.0,
-                                       s, 0.0,   c ) ); 
-    }
+    Xroty( BScalar theta ) { return BTransform(roty(theta)); }
 
     inline BTransform 
-    Xrotz( BScalar zrot ) 
-    {
-        using std::sin;
-        using std::cos;
-        
-        const BScalar s = sin(zrot);
-        const BScalar c = cos(zrot);
-        return BTransform( BMatrix3(  c,   s, 0.0,
-                                     -s,   c, 0.0,
-                                    0.0, 0.0, 1.0 ) );
-    }
+    Xrotz( BScalar theta ) { return BTransform(rotz(theta)); }
 
     inline BTransform 
-    Xtrans( const BVector3 &r ) 
-    {
-        return BTransform( B_IDENTITY_3x3, r ); 
-    }
+    Xtrans( const BVector3 &r ) { return BTransform( B_IDENTITY_3x3, r ); }
+    
 }
 
 

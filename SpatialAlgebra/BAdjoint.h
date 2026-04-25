@@ -10,16 +10,10 @@
  History:
 
  
- Adjoints are derrived from a BTransform X - they map between world and body coords.
- See pages 55, 56 "A Mathematical Introduction to Robotic Manipulation",  
- Murray, R.M., Li, Z., Shankar Sastry S. 1994. 
- Note Murray et al. uses (lin, ang) vector representation.
- 
- 
- The adjoint of a spatial transform X(E,r), denoted Ad_X maps body velocity 
- coordinates to world/spatial velocity coordinates.
- 
- The arb::toAdjoint() presented here has been tested against and matches 
+ Converts compact BTransforms into 6x6 spatial transformation matrices.
+
+
+ The function arb::toForce() presented here has been tested against and matches 
  the Eigen3 RBDL function:
  
      SpatialMatrix toMatrixAdjoint () const {
@@ -40,29 +34,23 @@
 
  
  
- The remaining adjoints are constructed from this basic definition.
+ The remaining matricies are constructed from this basic definition.
  
- The adjoint matricies are: 
+ The matricies are: 
  
- Ad_X       =  | E   -rx * E |
-               | 0       E   |
+ toMotion(X)        =  | E   -rx * E |
+  X                    | 0       E   |
  
- Ad_X^{-1}  =  | E^T   E^T * rx |
-               | 0        E^T   |
+ toMotionInverse(X) =  |    E^T      0  |
+  X^{-1}               | E^T * rx   E^T |
  
- Ad_X^T     =  |    E^T      0  |
-               | E^T * rx   E^T |
+ toForce(X)         =  |    E      0 |
+  X^{-T}               | -rx * E   E |
  
- Ad_X^{-T}  =  |    E      0 |
-               | -rx * E   E |
+ toForceInverse(X)  =  | E^T   E^T * rx |
+  X^{-1}               | 0        E^T   |
  
  where rx = arb::cross(r)
- 
- Notes: 
- 
- 1) Ad_X^{-T} == Ad_X^*
- 2) Ad_X ==  X^{-T}  (compare BTransform.h)
- 3) AdjointDual <=> AdjointInverseTranspose
  
 */
 
@@ -78,18 +66,58 @@
 
 namespace arb
 {
-
+    
     inline BMatrix6 
-    toAdjoint( const BTransform &X )  
-    // Ad_X - forward motion
+    toMotion( const BTransform &X )  
+    // motion A -> B
+    // matches Featherstone's X (spatial motion transform)
+    // use: transform twist from parent to child (forward pass)
+    {
+        return BMatrix6( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E(), X.E() );
+    }
+
+    inline BVector6 
+    applyMotion( const BTransform &X, const BVector6 &f )  
+    {
+        const BMatrix3 ET = arb::transpose(X.E());
+        const BVector3 lin = ET * (f.lin() - arb::cross(X.r(), f.ang()));
+        const BVector3 ang = ET * f.ang();
+        return BVector6(ang, lin);
+    }
+
+    
+    inline BMatrix6 
+    toMotionInverse( const BTransform &X )  
+    // motion B -> A
+    {
+        const BMatrix3 ET = arb::transpose(X.E());
+        return BMatrix6( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
+    }
+
+    inline BVector6 
+    applyMotionInverse( const BTransform &X, const BVector6 &f ) 
+    {
+        const BVector3 lin  = arb::cross(-X.r()) *  X.E() * f.ang() + X.E() * f.lin();
+        const BVector3 ang = X.E() * f.ang();
+        return BVector6(ang, lin);
+    }
+
+    //
+    //
+    //
+    
+    inline BMatrix6 
+    toForce( const BTransform &X )  
+    // force A -> B
+    // matches Featherstone's X* (spatial force transform)
+    // use: transform wrench from parent to child
     {
         const BMatrix3 Erx = arb::cross(-X.r()) * X.E();
         return BMatrix6( X.E(), Erx, B_ZERO_3x3, X.E() );
     }
 
     inline BVector6
-    applyAdjoint(const BTransform &X, const BVector6 &f)   
-    // Ad_X - forward motion
+    applyForce(const BTransform &X, const BVector6 &f)   
     {
         const BMatrix3 ET = arb::transpose(X.E());
         const BVector3 lin = ET * f.lin();
@@ -97,59 +125,23 @@ namespace arb
         return BVector6(ang,  lin);
     }
 
-
+    
     inline BMatrix6 
-    toAdjointTranspose( const BTransform &X )  
-    // Ad_X^T - forward force
-    {
-        const BMatrix3 ET = arb::transpose(X.E());
-        return BMatrix6( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
-    }
-
-    inline BVector6 
-    applyAdjointTranspose( const BTransform &X, const BVector6 &f ) 
-    // Ad_X^T - forward force
-    {
-        const BVector3 lin  = arb::cross(-X.r()) *  X.E() * f.ang() + X.E() * f.lin();
-        const BVector3 ang = X.E() * f.ang();
-        return BVector6(ang, lin);
-    }
-
-
-    inline BMatrix6 
-    toAdjointInverse( const BTransform &X )  
-    // Ad_X^{-1} - inverse motion
+    toForceInverse( const BTransform &X )  
+    // force B -> A
     {
         const BMatrix3 ET = arb::transpose(X.E());
         return BMatrix6( ET, ET * arb::cross(X.r()), B_ZERO_3x3, ET );
     }
 
     inline BVector6 
-    applyAdjointInverse( const BTransform &X, const BVector6 &v ) 
-    // Ad_X^{-1} - inverse motion
+    applyForceInverse( const BTransform &X, const BVector6 &v ) 
     {
         const BVector3 lin  = X.E() * v.lin();
         const BVector3 ang = (X.E() * v.ang()) + (arb::cross(-X.r()) * X.E() * v.lin());
         return BVector6(ang, lin);
     }
 
-
-    inline BMatrix6 
-    toAdjointDual( const BTransform &X )  
-    // Ad_X^{-T} or Ad_X^* - inverse force
-    {
-        return BMatrix6( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E(), X.E() );
-    }
-
-    inline BVector6 
-    applyAdjointDual( const BTransform &X, const BVector6 &f )  
-    // Ad_X^{-T} or Ad_X^* - inverse force
-    {
-        const BMatrix3 ET = arb::transpose(X.E());
-        const BVector3 lin = ET * (f.lin() - arb::cross(X.r(), f.ang()));
-        const BVector3 ang = ET * f.ang();
-        return BVector6(ang, lin);
-    }
 
 }
 
