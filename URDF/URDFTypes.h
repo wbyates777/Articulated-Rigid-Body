@@ -16,8 +16,6 @@
  Simple  intermediate layer of structs that hold URDF data for reading and writing
  uses glm::dvec3, glm::dvec4, glm::dmat3 data types - no spatial algebra stuff
  
-
- 
  Supports URDF Joint Types
  ---------------------------
  revolute   — a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
@@ -25,12 +23,11 @@
  prismatic  — a sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.
  fixed      — this is not really a joint because it cannot move. All degrees of freedom are locked. 
               This type of joint does not require the <axis>, <calibration>, <dynamics>, <limits> or <safety_controller>.
- floating   — 6-dof joint allows motion for all 6 degrees of freedom. Must be first joint
+ floating   — this joint allows motion for all 6 degrees of freedom. Must be first joint
  planar     - 3-dof joint allows motion x,y translation and z rotation
  
- Supports n0n-URDF Joint Types
+ Supports non-URDF Joint Types
  ---------------------------
- helical    - 1-dof joint 'screw' joint with both rotational and translational motion, axis, pitch 
  spherical  - 3-dof spherical or 'ball and socket' joint
  
  
