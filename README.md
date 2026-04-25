@@ -121,8 +121,9 @@ Additionally, the header-only autodiff library is required for automatic differe
 | Fixed2     |  0   |  Uncompressable rigid connection between links.  |  Identity Transform |
 | Revolute   |  1   |  Rotation about a specified axis.  |  Scalar Angle  |
 | Prismatic  |  1   |  Translation along a specified axis.  |  Scalar Displacement  |
-| Helical    |  1   |  A 'screw' joint with both rotational and translational motion |  Scalar Angle/Displacement  |
+| Helical    |  1   |  A 'screw' joint with both rotational and translational motion |  Scalar Pitch  |
 | Spherical  |  3   |  Full 3D rotation (ball-and-socket).  |  Quaternion  |
+| Planar     |  3   |  Translation in the x,y plane and rotation about z-axis  |  Vector3  |
 | Floating Base  |  6  | Unconstrained 3D motion of the root.  |  Position + Quaternion |
 
 ### Unified Robot Description Format (URDF)
