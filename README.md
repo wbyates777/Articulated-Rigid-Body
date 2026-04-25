@@ -148,6 +148,9 @@ Additionally, the header-only autodiff library is required for automatic differe
  _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
  so that they separate appropriately. (see RBDA, Section 11.7).
 
+The BContactManager utilizes an iterative Projected Gauss-Seidel (PGS) Solver to resolve multiple contact constraints. It combines Baumgarte Stabilization for smooth overlap recovery with a circular friction cone (Coulomb Friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
+It also employs impulse caching (Warm Starting) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
+
  https://youtu.be/g1jMEpu1sl8
 
 ### Spatial Algebra
@@ -382,8 +385,8 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
 
 Please send any questions or report any errors, omissions, or suggested extensions to the email wbyates777@gmail.com. 
 
-![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
-  are appreciated as they help others discover the project and they let me know I should keep maintaining it. 
+
+
  
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.  ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
 
