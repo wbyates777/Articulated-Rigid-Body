@@ -93,14 +93,14 @@ run_adjoint_tests(BSpatialChecks &st)
     
     // test apply toMatrix
     bool A = arb::nearZero(arb::applyForce(X, f) - (arb::toForce(X) * f));
-    bool B = arb::nearZero(arb::applyMotion(X, f) - (arb::toMotion(X) * f));
+    bool B = arb::nearZero(arb::applyMotion(X, v) - (arb::toMotion(X) * v));
     bool C = arb::nearZero(arb::applyForceInverse(X, f) - (arb::toForceInverse(X) * f));
-    bool D = arb::nearZero(arb::applyMotion(X, f) - (arb::toMotion(X) * f));
+    bool D = arb::nearZero(arb::applyMotionInverse(X, v) - (arb::toMotionInverse(X) * v));
     
-    st.expect(A, "Adjoint", "adjoint - apply vs toMatrix");
-    st.expect(B, "Adjoint", "dual  - apply vs toMatrix");
-    st.expect(C, "Adjoint", "inverse  -apply vs toMatrix");
-    st.expect(D, "Adjoint", "transpose  - apply vs toMatrix");
+    st.expect(A, "Adjoint", "force - apply vs toMatrix");
+    st.expect(B, "Adjoint", "motion  - apply vs toMatrix");
+    st.expect(C, "Adjoint", "force inverse - apply vs toMatrix");
+    st.expect(D, "Adjoint", "motion inverse - apply vs toMatrix");
     
     // inverse
     bool E = arb::nearZero(arb::applyForce(X, arb::applyForceInverse(X, f)) - f);
@@ -108,17 +108,17 @@ run_adjoint_tests(BSpatialChecks &st)
     bool G = arb::nearZero(arb::toForce(X) *  arb::toForceInverse(X) - B_IDENTITY_6x6);
     bool H = arb::nearZero(arb::toForceInverse(X) * arb::toForce(X) - B_IDENTITY_6x6);
     
-    st.expect(E, "Adjoint", "inverse - Ad_X(Ad_invX) == Id");
-    st.expect(F, "Adjoint", "inverse - Ad_X(Ad_X(invX)) == Id" );
-    st.expect(G, "Adjoint", "inverse - Ad_X * Ad_invX == Id"); 
-    st.expect(H, "Adjoint", "inverse - Ad_invX * Ad_X == Id");
+    st.expect(E, "Adjoint", "inverse - Force(ForceInverse(X)) == Id");
+    st.expect(F, "Adjoint", "inverse - Force(Force(invX)) == Id" );
+    st.expect(G, "Adjoint", "inverse - Force(X) * ForceInverse(X) == Id"); 
+    st.expect(H, "Adjoint", "inverse - ForceInverse(X) * Force(X) == Id");
     
     // transpose 
     bool I = arb::nearZero(arb::toMotionInverse(X) - arb::transpose(arb::toForce(X)));
     bool J = arb::nearZero(arb::transpose(arb::toForceInverse(X)) - arb::toMotion(X));
     
-    st.expect(I, "Adjoint", "transose - Ad_XT == (Ad_X)^T");
-    st.expect(J, "Adjoint", "transpose - (Ad_invX)^T == Ad_X^*");
+    st.expect(I, "Adjoint", "transose - MotionInverse(X) == Force(X)^T");
+    st.expect(J, "Adjoint", "transpose - ForceInverse(X)^T == Motion(X)");
     
     // Modern Robotics Prop 3.21, pg 100 : Ad[T1]*Ad[T2] == Ad[T1*T2]
     BTransform T1 = arb::rndTransform();
@@ -132,7 +132,7 @@ run_adjoint_tests(BSpatialChecks &st)
     
     // power invariance (RBDA Section 2.6, page 17)
     BScalar p_orig = arb::dot(f, v);
-    BScalar p_tran = arb::dot(arb::applyMotion(X, f), arb::applyForce(X, v));
+    BScalar p_tran = arb::dot(arb::applyForce(X, f), arb::applyMotion(X, v));
     
     st.expect(arb::nearZero(p_orig - p_tran), "Adjoint", "physics - power invariance under X");
 }
