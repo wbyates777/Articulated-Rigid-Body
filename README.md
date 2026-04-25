@@ -286,6 +286,11 @@ ARB has been tested against standard industrial robot models including:
  in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
  Notice that the maximum difference across all components is 0.00022200.
 
+<details>
+
+<summary>Results Table: RBDL versus ARB </summary>
+
+
    | Component  | RBDL | ARB  | Error |
 | :---       | ---: | ---: | ---:  |
 | arm_left_1_link | 4.13177335 | 4.13177043 | 0.00000292 |
@@ -322,6 +327,7 @@ ARB has been tested against standard industrial robot models including:
 | wheel_left_link | 119.15547007 | 119.15547007 | 0.00000000 |
 | wheel_right_link | 119.15547007 | 119.15547007 | 0.00000000 |
 
+</details>
 
 The file BSpatialChecks.cpp includes 52 consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
