@@ -45,10 +45,10 @@
   X^{-1}               | E^T * rx   E^T |
  
  toForce(X)         =  |    E      0 |
-  X^{-T}               | -rx * E   E |
+  X^{T}                | -rx * E   E |
  
  toForceInverse(X)  =  | E^T   E^T * rx |
-  X^{-1}               | 0        E^T   |
+  X^{-T}               | 0        E^T   |
  
  where rx = arb::cross(r)
  
