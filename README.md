@@ -113,7 +113,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
- ARB supports the following articulations or _joints_:
+ ARB supports the following joints:
 
  | Joint Type | DOF  | Description | Representation | 
 | :---       | ---: | :---        | :---           |
