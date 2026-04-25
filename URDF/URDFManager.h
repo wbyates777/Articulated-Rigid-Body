@@ -24,9 +24,7 @@
  I have included the tinyxml2 files here directly as there are only two of them.
  
 
- 
- 
- Supports URDF Joint Types
+  Supports URDF Joint Types
  ---------------------------
  revolute   — a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
  continuous — a continuous hinge joint that rotates around the axis and has no upper and lower limits.
@@ -34,9 +32,11 @@
  fixed      — this is not really a joint because it cannot move. All degrees of freedom are locked. 
               This type of joint does not require the <axis>, <calibration>, <dynamics>, <limits> or <safety_controller>.
  floating   — this joint allows motion for all 6 degrees of freedom. Must be first joint
- spherical  - a 3-DoF ball and socket joint (not a URDF buuilt in type)
+ planar     - 3-dof joint allows motion x,y translation and z rotation
  
- Planar, and Helical are not supported. 
+ Supports non-URDF Joint Types
+ ---------------------------
+ spherical  - 3-dof spherical or 'ball and socket' joint
  
  Notes: 
 
