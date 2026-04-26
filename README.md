@@ -10,7 +10,12 @@ Includes **end-to-end automatic differentiation**, enabling system identificatio
 
 ---
 
-### Demo
+### Demos
+
+**Simulating doors with revolute and prismatic joints**
+
+https://youtu.be/O9h_phDP_tk
+
 
 **Rigid body simulation using collision detection and contact resolution:**
 
