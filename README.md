@@ -84,7 +84,6 @@ Additionally, the header-only autodiff library is required for automatic differe
  In robotics [forward kinematics] refers to the use of kinematic equations to compute the position of 
  an end-effector, such as a jointed robotic arm, from specified values for the joint parameters
  (see figure 1).
-
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
  is known as [inverse kinematics].
 
@@ -92,7 +91,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 <img width="255" height="250" alt="robot_arm" src="https://github.com/user-attachments/assets/a51a097e-1480-4c3b-a724-2e5de4086daa"    />
 </p>
  <p align="center">
- Fig 1.  A simple jointed robot arm.
+ Figure 1.  A simple jointed robot arm.
  </p>
 
  The BDynamics class contains an implementation of:
@@ -117,8 +116,8 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  | Joint Type | DOF  | Description | Representation | 
 | :---       | ---: | :---        | :---           |
-| Fixed1     |  0   |  Compressable rigid connection between links.  |  Identity Transform |
-| Fixed2     |  0   |  Uncompressable rigid connection between links.  |  Identity Transform |
+| Fixed1     |  0   |  Compressible rigid connection between links.  |  Identity Transform |
+| Fixed2     |  0   |  Uncompressible rigid connection between links.  |  Identity Transform |
 | Revolute   |  1   |  Rotation about a specified axis.  |  Scalar Angle  |
 | Prismatic  |  1   |  Translation along a specified axis.  |  Scalar Displacement  |
 | Helical    |  1   |  A 'screw' joint with both rotational and translational motion |  Scalar Pitch  |
@@ -148,8 +147,8 @@ Additionally, the header-only autodiff library is required for automatic differe
  _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
  so that they separate appropriately. (see RBDA, Section 11.7).
 
-The BContactManager utilizes an iterative Projected Gauss-Seidel (PGS) Solver to resolve multiple contact constraints. It combines Baumgarte Stabilization for smooth overlap recovery with a circular friction cone (Coulomb Friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
-It also employs impulse caching (Warm Starting) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
+The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for smooth overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
+It also employs impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
 
  https://youtu.be/g1jMEpu1sl8
 
@@ -167,7 +166,7 @@ It also employs impulse caching (Warm Starting) across frames to ensure stabilit
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
  It also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
  For example, the following 'hello world' program performs [Newton-Euler] integration:
-
+ ```cpp
     #include "BSpatialAlgebra.h"
      
     int 
@@ -199,7 +198,7 @@ It also employs impulse caching (Warm Starting) across frames to ensure stabilit
        std::cout << T << " position is " << pos << std::endl; // angles in radians!
        return EXIT_SUCCESS;
     }
-
+ ```
  This produces the output:
 
     0.0 position is 0.00000000 0.00000000 0.00000000 20.00000000 50.00000000 3.00000000 
@@ -252,15 +251,16 @@ which are traditionally difficult to calibrate manually.
  provides a highly optimised implementation of 3D linear algebra primitives. 
  
  The spatial algebra implementation (though not the algorithms) is also header-only, and depends solely on STL and the 3D GLM types: 
- 
- ```glm::vec3, glm::mat3, glm::quat```, 
- 
+ ```
+ glm::vec3, glm::mat3, glm::quat,
+ ``` 
  and the GLM functions:
- 
- ```glm::cross(v1,v2), glm::dot(v1,v2), glm::outerProduct(v1,v2), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q)```.
- 
+ ```
+ glm::cross(u,v), glm::dot(u,v), glm::outerProduct(u,v), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q).
+ ```
+
  It is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3's and GLM's row-major, column-major differences), or 
+ the note on Eigen3's and GLM's row-major, column-major [differences]), or 
  replace GLM with a high(er)-performance alternative, such as a custom std::simd 
  linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
  while remaining (mostly) agnostic about the underlying implementation.
@@ -385,6 +385,7 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  [Automatic Differentiation]: https://en.wikipedia.org/wiki/Automatic_differentiation 
  [chain rule]: https://en.wikipedia.org/wiki/Chain_rule
  [System Identification]:  https://en.wikipedia.org/wiki/System_identification
+ [differences]: https://en.wikipedia.org/wiki/Row-_and_column-major_order
  [Model Predictive Control]: https://en.wikipedia.org/wiki/Model_predictive_control
  
 ## Notes
