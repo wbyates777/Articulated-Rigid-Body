@@ -265,7 +265,7 @@ which are traditionally difficult to calibrate manually.
  ```
 
  It is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3's and GLM's row-major, column-major [differences]), or 
+ the note on Eigen3's and GLM's row-major, column-major differences), or 
  replace GLM with a high(er)-performance alternative, such as a custom std::simd 
  linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
  while remaining (mostly) agnostic about the underlying implementation.
@@ -390,15 +390,13 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  [Automatic Differentiation]: https://en.wikipedia.org/wiki/Automatic_differentiation 
  [chain rule]: https://en.wikipedia.org/wiki/Chain_rule
  [System Identification]:  https://en.wikipedia.org/wiki/System_identification
- [differences]: https://en.wikipedia.org/wiki/Row-_and_column-major_order
  [Model Predictive Control]: https://en.wikipedia.org/wiki/Model_predictive_control
  
 ## Notes
 
 Please send any questions or report any errors, omissions, or suggested extensions to the email wbyates777@gmail.com. 
 
+This project is licensed under the MIT License.  
 
-
- 
-This project is licensed under the MIT License.  ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
+![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social) 
 
