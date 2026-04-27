@@ -82,12 +82,12 @@
 #include "BTransform.h"
 #endif
 
-#ifndef __BEXPONENTIAL_H__
-#include "BExponential.h"
-#endif
-
 #ifndef __BADJOINT_H__
 #include "BAdjoint.h"
+#endif
+
+#ifndef __BEXPONENTIAL_H__
+#include "BExponential.h"
 #endif
 
 #endif
