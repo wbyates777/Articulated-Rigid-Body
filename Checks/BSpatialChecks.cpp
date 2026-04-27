@@ -322,34 +322,42 @@ void
 run_lie_group_tests(BSpatialChecks &st) 
 {
     st.section("Lie Theory (exp/log)");
-    
+
+     // 3D log/exp
     BVector3 axis = arb::rndVec3();
     if (axis == B_ZERO_3)
         axis = arb::rndAxis();
     BVector3 w = glm::normalize(axis);
-    
+
     BScalar theta = arb::rndFloat();
     BVector3 x = w * theta;
     BMatrix3 R = arb::exp( x );
     BVector3 y = arb::log(R);
     
     st.expect(arb::nearZero(x - y), "Lie", "3D - log(exp(v)) == v"); // || arb::nearZero(v1 + v2)
+ 
+    BMatrix3 T = arb::rndRot();
+    y = arb::log(T);
+    BMatrix3 S = arb::exp(y);
+    
+    st.expect(arb::nearZero(T - S), "Lie", "3D - exp(log(X)) == X"); // || arb::nearZero(v1 + v2)
 
+    // 6D log/exp
     BVector6 v = arb::rndVec6();
     v.ang( arb::rndVec3(-M_PI_2, M_PI_2));  // keep rotation small to avoid wrap-around issues in Log
     v.lin( arb::rndVec3());
     
-    // exp(log(v)) == v identity
+    // log(exp(v)) == v identity
     BTransform X = arb::exp(v);
     BVector6 v_recovered = arb::log(X);
     st.expect(arb::nearZero(v - v_recovered), "Lie", "6D - log(exp(v)) == v");
     
-    
-    // log(exp(W)) == W identity -- very sensitive to precision
-    //BTransform W = arb::rndTransform();
-    //BTransform W_recovered = arb::exp(arb::log(W));
-    //st.expect(arb::nearZero(BMatrix6(W) - BMatrix6(W_recovered)), "Lie", "6D - exp(log(X)) == X");
-    
+    // exp(log(v)) == v identity
+    BTransform W = arb::rndTransform();
+    BVector6 h = arb::log(W);
+    BTransform Y = arb::exp(h);
+    st.expect(arb::nearZero(BMatrix6(Y) - BMatrix6(W)), "Lie", "6D - exp(log(v)) == v");
+ 
 
     // exp(-v) == inv(exp(v))
     st.expect(arb::nearZero(BMatrix6(arb::exp(-v)) - arb::inverse((arb::exp(v)))), "Lie", "exp mapping inverse");
