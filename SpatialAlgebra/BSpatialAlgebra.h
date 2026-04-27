@@ -82,8 +82,8 @@
 #include "BTransform.h"
 #endif
 
-#ifndef __BEXPLOG_H__
-#include "BExpLog.h"
+#ifndef __BEXPONENTIAL_H__
+#include "BExponential.h"
 #endif
 
 #ifndef __BADJOINT_H__
