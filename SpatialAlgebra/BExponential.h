@@ -1,18 +1,18 @@
-/* BExpLog 04/04/2026
+/* BExponential 04/04/2026
 
- $$$$$$$$$$$$$$$$$
- $   BExpLog.h   $
- $$$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$$$$$$
+ $   BExponential.h   $
+ $$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
  History: 
  
- Rotational and spatial exponential and logarithmic maps for motion vectors.
+ Spatial exponential and logarithmic maps for motion vectors.
 
- The exp function maps spatial motion vectors (twists) $v$ to their corresponding 
- transformation $X = exp(v)$ in the SE(3) Lie group.
- The transform $X = exp(v)$ represents the integrated displacement over a unit time step Δt. 
+
+ Given an arbitrary twist, he spatial transform $X = exp(v)$ represents 
+ the integrated displacement over a unit time step Δt. 
  If $v$ is expressed in the base/world coordinate frame we have:
  
     X(t + Δt) = X(t) exp(vΔt)  
@@ -37,7 +37,7 @@
  
  1) we use the Featherstone convention on transforms, i.e X(E,r) as opposed to the homogenous convention X = (R,p),
     where E = R^T and r = -R^Tp
- 2) arb::cross(w) * arb::crosw(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
+ 2) arb::cross(w) * arb::cross(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
  3) velocity vectors v are elements of a Lie algebra, transforms X are elements of a Lie group, exp:LieAlg --> LieGrp,
     SE(3) lie group of rigid body transforms, se(3) tangent space at identity
  
@@ -45,8 +45,8 @@
 
 
 
-#ifndef __BEXPLOG_H__
-#define __BEXPLOG_H__
+#ifndef __BEXPONENTIAL_H__
+#define __BEXPONENTIAL_H__
 
 
 #ifndef __BTRANSFORM_H__
@@ -60,10 +60,9 @@ namespace arb {
     //
     // exp
     //
-    
+
     inline BMatrix3 
     exp( const BVector3 &w )
-    // expSO3 - see eqn 3.51, page 84, Modern Robotics.
     // best to keep angular variables in range [-M_PI_2, M_PI_2]
     {
         using std::sin;
@@ -106,7 +105,6 @@ namespace arb {
         return I + A * W + B * (W * W);
     }
 
-
     inline BTransform 
     exp( const BVector6 &vec ) //  must be motion vector or twist
     {
@@ -125,20 +123,21 @@ namespace arb {
         
         return BTransform(E, r);
     }
-    
+
+
     //
     // log
     //
-    
+      
     inline BVector3 
     log( const BMatrix3 &R )
-    // logSO3
     {
         using std::acos;
         using std::sin;
         
         const BScalar cos_theta = arb::clamp(0.5 * (arb::trace(R) - 1.0), -1.0, 1.0);
         const BScalar theta = acos(cos_theta);
+        //assert(!arb::isnan(theta));
         
         // near identity, use first-order approximation
         if (theta < 1E-10)
@@ -194,7 +193,6 @@ namespace arb {
         return I - BScalar(0.5) * W + (A * B) * (W * W);
     }
     
-    
     inline BVector6 
     log( const BTransform &X )
     // return the spatial twist (motion vector) whose exponetial produces the given X
@@ -211,7 +209,24 @@ namespace arb {
         
         return BVector6(w, v);
     }
+   
     
+    inline BMatrix6 
+    expm( const BMatrix6 &m )  { return toMotion(exp(uncross(m))); }
+
+    inline BMatrix6 
+    logm( const BTransform &X )  { return crossm(log(X)); }
+    
+    inline BMatrix6 
+    logm( const BMatrix6 &X ) 
+    {
+        const BMatrix3 E = X.topLeft();
+        const BMatrix3 Z = X.botLeft() * arb::transpose(E);
+        const BVector3 r = -arb::uncross(Z);
+        
+        return arb::logm(BTransform(E, r));
+    }
+
 }
 
 #endif
