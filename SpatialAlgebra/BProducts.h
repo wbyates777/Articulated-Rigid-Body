@@ -80,7 +80,13 @@ namespace arb
     { 
         return BVector3(m[2][1], m[0][2], m[1][0]);
     }
-    
+
+    inline BVector6 
+    uncross( const BMatrix6 &m ) 
+    {
+        return BVector6(uncross(m.topLeft()), uncross(m.botLeft()));
+    }
+
     // return arb::cross(v) * arb::cross(-v)
     inline  BMatrix3 
     crosst( const BVector3 &v ) 
