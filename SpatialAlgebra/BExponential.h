@@ -214,10 +214,10 @@ namespace arb {
    
     
     inline BMatrix6 
-    expm( const BMatrix6 &m )  { return toMotion(exp(uncross(m))); }
+    expm( const BMatrix6 &m )  { return arb::toMotion(exp(uncross(m))); }
 
     inline BMatrix6 
-    logm( const BTransform &X )  { return crossm(log(X)); }
+    logm( const BTransform &X )  { return arb::crossm(log(X)); }
     
     inline BMatrix6 
     logm( const BMatrix6 &X ) 
