@@ -393,9 +393,9 @@ run_lie_group_tests(BSpatialChecks &st)
     // toMatrixAdjoint() and SpatialTransform (from RBDL) numerically.
 
     BMatrix6 AdZ = arb::toMotion(Z);
-    BTransform lhs = arb::exp(AdZ * u);
-    BTransform rhs = Z * arb::exp(u) * arb::inverse(Z);
-    bool match = arb::nearZero(BMatrix6(lhs) - BMatrix6(rhs));
+    BTransform lhs1 = arb::exp(AdZ * u);
+    BTransform rhs1 = Z * arb::exp(u) * arb::inverse(Z);
+    bool match = arb::nearZero(BMatrix6(lhs1) - BMatrix6(rhs1));
     
     st.expect(match, "Lie", "Adjoint Identity (b)");
 }
