@@ -53,7 +53,9 @@
 #include "BTransform.h"
 #endif
 
-
+#ifndef __BADJOINT_H__
+#include "BAdjoint.h"
+#endif
 
 namespace arb {
     
