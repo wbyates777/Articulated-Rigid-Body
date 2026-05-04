@@ -12,7 +12,7 @@ Includes **end-to-end automatic differentiation**, enabling system identificatio
 
 ### Demos
 
-**Simulating doors with revolute and prismatic joints**
+**Simulating doors with revolute and prismatic joints:**
 
 https://youtu.be/O9h_phDP_tk
 
@@ -31,7 +31,7 @@ It combines:
 - Spatial algebra (6D motion and force vectors),
 - Automatic differentiation across the full simulation pipeline,    
 - Efficient rigid body dynamics algorithms (ABA, RNEA), and
-- Collision detection and physically consistent contact resolution. 
+- Collision detection and impulse based contact resolution (PGS solver, warm start). 
 
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
@@ -62,7 +62,7 @@ to a simple hinged mechanism such as a door.
  This end-to-end differentiability facilitates the application of 
   advanced optimisation, machine learning techniques, and System Identification (SI).
 
-  The BContactManager class can detect collisions between (pairs of) rigid bodies and can resolves any 'contact' 
+  The BContactManager class can detect collisions between (pairs of) rigid bodies and can resolve multiple 'contacts' 
  by employing the physical concept of spatial impulse.  
 
  
@@ -150,10 +150,10 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  Collisions are resolved by calculating the
  _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
- so that they separate appropriately. (see RBDA, Section 11.7).
+ so that they separate appropriately (see RBDA, Section 11.7).
 
-The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for smooth overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
-It also employs impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
+The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
+It also uses impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
 
  https://youtu.be/g1jMEpu1sl8
 
@@ -264,7 +264,7 @@ which are traditionally difficult to calibrate manually.
  glm::cross(u,v), glm::dot(u,v), glm::outerProduct(u,v), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q).
  ```
 
- It is straightforward to convert back to Eigen3 (although see 
+ Given the small number of 3D functions and types employed, it is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3's and GLM's row-major, column-major differences), or 
  replace GLM with a high(er)-performance alternative, such as a custom std::simd 
  linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
@@ -339,14 +339,14 @@ The file BSpatialChecks.cpp includes 52 consistency checks, tested on random exa
  
          exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
          
-is a fundamental property that links adjoints, spatial transforms, and the exp mapping.
+is a fundamental property that links adjoints, spatial transforms, inverses, and the exp mapping.
 
  The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
  and so, given some joint  accelerations _qddot_, their composition should satisfy the identity:
 
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
  
-The test ```dynamics_test```  (example 5 in main.cpp) demonstrates this.
+The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
  
  ## Build Instructions
  
@@ -355,7 +355,7 @@ On a platform that supports cmake you can use the CMakeList.txt file included in
 
   ```mkdir build ; cd build ; cmake .. ; make ```
  
-Cmake will take care of installing the GLM, autodiff, and libccd libraries. 
+Cmake will take care of installing the GLM, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
 If you are not using cmake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
@@ -398,5 +398,5 @@ Please send any questions or report any errors, omissions, or suggested extensio
 
 This project is licensed under the MIT License.  
 
-![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social) 
+If you found this project useful please consider giving it a star. ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social) 
 
