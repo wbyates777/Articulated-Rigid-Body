@@ -180,14 +180,12 @@ BBoxCollider::max_point( const glm::dvec3 &dir ) const
 glm::dvec3  
 BSphereCollider::first_point( void ) const
 {
-    return m_body->pos() + BScalar(m_body->box().extent().y); // radius of box is too big
+    return m_body->pos() + glm::dvec3(0.0, m_body->box().extent().y, 0.0);
 }
 
 glm::dvec3 
 BSphereCollider::max_point( const glm::dvec3 &dir ) const
 {
-    glm::dvec3 mydir = glm::transpose(m_body->orient()) * dir;
-    mydir = glm::normalize(mydir);
-    
-    return (mydir * m_body->box().extent().y) + m_body->pos(); // radius of box is too big  
+    return m_body->pos() + (glm::normalize(dir) * m_body->box().extent().y);
 }
+
