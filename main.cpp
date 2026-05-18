@@ -337,6 +337,7 @@ sphere( double mass, double radius)
     return BRBInertia(mass, h, I_o);
 }
 
+
 void
 collisions( void )
 {
@@ -345,16 +346,39 @@ collisions( void )
     
     double mass1 = 100.0, radius1 = 1.5; 
     double mass2 = 80.0,  radius2 = 1.25;
-
+    BBox a(radius1);
+    BBox b(radius2);
     std::vector<CBody> bodies(2);
-    bodies[0] = CBody(1, BBody(sphere(mass1, radius1)), BBox(radius1));
-    bodies[1] = CBody(2, BBody(sphere(mass2, radius2)), BBox(radius2));
+    bodies[0] = CBody(1, BBody(sphere(mass1, radius1)), a);
+    bodies[1] = CBody(2, BBody(sphere(mass2, radius2)), b);
 
+    // polytope test should equal box test
+    // std::vector<glm::vec3> P = {a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7] };
+    // std::vector<glm::vec3> Q = {b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7] };
+    // BPolytope p(P);
+    // BPolytope q(Q);
+    // BBasicCollider basicColl1(p);
+    // BBasicCollider basicColl2(q);
+    // bodies[0].setCollider(&basicColl1);
+    // bodies[1].setCollider(&basicColl2);
 
+    // box test
+    // BBoxCollider boxColl1( a );
+    // BBoxCollider boxColl2( b );
+    // bodies[0].setCollider(&boxColl1);
+    // bodies[1].setCollider(&boxColl2);
+
+    // sphere test
+    BSphereCollider sphereColl1(radius1);
+    BSphereCollider sphereColl2(radius2);
+    bodies[0].setCollider(&sphereColl1);
+    bodies[1].setCollider(&sphereColl2);
+ 
+ 
     bodies[0].pos(B_ZERO_3);
-    bodies[1].pos(BVector3(0.0, 4.0, 0.0));
+    bodies[1].pos(BVector3(0.0, 3.5, 0.0));
     
-    bodies[1].force(BVector6(B_ZERO_3, 0.0, -2000.0, 0.0));
+    bodies[1].force(BVector6(B_ZERO_3, 0.0, -1000.0, 0.0));
     
     std::vector<ABody*> body_collisions = { &bodies[0], &bodies[1] };
     
@@ -379,8 +403,6 @@ collisions( void )
             std::cout << std::endl;
             std::cout << " >*BANG*< - Collision Detected!" << std::endl;
             
-            //std::cout  <<  glm::degrees(bodies[0].v().ang()) << "\t"  <<  glm::degrees(bodies[1].v().ang()) << "\n";
-            //std::cout << bodies[0].v().lin() << "\t"  <<  bodies[1].v().lin() << "\n";
             std::cout << std::endl;
         }
         
@@ -666,7 +688,7 @@ main( void )
     BModel test1 = urdf.load(path + "ur5.urdf"); 
     exampleURDF(test1, true);
    
-    /*BModel test2 = urdf.load(path + "kuka_iiwa7.urdf");
+    /* BModel test2 = urdf.load(path + "kuka_iiwa7.urdf");
     exampleURDF(test2, true);
    
     BModel test3 = urdf.load(path + "kuka_iiwa14.urdf");
@@ -677,9 +699,9 @@ main( void )
     
     BModel test5 = urdf.load(path + "tiago_dual-test.urdf");
     exampleURDF(test5, true); 
- 
+   
     BModel test6 = example5_model();
-    exampleURDF(test6, true);*/
+    exampleURDF(test6, true);  */
     
 
     collisions();

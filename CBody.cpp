@@ -40,75 +40,26 @@ CBody::CBody( void )  : ABody(),
                         m_orient(B_IDENTITY_QUAT),     
                         m_force(B_ZERO_6),
                         m_delta(0.25),
-                        m_collider(this) {}
+                        m_collider(nullptr) {}
 
 CBody::CBody( BBodyId bid, const BBody &body, const BBox &box )  :  ABody(), 
-                                                                    m_id(0), 
-                                                                    m_box(),
-                                                                    m_body(),
+                                                                    m_id(bid), 
+                                                                    m_box(box),
+                                                                    m_body(body),
                                                                     m_I_base(B_ZERO_RBI),
                                                                     m_invI_base(B_IDENTITY_6x6),
                                                                     m_invI(B_IDENTITY_6x6),
                                                                     m_orient(B_IDENTITY_QUAT),     
                                                                     m_force(B_ZERO_6),
                                                                     m_delta(0.25),
-                                                                    m_collider(this)
+                                                                    m_collider(nullptr)
 {
-    set( bid, body, box );
-}
-
-// NB we provdie copy contructors because m_collider has a copy to 'this' object
-
-CBody::CBody( const CBody &rhs ) :  ABody(rhs), 
-                                    m_id(rhs.m_id), 
-                                    m_box(rhs.m_box),
-                                    m_body(rhs.m_body),
-                                    m_I_base(rhs.m_I_base),
-                                    m_invI_base(rhs.m_invI_base),
-                                    m_invI(rhs.m_invI),
-                                    m_orient(rhs.m_orient),     
-                                    m_force(rhs.m_force),
-                                    m_delta(rhs.m_delta),
-                                    m_collider() 
-{
-    m_collider.setPoints(rhs.collider().getPoints());
-    m_collider.setBody(this);
-}
-
-CBody&
-CBody::operator=( const CBody& rhs )
-{
-    if (&rhs == this)
-        return *this;
-    
-    m_id        = rhs.m_id; 
-    m_box       = rhs.m_box;
-    m_body      = rhs.m_body;
-    m_I_base    = rhs.m_I_base;
-    m_invI_base = rhs.m_invI_base;
-    m_invI      = rhs.m_invI;
-    m_orient    = rhs.m_orient;     
-    m_force     = rhs.m_force;
-    m_delta     = rhs.m_delta;
-
-    m_collider.setPoints(rhs.collider().getPoints());
-    //m_collider.setBody(this);
-    
-    return *this;
-}
-
-void
-CBody::set( BBodyId bid, const BBody &body, const BBox &box )
-{
-    m_id     = bid;
-    m_body   = body;
-    m_box    = box;
-    
     m_orient = glm::quat_cast(m_body.X_base().E()); // sync m_orient and X_base
     m_invI   = arb::inverse(m_body.I()); 
     
     updateBaseInertia();
 }
+
 
 void 
 CBody::updateBaseInertia( void )  
