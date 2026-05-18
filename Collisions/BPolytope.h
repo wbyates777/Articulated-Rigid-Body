@@ -42,6 +42,16 @@ struct BPolytope
     explicit BPolytope( const std::vector<glm::vec3> &points ): m_coord(points), m_adjacency(), m_lastVertex(0)  {}
     ~BPolytope( void )=default;
 
+    size_t 
+    size( void ) const { return m_coord.size(); }
+    
+    glm::vec3& 
+    operator[]( int idx ) { return m_coord[idx]; }
+    
+    const glm::vec3& 
+    operator[]( int idx ) const { return m_coord[idx]; }
+
+    
     // NB polytope coords and indexes are float and short respectively
     std::vector<glm::vec3> m_coord;  
     std::vector<std::vector<short>> m_adjacency;  

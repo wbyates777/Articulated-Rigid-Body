@@ -183,8 +183,8 @@ BContactManager::prepare( BScalar dt )
         BVector3 rel_pos2 = c.pos - b2->pos();
         
         // the unit spatial impulse (force) transmitted from b1 to b2 along the contact normal
-        c.n_1 = BVector6(arb::cross(rel_pos1, -c.norm), -c.norm);
-        c.n_2 = BVector6(arb::cross(rel_pos2,  c.norm),  c.norm);
+        c.n_1 = BVector6(arb::cross(rel_pos1, -c.normal), -c.normal);
+        c.n_2 = BVector6(arb::cross(rel_pos2,  c.normal),  c.normal);
         
         // Δv_1, Δv_2 unit spatial motion vectors in world coords (eqns 11.60, 11.61)
         c.dv_1 = (b1->invI_base() * c.n_1); 
@@ -216,7 +216,7 @@ BContactManager::prepare( BScalar dt )
             
             // create a coordinate frame from the normal
             // note c.n_1 and c.n_2 are considered to be nz_1 and nz_2
-            compute_basis(c.norm, normy, normx );  // sic. order is correct
+            compute_basis(c.normal, normy, normx );  // sic. order is correct
             
             // unit spatial impulse (force) vector - tangent plane (x-y axis) of contact space 
             c.nx_1 = BVector6(arb::cross(rel_pos1, -normx), -normx);
@@ -398,6 +398,8 @@ BContactManager::detect( const std::vector<ABody*> &body )
                         // if bodies collide
                         //b1->addMsg(BMsg(BMsg::COLLISON, b2));
                         //b2->addMsg(BMsg(BMsg::COLLISON, b1));
+                    
+                        // for debug print out contact position, depth and normal here
                         
                         c.contactId = myhash(b1->objId(), b2->objId()); // must be done here
                         m_active.push_back(c);

@@ -60,13 +60,29 @@ BGJK::BGJK( void ) : m_ccd{}
 // support functions for BCollider shape i.e. BPolytope, BBox or BSpheres
 //
 
+BVector3
+BGJK::first_point( const ABody *body ) 
+{ 
+    // convert local body/model vertex to world vertex; 
+    return (body->orient() * body->collider()->first_point()) + body->pos(); 
+}
+
+BVector3
+BGJK::max_point( const ABody *body, const BVector3& dir ) 
+{
+    // convert from world to body/model coords and then back
+    const BVector3 mydir = (arb::transpose(body->orient()) * dir);
+    const BVector3 vert =  body->collider()->max_point(mydir);
+    return (body->orient() * vert)  + body->pos();
+}
+
 void 
 BGJK::first_dir_fn(const void *obj1, const void *obj2, ccd_vec3_t *dir)
 {
     const ABody *body1 = static_cast<const ABody*>(obj1);
     const ABody *body2 = static_cast<const ABody*>(obj2);
-    const glm::dvec3 v1 = body1->collider().first_point();
-    const glm::dvec3 v2 = body2->collider().first_point();
+    const glm::dvec3 v1 = first_point(body1);
+    const glm::dvec3 v2 = first_point(body2);
     setVec3(dir, v1 - v2);
 }
 
@@ -75,9 +91,10 @@ BGJK::support_fn(const void *obj, const ccd_vec3_t *dir, ccd_vec3_t *vec)
 {
     const ABody *body = static_cast<const ABody*>(obj);
     const glm::dvec3 mydir(toGLM(dir)); 
-    const glm::dvec3 v = body->collider().max_point(mydir);
+    const glm::dvec3 v = max_point(body, mydir);
     setVec3(vec, v); 
 }
+
 
 
 /**
@@ -112,11 +129,11 @@ BGJK::collision( BContact &c )
     
     if (res == 0)
     {
-        c.norm      = toGLM(&dir);
+        c.normal    = toGLM(&dir);
         c.pos       = toGLM(&pos);
         c.depth     = depth;
         
-        //assert(arb::isnan(c.norm));
+        assert(!arb::isnan(c.normal)); // checks derivative as well
         
         retVal  = true;
     }

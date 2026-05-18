@@ -65,6 +65,11 @@ private:
     static void
     support_fn(const void *obj, const ccd_vec3_t *dir, ccd_vec3_t *vec);
     
+    static BVector3
+    first_point( const ABody *body );
+    
+    static BVector3
+    max_point( const ABody *body, const BVector3& dir ); 
     
     ccd_t m_ccd;
 

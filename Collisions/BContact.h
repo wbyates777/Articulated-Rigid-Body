@@ -50,7 +50,7 @@ struct BContact
     uint64_t timestamp;          // m_history pruning   
 
     BVector3 pos;                // computed 3D contact position c in world coords
-    BVector3 norm;               // computed 3D contact normal n
+    BVector3 normal;             // computed 3D contact normal n
     
     //
     // spatial impulse (norm is z-axis)

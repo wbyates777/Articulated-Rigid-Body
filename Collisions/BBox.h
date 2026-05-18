@@ -18,6 +18,7 @@
 #define __BBOX_H__
 
 
+
 #include <cmath>
 #include <glm/vec3.hpp>
 #include <glm/geometric.hpp> // for glm::length
@@ -172,12 +173,7 @@ public:
         return area;
     }
     
-    friend std::ostream&
-    operator<<( std::ostream &ostr, const BBox &b );
-    
-    friend std::istream& 
-    operator>>( std::istream &istr, BBox &b ); 
-    
+
 private:
 
     glm::dvec3 m_top;       // top (max) and bottom (min) opposite corners of box 
@@ -187,29 +183,5 @@ private:
     double m_radius;        // of sphere that contains box
 
 };
-
-inline std::ostream&
-operator<<( std::ostream &ostr, const BBox &b )
-{
-    ostr << b.m_top << ' ';
-    ostr << b.m_bot << ' ';
-    ostr << b.m_pos << ' ';
-    ostr << b.m_extent << ' ';
-    ostr << b.m_radius << ' ';
-
-    return ostr;
-}
-
-inline std::istream& 
-operator>>( std::istream &istr, BBox &b )
-{
-    istr >> b.m_top;
-    istr >> b.m_bot;
-    istr >> b.m_pos;
-    istr >> b.m_extent;
-    istr >> b.m_radius;
-    
-    return istr;
-}
 
 #endif

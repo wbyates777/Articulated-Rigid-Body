@@ -11,6 +11,8 @@
  
  Support functions for various types/shapes of colliders
 
+ Note all points in coordinates local to model.
+ 
  See for example https://github.com/jrl-umi3218/sch-core/tree/master/src/S_Object 
    
  
@@ -31,8 +33,9 @@
 #include "BPolytope.h"
 #endif
 
-
-class ABody;
+#ifndef __BBOX_H__
+#include "BBox.h"
+#endif
 
 
 class BCollider
@@ -40,26 +43,17 @@ class BCollider
 
 public:
 
-    BCollider( void ) : m_body(nullptr), m_polytopes() {}
-    BCollider( ABody *b ) : m_body(b), m_polytopes() {}
-    virtual ~BCollider( void ) { m_body = nullptr; }
-
-    void
-    setBody( ABody *b ) { m_body = b; }
+    BCollider( void ) : m_lastVert(0), m_lastPoly(0), m_polytope() {}
     
+    BCollider( const std::vector<BPolytope>& p ) : m_lastVert(0), m_lastPoly(0), m_polytope(p) {}
+    BCollider( const BPolytope& p ) : m_lastVert(0), m_lastPoly(0), m_polytope(std::vector<BPolytope>(1,p)) {}
     
-    const std::vector<BPolytope>&
-    getPoints( void ) const { return m_polytopes; }
-    
-    std::vector<BPolytope>&
-    getPoints( void ) { return m_polytopes; }
-    
-    void
-    setPoints( const std::vector<BPolytope> &p ) { m_polytopes = p; }
+    virtual ~BCollider( void )=default;
     
     //
     // support functions
     //
+    
     virtual glm::dvec3  
     first_point( void ) const = 0;
     
@@ -68,8 +62,9 @@ public:
     
 protected:
 
-    ABody *m_body;                      // take care when copying - ensure that m_body points to correct object
-    std::vector<BPolytope> m_polytopes; // not always used by support functions
+    mutable int m_lastVert;
+    mutable int m_lastPoly;
+    std::vector<BPolytope> m_polytope; 
 
 };
 
@@ -85,7 +80,8 @@ class BBasicCollider : public BCollider
 public:
     
     BBasicCollider( void )=default;
-    BBasicCollider( ABody *b ) : BCollider(b) {}
+    BBasicCollider( const std::vector<BPolytope>& p ) : BCollider(p) {}
+    BBasicCollider( const BPolytope& p ) : BCollider(p) {}
     ~BBasicCollider( void ) override=default;
 
     glm::dvec3  
@@ -105,7 +101,8 @@ class BBodyCollider : public BCollider
 public:
     
     BBodyCollider( void )=default;
-    BBodyCollider( ABody *b ) : BCollider(b) {}
+    BBodyCollider( const std::vector<BPolytope>& p ) : BCollider(p) {}
+    BBodyCollider( const BPolytope& p ) : BCollider(p) {}
     ~BBodyCollider( void ) override=default;
     
     glm::dvec3  
@@ -125,7 +122,7 @@ class BBoxCollider : public BCollider
 public:
     
     BBoxCollider( void )=default;
-    BBoxCollider( ABody *b ) : BCollider(b) {}
+    BBoxCollider( const BBox& box ) : BCollider(), m_box(box)  {}
     ~BBoxCollider( void ) override=default;
     
     glm::dvec3  
@@ -133,7 +130,10 @@ public:
 
     glm::dvec3
     max_point( const glm::dvec3 &dir ) const override;
+   
+private:
     
+    BBox m_box;
 };
 
 
@@ -146,7 +146,10 @@ class BSphereCollider : public BCollider
 public:
     
     BSphereCollider( void )=default;
-    BSphereCollider( ABody *b ) : BCollider(b) {}
+    BSphereCollider( double r ) : BCollider() 
+    {
+        m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
+    }
     ~BSphereCollider( void ) override=default;
     
     glm::dvec3  
