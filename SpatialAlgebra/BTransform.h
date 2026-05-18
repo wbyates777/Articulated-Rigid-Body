@@ -108,6 +108,7 @@
 #include "BABInertia.h"
 #endif
 
+
 class BTransform
 {
     
@@ -142,6 +143,9 @@ public:
         m_E = B_IDENTITY_3x3; m_r = r;
     }
     
+
+    ///
+    ///
     // rotation, preserves coordinate frame origin
     const BMatrix3&
     E( void ) const { return m_E; }

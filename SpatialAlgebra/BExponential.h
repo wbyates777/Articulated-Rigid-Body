@@ -11,17 +11,15 @@
  Spatial exponential and logarithmic maps for motion vectors.
 
 
- Given an arbitrary twist, he spatial transform $X = exp(v)$ represents 
+ Given an arbitrary twist, the spatial transform $X = exp(v)$ represents 
  the integrated displacement over a unit time step Δt. 
  If $v$ is expressed in the base/world coordinate frame we have:
  
     X(t + Δt) = X(t) exp(vΔt)  
  
- or
+ or if $v$ is expressed in body frame coordinates.
  
     X(t + Δt) = exp(vΔt) X(t) 
- 
- if $v$ is expressed in body frame coordinates.
  
  The log mapping is the inverse of exp. In symbols:
  
@@ -62,7 +60,7 @@ namespace arb {
     //
     // exp
     //
-
+    
     inline BMatrix3 
     exp( const BVector3 &w )
     // best to keep angular variables in range [-M_PI_2, M_PI_2]
@@ -76,7 +74,7 @@ namespace arb {
         
         if (theta < 1E-8)
         {
-            // Rodrigues series near zero: $exp(cross(w)) ≈ I + cross(w) + 1/2 cross(w)^2$
+            // Rodrigues series near zero: $exp(cross(ω)) ≈ I + cross(ω) + 1/2 cross(ω)^2$
             return I + W + BScalar(0.5) * (W * W);
         }
         
@@ -125,12 +123,11 @@ namespace arb {
         
         return BTransform(E, r);
     }
-
-
+    
     //
     // log
     //
-      
+    
     inline BVector3 
     log( const BMatrix3 &R )
     {
@@ -212,13 +209,14 @@ namespace arb {
         return BVector6(w, v);
     }
    
-    
+
     inline BMatrix6 
     expm( const BMatrix6 &m )  { return arb::toMotion(exp(uncross(m))); }
 
     inline BMatrix6 
     logm( const BTransform &X )  { return arb::crossm(log(X)); }
     
+
     inline BMatrix6 
     logm( const BMatrix6 &X ) 
     {

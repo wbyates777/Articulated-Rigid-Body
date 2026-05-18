@@ -46,6 +46,10 @@
 #include "BSpatialTypes.h"
 #endif
 
+#ifndef __BSTREAM_H__
+#include "BStream.h"
+#endif
+
 #ifndef __BFUNCTIONS_H__
 #include "BFunctions.h"
 #endif

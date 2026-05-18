@@ -32,9 +32,12 @@
 #define GLM_FORCE_UNRESTRICTED_GENTYPE  // required by GLM
 #define GLM_FORCE_CTOR_INIT             // required by GLM
 
-#include <glm/vec3.hpp> 
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp> 
 
-// interoperability between glm and autodiff 
+//
+// inter-operability between glm and autodiff 
+//
 inline glm::dvec3 
 operator+( const glm::vec<3,autodiff::real> &a, const glm::dvec3 &b ) 
 {
@@ -47,6 +50,18 @@ operator+( const glm::dvec3 &a, const glm::vec<3,autodiff::real> &b )
     return glm::dvec3(a.x + b.x[0], a.y + b.y[0], a.z + b.z[0]); 
 }
 
+inline glm::dvec4 
+operator+( const glm::vec<4,autodiff::real> &a, const glm::dvec4 &b ) 
+{
+    return glm::dvec4(a.x[0] + b.x, a.y[0] + b.y, a.z[0] + b.z, a.w[0] + b.w); 
+}
+
+inline glm::dvec4 
+operator+( const glm::dvec4 &a, const glm::vec<4,autodiff::real> &b ) 
+{
+    return glm::dvec4(a.x + b.x[0], a.y + b.y[0], a.z + b.z[0], a.w + b.w[0]); 
+}
+//
 
 // my stream operators need operator>>()
 inline std::istream& 

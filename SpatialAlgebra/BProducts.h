@@ -50,6 +50,7 @@ namespace arb
     {
         return arb::dot(v1.ang(), v2.ang()) + arb::dot(v1.lin(), v2.lin());
     }
+
     
     // standard Euclidian cross product a⨉b
     inline constexpr BVector3   
@@ -80,7 +81,7 @@ namespace arb
     { 
         return BVector3(m[2][1], m[0][2], m[1][0]);
     }
-
+    
     inline BVector6 
     uncross( const BMatrix6 &m ) 
     {

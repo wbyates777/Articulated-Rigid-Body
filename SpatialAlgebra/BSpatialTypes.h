@@ -13,17 +13,12 @@
 */
 
 
-#ifndef __BSPATIALTYPESDIFF_H__
-#define __BSPATIALTYPESDIFF_H__
+#ifndef __BSPATIALTYPES_H__
+#define __BSPATIALTYPES_H__
 
-#include <map>
-#include <string>
+
 #include <vector>
 #include <array>
-#include <iostream>
-#include <algorithm>
-
-#include <cmath>
 #include <cassert>
 
 //
@@ -75,7 +70,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 //
-// vector and matrix types
+// vector and matrix types -- these are potentially differentiable
 //
 
 typedef unsigned int          BJointId;
@@ -83,10 +78,23 @@ typedef unsigned int          BBodyId;
 
 typedef glm::vec<3,BScalar>   BVector3; 
 typedef glm::mat<3,3,BScalar> BMatrix3; 
+
+typedef glm::vec<4,BScalar>   BVector4;
+typedef glm::mat<4,4,BScalar> BMatrix4;
+
 typedef glm::qua<BScalar>     BQuat;
 
 typedef std::vector<BScalar>  BMotionSpace;
 
+
+constexpr  int B_X = 0;
+constexpr  int B_Y = 1;
+constexpr  int B_Z = 2;
+
+constexpr  BScalar B_SCALAR_MAX     =  std::numeric_limits<BScalar>::max();
+constexpr  BScalar B_SCALAR_MIN     = -std::numeric_limits<BScalar>::max();
+constexpr  BScalar B_EPS            =  std::numeric_limits<BScalar>::epsilon();
+constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() * std::numeric_limits<BScalar>::epsilon();
 
 //
 // vector and matrix constants
@@ -101,6 +109,11 @@ typedef std::vector<BScalar>  BMotionSpace;
     const BMatrix3 B_IDENTITY_3x3(1.0);
     const BMatrix3 B_ZERO_3x3(0.0);
 
+    const BVector4 B_ZERO_4(0.0);
+    const BVector4 B_ONE_4(1.0);
+    const BMatrix4 B_IDENTITY_4x4(1.0); 
+    const BMatrix4 B_ZERO_4x4(0.0);
+
     const BQuat    B_IDENTITY_QUAT(glm::identity<BQuat>());
 #else
     constexpr BVector3 B_XAXIS(1.0, 0.0, 0.0);
@@ -112,11 +125,18 @@ typedef std::vector<BScalar>  BMotionSpace;
     constexpr BMatrix3 B_IDENTITY_3x3(1.0);
     constexpr BMatrix3 B_ZERO_3x3(0.0);
 
+    constexpr BVector4 B_ZERO_4(0.0);
+    constexpr BVector4 B_ONE_4(1.0);
+    constexpr BMatrix4 B_IDENTITY_4x4(1.0); 
+    constexpr BMatrix4 B_ZERO_4x4(0.0);
+
     constexpr BQuat    B_IDENTITY_QUAT(glm::identity<BQuat>());
 #endif
 
 #if defined(ARB_USE_FLOAT)
-// interoperability between glm float and double 
+//
+// inter-operability between glm float and glm double 
+//
 inline glm::dvec3 
 operator+( const glm::vec3 &a, const glm::dvec3 &b ) 
 {
@@ -126,6 +146,16 @@ inline glm::dvec3
 operator+( const glm::dvec3 &a, const glm::vec3 &b ) 
 {
     return glm::dvec3(a.x + b.x, a.y + b.y, a.z + b.z); 
+}
+inline glm::dvec4 
+operator+( const glm::vec4 &a, const glm::dvec4 &b ) 
+{
+    return glm::dvec4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w); 
+}
+inline glm::dvec4 
+operator+( const glm::dvec4 &a, const glm::vec4 &b ) 
+{
+    return glm::dvec4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w); 
 }
 #endif
 
@@ -170,152 +200,9 @@ constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
     0.0, 0.0, 0.0
 };
 
-
-
-//
-// my glm template stream operators -- customise spatial algebra output
-//
-
-namespace  glm 
-{
-
-    template<typename T> inline std::ostream&
-    operator<<( std::ostream &ostr, const  glm::vec<3,T> &v )
-    {
-        ostr << v.x << ',' << v.y << ',' << v.z << ' ';
-        return ostr;
-    }
-
-    template<typename T> inline std::istream&
-    operator>>( std::istream &istr, glm::vec<3,T> &v )
-    {
-        char delim;
-        istr >> v.x >> delim >> v.y >> delim >> v.z;
-        return istr;
-    }
-
-
-    template<typename T> inline std::ostream&
-    operator<<( std::ostream &ostr, const glm::mat<3,3,T> &m )
-    {
-        ostr << m[0][0] << ' ' << m[0][1] << ' ' << m[0][2] << '\n'
-             << m[1][0] << ' ' << m[1][1] << ' ' << m[1][2] << '\n'
-             << m[2][0] << ' ' << m[2][1] << ' ' << m[2][2] << '\n';
-        return ostr;
-    }
-
-    template<typename T> inline std::istream&
-    operator>>( std::istream &istr, glm::mat<3,3,T> &m )
-    {
-        istr >> m[0][0] >> m[0][1] >> m[0][2] 
-             >> m[1][0] >> m[1][1] >> m[1][2]
-             >> m[2][0] >> m[2][1] >> m[2][2];
-        return istr;
-    }
-
-   
-    template<typename T> inline  std::ostream&
-    operator<<( std::ostream &ostr, const glm::qua<T> &q )
-    {
-        ostr << q.w << ' ' << q.x << ' ' << q.y << ' ' << q.z << ' ';
-        return ostr;
-    }
-
-    template<typename T> inline std::istream&
-    operator>>( std::istream &istr, glm::qua<T> &q )
-    {
-        istr >> q.w >> q.x >> q.y >> q.z;
-        return istr;
-    }
-}
-
-//
-// my stdlib template stream operators 
-//
-
-template <class T, class U>
-inline std::ostream&
-operator<<(std::ostream &ostr, const std::pair<T,U> &v)
-{
-    ostr << v.first << ' ' << v.second << ' ';
-    return ostr;
-}
-
-template <class T, class U>
-inline std::istream&
-operator>>(std::istream &istr, std::pair<T,U> &v)
-{
-    istr >> v.first >> v.second;
-    return istr;
-}
-
-template <typename T>
-std::ostream&
-operator<<( std::ostream &ostr, const std::vector<T> &v )
-{
-    ostr << int(v.size()) << '\n';
-    
-    int count = 0;
-    for (auto  i = v.begin(); i != v.end(); ++i)
-    {
-        ostr << *i << ((++count % 20) ? ' ' : '\n');
-    }
-
-    return ostr;
-}
-
-template <typename T>
-std::istream& 
-operator>>( std::istream &istr, std::vector<T> &v )
-{
-    int len = 0;    
-    istr >> len;
-    v.resize(len);
-
-    for (auto i = v.begin(); i != v.end(); ++i)
-    {
-        istr >> *i;
-    }
-    
-    return istr;
-}
-
-template <typename K, typename T>
-std::ostream& 
-operator<<(std::ostream &ostr, const std::map<K,T> &m)
-{
-    ostr << int(m.size()) << '\n';
-
-    for (auto i = m.begin(); i != m.end(); ++i)
-    {
-        ostr << i->first << ' ' << i->second <<  '\n';
-    }
-    
-    return ostr;
-}
-
-template <typename K, typename T>
-std::istream&
-operator>>(std::istream &istr, std::map<K,T> &m)
-{
-    m.clear();
-
-    K key = K();
-    T val = T();
-    
-    int len = 0;
-    istr >> len;
-    
-    auto pos = m.begin();
-    for (int i = 0; i < len; ++i)
-    {
-        istr >> key >> val;
-        pos = m.insert( pos, typename std::map<K,T>::value_type( key, val ));
-    }
-    
-    return istr;
-}
-
+#ifndef __BSTREAM_H__
+#include "BStream.h"
+#endif
 
 
 #endif

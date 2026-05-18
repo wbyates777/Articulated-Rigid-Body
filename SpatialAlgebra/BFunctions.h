@@ -11,7 +11,10 @@
  
  3D functions - mostly from GLM.
 
- 
+
+ #define GLM_ENABLE_EXPERIMENTAL
+ #include <glm/gtx/norm.hpp>  // For glm::distance2/glm::length2
+
 */
 
 
@@ -22,19 +25,31 @@
 #include "BSpatialTypes.h"
 #endif
 
+
 namespace arb {
+
 
     inline BScalar
     length( const BVector3 &v ) 
     { 
-        using std::sqrt; return sqrt((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2])); 
-        //  return glm::length(v);
+        using std::sqrt; 
+        // return sqrt((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2])); 
+        // return sqrt(glm::dot(v,v)); 
+        return glm::length(v);
+    } 
+    
+    inline BScalar
+    length2( const BVector3 &v ) 
+    { 
+         // return (v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2]); 
+         return glm::dot(v,v);
+         //return glm::length2(v);
     } 
     
     inline BVector3
     normalize( const BVector3 &v ) 
     {
-        return v / length(v);
+        return v / arb::length(v);
         //return glm::normalize(v);
     } 
     
