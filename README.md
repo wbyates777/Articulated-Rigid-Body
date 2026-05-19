@@ -398,5 +398,7 @@ Please send any questions or report any errors, omissions, or suggested extensio
 
 This project is licensed under the MIT License.  
 
-If you found this project useful please consider giving it a star. ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social) 
+If you found this project useful please consider giving it a star.
+
+ ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social&version=1)
 
