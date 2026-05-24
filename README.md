@@ -147,6 +147,17 @@ Additionally, the header-only autodiff library is required for automatic differe
  the [Separating Axis Theorem] (SAT). Computationally, this is relatively efficient.
  The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
  using the [GJK algorithm]. This is very precise but computationally more expensive.
+ 
+
+ ARB provides two options for narrow-phase collision detection: 
+ - the default libccd backend,  or
+ - an implementation of openGJK.
+   
+Libccd is a well-tested C library, with  support for standard primitives such as boxes and spheres, as well as complex arbitrary shapes represented as polytopes (convex hulls).
+It is released under a permissive license, compatible with the MIT license used here. However it does not use differentiable types, and so, it is not possible to differentiate _across a contact_, that is, to compute post-collision derivatives for interacting bodies.
+The openGJK C++ implementation presented here does employ differentiable types.
+However it only supports polytopes; although boxes can be represented as 8-point polytopes, analytical primitives like spheres are not natively supported.
+Furthermore, openGJK is released under the GPLv3 license, and using this module will subject the entire project to GPLv3 copyleft terms.
 
  Collisions are resolved by calculating the
  _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
@@ -156,6 +167,9 @@ The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) sol
 It also uses impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
 
  https://youtu.be/g1jMEpu1sl8
+
+
+
 
 ### Spatial Algebra
 
@@ -370,6 +384,8 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  autodiff  - https://github.com/autodiff/autodiff
  
  CCD       - https://github.com/danfis/libccd
+ 
+ openGJK   - https://github.com/MattiaMontanari/openGJK
  
   ### External 
   
