@@ -1,8 +1,8 @@
 /* BGJK 20/12/2025
 
- $$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$
  $   BGJK.cpp   $
- $$$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
@@ -59,20 +59,23 @@ BGJK::BGJK( void ) : m_ccd{}
 //
 // support functions for BCollider shape i.e. BPolytope, BBox or BSpheres
 //
-
 BVector3
 BGJK::first_point( const ABody *body ) 
 { 
-    // convert local body/model vertex to world vertex; 
-    return (body->orient() * body->collider()->first_point()) + body->pos(); 
+    // convert body/model vertex to world vertex; 
+    return (body->orient() * body->collider().first_point()) + body->pos(); 
 }
 
 BVector3
 BGJK::max_point( const ABody *body, const BVector3& dir ) 
 {
-    // convert from world to body/model coords and then back
+    // convert from world to body/model coords
     const BVector3 mydir = (arb::transpose(body->orient()) * dir);
-    const BVector3 vert =  body->collider()->max_point(mydir);
+    
+    // support function 
+    const BVector3 vert =  body->collider().max_point(mydir);
+    
+    // convert body/model vertex to world vertex; 
     return (body->orient() * vert)  + body->pos();
 }
 
@@ -96,7 +99,6 @@ BGJK::support_fn(const void *obj, const ccd_vec3_t *dir, ccd_vec3_t *vec)
 }
 
 
-
 /**
  * Computes penetration of obj2 into obj1.
  * Depth of penetration, direction and position is returned. It means that
@@ -112,34 +114,36 @@ BGJK::support_fn(const void *obj, const ccd_vec3_t *dir, ccd_vec3_t *vec)
  * If memory allocation fails -2 is returned.
  */
 bool
-BGJK::collision( BContact &c )
+BGJK::collision( ABody* body1, ABody* body2, BScalar &distance, BVector3 &cnormal, BVector3 &cpoint )
 {
-    double depth = -1.0;
+    using std::abs;
     
+    double depth = -1.0;
     ccd_vec3_t dir, pos;
     
     ccdVec3Set(&dir, CCD_ZERO, CCD_ZERO, CCD_ZERO);
     ccdVec3Set(&pos, CCD_ZERO, CCD_ZERO, CCD_ZERO);
 
     //
-    int res = ccdGJKPenetration(c.body1, c.body2, &m_ccd, &depth, &dir, &pos);
+    int res = ccdGJKPenetration(body1, body2, &m_ccd, &depth, &dir, &pos);
     //
     
     bool retVal = false;
     
     if (res == 0)
     {
-        c.normal    = toGLM(&dir);
-        c.pos       = toGLM(&pos);
-        c.depth     = depth;
+        cnormal = toGLM(&dir);
+        assert(!arb::isnan(cnormal)); 
         
-        assert(!arb::isnan(c.normal)); // checks derivative as well
+        cpoint = toGLM(&pos);
+        cpoint += (cnormal * abs(BScalar(depth))); 
         
+        distance = depth;
         retVal  = true;
     }
     else if (res == -1)
     {
-        c.depth = -1;
+        distance = 1; // something positive?
         retVal = false;
     }
     else if (res == -2)

@@ -43,122 +43,73 @@ class BCollider
 
 public:
 
-    BCollider( void ) : m_lastVert(0), m_lastPoly(0), m_polytope() {}
+    enum ColliderType { Sphere, Box, Linear, Adjacency, MAXCOLLIDER };
     
-    BCollider( const std::vector<BPolytope>& p ) : m_lastVert(0), m_lastPoly(0), m_polytope(p) {}
-    BCollider( const BPolytope& p ) : m_lastVert(0), m_lastPoly(0), m_polytope(std::vector<BPolytope>(1,p)) {}
+    BCollider( void ) : m_type(Linear), m_lastVert(0), m_lastPoly(0), m_polytope(), m_box() {}
+    BCollider( const std::vector<BPolytope>& p ) : m_type(Linear), m_lastVert(0), m_lastPoly(0), m_polytope(p), m_box() {}
+    BCollider( const BPolytope& p ) : BCollider(std::vector<BPolytope>(1,p)) {}
+    BCollider( const BBox& box ) : m_type(Box), m_lastVert(0), m_lastPoly(0), m_polytope(), m_box(box)  {}
+    BCollider( double r ) : m_type(Sphere), m_lastVert(0), m_lastPoly(0), m_polytope(), m_box() 
+    {
+        m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
+    }
+    ~BCollider( void )=default;
     
-    virtual ~BCollider( void )=default;
+    
+    ColliderType 
+    getType( void ) const { return m_type; }
+    
+    void 
+    setType( ColliderType c ) { m_type = c; }
+    
+    void 
+    setType( const BBox &box ) { m_type = BCollider::Box; m_box = box; }
+    
+    void 
+    setType( double r ) 
+    { 
+        m_type = BCollider::Sphere; 
+        m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
+    }
+    
+    
+    void
+    setPoints(  const std::vector<BPolytope>& p, ColliderType type = Linear ) { m_polytope = p; m_type = type; }
+    
+    void
+    setPoints( const BPolytope& p, ColliderType type = Linear ) { m_polytope = std::vector<BPolytope>(1,p); m_type = type; }
     
     //
     // support functions
     //
     
     virtual glm::dvec3  
-    first_point( void ) const = 0;
+    first_point( void ) const;
+    
     
     virtual glm::dvec3
-    max_point( const glm::dvec3 &dir ) const = 0;
+    max_point( const glm::dvec3 &dir ) const;
     
-protected:
 
+    
+private:
+
+    glm::dvec3 
+    linear_max_point( const glm::dvec3 &dir ) const;
+    
+    glm::dvec3
+    adjacency_max_point( const glm::dvec3 &dir ) const;
+    
+    ColliderType m_type;
+    
     mutable int m_lastVert;
     mutable int m_lastPoly;
     std::vector<BPolytope> m_polytope; 
-
-};
-
-
-
-//
-// mesh - max_point is a linear vertex search
-// relatively slow but bullet proof. Ok for small meshes or testing
-//
-class BBasicCollider : public BCollider
-{
-    
-public:
-    
-    BBasicCollider( void )=default;
-    BBasicCollider( const std::vector<BPolytope>& p ) : BCollider(p) {}
-    BBasicCollider( const BPolytope& p ) : BCollider(p) {}
-    ~BBasicCollider( void ) override=default;
-
-    glm::dvec3  
-    first_point( void ) const override;
-
-    glm::dvec3
-    max_point( const glm::dvec3 &dir ) const override;
-};
-
-
-//
-// adjacency mesh; fastest method - requires triangular mesh
-//
-class BBodyCollider : public BCollider
-{
-    
-public:
-    
-    BBodyCollider( void )=default;
-    BBodyCollider( const std::vector<BPolytope>& p ) : BCollider(p) {}
-    BBodyCollider( const BPolytope& p ) : BCollider(p) {}
-    ~BBodyCollider( void ) override=default;
-    
-    glm::dvec3  
-    first_point( void ) const override;
-
-    glm::dvec3
-    max_point( const glm::dvec3 &dir ) const override;
-    
-};
-
-//
-// Box
-//
-class BBoxCollider : public BCollider
-{
-    
-public:
-    
-    BBoxCollider( void )=default;
-    BBoxCollider( const BBox& box ) : BCollider(), m_box(box)  {}
-    ~BBoxCollider( void ) override=default;
-    
-    glm::dvec3  
-    first_point( void ) const override;
-
-    glm::dvec3
-    max_point( const glm::dvec3 &dir ) const override;
-   
-private:
-    
     BBox m_box;
-};
-
-
-//
-// Sphere
-//
-class BSphereCollider : public BCollider
-{
-    
-public:
-    
-    BSphereCollider( void )=default;
-    BSphereCollider( double r ) : BCollider() 
-    {
-        m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
-    }
-    ~BSphereCollider( void ) override=default;
-    
-    glm::dvec3  
-    first_point( void ) const override;
-
-    glm::dvec3
-    max_point( const glm::dvec3 &dir ) const override;
     
 };
+
+
 
 #endif
 

@@ -27,21 +27,61 @@
 
 
 constexpr  double B_SMALL_NUM = 1E-12;
-constexpr  double B_MIN =  -std::numeric_limits<double>::max();
+constexpr  double B_MIN_NUM =  -std::numeric_limits<double>::max();
+
+
 
 //
-// Linear 
+// Box
 //
 glm::dvec3  
-BBasicCollider::first_point( void ) const
+BCollider::first_point( void ) const
 {
-
-    return glm::dvec3(m_polytope[0].m_coord[0]);
+    if (m_type == BCollider::Box)
+    {
+        m_box.top();
+    }
+    
+    return glm::dvec3(m_polytope[0][0]);
 }
 
 
+
+
+glm::dvec3
+BCollider::max_point( const glm::dvec3 &dir ) const
+{
+    if (m_type == BCollider::Sphere)
+    {
+        return  (glm::normalize(dir) * double(m_polytope[0][0][1])); //.y
+    }
+    
+    if (m_type == BCollider::Box)
+    {
+        const glm::dvec3 &ext = m_box.extent();
+        
+        return glm::dvec3( (dir.x >= 0) ? ext.x : -ext.x,
+                           (dir.y >= 0) ? ext.y : -ext.y,
+                           (dir.z >= 0) ? ext.z : -ext.z );
+    }
+    
+    if (m_type == BCollider::Linear)
+    {
+        return linear_max_point( dir );
+    }
+    
+    if (m_type == BCollider::Adjacency)
+    {
+        return adjacency_max_point( dir );
+    }
+    
+    return glm::dvec3(0.0);
+}
+
+
+
 glm::dvec3 
-BBasicCollider::max_point( const glm::dvec3 &dir ) const
+BCollider::linear_max_point( const glm::dvec3 &dir ) const
 // basic, robust, brute force linear search - tested 
 {
     // degenerate direction
@@ -56,7 +96,7 @@ BBasicCollider::max_point( const glm::dvec3 &dir ) const
     m_lastVert = -1;
     m_lastPoly = -1;
     
-    double maxDot = B_MIN; 
+    double maxDot = B_MIN_NUM; 
     for (int j = 0; j < m_polytope.size(); ++j) 
     {
         const BPolytope &poly = m_polytope[j];
@@ -80,17 +120,8 @@ BBasicCollider::max_point( const glm::dvec3 &dir ) const
 }
 
 
-//
-// Adjacency
-//
-glm::dvec3  
-BBodyCollider::first_point( void ) const
-{
-    return m_polytope[0].m_coord[0];
-}
-
 glm::dvec3
-BBodyCollider::max_point( const glm::dvec3 &dir ) const
+BCollider::adjacency_max_point( const glm::dvec3 &dir ) const
 {
     // degenerate direction
     if (glm::length2(dir) < B_SMALL_NUM)
@@ -101,7 +132,7 @@ BBodyCollider::max_point( const glm::dvec3 &dir ) const
         return m_polytope[0].m_coord[0];
     }
 
-    double globalMaxDot = B_MIN;
+    double globalMaxDot = B_MIN_NUM;
     glm::dvec3 bestVertexLocal(0.0);
 
     for (int j = 0; j < m_polytope.size(); ++j) 
@@ -146,41 +177,61 @@ BBodyCollider::max_point( const glm::dvec3 &dir ) const
 }
 
 
+
+
+
 //
-// Box
+// untested gemini code
 //
+
+/*
 glm::dvec3  
-BBoxCollider::first_point( void ) const
+BCylinderCollider::first_point( void ) const
 {
-    return m_box.top();
+    // Return any valid point inside or on the cylinder (e.g., the top center)
+    return glm::dvec3(0.0, m_height * 0.5, 0.0);
 }
 
 glm::dvec3 
-BBoxCollider::max_point( const glm::dvec3 &dir ) const
+BCylinderCollider::max_point( const glm::dvec3 &dir ) const
 {
-    const glm::dvec3 &extent = m_box.extent();
-    
-    glm::dvec3 v( (dir.x >= 0) ? extent.x : -extent.x,
-                  (dir.y >= 0) ? extent.y : -extent.y,
-                  (dir.z >= 0) ? extent.z : -extent.z );
+    glm::dvec3 v(0.0);
 
-    
+    // 1. Handle the circular cross-section (X and Z components)
+    double xz_len = glm::length(glm::dvec2(dir.x, dir.z));
+    if (xz_len > 1E-6) // Avoid division by zero if dir points straight up/down
+    {
+        v.x = (dir.x / xz_len) * m_radius;
+        v.z = (dir.z / xz_len) * m_radius;
+    }
+
+    // 2. Handle the height cap (Y component)
+    v.y = (dir.y >= 0.0) ? (m_height * 0.5) : (-m_height * 0.5);
+
     return v;
 }
 
-
-//
-// Sphere
-//
 glm::dvec3  
-BSphereCollider::first_point( void ) const
+BCapsuleCollider::first_point( void ) const
 {
-    return glm::dvec3(m_polytope[0][0]);
+    // Return the top tip of the capsule
+    return glm::dvec3(0.0, (m_height * 0.5) + m_radius, 0.0);
 }
 
 glm::dvec3 
-BSphereCollider::max_point( const glm::dvec3 &dir ) const
+BCapsuleCollider::max_point( const glm::dvec3 &dir ) const
 {
-    return  (glm::normalize(dir) * double(m_polytope[0][0][1])); //.y
-}
+    // 1. Get the support point of the inner line segment along the Y-axis
+    glm::dvec3 v(0.0);
+    v.y = (dir.y >= 0.0) ? (m_height * 0.5) : (-m_height * 0.5);
 
+    // 2. Add the sphere contribution
+    double dir_len = glm::length(dir);
+    if (dir_len > 1E-6)
+    {
+        v += (dir / dir_len) * m_radius;
+    }
+
+    return v;
+}
+*/

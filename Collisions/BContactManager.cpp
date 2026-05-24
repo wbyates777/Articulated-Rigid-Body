@@ -40,11 +40,44 @@
  Note an Orientated Bounding Box (OBB) is an Axis Aligned Bounding Box (AABB) with
  an accompanying 3D orientation matrix/quaternion.
  
+ 
+ For the special case where all the collider objects under consideration are perfect spheres
+ you can replace:  
+   
+ iscollision = m_detector1.collision( b1, b2, c.depth, c.normal, c.pos ); // openGJHK 
+ 
+ with
+ 
+ {
+    BVector3 diff = b2->pos() - b1->pos();
+    BScalar dist  = arb::length(diff);
+    c.depth       = (b1->box().extent().y + b2->box().extent().y) - dist;
+    c.normal      = diff / dist;
+    c.pos         = b1->pos() + (c.normal * BScalar(b1->box().extent().y)); // extent here is radius
+ 
+    if (c.depth > 0)
+    {
+        iscollision = true;
+    }
+ }
+
+ This also calculates the correct derivatives.
 */
 
 
 #ifndef __BCONTACTMANAGER_H__
 #include "BContactManager.h"
+#endif
+
+
+
+#ifndef __BPOLYTOPE_H__
+#include "BPolytope.h"
+#endif
+
+
+#ifndef __BCOLLIDER_H__
+#include "BCollider.h"
 #endif
 
 
@@ -63,7 +96,8 @@ BContactManager::BContactManager( int N ) : m_timestamp(0),
                                             m_frictionOn(true), 
                                             m_active(), 
                                             m_history(), 
-                                            m_gjk() 
+                                            m_detector()
+
 {
     m_active.reserve(N);  
     m_history.reserve(N);
@@ -176,6 +210,16 @@ BContactManager::prepare( BScalar dt )
         ABody *b1 = c.body1;
         ABody *b2 = c.body2;
         
+        
+        /* // "Cheat" depth for two spheres
+        BVector3 diff = b2->pos() - b1->pos();
+        BScalar dist = arb::length(diff);
+        BScalar analytical_depth = (b1->box().extent().y + b2->box().extent().y) - dist;
+        BVector3 analytical_normal = diff / dist;
+        c.normal = analytical_normal;
+        c.depth  = analytical_depth;
+        // */
+        
         // 
         // Two-Body Collisions, RBDA, page 232
         //
@@ -273,8 +317,6 @@ void
 BContactManager::solve( void ) 
 // Projected Gauss-Seidel (PGS) solver 
 {
-    using std::sqrt;
-    
     for (int i = 0; i < m_iters; ++i) 
     {
         for (BContact &c : m_active) 
@@ -347,10 +389,13 @@ BContactManager::solve( void )
     }
 }
 
+
 int
 BContactManager::detect( const std::vector<ABody*> &body )
 // collision detection: broad-phase then narrow-phase
 {
+    using std::abs;
+    
     m_active.clear();
     
     for (int i = 0; i < body.size(); ++i)
@@ -368,7 +413,7 @@ BContactManager::detect( const std::vector<ABody*> &body )
                continue;
             
             //BScalar  range2_sq  = 20.0 * 20.0; //b2->range2();
-            BScalar radius2    = b2->box().radius(); 
+            BScalar radius2 = b2->box().radius(); 
               
             BScalar d2 = glm::distance2(b1->pos(), b2->pos());
             
@@ -387,19 +432,23 @@ BContactManager::detect( const std::vector<ABody*> &body )
             {
                 // broad-phase SAT for OBB check 
                 bool box_check = intersect(b1, b2);
-       
+             
                 if (box_check) 
                 {
                     // narrow-phase GJK check 
                     BContact c(b1, b2);
-        
-                    if (m_gjk.collision( c ))
+                    bool iscollision = false;
+          
+                    iscollision = m_detector.collision( b1, b2, c.depth, c.normal, c.pos );  
+
+                    if (iscollision)
                     {
+                        // we expect a positive depth for a collision
+                        assert(c.depth >= 0.0);
+                        
                         // if bodies collide
                         //b1->addMsg(BMsg(BMsg::COLLISON, b2));
                         //b2->addMsg(BMsg(BMsg::COLLISON, b1));
-                    
-                        // for debug print out contact position, depth and normal here
                         
                         c.contactId = myhash(b1->objId(), b2->objId()); // must be done here
                         m_active.push_back(c);

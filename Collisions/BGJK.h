@@ -8,6 +8,8 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
+ Used for collision detection.
+ 
  My c++ wrapper for external c library libcdd, see https://github.com/danfis/libccd
 
  An implemetation of: 
@@ -15,25 +17,40 @@
  i) the Gilbert–Johnson–Keerthi (GJK) distance algorithm, and 
  ii) the Expanding-Polytope-Algorithm (EPA). 
 
- Computes penetration of body2 into body1. Returns depth of penetration, contact position, 
- and contact normal direction. 
+ Computes penetration of body2 into body1. Returns distance/depth of penetration, contact normal direction, 
+ and contact position. 
 
- Used for collision detection.
- 
  see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
  
  It is not the most recent implementation of GJK but it is well tested, fairly efficient and robust.
  Also it does not depend directly on Eigen.
  
-
 */
+
+/***
+ * libccd
+ * ---------------------------------
+ * Copyright (c)2012 Daniel Fiser <danfis@danfis.cz>
+ *
+ *
+ *  This file is part of libccd.
+ *
+ *  Distributed under the OSI-approved BSD License (the "License");
+ *  see accompanying file BDS-LICENSE for details or see
+ *  <http://www.opensource.org/licenses/bsd-license.php>.
+ *
+ *  This software is distributed WITHOUT ANY WARRANTY; without even the
+ *  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the License for more information.
+ */
 
 #ifndef __BGJK_H__
 #define __BGJK_H__
 
 
-#ifndef __BCONTACT_H__
-#include "BContact.h"
+
+#ifndef __ABODY_H__
+#include "ABody.h"
 #endif
 
 #include <ccd/ccd.h>
@@ -47,8 +64,9 @@ public:
     BGJK( void );
     ~BGJK( void )=default;
 
+    // if a collision has taken place fill in the contact distance, normal and point, and return true 
     bool
-    collision( BContact &contact ); // if true, fill out details in contact
+    collision( ABody* body1, ABody* body2, BScalar &distance, BVector3 &cnormal, BVector3 &cpoint ); 
     
 private:
 

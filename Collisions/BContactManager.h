@@ -80,9 +80,15 @@
 #include "ABody.h"
 #endif
 
+#ifndef __BCONTACT_H__
+#include "BContact.h"
+#endif
+
 #ifndef __BGJK_H__
 #include "BGJK.h"
 #endif
+
+
 
 #include <unordered_map>
 
@@ -96,10 +102,13 @@ public:
     explicit BContactManager( int N = 32 );  
     ~BContactManager( void );
     
+    void
+    clear( void ) { m_active.clear(); m_history.clear(); }
+        
     // return number of collisions; update velocities of bodies accordingly
     int
     resolve( double dt, const std::vector<ABody*> &body_list );
-    
+
     
     void
     setIters( int num ) { m_iters = num; }
@@ -178,7 +187,9 @@ private:
 
     std::vector<BContact>        m_active;
     std::unordered_map<uint64_t, BContact> m_history; 
-    BGJK                         m_gjk;  
+    
+
+    BGJK  m_detector; 
 
 };
 

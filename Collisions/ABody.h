@@ -116,10 +116,10 @@ public:
     //
     // collsions
     //
-    virtual BCollider* 
+    virtual BCollider& 
     collider( void ) = 0;
     
-    virtual const BCollider* 
+    virtual const BCollider& 
     collider( void ) const = 0;
         
 protected:
