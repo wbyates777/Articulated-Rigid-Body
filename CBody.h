@@ -10,8 +10,10 @@
 
  A demo 'collidable body' class.
  
- Its a demo because of the way the BCollider/Polytope and the CBody 'this' pointer are handled. 
- This implementation works, but I think it could be improved upon. 
+ Its a demo class because of, for example, the way the BCollider types are handled. 
+ The all colliders-in-one approach is used because it makes writting the demo code easier.
+ 
+ A proper application should rewrite this bit.
  
  
 */
