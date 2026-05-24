@@ -353,26 +353,20 @@ collisions( void )
     bodies[1] = CBody(2, BBody(sphere(mass2, radius2)), b);
 
     // polytope test should equal box test
-    // std::vector<glm::vec3> P = {a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7] };
-    // std::vector<glm::vec3> Q = {b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7] };
-    // BPolytope p(P);
-    // BPolytope q(Q);
-    // BBasicCollider basicColl1(p);
-    // BBasicCollider basicColl2(q);
-    // bodies[0].setCollider(&basicColl1);
-    // bodies[1].setCollider(&basicColl2);
+    std::vector<glm::vec3> P = {a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7] };
+    std::vector<glm::vec3> Q = {b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7] };
+    BPolytope p(P);
+    BPolytope q(Q);
+    bodies[0].collider().setPoints(p, BCollider::Linear);
+    bodies[1].collider().setPoints(q, BCollider::Linear);
 
     // box test
-    // BBoxCollider boxColl1( a );
-    // BBoxCollider boxColl2( b );
-    // bodies[0].setCollider(&boxColl1);
-    // bodies[1].setCollider(&boxColl2);
+    //bodies[0].collider().setType(a);
+   // bodies[1].collider().setType(b);
 
     // sphere test
-    BSphereCollider sphereColl1(radius1);
-    BSphereCollider sphereColl2(radius2);
-    bodies[0].setCollider(&sphereColl1);
-    bodies[1].setCollider(&sphereColl2);
+    //bodies[0].collider().setType(radius1);
+   // bodies[1].collider().setType(radius1);
  
  
     bodies[0].pos(B_ZERO_3);
