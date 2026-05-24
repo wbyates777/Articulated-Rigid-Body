@@ -28,6 +28,11 @@
 #include "BAdjoint.h"
 #endif
 
+#ifndef __BSPATIALTYPES_H__
+#include "BSpatialTypes.h"
+#endif
+
+
 #include <iostream>
 
 CBody::CBody( void )  : ABody(), 
@@ -40,23 +45,23 @@ CBody::CBody( void )  : ABody(),
                         m_orient(B_IDENTITY_QUAT),     
                         m_force(B_ZERO_6),
                         m_delta(0.25),
-                        m_collider(nullptr) {}
+                        m_collider() {}
 
-CBody::CBody( BBodyId bid, const BBody &body, const BBox &box )  :  ABody(), 
-                                                                    m_id(bid), 
-                                                                    m_box(box),
-                                                                    m_body(body),
-                                                                    m_I_base(B_ZERO_RBI),
-                                                                    m_invI_base(B_IDENTITY_6x6),
-                                                                    m_invI(B_IDENTITY_6x6),
-                                                                    m_orient(B_IDENTITY_QUAT),     
-                                                                    m_force(B_ZERO_6),
-                                                                    m_delta(0.25),
-                                                                    m_collider(nullptr)
+
+CBody::CBody( BBodyId bid, const BBody &body, const BBox &box ) : ABody(), 
+                                                                  m_id(bid), 
+                                                                  m_box(box),
+                                                                  m_body(body),
+                                                                  m_I_base(B_ZERO_RBI),
+                                                                  m_invI_base(B_IDENTITY_6x6),
+                                                                  m_invI(B_IDENTITY_6x6),
+                                                                  m_orient(B_IDENTITY_QUAT),     
+                                                                  m_force(B_ZERO_6),
+                                                                  m_delta(0.25),
+                                                                  m_collider()
 {
     m_orient = glm::quat_cast(m_body.X_base().E()); // sync m_orient and X_base
     m_invI   = arb::inverse(m_body.I()); 
-    
     updateBaseInertia();
 }
 
@@ -67,7 +72,6 @@ CBody::updateBaseInertia( void )
 // convert 'body coordinate' inverse spatial inertia I^{-1} to 'base coordinates' I^{-1}_base 
 // Note in a rotating body I is constant while I_base is changing 
 // see RBDA, Table 2.5 and eqn 2.66, page 34
-
 { 
     const BTransform X(m_body.X_base().E()); // world to body
     m_I_base = X.applyTranspose(m_body.I());

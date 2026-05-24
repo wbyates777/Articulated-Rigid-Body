@@ -10,8 +10,10 @@
 
  A demo 'collidable body' class.
  
+ Its a demo because of the way the BCollider/Polytope and the CBody 'this' pointer are handled. 
+ This implementation works, but I think it could be improved upon. 
  
-
+ 
 */
 
 
@@ -27,6 +29,9 @@
 #include "BBody.h"
 #endif
 
+#ifndef __BCOLLIDER_H__
+#include "BCollider.h"
+#endif
 
 class CBody : public ABody
 {
@@ -35,11 +40,14 @@ public:
 
     CBody( void );
     CBody( BBodyId bid, const BBody &body, const BBox &box );
+ 
     ~CBody( void )=default;
 
 
+    
     BBodyId
     objId( void ) const override { return m_id; }
+    
     
     //
     // object position and orientation (for a BModel use m_body[2].X_base())
@@ -156,18 +164,18 @@ public:
     //
     // collsions
     //
-    BCollider* 
+    BCollider& 
     collider( void ) override { return m_collider; };
     
-    const BCollider* 
+    const BCollider& 
     collider( void ) const override { return m_collider; };
 
-    // caller owns memory
-    void 
-    setCollider( BCollider* c ) { m_collider = c; };
-    
     
 private:
+
+   // void
+  //  setPolytope( const std::vector<BPolytope> &poly ) { m_collider.setPoints(poly); }
+    
 
     void 
     updateBaseInertia( void );
@@ -188,7 +196,8 @@ private:
     BVector6    m_force;
     BScalar     m_delta;
     
-    BCollider *m_collider;
+    BCollider  m_collider; 
+
 };
 
 
