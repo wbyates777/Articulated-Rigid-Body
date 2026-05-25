@@ -227,7 +227,15 @@ namespace arb
         return BVector6(max(v1[0],v2[0]), max(v1[1],v2[1]), max(v1[2],v2[2]), 
                         max(v1[3],v2[3]), max(v1[4],v2[4]), max(v1[5],v2[5]));
     }
-    
+
+    inline constexpr BVector6 
+    clamp(const BVector6 &v, BScalar min, BScalar max) 
+    { 
+        using std::clamp;
+        return BVector6(clamp(v[0], min, max), clamp(v[1], min, max), clamp(v[2], min, max), 
+                        clamp(v[3], min, max), clamp(v[4], min, max), clamp(v[5], min, max));
+    }
+
     inline constexpr BVector6 
     clamp(const BVector6 &v, const BVector6 &min, const BVector6 &max) 
     { 
