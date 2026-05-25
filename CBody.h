@@ -175,10 +175,6 @@ public:
     
 private:
 
-   // void
-  //  setPolytope( const std::vector<BPolytope> &poly ) { m_collider.setPoints(poly); }
-    
-
     void 
     updateBaseInertia( void );
 
