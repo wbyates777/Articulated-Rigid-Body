@@ -175,10 +175,10 @@ namespace arb {
     
 
     inline bool 
-    isnan(const BVector3 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
+    isnan(const BVector3 &v) { using std::isnan; return (isnan(v[0]) || isnan(v[1]) || isnan(v[2])); }
 
     inline bool 
-    isnan( const BQuat &q )  { return (std::isnan(q.w) || std::isnan(q.x) || std::isnan(q.y) || std::isnan(q.z)); }
+    isnan( const BQuat &q )  { using std::isnan; return (isnan(q.w) || isnan(q.x) || isnan(q.y) || isnan(q.z)); }
     
     inline bool 
     isnan( const BMatrix3 &m ) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
