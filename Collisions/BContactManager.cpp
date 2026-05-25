@@ -260,7 +260,7 @@ BContactManager::prepare( BScalar dt )
             
             // create a coordinate frame from the normal
             // note c.n_1 and c.n_2 are considered to be nz_1 and nz_2
-            compute_basis(c.normal, normy, normx );  // sic. order is correct
+            compute_basis(c.normal, normx, normy );  
             
             // unit spatial impulse (force) vector - tangent plane (x-y axis) of contact space 
             c.nx_1 = BVector6(arb::cross(rel_pos1, -normx), -normx);
