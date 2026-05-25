@@ -125,7 +125,7 @@ public:
     //com( void ) const { assert(m_mass != 0); return  m_h / m_mass; }
     
     BVector3
-    com( void ) const { return (m_mass > 1E-6) ? (m_h / m_mass) : B_ZERO_3; }
+    com( void ) const { return (m_mass < B_EPS) ? B_ZERO_3 : (m_h / m_mass); }
 
     
     BRBInertia
