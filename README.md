@@ -4,8 +4,9 @@
 
 - Forward dynamics via the Articulated Body Algorithm (ABA) —  $O(N_B)$,  
 - Inverse dynamics via the Recursive Newton–Euler Algorithm (RNEA) -  $O(N_B)$, 
-- Collision detection and spatial impulse-based contact resolution.  
-
+- Collision detection and spatial impulse-based contact resolution, and  
+- Unified Robot Description Format (URDF) parser for model import and export.
+  
 Includes **end-to-end automatic differentiation**, enabling system identification, optimisation, and machine learning applications.
 
 ---
@@ -29,10 +30,10 @@ ARB is a compact implementation of a differentiable spatial algebra designed for
 
 It combines:
 - Spatial algebra (6D motion and force vectors),
-- Automatic differentiation across the full simulation pipeline,    
+- Automatic differentiation across the full simulation pipeline (including contacts),    
 - Efficient rigid body dynamics algorithms (ABA, RNEA), and
-- Collision detection and impulse based contact resolution (PGS solver, warm start). 
-
+- Collision detection and impulse based contact resolution (PGS solver, warm start), 
+- URDF file parser for model import and export.
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
 
@@ -58,7 +59,7 @@ to a simple hinged mechanism such as a door.
 
  
  Automatic differentiation is provided by the autodiff library.
- Thus the algebra, the ABA,  the RNEA, and collision resolution are completely differentiable. 
+ Thus the algebra, the ABA, and the RNEA,  are completely differentiable. 
  This end-to-end differentiability facilitates the application of 
   advanced optimisation, machine learning techniques, and System Identification (SI).
 
@@ -68,7 +69,7 @@ to a simple hinged mechanism such as a door.
  
 This code is written in C++23 and depends primarily on STL and the header-only GLM. 
 Additionally, the header-only autodiff library is required for automatic differentiability, and 
- the libccd shared library for collision detection.
+ the openGJK or libccd library for collision detection.
 
 
 ### Key Features
@@ -77,9 +78,9 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * End-to-end automatic differentiability using autodiff (header-only),
-* Universal Robot Description Format (URDF) load and save,
+* Universal Robot Description Format (URDF) import and export,
 * Collision Resolution –  spatial impulses and GJK/EPA contact manifolds.
-* Minimal dependencies STL, GLM, (autodiff and libccd optional).
+* Minimal dependencies STL, GLM, (autodiff, openGJK, and libccd optional).
 
 ## Background
 
@@ -130,43 +131,6 @@ Additionally, the header-only autodiff library is required for automatic differe
 | Planar     |  3   |  Translation in the x,y plane and rotation about z-axis  |  Vector3  |
 | Floating Base  |  6  | Unconstrained 3D motion of the root.  |  Position + Quaternion |
 
-### Unified Robot Description Format (URDF)
-
-  The Unified Robot Description Format (URDF) is an XML-based industry standard used to define the physical configuration of a robot, 
-  acting as the universal language for the [Robot Operating System] (ROS) ecosystem. It specifies  a 
-  robot’s kinematic tree, including the hierarchy of links, the types of joints connecting them, and their respective physical properties such as mass, centre of mass, and inertia tensors.
-  
-  By supporting URDF, ARB can load complex, real-world robot models, such as the ur5 or tiago, directly from standard industry files. 
-  The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required 
-  for the ABA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.
-
-### Collision Detection and Impulse Based Resolution
-
- The task of detecting collisions between rigid bodies can be subdivided into _broad phase_ and  _narrow phase_.
- Broad-phase consists of detecting intersections between oriented bounding boxes (OBB) using 
- the [Separating Axis Theorem] (SAT). Computationally, this is relatively efficient.
- The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
- using the [GJK algorithm]. This is very precise but computationally more expensive.
- 
-
- ARB provides two options for narrow-phase collision detection: 
- - the default libccd backend,  or
- - an implementation of openGJK.
-   
-Libccd is a well-tested C library, with  support for standard primitives such as boxes and spheres, as well as complex arbitrary shapes represented as polytopes (convex hulls).
-It is released under a permissive license, compatible with the MIT license used here. However it does not use differentiable types, and so, it is not possible to differentiate _across a contact_, that is, to compute post-collision derivatives for interacting bodies.
-The openGJK C++ implementation presented here does employ differentiable types.
-However it only supports polytopes; although boxes can be represented as 8-point polytopes, analytical primitives like spheres are not natively supported.
-Furthermore, openGJK is released under the GPLv3 license, and using this module will subject the entire project to GPLv3 copyleft terms.
-
- Collisions are resolved by calculating the
- _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
- so that they separate appropriately (see RBDA, Section 11.7).
-
-The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
-It also uses impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
-
- https://youtu.be/g1jMEpu1sl8
 
 
 
@@ -250,7 +214,45 @@ SI allows researchers to synchronise a simulation with the real world.
 Additionally, SI can be used for the estimation of non-conservative forces such as joint friction and damping, 
 which are traditionally difficult to calibrate manually.
 
+### Collision Detection and Impulse Based Resolution
 
+ The task of detecting collisions between rigid bodies is non-trivial. It is typically subdivided into two phases:  _broad phase_ and  _narrow phase_.
+ Broad-phase consists of detecting intersections between oriented bounding boxes (OBB) using 
+ the [Separating Axis Theorem] (SAT). Computationally, this is relatively efficient.
+ The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
+ using the [GJK algorithm]. This is very precise but computationally more expensive.
+ 
+
+ ARB provides two options for narrow-phase collision detection: 
+ - the default libccd backend,  or
+ - an implementation of openGJK.
+   
+Libccd is a well-tested C library, with  support for standard primitives such as boxes and spheres, as well as complex arbitrary shapes represented as polytopes (convex hulls).
+It is released under a permissive license, compatible with the MIT license used here. However it does not use differentiable types, and so, it is not possible to differentiate _across a contact_, that is, to compute post-collision derivatives for interacting bodies.
+The openGJK C++ implementation presented here does employ differentiable types.
+However it only supports polytopes; although boxes can be represented as 8-point polytopes, analytical primitives like spheres are not natively supported.
+Furthermore, openGJK is released under the GPLv3 license, and using this module will subject the entire project to GPLv3 copyleft terms.
+
+ Collisions are resolved by calculating the
+ _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
+ so that they separate appropriately (see RBDA, Section 11.7). 
+
+The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
+It also uses impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
+
+ https://youtu.be/g1jMEpu1sl8
+
+
+
+### Unified Robot Description Format (URDF)
+
+  The Unified Robot Description Format (URDF) is an XML-based industry standard used to define the physical configuration of a robot, 
+  acting as the universal language for the [Robot Operating System] (ROS) ecosystem. It specifies  a 
+  robot’s kinematic tree, including the hierarchy of links, the types of joints connecting them, and their respective physical properties such as mass, centre of mass, and inertia tensors.
+  
+  By supporting URDF, ARB can load complex, real-world robot models, such as the ur5 or tiago, directly from standard industry files. 
+  The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required 
+  for the ABA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.
   
 ## Implementation 
 
@@ -290,9 +292,11 @@ which are traditionally difficult to calibrate manually.
  It should be noted that the calculated derivatives are
  exact (to machine precision) and not approximated, as is the case for finite difference methods.
 
-The collision detection component relies on the external library _libccd_ (see below).
-libccd is a C library for a collision detection between two convex shapes. It implements a variant 
-of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). 
+The collision detection component depends on two external libraries _libccd_ and _openGJK_ (see below).
+Libccd is a C library that implements a variant 
+of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). OpenGJK is a more modern and efficient C++ implemenation of GJK/EPA. 
+The OpenGJK used here has been rewritten to use GLM types in order to 
+support  autodiff types, and  automatic  differentiation.
  
  ## Validation
  
@@ -417,4 +421,5 @@ This project is licensed under the MIT License.
 If you found this project useful please consider giving it a star.
 
  ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social&version=1)
+
 
