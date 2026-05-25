@@ -87,7 +87,7 @@ public:
     void
     ang( const BVector3 &v ) { m_data[0] = v[0]; m_data[1] = v[1]; m_data[2] = v[2]; }
 
-    BVector3
+    constexpr BVector3
     ang( void ) const { return BVector3(m_data[0], m_data[1], m_data[2]); }
 
     // linear
@@ -100,13 +100,13 @@ public:
     void
     lin( const BVector3 &v ) { m_data[3] = v[0]; m_data[4] = v[1]; m_data[5] = v[2]; }
     
-    BVector3
+    constexpr BVector3
     lin( void ) const { return BVector3(m_data[3], m_data[4], m_data[5]); }
     
-    BScalar&
+    constexpr BScalar&
     operator[]( int i ) { return m_data[i]; }
     
-    BScalar
+    constexpr BScalar
     operator[]( int i ) const { return m_data[i]; }
 
     static size_t 
