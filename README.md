@@ -24,9 +24,9 @@ https://youtu.be/g1jMEpu1sl8
 
 ---
 
-## Overview
+## Introduction
 
-ARB is a compact implementation of a differentiable spatial algebra designed for use in computer graphics, simulation, and robotics.
+ARB is a compact implementation of a differentiable spatial algebra designed for use in computer graphics, simulation, and robotics, with end-to-end automatic differentiability (AD). 
 
 It combines:
 - Spatial algebra (6D motion and force vectors),
@@ -37,9 +37,6 @@ It combines:
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
 
-## Introduction
-
-ARB is a compact implementation of _spatial_ _algebra_ with end-to-end automatic differentiability (AD). 
 
 The spatial algebra is used to implement two important rigid body dynamics algorithms: articulated-body algorithm (ABA) 
 and the recursive Newton-Euler algorithm (RNEA)  (see Featherstone 2008).
