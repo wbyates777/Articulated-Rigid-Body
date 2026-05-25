@@ -75,7 +75,7 @@ namespace arb {
     inline bool
     isinvertible( const BMatrix3 &m )
     {
-        using std::abs; return abs(arb::determinant(m)) > std::numeric_limits<BScalar>::epsilon();
+        using std::abs; return abs(arb::determinant(m)) > B_EPS;
     }
     
     //  m^{T} - style choice - I prefer arb::transpose(m) to m.transpose() 
