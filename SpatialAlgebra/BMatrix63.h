@@ -173,7 +173,7 @@ public:
     data( void ) const { return m_data; }
     
     
-    BMatrix3
+    constexpr BMatrix3
     top( void ) const 
     {
         BMatrix3 retVal;
@@ -192,7 +192,7 @@ public:
                 m_data[i][j] = m[i][j];
     }
     
-    BMatrix3
+    constexpr BMatrix3
     bot( void ) const 
     {
         BMatrix3 retVal; 
@@ -473,7 +473,7 @@ public:
     data( void ) const { return m_data; }
     
     
-    BMatrix3
+    constexpr BMatrix3
     left( void ) const 
     {
         BMatrix3 retVal;
@@ -491,7 +491,7 @@ public:
                 m_data[i][j] = m[i][j];
     }
     
-    BMatrix3
+    constexpr BMatrix3
     right( void ) const 
     {
         BMatrix3 retVal; 
