@@ -7,7 +7,7 @@
   For a  discussion on how this variant improves upon the classic GJK algorithm, 
   see the  paper included in this subdirectory.
  
-  OpenGJK has been rewritten using [GLM] to support [automatic differentiation] using [autodiff] types. 
+  OpenGJK has been rewritten with [GLM] to support [automatic differentiation] using [autodiff] types. 
   This makes it possible to differentiate across a contact boundary and calculate 
   precise post-collision  derivatives for interacting  bodies. 
  
@@ -26,6 +26,8 @@ overriding the permissive nature of ARB's default MIT license.
 
 The specific OpenGJK project files are:
 
+ BSimplex.h
+ 
  BCollider.h/.cpp
  
  BOpenGJK.h/.cpp
