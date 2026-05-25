@@ -101,10 +101,10 @@ public:
     I( void ) const { return m_I; }  // inertia at origin
 
     BMatrix3 
-    Icom( void ) const { return (m_mass < 1E-6) ? m_I : m_I - (arb::crosst(m_h) / m_mass); }  // inertia at com
+    Icom( void ) const { return (m_mass < B_EPS) ? m_I : m_I - (arb::crosst(m_h) / m_mass); }  // inertia at com
     
     BVector3
-    com( void ) const { return (m_mass < 1E-6) ? B_ZERO_3 : m_h / m_mass; }  
+    com( void ) const { return (m_mass < B_EPS) ? B_ZERO_3 : m_h / m_mass; }  
  
     
     void
