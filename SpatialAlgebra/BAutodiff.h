@@ -76,9 +76,9 @@ namespace  glm { using ::operator>>; }
 
 namespace std {
     
-    // v[0] or autodiff::val(v) is value and v[1] or autodiff::derivative(v) is gradient 
+    // autodiff::val(v) is value and autodiff::derivative(v) is gradient 
     inline bool 
-    isnan( const autodiff::real &v ) { return std::isnan(v[0]) || std::isnan(v[1]); }
+    isnan( const autodiff::real &v ) { return std::isnan(autodiff::val(v)) || std::isnan(autodiff::derivative(v)); }
     
     inline constexpr autodiff::real 
     clamp( const autodiff::real &d, const autodiff::real &min, const autodiff::real &max ) 
