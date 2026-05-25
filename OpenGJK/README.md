@@ -41,14 +41,13 @@ The files common to both collision managment modules are:
  ABody.h
  
  BBox.h
+
+ BPolytope.h
  
  BContact.h
  
- BPolytope.h
+ BContactManager.h/.cpp
  
- BContactManager.h
- 
- BContactManager.cpp
 
  ```
 /*
