@@ -171,17 +171,13 @@ public:
     bool
     is_new(const BGJKVertex &new_point) const
     {
-        bool is_new = true;
         for (int vtx = 0; vtx < m_nvrtx; ++vtx) 
         {
-            BScalar d2 = arb::length2(new_point.vertex - m_point[vtx].vertex);
+            const BScalar d2 = arb::length2(new_point.vertex - m_point[vtx].vertex);
             if (d2 < B_EPS2) 
-            {
-                is_new = false;
-                break;
-            }
+                return false;
         }
-        return is_new;
+        return true;
     }
     
     friend std::ostream&
