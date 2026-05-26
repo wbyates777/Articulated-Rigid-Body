@@ -18,20 +18,16 @@
  ii) the Expanding-Polytope-Algorithm (EPA). 
 
  Computes penetration of body2 into body1. 
- Returns distance/depth of penetration, contact normal direction, and contact position. 
+ 
+ Returns positive depth of penetration, contact normal direction, and contact position. 
 
  see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
  
- This code is differentiable. 
+ This code is differentiable using autodiff 
  
 
- Notes 
- 
- i) OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used 
-    then *all* the code in the release/product is also bound by the GPL3 license.
- 
- ii) EPA returns positive depth for penetration; 
- 
+ Note: OpenGJK is released under a GPL3 license. As a result if this code is used 
+ then *all* the ARB code base is also bound by the GPL3 license.
  
 */
 
@@ -59,11 +55,6 @@
 #define __BGJK_H__
 
 
-
-#include <string>
-#include <vector>
-#include <map>
-
 #ifndef __BSPATIALTYPES_H__
 #include "BSpatialTypes.h"
 #endif
@@ -79,11 +70,6 @@
 #ifndef __BOPENEPA_H__
 #include "BOpenEPA.h"
 #endif
-
-#ifndef __BCOLLIDER_H__
-#include "BCollider.h"
-#endif
-
 
 
 class BGJK  
