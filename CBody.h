@@ -10,10 +10,12 @@
 
  A demo 'collidable body' class.
  
- Its a demo class because of, for example, the way the BCollider types are handled. 
- The all colliders-in-one approach is used because it makes writting the demo code easier.
+ Its a demo class because its designed to make writting the demo code easy.
  
- A proper application should rewrite this bit.
+ For example, consider the way the BCollider types are handled. 
+ The all-in-one collider type approach used here is inefficient.
+ 
+ A proper application would rewrite this bit.
  
  
 */
