@@ -8,15 +8,20 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- My c++ rewrite of the EPA in openGJK 
+ My c++ rewrite of openGJK/openEPA so we can use GLM functions and therefore autodiff
+ 
+ openEPA provides us with the indices into the two polytopes; libccd did not provide this.
+ 
+ openEPA returns positive depth for penetration or zero otherwise. 
  
  The main changes are:
  
- i)   glm based Vector3 types which can be made differentiable,
- ii)  the structs EPAVertex and BIndex with operators that simplify the syntax
- iii) broke up the large collisions function into more managable logical chunks,
-      by adding find_closest_face(), expand_simplex_to_tetrahedron(),
-      tessellate_polytope(), and compute_contact()
+ i)    an extra level of indexing so that each body can have a number of polytopes.
+ ii)   GLM based BVector3 types which can be made differentiable,
+ iii)  the structs EPAVertex and BIndex with operators that simplify the syntax
+ iv)   broke up the large collisions function into more managable logical chunks,
+       by adding find_closest_face(), expand_simplex_to_tetrahedron(),
+       and tessellate_polytope().
 
  
  see https://github.com/MattiaMontanari/openGJK 
@@ -24,7 +29,6 @@
  
  Note: OpenGJK is released under a GPL3 license. As a result if this code is used 
  then *all* the ARB code base is also bound by the GPL3 license.
- 
  
 */
 
@@ -51,9 +55,7 @@
 #ifndef __BOPENEPA_H__
 #define __BOPENEPA_H__
 
-#include <string>
-#include <vector>
-#include <map>
+#include <array>
 
 #ifndef __BPSIMPLEX_H__
 #include "BSimplex.h"
@@ -64,8 +66,6 @@
 #endif
 
 class BEPAPolytope;
-class BEPAFace;
-
 
 //
 // local EPA types
