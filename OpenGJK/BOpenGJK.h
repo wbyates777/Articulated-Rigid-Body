@@ -8,11 +8,12 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
  
- My c++ rewrite of openGJK/openEPA so we can use glm functions and therefore autodiff
+ My c++ rewrite of openGJK/openEPA so we can use GLM functions and therefore autodiff
  
- openEPA provides us with the indices into the two polytopes; libccd did not provide this.
+ The main changes are:
  
- We have added an extra level of indexing so that each body can have a number of polytopes.
+ i)    an extra level of indexing so that each body can have a number of polytopes, and
+ ii)   GLM based BVector3 types which can be made differentiable,
  
  see https://github.com/MattiaMontanari/openGJK 
 
@@ -44,19 +45,14 @@
 #ifndef __BOPENGJK_H__
 #define __BOPENGJK_H__
 
-#include <vector>
-
 #ifndef __ABODY_H__
 #include "ABody.h"
 #endif
-
-
 
 #ifndef __BPSIMPLEX_H__
 #include "BSimplex.h"
 #endif
 
-class BCollider;
 
 class BOpenGJK
 {
@@ -93,7 +89,8 @@ private:
         const BVector3 n = arb::cross(p - q, p - r);
         v = n * (arb::dot(n, p) / arb::dot(n, n));
     }
-    
+
+
     int 
     hff1( const BVector3 &p, const BVector3 &q ) const 
     {
@@ -139,10 +136,11 @@ private:
     
     void 
     W3D( const ABody *body1, const ABody *body2, BSimplex &smp ) const;
-    
+
     void
     calc_witness( const ABody *body1, const ABody *body2, BSimplex &smp ) const;
-    
+
+
     BVector3
     first_point( ABody *body ) const;
     
