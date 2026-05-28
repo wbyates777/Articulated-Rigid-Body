@@ -11,6 +11,15 @@ Includes **end-to-end automatic differentiation**, enabling system identificatio
 
 ---
 
+## ⚡ Quick Start ⚡
+
+If you have CMake and a C++23 compliant compiler, you can clone, download all dependencies, and build ARB with a single command:
+
+```bash
+git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articulated-Rigid-Body && mkdir build && cd build && cmake .. && make -j8
+```
+
+---
 ### Demos
 
 **Simulating doors with revolute and prismatic joints:**
@@ -75,7 +84,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * End-to-end automatic differentiability using autodiff (header-only),
-* Universal Robot Description Format (URDF) import and export,
+* Unified Robot Description Format (URDF) import and export,
 * Collision Resolution –  spatial impulses and GJK/EPA contact manifolds.
 * Minimal dependencies STL, GLM, (autodiff, openGJK, and libccd optional).
 
@@ -294,6 +303,9 @@ Libccd is a C library that implements a variant
 of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). OpenGJK is a more modern and efficient C++ implemenation of GJK/EPA. 
 The OpenGJK used here has been rewritten to use GLM types in order to 
 support  autodiff types, and  automatic  differentiation.
+
+ The URDFManager class depends on [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simiplicity these are included in this codebase.
+
  
  ## Validation
  
@@ -387,6 +399,8 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  CCD       - https://github.com/danfis/libccd
  
  openGJK   - https://github.com/MattiaMontanari/openGJK
+
+ TinyXML2  - https://github.com/leethomason/tinyxml2
  
   ### External 
   
@@ -408,6 +422,7 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  [chain rule]: https://en.wikipedia.org/wiki/Chain_rule
  [System Identification]:  https://en.wikipedia.org/wiki/System_identification
  [Model Predictive Control]: https://en.wikipedia.org/wiki/Model_predictive_control
+ [TinyXML2]: https://github.com/leethomason/tinyxml2
  
 ## Notes
 
@@ -415,8 +430,7 @@ Please send any questions or report any errors, omissions, or suggested extensio
 
 This project is licensed under the MIT License.  
 
-If you found this project useful please consider giving it a star.
-
+Please click here: 
  ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social&version=1)
 
 
