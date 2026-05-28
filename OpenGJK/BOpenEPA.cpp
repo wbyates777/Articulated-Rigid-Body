@@ -310,14 +310,14 @@ BOpenEPA::support_epa(const ABody* body1, const ABody* body2, const BVector3& di
 {
     // search body1
     const glm::dvec3 localDir1 = glm::transpose(body1->orient()) * dir;
-    BScalar local_max1 = B_SCALAR_MIN;
+    double local_max1 = -std::numeric_limits<double>::max();
     BIndex local_best1(-1,-1); 
     for (int i = 0; i < body1->collider().size(); ++i) 
     {
         for (int j = 0; j < body1->collider().getPoints(i).size(); ++j) 
         {
             BIndex idx(j,i); // (vertIdx, polyIdx)
-            BScalar s = arb::dot(point(body1, idx), localDir1);
+            double s = glm::dot(body1->collider().point(idx), localDir1);
             
             if (s > local_max1) 
             {
@@ -329,14 +329,14 @@ BOpenEPA::support_epa(const ABody* body1, const ABody* body2, const BVector3& di
     
     // search body2 in opposite direction
     const glm::dvec3 localDir2 = glm::transpose(body2->orient()) * dir;
-    BScalar local_max2 = B_SCALAR_MIN;
+    double local_max2  = -std::numeric_limits<double>::max();;
     BIndex local_best2(-1,-1);
     for (int i = 0; i < body2->collider().size(); ++i) 
     {
         for (int j = 0; j < body2->collider().getPoints(i).size(); ++j) 
         {
             BIndex idx(j,i);  //  (vertIdx, polyIdx)
-            BScalar s = arb::dot(point(body2, idx), localDir2);
+            double s = glm::dot(body2->collider().point(idx), localDir2);
             
             if (-s > local_max2) 
             {
