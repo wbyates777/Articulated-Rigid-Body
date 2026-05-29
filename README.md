@@ -374,7 +374,28 @@ is a fundamental property that links adjoints, spatial transforms, inverses, and
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
  
 The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
- 
+
+
+ ## Performance
+
+To measure  perfomance ARB has been benchmarked against RBDL v3.3.1. 
+
+The  table below shows the execution times in milliseconds of forward dynamics (ABA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
+
+| Algorithm | Engine | Total Execution Time (100k runs)  | Difference |
+| :--- | :--- | :--- |  :--- |
+| **RNEA**  | RBDL | 206.17 ms | *Baseline* |
+| | ARB | **220.70 ms** | **+7.0%** |
+| **ABA**  | RBDL  | 529.64 ms | *Baseline* |
+| | ARB | **554.25 ms** | **+4.6%** |
+
+#### Notes
+* **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
+* **Compilation Environment:** C++23 clang optimized with flags: `-O3 -DNDEBUG -march=native`.
+
+Despite ARB's lightweight footprint it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard RBDL. Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
+
+
  ## Build Instructions
  
 
