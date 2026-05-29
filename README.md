@@ -383,17 +383,17 @@ To measure  perfomance ARB has been benchmarked against RBDL v3.3.1.
 The  table below shows the execution times in milliseconds of forward dynamics (ABA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
 
 | Algorithm | Engine | Total Execution Time (100k runs)  | Difference |
-| :--- | :--- | :--- |  :--- |
-| **RNEA**  | RBDL | 206.17 ms | *Baseline* |
-| | ARB | **220.70 ms** | **+7.0%** |
-| **ABA**  | RBDL  | 529.64 ms | *Baseline* |
-| | ARB | **554.25 ms** | **+4.6%** |
+| :--- | :--- | :--- |  :--- | 
+| **RNEA**  | RBDL | 199.91 ms | *Baseline* |
+| | ARB | **208.85 ms** | **+4.47%** |
+| **ABA**  | RBDL  | 518.93 ms | *Baseline* |
+| | ARB | **518.32 ms** | **-0.12%** |
 
 #### Notes
 * **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
-* **Compilation Environment:** C++23 clang optimized with flags: `-O3 -DNDEBUG -march=native`.
+* **Compilation Environment:** C++23 clang optimized with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
 
-Despite ARB's lightweight footprint it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard RBDL. Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
+Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard RBDL. Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
 
 
  ## Build Instructions
