@@ -38,6 +38,19 @@ set(AUTODIFF_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(AUTODIFF_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(CMAKE_CUDA_COMPILER OFF CACHE BOOL "" FORCE)
 
+# ==============================================================================
+# WORKAROUND: Generates a fake Eigen3Config.cmake inside the build directory.
+# This completely satisfies find_package(Eigen3) without needing the real library.
+# ==============================================================================
+file(WRITE "${CMAKE_BINARY_DIR}/Eigen3Config.cmake" "
+    set(Eigen3_FOUND TRUE)
+    if(NOT TARGET Eigen3::Eigen)
+        add_library(Eigen3::Eigen INTERFACE IMPORTED)
+    endif()
+")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}")
+# ==============================================================================
+
 # ccd
 set(ENABLE_DOUBLE_PRECISION ON CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
