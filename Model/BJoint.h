@@ -236,7 +236,7 @@ public:
         
         Helical,       // A 1-DoF 'screw' joint with both rotational and translational motion.
         
-        Planar,        // Planar Joint (3-DOF: x,y translation and z rotation)
+        Planar,        // Planar joint (3-DOF: x,y translation and z rotation)
 
         MAXJOINT    
     };
@@ -318,7 +318,7 @@ public:
     const BTransform& 
     X_lambda( void ) const { return m_X_lambda; }
    
-    // the action of the joint - typically a function of the joint's type m_jtype and state $q$  (see RBDA, Table 4.1)    
+    // the action of the joint - typically a function of the joint's type m_jtype and state $q$  (see RBDA, Table 4.1) 
     const BTransform& 
     X_J( void ) const { return m_X_J; } 
     
@@ -391,6 +391,8 @@ public:
     
     
 private:
+    
+    BJoint( const std::vector<BVector6> &axes );
     
     void
     setMotionSpace( const BMotionSpace &m ) { m_S = m; }

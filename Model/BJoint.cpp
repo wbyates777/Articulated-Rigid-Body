@@ -37,48 +37,49 @@ constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_ONE_6x3
     0.0, 0.0, 1.0 
 };
 
-// S matrix for Planar: [x_trans, y_trans, z_rot]
-// Columns: 0=TransX, 1=TransY, 2=RotZ
+
 constexpr std::array<std::array<BScalar, 3>, 6> B_PLANAR_6x3
 {
     0.0, 0.0, 0.0,  
     0.0, 0.0, 0.0,  
-    0.0, 0.0, 1.0,  // ang z (rot Z)
-    1.0, 0.0, 0.0,  // lin x (trans X)
-    0.0, 1.0, 0.0,  // lin y (trans Y)
+    0.0, 0.0, 1.0,  
+    1.0, 0.0, 0.0,  
+    0.0, 1.0, 0.0,  
     0.0, 0.0, 0.0   
 };
 
+
+//
 // constructs a 1-DoF joint with the given motion subspaces
-BJoint::BJoint( const BVector6 &axis_0 )  : m_id(0),
-                                            m_qidx(0),
-                                            m_widx(0),
-                                            m_jtype(JType::UNDEFINED),
-                                            m_X_lambda(B_IDENTITY_TRANS),
-                                            m_X_J(B_IDENTITY_TRANS),
-                                            m_X_T(B_IDENTITY_TRANS),
-                                            m_v_J(B_ZERO_6),
-                                            m_c_J(B_ZERO_6),
-                                            m_S(),
-                                            m_axis(1, axis_0)
+BJoint::BJoint( const BVector6 &axis0 ) : m_id(0),
+                                          m_qidx(0),
+                                          m_widx(0),
+                                          m_jtype(JType::UNDEFINED),
+                                          m_X_lambda(B_IDENTITY_TRANS),
+                                          m_X_J(B_IDENTITY_TRANS),
+                                          m_X_T(B_IDENTITY_TRANS),
+                                          m_v_J(B_ZERO_6),
+                                          m_c_J(B_ZERO_6),
+                                          m_S(),
+                                          m_axis(1, axis0)
 {
     setMotionSpace(m_axis[0]);
     m_v_J = m_axis[0];
     
     // TODO: this has to be properly determined AND test case. Try Matt's dot product idea
-    if (axis_0 == BVector6(B_XAXIS, B_ZERO_3)) 
+    if (axis0 == BVector6(B_XAXIS, B_ZERO_3)) 
     {
         m_jtype = JType::RevoluteX;
     } 
-    else if (axis_0 == BVector6(B_YAXIS, B_ZERO_3)) 
+    else if (axis0 == BVector6(B_YAXIS, B_ZERO_3)) 
     {
         m_jtype = JType::RevoluteY;
     } 
-    else if (axis_0 == BVector6(B_ZAXIS, B_ZERO_3)) 
+    else if (axis0 == BVector6(B_ZAXIS, B_ZERO_3)) 
     {
         m_jtype = JType::RevoluteZ;
     } 
-    else if (axis_0.ang() == B_ZERO_3) 
+    else if (axis0.ang() == B_ZERO_3) 
     {
         m_jtype = JType::Prismatic;
     } 
@@ -91,94 +92,44 @@ BJoint::BJoint( const BVector6 &axis_0 )  : m_id(0),
 }
 
 BJoint::BJoint( const BVector6 &axis_0, 
-                const BVector6 &axis_1 ) :  m_id(0),
-                                            m_qidx(0),
-                                            m_widx(0),
-                                            m_jtype(JType::UNDEFINED),
-                                            m_X_lambda(B_IDENTITY_TRANS),
-                                            m_X_J(B_IDENTITY_TRANS),
-                                            m_X_T(B_IDENTITY_TRANS),
-                                            m_v_J(B_ZERO_6),
-                                            m_c_J(B_ZERO_6),
-                                            m_S(),
-                                            m_axis()
-{
-    setJoint({axis_0, axis_1}); 
-}
+                const BVector6 &axis_1 ): BJoint(std::vector<BVector6>{axis_0, axis_1}) {}
 
 BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_1,
-                const BVector6 &axis_2 )  : m_id(0), 
-                                            m_qidx(0),
-                                            m_widx(0),
-                                            m_jtype(JType::UNDEFINED),
-                                            m_X_lambda(B_IDENTITY_TRANS),
-                                            m_X_J(B_IDENTITY_TRANS),
-                                            m_X_T(B_IDENTITY_TRANS),
-                                            m_v_J(B_ZERO_6),
-                                            m_c_J(B_ZERO_6),
-                                            m_S(),
-                                            m_axis()
-{
-    setJoint({axis_0, axis_1, axis_2}); 
-}
+                const BVector6 &axis_2 ): BJoint(std::vector<BVector6>{axis_0, axis_1, axis_2}) {}
 
 BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_1,
                 const BVector6 &axis_2,
-                const BVector6 &axis_3 ) :  m_id(0),
-                                            m_qidx(0),
-                                            m_widx(0),
-                                            m_jtype(JType::UNDEFINED),
-                                            m_X_lambda(B_IDENTITY_TRANS),
-                                            m_X_J(B_IDENTITY_TRANS),
-                                            m_X_T(B_IDENTITY_TRANS),
-                                            m_v_J(B_ZERO_6),
-                                            m_c_J(B_ZERO_6),
-                                            m_S(),
-                                            m_axis()
-{
-    setJoint({axis_0, axis_1, axis_2, axis_3}); 
-}
+                const BVector6 &axis_3 ): BJoint(std::vector<BVector6>{axis_0, axis_1, axis_2, axis_3}) {}
 
 BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_1,
                 const BVector6 &axis_2,
                 const BVector6 &axis_3,
-                const BVector6 &axis_4 ) :  m_id(0),
-                                            m_qidx(0),
-                                            m_widx(0),
-                                            m_jtype(JType::UNDEFINED),
-                                            m_X_lambda(B_IDENTITY_TRANS),
-                                            m_X_J(B_IDENTITY_TRANS),
-                                            m_X_T(B_IDENTITY_TRANS),
-                                            m_v_J(B_ZERO_6),
-                                            m_c_J(B_ZERO_6),
-                                            m_S(),
-                                            m_axis()
-{
-    setJoint({axis_0, axis_1, axis_2, axis_3, axis_4}); 
-}
+                const BVector6 &axis_4 ): BJoint(std::vector<BVector6>{axis_0, axis_1, axis_2, axis_3, axis_4}) {}
 
 BJoint::BJoint( const BVector6 &axis_0,
                 const BVector6 &axis_1,
                 const BVector6 &axis_2,
                 const BVector6 &axis_3,
                 const BVector6 &axis_4,
-                const BVector6 &axis_5 )  : m_id(0),
-                                            m_qidx(0),
-                                            m_widx(0),
-                                            m_jtype(JType::UNDEFINED),
-                                            m_X_lambda(B_IDENTITY_TRANS),
-                                            m_X_J(B_IDENTITY_TRANS),
-                                            m_X_T(B_IDENTITY_TRANS),
-                                            m_v_J(B_ZERO_6),
-                                            m_c_J(B_ZERO_6),
-                                            m_S(),
-                                            m_axis()
+                const BVector6 &axis_5 ): BJoint(std::vector<BVector6>{axis_0, axis_1, axis_2, axis_3, axis_4, axis_5}) {}
+
+BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
+                                                       m_qidx(0),
+                                                       m_widx(0),
+                                                       m_jtype(JType::UNDEFINED),
+                                                       m_X_lambda(B_IDENTITY_TRANS),
+                                                       m_X_J(B_IDENTITY_TRANS),
+                                                       m_X_T(B_IDENTITY_TRANS),
+                                                       m_v_J(B_ZERO_6),
+                                                       m_c_J(B_ZERO_6),
+                                                       m_S(),
+                                                       m_axis()
 {
-    setJoint({axis_0, axis_1, axis_2, axis_3, axis_4, axis_5}); 
-}
+    setJoint(axes); 
+} 
 
 void
 BJoint::setJoint( const std::vector<BVector6> &axes )
@@ -488,7 +439,6 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     {
         m_X_lambda = m_X_T; 
     } 
-
     else if (m_jtype == JType::TransXYZ)  // 3-DoF
     {
         m_v_J = BVector6( B_ZERO_3, qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2] );
