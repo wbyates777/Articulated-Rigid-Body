@@ -393,7 +393,7 @@ The  table below shows the execution times in milliseconds of forward dynamics (
 
    | Algorithm  | RBDL | ARB  | Difference |
 | :---       | ---: | ---: | ---:  |
-| ABA | 523.22  | 290.23 | -1.31% |
+| ABA | 523.22  | 516.38 | -1.31% |
 | CRBA | 290.23 | 303.99  | +4.74%|
 | RNEA | 201.60 |  213.87 | +6.09% |
 
