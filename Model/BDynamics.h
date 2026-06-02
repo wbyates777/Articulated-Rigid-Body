@@ -58,6 +58,12 @@
 #include "BABInertia.h"
 #endif
 
+#ifndef __AMATRIX_H__
+#include "AMatrix.h"
+#endif
+
+
+
 
 struct BModelState 
 {
@@ -80,6 +86,10 @@ struct BModelState
 
 typedef  std::vector<BVector6> BExtForce;
 
+
+ 
+
+
 class BDynamics
 {
     
@@ -87,6 +97,8 @@ public:
     
     BDynamics( int expected_dof = 3 );
     ~BDynamics( void )=default;
+    
+    
     
     /** \brief Computes forward dynamics with the Articulated Body algorithm (ABA)
      *
@@ -111,13 +123,31 @@ public:
      *   \f$ \tau = M(q) \ddot{q} + N(q, \dot{q}, f_\textit{ext}) \f$
      *
      * \param m      rigid body model
-     * \param qstate state  of the internal joints (positions, velocities, accelerations)
+     * \param qstate state of the internal joints (positions, velocities, accelerations)
      * \param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
      */
     void  
-    inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce()); 
+    inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce() ); 
     
     
+
+    /** \brief Computes the joint space inertia matrix by using the Composite Rigid Body Algorithm
+     *
+     * This function computes the joint space inertia matrix from a given model and
+     * the generalized state vector:
+     *   \f$ M(q) \f$
+     *
+     * \param model rigid body model
+     * \param Q     state of the internal joints (positions, velocities, accelerations)
+     * \param H     a matrix where the result will be stored in
+     * \param update_kinematics  whether the kinematics should be updated (safer, but at a higher computational cost!)
+     *
+     * \note This function only evaluates the entries of H that are non-zero. One
+     * Before calling this function one has to ensure that all other values
+     * have been set to zero, e.g. by calling H.setZero().
+     */
+    void 
+    crba( BModel &model, const BModelState &Q, BMatrix &H, bool update_kinematics = true ); 
     
     
     // update kinematics - calculates positions
@@ -130,8 +160,31 @@ public:
     
 private: 
 
+    void
+    block_3_1(BMatrix& H, int dof_index_i, int dof_index_j, const BVector3 &val)
+    {
+        H[dof_index_i][dof_index_j]   = val[0];
+        H[dof_index_i+1][dof_index_j] = val[1];
+        H[dof_index_i+2][dof_index_j] = val[2];
+    }
+    void
+    block_1_3(BMatrix& H, int dof_index_i, int dof_index_j, const BVector3 &val)
+    {
+        H[dof_index_i][dof_index_j]   = val[0];
+        H[dof_index_i][dof_index_j+1] = val[1];
+        H[dof_index_i][dof_index_j+2] = val[2];
+    }
+
+    void
+    block_3_3(BMatrix& H, int dof_index_i, int dof_index_j, const BMatrix3 &val)
+    {
+        for ( int i = 0; i < 3; ++i )
+            for ( int j = 0; j < 3; ++j )
+                H[i + dof_index_i][j + dof_index_j] = val[i][j];
+    }
+
     //
-    // forward algorithm
+    // forward algorithm (ABA)
     //
     // transient variables for joints with 1 degrees of freedom 
     // U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
@@ -149,9 +202,14 @@ private:
     std::vector<BVector6>   m_pA;  // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
     
     //
-    // inverse algorithm
+    // inverse algorithm (RNEA)
     //
     std::vector<BVector6>  m_f;    // $f_i$ the net internal force acting on body $B_i$ (see RBDA, equation 5.9)
+    
+    //
+    // composite rigid body algorithm (CRBA)
+    //
+    std::vector<BRBInertia> m_Ic; // I_c is the inertia of the subtree rooted at body i (equation 6.12, page 105)
     
 };
 

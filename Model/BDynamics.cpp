@@ -105,6 +105,8 @@ BDynamics::BDynamics( int expected_dof ): m_dof1_U(),
     
     m_IA.reserve(expected_dof);
     m_pA.reserve(expected_dof);
+    
+    m_Ic.reserve(expected_dof);
 }
 
 
@@ -441,4 +443,116 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
         }
     }
 }
+
+void 
+BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool update_kinematics ) 
+// Composite-Rigid-Body Algorithm, RBDA, Section 6.2, page 104
+{    
+    const std::vector<BScalar> qdot_zero(qstate.qdot.size(), 0.0);
+    
+    const int N_B = (int) model.numBody();
+    
+    m_Ic.resize(N_B);
+    m_Ic[0] = B_ZERO_RBI;
+    
+    for (int i = 1; i < N_B; ++i) 
+    {
+        if (update_kinematics) 
+        {
+            model.joint(i).jcalc(qstate.q, qdot_zero);
+        }
+        
+        m_Ic[i] =  model.body(i).I();
+    }
+    
+    for (int i = N_B - 1; i > 0; --i) 
+    {
+        
+        int lambda       = model.parentId(i); 
+        int dof_index_i  = model.joint(i).qindex();
+        int dofCount     = model.joint(i).DoFCount();  
+        const BTransform& X_lambda = model.joint(i).X_lambda(); 
+        
+        if (lambda != 0) 
+        {
+            m_Ic[lambda] += X_lambda.applyTranspose(m_Ic[i]);
+        }
+        
+        if (dofCount == 1) 
+        {
+            const BVector6 S(model.joint(i).S());
+            
+            BVector6 F = m_Ic[i] * S;
+            H[dof_index_i][dof_index_i] = arb::dot(S, F);
+            
+            int j = i;
+            int dof_index_j = dof_index_i;
+            
+            while (model.parentId(j) != 0) 
+            {
+                F = model.joint(j).X_lambda().applyTranspose(F); 
+                j = model.parentId(j);
+                dof_index_j = model.joint(j).qindex();
+                
+                
+                if (model.joint(j).DoFCount() == 1) 
+                {
+                    const BVector6 S_j(model.joint(j).S());
+                    H[dof_index_i][dof_index_j] = H[dof_index_j][dof_index_i] = arb::dot(F, S_j);
+                } 
+                else if (model.joint(j).DoFCount() == 3) 
+                {
+                    const BMatrix63 S_j(model.joint(j).S());
+                    const BVector3 val =  arb::transpose(S_j) * F;
+                    
+                    block_1_3(H, dof_index_i, dof_index_j, val);
+                    block_3_1(H, dof_index_j, dof_index_i, val);
+                }
+                
+            }
+        } 
+        else if (dofCount == 3) 
+        {
+            const BMatrix63 S(model.joint(i).S());
+            
+            BMatrix63 F = m_Ic[i] * S;
+          
+            block_3_3(H, dof_index_i, dof_index_i, arb::transpose(S) * F);
+            
+            int j = i;
+            int dof_index_j = dof_index_i;
+            
+            while (model.parentId(j) != 0) 
+            {
+                const BTransform& X_lambda = model.joint(j).X_lambda(); 
+       
+                F = arb::toForceInverse(X_lambda) * F; 
+                //F = arb::transpose(X_lambda) * F; // this also works
+                
+                j = model.parentId(j);
+                dof_index_j = model.joint(j).qindex();
+                
+                if (model.joint(j).DoFCount() == 1) 
+                {
+                    const BVector6 S_j(model.joint(j).S());
+                    const BVector3 val = arb::transpose(F) * S_j;
+                    
+                    block_3_1(H, dof_index_i, dof_index_j, val);
+                    block_1_3(H, dof_index_j, dof_index_i, val);
+                } 
+                else if (model.joint(j).DoFCount() == 3) 
+                {
+                    const BMatrix63 S_j(model.joint(j).S());
+                    //const BMatrix3 val = arb::transpose(F) * S_j;
+                    const BMatrix3 val = arb::transpose(F.top()) * S_j.top() + 
+                                         arb::transpose(F.bot()) * S_j.bot();
+                    
+                    block_3_3(H, dof_index_i, dof_index_j, val);
+                    block_3_3(H, dof_index_j, dof_index_i, arb::transpose(val));
+                }
+            }
+        } 
+    }
+}
+
 
