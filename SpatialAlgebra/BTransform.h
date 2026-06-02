@@ -115,11 +115,9 @@ class BTransform
 public:
     
     BTransform( void )=default;
-    
     // BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
     constexpr BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
     constexpr BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
-    
     ~BTransform( void )=default;
     
     void
@@ -225,14 +223,14 @@ public:
     applyTranspose( const BRBInertia &rbi ) const 
     // returns X^T I X 
     {
-        const BMatrix3 ET = arb::transpose(m_E);
-        const BMatrix3 rx = arb::cross(m_r);
-        const BVector3 h = (m_E * rbi.h()) + (rbi.mass() * m_r); 
-        const BMatrix3 aux = rx * arb::cross(m_E * rbi.h()) + arb::cross(h) * rx;
-        const BMatrix3 I = (m_E * rbi.I() * ET) - aux;
+        const BVector3 Eh = m_E * rbi.h();
+        const BVector3 h  = Eh + (rbi.mass() * m_r); 
+        BMatrix3 I = m_E * rbi.I() * arb::transpose(m_E);
+        const BMatrix3 outers = arb::outer(Eh, m_r) + arb::outer(m_r, h);
+        const BScalar total_dot = arb::dot(m_r, Eh) + arb::dot(h, m_r);
+        I -= (outers - total_dot * B_IDENTITY_3x3);
         return BRBInertia( rbi.mass(), h, I );
     }
-    
     
     BABInertia 
     apply( const BABInertia &abi ) const  
