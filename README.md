@@ -455,8 +455,6 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  
 ## Notes
 
-Please send any questions or report any errors, omissions, or suggested extensions to the email wbyates777@gmail.com. 
-
 This project is licensed under the MIT License.  
 
 Please click here:  
