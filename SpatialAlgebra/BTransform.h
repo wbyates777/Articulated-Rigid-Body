@@ -184,23 +184,9 @@ public:
     operator*( const BVector6 &v ) const 
     // return X * v
     {
-        // v_rxw = v.lin() - arb::cross(m_r, v.ang())
-        const BVector3 v_rxw( v[3] - m_r[1] * v[2] + m_r[2] * v[1],
-                              v[4] - m_r[2] * v[0] + m_r[0] * v[2],
-                              v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
-        
-        return BVector6(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
-                        m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
-                        m_E[2][0] * v[0]  + m_E[2][1] * v[1]  + m_E[2][2] * v[2],
-                      
-                        m_E[0][0] * v_rxw[0] + m_E[0][1] * v_rxw[1] + m_E[0][2] * v_rxw[2],
-                        m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
-                        m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );
-        
-        // const BMatrix3 ET = arb::transpose(m_E);
-        // const BVector3 ang = ET * v.ang();
-        // const BVector3 lin = ET * v_rxw;
-        // return BVector6(ang, lin);
+        const BMatrix3 ET = arb::transpose(m_E);
+        const BVector3 v_rxw = v.lin() - arb::cross(m_r, v.ang());
+        return BVector6(ET * v.ang(), ET * v_rxw);
     }
 
     BVector6 
@@ -210,25 +196,9 @@ public:
     applyTranspose( const BVector6 &f ) const
     // returns X^T * f 
     {
-        const BVector3 ETf( m_E[0][0] * f[3] + m_E[1][0] * f[4] + m_E[2][0] * f[5],
-                            m_E[0][1] * f[3] + m_E[1][1] * f[4] + m_E[2][1] * f[5],
-                            m_E[0][2] * f[3] + m_E[1][2] * f[4] + m_E[2][2] * f[5] );
-        
-        return BVector6( m_E[0][0] * f[0] + m_E[1][0] * f[1] + m_E[2][0] * f[2] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
-                         m_E[0][1] * f[0] + m_E[1][1] * f[1] + m_E[2][1] * f[2] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
-                         m_E[0][2] * f[0] + m_E[1][2] * f[1] + m_E[2][2] * f[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
-                         ETf[0],
-                         ETf[1],
-                         ETf[2] );
-        
-        // const BVector3 ETf = m_E * f.lin();
-        // const BVector3 aux = m_E * f.ang();
-        // return BVector6(aux[0] - m_r[2] * ETf[1] + m_r[1] * ETf[2],
-        //                 aux[1] + m_r[2] * ETf[0] - m_r[0] * ETf[2],
-        //                 aux[2] - m_r[1] * ETf[0] + m_r[0] * ETf[1],
-        //                 ETf[0],
-        //                 ETf[1],
-        //                 ETf[2]);
+        const BVector3 ETf = m_E * f.lin();
+        const BVector3 aux = m_E * f.ang() + arb::cross(m_r, ETf);
+        return BVector6(aux, ETf);
     }
 
     // transform 3D point p to/from coordinate frame 
