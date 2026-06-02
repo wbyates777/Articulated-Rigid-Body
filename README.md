@@ -3,6 +3,7 @@
 **Compact C++ articulated rigid body simulation library implementing:**
 
 - Forward dynamics via the Articulated Body Algorithm (ABA) —  $O(N_B)$,  
+- Forward dynamics via the Composite Rigid Body Algorithm (CRBA) —  $O(N_B^2)$, 
 - Inverse dynamics via the Recursive Newton–Euler Algorithm (RNEA) -  $O(N_B)$, 
 - Collision detection and spatial impulse-based contact resolution, and  
 - Unified Robot Description Format (URDF) parser for model import and export.
@@ -40,19 +41,20 @@ ARB is a compact implementation of a _differentiable spatial algebra_, designed 
 It combines:
 - Spatial algebra (6D motion and force vectors),
 - Automatic differentiation (AD) across the full simulation pipeline (including contacts),    
-- Efficient rigid body dynamics algorithms (ABA, RNEA), 
+- Efficient rigid body dynamics algorithms (ABA, CRBA, RNEA), 
 - Collision detection and impulse based contact resolution (PGS solver, warm start), and
 - URDF file parser for model import and export.
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
 
 
-The spatial algebra is used to implement two important rigid body dynamics algorithms: articulated-body algorithm (ABA) 
+The spatial algebra is used to implement three important rigid body dynamics algorithms: articulated-body algorithm (ABA),
+the composite rigid body algorithm (CRBA), 
 and the recursive Newton-Euler algorithm (RNEA)  (see Featherstone 2008).
 The algebra is also used to implement a _spatial impulse_ based, collision resolution algorithm.
 All three algorithms have been tested extensively in a graphics environment.
 
-The implementations of ABA and RNEA presented here are based on those in the well known robotics library RBDL, but are intended for use in computer graphics.
+The implementations of ABA, CRBA, and RNEA presented here are based on those in the well known robotics library RBDL, but are intended for use in computer graphics.
 They allow a programmer to handle, in a physically consistent manner, rigid bodies and articulated rigid bodies.
 In the context of graphics these articulated bodies could range from a fully-jointed humanoid character, 
 to a simple hinged mechanism such as a door. 
@@ -81,6 +83,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 ### Key Features
 
 * Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
+* Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ calculate joint-space inertia matrix $M(q)$ for kinematic trees.
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * End-to-end automatic differentiability using autodiff (header-only),
@@ -108,10 +111,11 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  The BDynamics class contains an implementation of:
  
- - the articulated-body algorithm (ABA), and  
+ - the articulated-body algorithm (ABA), 
+ - the composite rigid-body algorithm (CRBA), and  
  - the recursive Newton-Euler algorithm (RNEA).
 
- Both of these algorithms are presented in:
+ These algorithms are presented in:
 
  "Rigid Body Dynamics Algorithms" (RBDA), [R. Featherstone], Springer, 2008. 
 
@@ -120,6 +124,11 @@ Additionally, the header-only autodiff library is required for automatic differe
  where $N_B$ is the number of bodies/joints. 
  This is the theoretical minimum for solving the forward dynamics problem (see RBDA, Section 7.3). 
  
+ 
+ CRBA also calculates forward dynamics. In contrast to ABA, it forms an equation of motion for the whole system, 
+ and then solves it for the acceleration variables. Although CRBA is $O(N_B^2)$ it can match or slightly
+exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that are branched enough to have a small depth. 
+
  RNEA calculates the inverse dynamics of a kinematic tree. 
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
@@ -202,7 +211,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  This library also supports [Automatic Differentiation] (AD).
  Adding automatic differentiation to the spatial algebra library means that 
- the algebra, the ABA, the RNEA, and collision resolution are completely differentiable. 
+ the algebra, ABA, CRBA, RNEA, and collision resolution are completely differentiable. 
  Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
  AD uses the [chain rule] to propagate exact _analytical_ derivatives through the code at the machine level.
  This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques
@@ -212,7 +221,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 For example, consider  _System Identification_ (SI).
 System Identification is the process of constructing a mathematical model of a dynamic system, 
 using analytical methods, based on observed input and output data. 
-While forward dynamics (ABA) predicts how a system moves given its physical parameters, 
+While forward dynamics (ABA/CRBA) predicts how a system moves given its physical parameters, 
 SI reverses this process: 
 it can recover the underlying physical parameters (mass, centre-of-mass, inertia tensor) of each body 
 by observing the system's motion (see ARB example 6 in main.cpp).
@@ -258,7 +267,7 @@ It also uses impulse caching (_warm starting_) across frames to ensure stability
   
   By supporting URDF, ARB can load complex, real-world robot models, such as the ur5 or tiago, directly from standard industry files. 
   The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required 
-  for the ABA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.
+  for the ABA, CRBA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.
   
 ## Implementation 
 
@@ -380,20 +389,19 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
 To measure  perfomance ARB has been benchmarked against RBDL v3.3.1. 
 
-The  table below shows the execution times in milliseconds of forward dynamics (ABA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
+The  table below shows the execution times in milliseconds of forward dynamics (ABA/CRBA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
 
-| Algorithm | Engine | Total Execution Time (100k runs)  | Difference |
-| :--- | :--- | :--- |  :--- | 
-| **RNEA**  | RBDL | 199.91 ms | *Baseline* |
-| | ARB | **208.85 ms** | **+4.47%** |
-| **ABA**  | RBDL  | 518.93 ms | *Baseline* |
-| | ARB | **518.32 ms** | **-0.12%** |
+   | Algorithm  | RBDL | ARB  | Difference |
+| :---       | ---: | ---: | ---:  |
+| ABA | 523.22  | 290.23 | -1.31% |
+| CRBA | 290.23 | 303.99  | +4.74%|
+| RNEA | 201.60 |  213.87 | +6.09% |
 
 #### Notes
 * **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
 * **Compilation Environment:** C++23 clang optimized with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
 
-Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard RBDL. Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
+Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard (RBDL). Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
 
 
  ## Build Instructions
