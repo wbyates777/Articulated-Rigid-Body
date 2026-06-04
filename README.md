@@ -42,7 +42,7 @@ It combines:
 - Spatial algebra (6D motion and force vectors),
 - Automatic differentiation (AD) across the full simulation pipeline (including contacts),    
 - Efficient rigid body dynamics algorithms (ABA, CRBA, RNEA), 
-- Collision detection and impulse based contact resolution (PGS solver, warm start), and
+- Collision detection (GJK/EPA) and impulse based contact resolution (PGS solver, warm start), and
 - URDF file parser for model import and export.
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
@@ -52,7 +52,7 @@ The spatial algebra is used to implement three important rigid body dynamics alg
 the composite rigid body algorithm (CRBA), 
 and the recursive Newton-Euler algorithm (RNEA)  (see Featherstone 2008).
 The algebra is also used to implement a _spatial impulse_ based, collision resolution algorithm.
-All three algorithms have been tested extensively in a graphics environment.
+All the algorithms have been tested extensively in a graphical environment.
 
 The implementations of ABA, CRBA, and RNEA presented here are based on those in the well known robotics library RBDL, but are intended for use in computer graphics.
 They allow a programmer to handle, in a physically consistent manner, rigid bodies and articulated rigid bodies.
@@ -87,8 +87,8 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * End-to-end automatic differentiability using autodiff (header-only),
+* Collision Resolution –  spatial impulses and GJK/EPA contact manifolds,
 * Unified Robot Description Format (URDF) import and export,
-* Collision Resolution –  spatial impulses and GJK/EPA contact manifolds.
 * Minimal dependencies STL, GLM, (autodiff, openGJK, and libccd optional).
 
 ## Background
