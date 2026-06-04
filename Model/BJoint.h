@@ -406,9 +406,6 @@ private:
     void
     setMotionSpace( const BMatrix6 &m );
 
-    void
-    setJoint( const std::vector<BVector6> &axes );
-    
     static bool 
     validate_spatial_axis( const BVector6 &axis );
     
