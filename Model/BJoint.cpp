@@ -128,13 +128,7 @@ BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
                                                        m_S(),
                                                        m_axis()
 {
-    setJoint(axes); 
-} 
-
-void
-BJoint::setJoint( const std::vector<BVector6> &axes )
-// Constructs a N=2,..,6-DoF joint with the given motion subspaces.
-{
+    // Constructs a N=2,..,6-DoF joint with the given motion subspaces.
     int DoF_count = (int) axes.size();
     
     m_axis = axes;
@@ -154,8 +148,7 @@ BJoint::setJoint( const std::vector<BVector6> &axes )
     {
         validate_spatial_axis(m_axis[i]);
     }
-}
-
+} 
 
 /** \brief Checks whether we have pure rotational or translational axis.
  *
