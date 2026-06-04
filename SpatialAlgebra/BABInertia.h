@@ -64,14 +64,10 @@ class BABInertia
 public:
     
     BABInertia( void )=default;
-    
     // inertia I_o at body frame origin
     constexpr BABInertia( const BMatrix3 &M, const BMatrix3 &H, const BMatrix3 &I_o ): m_M(M), m_H(H), m_I(I_o) {}
-    
-    constexpr BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {} 
-    
+    constexpr BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {}     
     explicit BABInertia( const BMatrix6 &I ) { set(I); }  
-    
     // called from BDynamics  (U * Dinv * U^T) for 1-DoF
     explicit BABInertia( const BVector6 &a, const BVector6 &b ): m_M(arb::outer(a.lin(), b.lin())), 
                                                                  m_H(arb::outer(a.ang(), b.lin())),
@@ -91,10 +87,7 @@ public:
         m_H = U_botT * UD_top;
         m_I = U_topT * UD_top;
     }
-    
     BABInertia( const BRBInertia &I ):  m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {}
-    
-
     ~BABInertia( void )=default;
 
   
@@ -222,19 +215,19 @@ public:
                          (m_H[0][2] * m[0][1]) + (m_H[1][2] * m[1][1]) + (m_H[2][2] * m[2][1])  +  (m_M[0][2] * m[3][1]) + (m_M[1][2] * m[4][1]) + (m_M[2][2] * m[5][1]),
                          (m_H[0][2] * m[0][2]) + (m_H[1][2] * m[1][2]) + (m_H[2][2] * m[2][2])  +  (m_M[0][2] * m[3][2]) + (m_M[1][2] * m[4][2]) + (m_M[2][2] * m[5][2]));
     
-        /* BMatrix63 retVal(B_ZERO_6x3);
-        for (int i = 0; i < 3; ++i)   
-        {         
-            for (int j = 0; j < 3; ++j)   
-            {     
-                for (int k = 0; k < 3; ++k)
-                {
-                    retVal[i][j]   += m_I[k][i] * m[k][j] + m_H[i][k] * m[k+3][j];       
-                    retVal[i+3][j] += m_H[k][i] * m[k][j] + m_M[k][i] * m[k+3][j];      
-                }
-            }
-        }
-        return retVal; */
+         /* BMatrix63 retVal(B_ZERO_6x3);
+         for (int i = 0; i < 3; ++i)   
+         {         
+             for (int k = 0; k < 3; ++k) 
+             {     
+                 for (int j = 0; j < 3; ++j)  
+                 {
+                     retVal[i][j]   += m_I[k][i] * m[k][j] + m_H[i][k] * m[k+3][j];       
+                     retVal[i+3][j] += m_H[k][i] * m[k][j] + m_M[k][i] * m[k+3][j];      
+                 }
+             }
+         }
+         return retVal; */
     }
     
     BABInertia  
