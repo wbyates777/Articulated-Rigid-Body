@@ -21,12 +21,15 @@ git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articul
 ```
 
 ---
-### Demos
+### Visual Demos
 
 **Simulating doors with revolute and prismatic joints:**
 
 https://youtu.be/O9h_phDP_tk
 
+**Simulating a simple real-world robot: the UR5:**
+
+https://youtu.be/0fA2F12N0uY
 
 **Rigid body simulation using collision detection and contact resolution:**
 
