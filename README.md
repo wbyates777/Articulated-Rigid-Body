@@ -1,3 +1,6 @@
+![](https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
+![](https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
+
 # <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" />  Articulated Rigid Body (ARB) 
 
 **Compact C++ articulated rigid body simulation library implementing:**
@@ -27,7 +30,7 @@ git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articul
 
 https://youtu.be/O9h_phDP_tk
 
-**Simulating a simple real-world robot: the UR5:**
+**Simulating a simple real-world robot - the UR5:**
 
 https://youtu.be/0fA2F12N0uY
 
@@ -130,7 +133,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  
  CRBA also calculates forward dynamics. In contrast to ABA, it forms an equation of motion for the whole system, 
  and then solves it for the acceleration variables. Although CRBA is $O(N_B^2)$ it can match or slightly
-exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that are branched enough to have a small depth. 
+exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that are branched enough to have a small depth (see RBDA, Section 6.2). 
 
  RNEA calculates the inverse dynamics of a kinematic tree. 
  It is the simplest, most efficient known algorithm for trees, and also has a computational
@@ -268,7 +271,7 @@ It also uses impulse caching (_warm starting_) across frames to ensure stability
   acting as the universal language for the [Robot Operating System] (ROS) ecosystem. It specifies  a 
   robot’s kinematic tree, including the hierarchy of links, the types of joints connecting them, and their respective physical properties such as mass, centre of mass, and inertia tensors.
   
-  By supporting URDF, ARB can load complex, real-world robot models, such as the ur5 or tiago, directly from standard industry files. 
+  By supporting URDF, ARB can load real-world robot models, such as the [ur5] or tiago, directly from standard industry files. 
   The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required 
   for the ABA, CRBA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.
   
@@ -445,6 +448,7 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
  [forward kinematics]: https://en.wikipedia.org/wiki/Forward_kinematics
  [inverse kinematics]: https://en.wikipedia.org/wiki/Inverse_kinematics
  [Separating Axis Theorem]: https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
+ [ur5]: https://www.youtube.com/watch?v=35KhfiAmE4o
  [GJK algorithm]: https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
  [R. Featherstone]:  https://royfeatherstone.org
  [Robot Operating System]: https://en.wikipedia.org/wiki/Robot_Operating_System
@@ -460,7 +464,7 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
 
 This project is licensed under the MIT License.  
 
-Please click here:  
- ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
+Stars Welcome. It aids project visibility. Please click here:  
+![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
 ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body.svg?style=social)
 
