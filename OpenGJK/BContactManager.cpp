@@ -238,15 +238,16 @@ BContactManager::prepare( BScalar dt )
         c.invK  = BScalar(1.0) / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
  
         // ζ initial relative or separation velocity at contact c (eqn 11.62)
-        const BScalar n_dot_relvel = arb::dot(c.n_2, b2->v() - b1->v()); 
+        // Note unlike eqn 11.62 here n_1 != -n_2
+        const BScalar n_dot_relvel = arb::dot(c.n_2, b2->vel()) + arb::dot(c.n_1, b1->vel());
         
         // restitution bias: only apply if moving fast enough (prevents jitter)
         const BScalar e = (n_dot_relvel < -0.5) ? m_e : 0.0; // 0.5 is a restitution threshold
         
         const BScalar baumgarte_bias = beta * arb::max(0.0, c.depth - slop); 
         
-        // this is the total velocity change we want to achieve (numerator of (11.65))
-        c.velBias = (-(1.0 + e) * n_dot_relvel) + baumgarte_bias;
+        // this is the total velocity change we want to achieve (compare numerator of (11.65))
+        c.velBias = std::max((-e * n_dot_relvel), baumgarte_bias);
      
         // prevent 'explosive ejection' 
         c.velBias = arb::clamp(c.velBias, -5.0, 5.0);
