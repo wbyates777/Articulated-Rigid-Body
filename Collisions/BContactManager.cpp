@@ -190,7 +190,8 @@ BContactManager::compute_basis(const BVector3 &n, BVector3 &b1, BVector3 &b2)
 // "Building an Orthonormal Basis, Revisted", Duff et al. JCGT, 2017. 
 // the tangents remain geometrically consistent as the normal changes/body rotates
 { 
-    const BScalar sign = std::copysign(BScalar(1.0), n.z);
+    //const BScalar sign = std::copysign(BScalar(1.0), n.z);
+    const BScalar sign = (n.z >= 0.0) ? 1.0 : -1.0;
     const BScalar a = -1.0 / (sign + n.z);
     const BScalar b = n.x * n.y * a;
     b1 = BVector3(1.0 + sign * n.x * n.x * a,  sign * b,  -sign * n.x);
@@ -239,7 +240,7 @@ BContactManager::prepare( BScalar dt )
  
         // ζ initial relative or separation velocity at contact c - see eqn 11.62
         // however here c.n_1 != -c.n_2 unlike eqn 11.62
-        const BScalar n_dot_relvel = arb::dot(c.n_2, b2->vel()) + arb::dot(c.n_1, b1->vel());
+        const BScalar n_dot_relvel = arb::dot(c.n_2, b2->v()) + arb::dot(c.n_1, b1->v());
         
         // restitution bias: only apply if moving fast enough (prevents jitter)
         const BScalar e = (n_dot_relvel < -0.5) ? m_e : 0.0; // 0.5 is a restitution threshold
