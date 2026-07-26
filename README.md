@@ -29,15 +29,15 @@ git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articul
 
 **Simulating a simple real-world robot - the UR5:**
 
-https://youtu.be/0fA2F12N0uY
+https://youtu.be/mSGq3sTns7I
 
-**Rigid body simulation using collision detection and contact resolution:**
-
-https://youtu.be/g1jMEpu1sl8
-
-**Rigid body simulation - stacking:**
+**Rigid body simulation - stable stacking and resting contacts:**
 
 https://youtu.be/6QDBxBMMwA8
+
+**Rigid body simulation using collision detection and impulse resolution:**
+
+https://youtu.be/g1jMEpu1sl8
 
 **Example of simulating doors with revolute and prismatic joints:**
 
