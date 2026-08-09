@@ -135,23 +135,26 @@ BContactManager::sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const 
     }
 
     // vector from center A to center B in A's space
-    glm::dvec3 t(rotB * (posB - posA));
+    glm::dvec3 t(glm::transpose(rotA) * (posB - posA)); 
 
     // face normal axis checks
     for (int i = 0; i < 3; ++i) // A's axes 
     {
-        //double s = std::fabs(t[i]) - (extA[i] + glm::dot(glm::column(absC, i), extB)); // slower
-        const glm::dvec3 mycol(absC[i][0], absC[i][1], absC[i][2]);
-        double s = std::fabs(t[i]) - (extA[i] + glm::dot(mycol, extB));
+        //double s = std::fabs(t[i]) - (extA[i] + glm::dot(glm::row(absC, i), extB)); // slower
+        const glm::dvec3 myrow(absC[0][i], absC[1][i], absC[2][i]);
+        double s = std::fabs(t[i]) - (extA[i] + glm::dot(myrow, extB));
+        
         if (s > 0.0)
             return false;
     }
     
     for (int i = 0; i < 3; ++i) // B's axes 
     {
-        //double s = std::fabs(glm::dot(t, glm::row(C, i))) -  (extB[i] + glm::dot(glm::row(absC, i), extA)); // slower
-        const glm::dvec3 myrow(absC[0][i], absC[1][i], absC[2][i]);
-        double s = std::fabs(glm::dot(t, glm::row(C, i))) -  (extB[i] + glm::dot(myrow, extA));
+        //double s = std::fabs(glm::dot(t, glm::column(C, i))) -  (extB[i] + glm::dot(glm::column(absC, i), extA)); // slower
+        const glm::dvec3 mycol1(C[i][0], C[i][1], C[i][2]);
+        const glm::dvec3 mycol2(absC[i][0], absC[i][1], absC[i][2]);
+        double s = std::fabs(glm::dot(t, mycol1)) - (extB[i] + glm::dot(mycol2, extA));
+
         if (s > 0.0)
             return false;
     }
