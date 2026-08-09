@@ -140,18 +140,22 @@ BContactManager::sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const 
     // face normal axis checks
     for (int i = 0; i < 3; ++i) // A's axes 
     {
-        double s = std::fabs(t[i]) - (extA[i] + glm::dot(glm::column(absC, i), extB));
+        //double s = std::fabs(t[i]) - (extA[i] + glm::dot(glm::column(absC, i), extB)); // slower
+        const glm::dvec3 mycol(absC[i][0], absC[i][1], absC[i][2]);
+        double s = std::fabs(t[i]) - (extA[i] + glm::dot(mycol, extB));
         if (s > 0.0)
             return false;
     }
     
     for (int i = 0; i < 3; ++i) // B's axes 
     {
-        double s = std::fabs(glm::dot(t, glm::row(C, i))) -  (extB[i] + glm::dot(glm::row(absC, i), extA));
+        //double s = std::fabs(glm::dot(t, glm::row(C, i))) -  (extB[i] + glm::dot(glm::row(absC, i), extA)); // slower
+        const glm::dvec3 myrow(absC[0][i], absC[1][i], absC[2][i]);
+        double s = std::fabs(glm::dot(t, glm::row(C, i))) -  (extB[i] + glm::dot(myrow, extA));
         if (s > 0.0)
             return false;
     }
-
+ 
     if ( !parallel )
     {
         // edge cross products axis checks
