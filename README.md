@@ -33,7 +33,7 @@ https://youtu.be/mSGq3sTns7I
 
 **Rigid body simulation - stable stacking and resting contacts:**
 
-https://youtu.be/6QDBxBMMwA8
+https://youtu.be/gKXwwdfl8QE
 
 **Rigid body simulation using collision detection and impulse resolution:**
 
