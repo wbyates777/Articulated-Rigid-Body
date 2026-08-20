@@ -150,6 +150,7 @@ BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
     }
 } 
 
+
 /** \brief Checks whether we have pure rotational or translational axis.
  *
  * This function is mainly used to print out warnings when specifying an
@@ -192,7 +193,7 @@ BJoint::validate_spatial_axis( const BVector6 &axis )
     return axis_rot != axis_trans; 
 }
 
-BJoint::BJoint(JType jtype ) :  m_id(0),
+BJoint::BJoint( JType jtype ) : m_id(0),
                                 m_qidx(0),
                                 m_widx(0),
                                 m_jtype(jtype),

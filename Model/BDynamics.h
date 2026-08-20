@@ -95,9 +95,8 @@ class BDynamics
     
 public:
     
-    BDynamics( int expected_dof = 3 );
+    explicit BDynamics( int expected_dof = 3 );
     ~BDynamics( void )=default;
-    
     
     
     /** \brief Computes forward dynamics with the Articulated Body algorithm (ABA)
@@ -167,6 +166,7 @@ private:
         H[dof_index_i+1][dof_index_j] = val[1];
         H[dof_index_i+2][dof_index_j] = val[2];
     }
+    
     void
     block_1_3(BMatrix& H, int dof_index_i, int dof_index_j, const BVector3 &val)
     {
@@ -186,6 +186,7 @@ private:
     //
     // forward algorithm (ABA)
     //
+    
     // transient variables for joints with 1 degrees of freedom 
     // U_i, d_i and u_i (see  RBDA, equations 7.43, 7.44, and 7.45)
     std::vector<BVector6> m_dof1_U;        // $U_i = I_i^A  S_i$ 
@@ -198,21 +199,23 @@ private:
     std::vector<BVector3>  m_dof3_u;
     
     // transient variables for bodies
-    std::vector<BABInertia> m_IA;  // spatial articulated-body inertia $I_i^A$ (see RBDA, equation 7.37)
-    std::vector<BVector6>   m_pA;  // spatial articulated-body bias force $p_i^A$ (see RBDA, equation 7.38)
+    std::vector<BABInertia> m_IA;  // spatial inertia $I_i^A$ (see RBDA, equation 7.37)
+    std::vector<BVector6>   m_pA;  // spatial bias force $p_i^A$ (see RBDA, equation 7.38)
     
     //
     // inverse algorithm (RNEA)
     //
+    
     std::vector<BVector6>  m_f;    // $f_i$ the net internal force acting on body $B_i$ (see RBDA, equation 5.9)
     
     //
     // composite rigid body algorithm (CRBA)
     //
+    
     std::vector<BRBInertia> m_Ic; // I_c is the inertia of the subtree rooted at body i (equation 6.12, page 105)
     
 };
 
 #endif
 
-
+//

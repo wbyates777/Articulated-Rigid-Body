@@ -124,10 +124,9 @@ operator>>( std::istream &istr, BFixedBody &b )
     istr >> b.m_inertia;
     istr >> b.m_parent;
 
-    
     return istr;
 }
 
 #endif
 
-
+//

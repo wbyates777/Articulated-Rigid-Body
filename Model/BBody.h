@@ -10,31 +10,6 @@
 
  Describes all properties of a single body
  
- 
- Gyration radii used to set the main diagonal of inertia tensor 
- see https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-
- 
-
- Examples.
- 
- BInertia 
- sphere( BScalar mass, BScalar radius )
- {
-     return BInertia(mass, glm::dvec3((2.0/5.0) * mass * radius * radius));
- }
- 
- BInertia 
- rectangle( BScalar mass, BScalar height, BScalar width, BScalar depth )
- {
-     glm::dvec3 diag;
-     diag[0] = (1.0/12.0) * mass * (depth * depth + height * height); // x-width
-     diag[1] = (1.0/12.0) * mass * (depth * depth + width * width);   // y-height
-     diag[2] = (1.0/12.0) * mass * (width * width + height * height); // z-depth
-     return BInertia(mass, diag);
- }
- 
- 
 */
 
 
@@ -208,7 +183,7 @@ private:
     BVector6  m_a;    // spatial acceleration of the body
     BVector6  m_c;    // spatial velocity-dependent acceleration term
 
-    BRBInertia m_I;          // spatial inertia at origin of the body (mass, com, rotational inertia)
+    BRBInertia m_I;   // spatial inertia at origin of the body (mass, com, rotational inertia)
 
     // transform from base/world coordinate frame to this body's frame 
     // the body's base/world position and orientation

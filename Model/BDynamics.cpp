@@ -351,7 +351,8 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     
     const int N_B = (int) m.numBody();
     
-    m_f.assign(N_B, B_ZERO_6);
+    m_f.resize(N_B);
+    m_f[0] = B_ZERO_6;
     
     // $v_i = {i}^X_{\lambda(i)} v_{\lambda(i)} + v_J$
     // $c_i = c_J + v_i \cross v_J$
@@ -447,6 +448,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
 void 
 BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool update_kinematics ) 
 // Composite-Rigid-Body Algorithm, RBDA, Section 6.2, page 104
+// Given an empty (zeroed) H matrix, fill in the elements of the 'joint space inertia matrix'
 {    
     const std::vector<BScalar> qdot_zero(qstate.qdot.size(), 0.0);
     
@@ -465,39 +467,40 @@ BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool upda
         m_Ic[i] =  model.body(i).I();
     }
     
+    // fill in the joint space inertia matrix
     for (int i = N_B - 1; i > 0; --i) 
     {
-        
         int lambda       = model.parentId(i); 
         int dof_index_i  = model.joint(i).qindex();
         int dofCount     = model.joint(i).DoFCount();  
+        
         const BTransform& X_lambda = model.joint(i).X_lambda(); 
         
         if (lambda != 0) 
         {
+            // sum all children (composite) inertias
             m_Ic[lambda] += X_lambda.applyTranspose(m_Ic[i]);
         }
         
         if (dofCount == 1) 
         {
             const BVector6 S(model.joint(i).S());
-            
             BVector6 F = m_Ic[i] * S;
+            
             H[dof_index_i][dof_index_i] = arb::dot(S, F);
             
             int j = i;
-            int dof_index_j = dof_index_i;
-            
+
             while (model.parentId(j) != 0) 
             {
                 F = model.joint(j).X_lambda().applyTranspose(F); 
                 j = model.parentId(j);
-                dof_index_j = model.joint(j).qindex();
-                
+                int dof_index_j = model.joint(j).qindex();
                 
                 if (model.joint(j).DoFCount() == 1) 
                 {
                     const BVector6 S_j(model.joint(j).S());
+                    
                     H[dof_index_i][dof_index_j] = H[dof_index_j][dof_index_i] = arb::dot(F, S_j);
                 } 
                 else if (model.joint(j).DoFCount() == 3) 
@@ -506,7 +509,7 @@ BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool upda
                     const BVector3 val =  arb::transpose(S_j) * F;
                     
                     block_1_3(H, dof_index_i, dof_index_j, val);
-                    block_3_1(H, dof_index_j, dof_index_i, val);
+                    block_3_1(H, dof_index_j, dof_index_i, val); // transpose not needed here
                 }
                 
             }
@@ -514,23 +517,19 @@ BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool upda
         else if (dofCount == 3) 
         {
             const BMatrix63 S(model.joint(i).S());
-            
             BMatrix63 F = m_Ic[i] * S;
           
             block_3_3(H, dof_index_i, dof_index_i, arb::transpose(S) * F);
             
             int j = i;
-            int dof_index_j = dof_index_i;
             
             while (model.parentId(j) != 0) 
             {
-                const BTransform& X_lambda = model.joint(j).X_lambda(); 
-       
+                const BTransform  &X_lambda = model.joint(j).X_lambda(); 
                 F = arb::toForceInverse(X_lambda) * F; 
                 //F = arb::transpose(X_lambda) * F; // this also works
-                
                 j = model.parentId(j);
-                dof_index_j = model.joint(j).qindex();
+                int dof_index_j = model.joint(j).qindex();
                 
                 if (model.joint(j).DoFCount() == 1) 
                 {
