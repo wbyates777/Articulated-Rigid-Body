@@ -98,7 +98,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * End-to-end automatic differentiability using autodiff (header-only),
-* Collision Resolution –  spatial impulses and GJK/EPA contact manifolds,
+* Collision Resolution –  spatial impulses and GJK/EPA 4-point persistent contact manifolds,
 * Unified Robot Description Format (URDF) import and export,
 * Minimal dependencies STL, GLM, (autodiff, openGJK, and libccd optional).
 
@@ -258,6 +258,10 @@ It is released under a permissive license, compatible with the MIT license used 
 The openGJK C++ implementation presented here does employ differentiable types.
 However it only supports polytopes; although boxes can be represented as 8-point polytopes, analytical primitives like spheres are not natively supported.
 Furthermore, openGJK is released under the GPLv3 license, and using this module will subject the entire project to GPLv3 copyleft terms.
+
+ Although the openGJK implementation  can be used to "differentiate across a contact",  
+ the contact derivatives may exhibit jump discontinuities due to discrete contact switching, friction clamping, or simplex transitions. 
+   Applications that require strictly continuous gradients must implement more advanced techniques such as soft contact or gradient-smoothing techniques.
 
  Collisions are resolved by calculating the
  _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities

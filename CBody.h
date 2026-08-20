@@ -10,12 +10,8 @@
 
  A demo 'collidable body' class.
  
- Its a demo class because its designed to make writting the demo code easy.
- 
- For example, consider the way the BCollider types are handled. 
- The all-in-one collider type approach used here is inefficient.
- 
- A proper application would rewrite this bit.
+ Its a demo because of the way the BCollider/Polytope and the CBody 'this' pointer are handled. 
+ This implementation works, but I think it could be improved upon. 
  
  
 */
@@ -33,6 +29,11 @@
 #include "BBody.h"
 #endif
 
+#ifndef __BBOX_H__
+#include "BBox.h"
+#endif
+
+
 #ifndef __BCOLLIDER_H__
 #include "BCollider.h"
 #endif
@@ -45,7 +46,7 @@ public:
     CBody( void );
     CBody( BBodyId bid, const BBody &body, const BBox &box );
  
-    ~CBody( void )=default;
+    virtual ~CBody( void )=default;
 
 
     
@@ -75,7 +76,7 @@ public:
     void
     orient( const BMatrix3 &q ) override { m_body.X_base().E(q); }
     
- 
+
     BBody&
     body( void ) { return m_body; }
     
@@ -83,8 +84,18 @@ public:
     body( void ) const { return m_body; }
     
     //
-    // spatial velocity interface 
+    // spatial interface 
     //
+    const BTransform& 
+    X_base( void ) const override { return m_body.X_base(); }
+
+    BTransform& 
+    X_base( void ) override { return m_body.X_base(); }
+
+    void
+    X_base( const BTransform &X ) override { m_body.X_base(X); }
+
+
     const BVector6&
     v( void ) const override { return m_body.v(); }
     
@@ -94,9 +105,7 @@ public:
     void
     v( const BVector6 &v ) override { m_body.v(v); }  
     
-    //
-    // spatial inertia
-    //
+    
     const BRBInertia& 
     I( void ) const override { return m_body.I(); }
     
