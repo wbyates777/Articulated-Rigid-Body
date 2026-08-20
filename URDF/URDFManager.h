@@ -24,7 +24,9 @@
  I have included the tinyxml2 files here directly as there are only two of them.
  
 
-  Supports URDF Joint Types
+ 
+ 
+ Supports URDF Joint Types
  ---------------------------
  revolute   — a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
  continuous — a continuous hinge joint that rotates around the axis and has no upper and lower limits.
