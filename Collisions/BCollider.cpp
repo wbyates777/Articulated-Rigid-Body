@@ -8,6 +8,8 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
+ CCD Collider
+ 
  Note all points in coordinates local to model.
  
  Note we use double/float and glm types here not spatial algebra types
@@ -42,18 +44,15 @@ BCollider::first_point( void ) const
         m_box.top();
     }
     
-    return glm::dvec3(m_polytope[0][0]);
+    return glm::dvec3(m_polytope[0].m_coord[0]);
 }
-
-
-
 
 glm::dvec3
 BCollider::max_point( const glm::dvec3 &dir ) const
 {
     if (m_type == BCollider::Sphere)
     {
-        return  (glm::normalize(dir) * double(m_polytope[0][0][1])); //.y
+        return  (glm::normalize(dir) * double(m_polytope[0].m_coord[0][1])); //.y
     }
     
     if (m_type == BCollider::Box)
@@ -84,12 +83,15 @@ glm::dvec3
 BCollider::linear_max_point( const glm::dvec3 &dir ) const
 // basic, robust, brute force linear search - tested 
 {
+    assert(!m_polytope.empty());
+    
     // degenerate direction
     if (glm::length2(dir) < B_SMALL_NUM)
     {
         // any/this value will do
         m_lastVert = 0;
         m_lastPoly = 0;
+        
         return m_polytope[0].m_coord[0];
     }
 
@@ -116,6 +118,7 @@ BCollider::linear_max_point( const glm::dvec3 &dir ) const
         }
     }
     
+    assert(m_lastPoly != -1 && m_lastVert != -1);
     return m_polytope[m_lastPoly].m_coord[m_lastVert];
 }
 
@@ -176,62 +179,4 @@ BCollider::adjacency_max_point( const glm::dvec3 &dir ) const
     return bestVertexLocal;
 }
 
-
-
-
-
 //
-// untested gemini code
-//
-
-/*
-glm::dvec3  
-BCylinderCollider::first_point( void ) const
-{
-    // Return any valid point inside or on the cylinder (e.g., the top center)
-    return glm::dvec3(0.0, m_height * 0.5, 0.0);
-}
-
-glm::dvec3 
-BCylinderCollider::max_point( const glm::dvec3 &dir ) const
-{
-    glm::dvec3 v(0.0);
-
-    // 1. Handle the circular cross-section (X and Z components)
-    double xz_len = glm::length(glm::dvec2(dir.x, dir.z));
-    if (xz_len > 1E-6) // Avoid division by zero if dir points straight up/down
-    {
-        v.x = (dir.x / xz_len) * m_radius;
-        v.z = (dir.z / xz_len) * m_radius;
-    }
-
-    // 2. Handle the height cap (Y component)
-    v.y = (dir.y >= 0.0) ? (m_height * 0.5) : (-m_height * 0.5);
-
-    return v;
-}
-
-glm::dvec3  
-BCapsuleCollider::first_point( void ) const
-{
-    // Return the top tip of the capsule
-    return glm::dvec3(0.0, (m_height * 0.5) + m_radius, 0.0);
-}
-
-glm::dvec3 
-BCapsuleCollider::max_point( const glm::dvec3 &dir ) const
-{
-    // 1. Get the support point of the inner line segment along the Y-axis
-    glm::dvec3 v(0.0);
-    v.y = (dir.y >= 0.0) ? (m_height * 0.5) : (-m_height * 0.5);
-
-    // 2. Add the sphere contribution
-    double dir_len = glm::length(dir);
-    if (dir_len > 1E-6)
-    {
-        v += (dir / dir_len) * m_radius;
-    }
-
-    return v;
-}
-*/

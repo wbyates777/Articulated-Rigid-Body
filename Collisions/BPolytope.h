@@ -23,7 +23,7 @@
 
  Note:
  
- i) I use float ans short here (to save memory) - no spatial algebra/diffentiable types
+ i) I use float and short here (to save memory) - no spatial algebra/diffentiable types
  ii) I use the Python executable CoACD for converting meshes to sequences of polytopes/convex hulls. 
  
  See https://github.com/SarahWeiii/CoACD
@@ -39,6 +39,10 @@
 #define __BPOLYTOPE_H__
 
 
+#ifndef __BGLM_H__
+#include "BGLM.h"
+#endif
+
 #include <vector>
 #include <glm/vec3.hpp> 
 
@@ -48,15 +52,6 @@ struct BPolytope
     explicit BPolytope( const std::vector<glm::vec3> &points ): m_coord(points), m_adjacency(), m_lastVertex(0) {}
     ~BPolytope( void )=default;
 
-    glm::vec3& 
-    operator[]( int idx ) { return m_coord[idx]; }
-    
-    const glm::vec3& 
-    operator[]( int idx ) const { return m_coord[idx]; }
-    
-    size_t 
-    size( void ) const { return m_coord.size(); }
-    
     // NB polytope verteces and indexes are float and short respectively
     std::vector<glm::vec3> m_coord;  
     std::vector<std::vector<short>> m_adjacency;  
@@ -65,8 +60,6 @@ struct BPolytope
 };
 
 
-
-
 #endif
 
-
+//

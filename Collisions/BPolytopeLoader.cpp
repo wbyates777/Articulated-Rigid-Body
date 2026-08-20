@@ -142,6 +142,16 @@ BPolytopeLoader::processSubPoly( BPolytope &poly, aiMesh *mesh, const aiScene *s
         int b = face.mIndices[1];
         int c = face.mIndices[2];
    
+        
+        /*
+         // Get vertex positions
+             aiVector3D a = mesh->mVertices[face.mIndices[0]];
+             aiVector3D b = mesh->mVertices[face.mIndices[1]];
+             aiVector3D c = mesh->mVertices[face.mIndices[2]];
+
+             // Calculate normal: (B-A) cross (C-A)
+             aiVector3D normal = glm::normalize(((b - a) ^ (c - a)));
+         */
          // edge adjacency; we assume triangulated mesh
         adjSet[a].insert(b);
         adjSet[b].insert(a);

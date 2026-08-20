@@ -9,40 +9,27 @@
  History:
 
  
- RBDA, chapter 11, Contact and Impact. 
- Section 11.7 - Two-Body Collisions, Friction
+ Two-Body Collisions, Friction
+ 
+ Collision resolution consists of varying the colliding objects velocities by calculating and applying the 
+ spatial impulse resulting from the collision (see RBDA, Section 11.7 Impulsive Dynamics, 
+ Subsections: Two-Body Collisions, and Friction, pages 232-235).
 
- Consider two rigid bodies, body1 and body2, that collide at a single contact point c.
+ Consider two rigid bodies, body1 and body2, that collide at a contact point c.
  Their velocities before the impact are v1 and v2, and their velocities afterwards
  are v1 + ∆v1 and v2 + ∆v2. 
- 
- 
- Coefficient of Restitution
- ------------------------------
- The coefficient of restitution (COR) is denoted e and when:
- e = 0     : a perfectly inelastic collision; objects do not rebound at all and end up touching.
- 0 < e < 1 : an inelastic collision, in which some kinetic energy is dissipated. 
-             The objects rebound with a lower separation speed than the speed of approach.
- e = 1     : a perfectly elastic collision, in which no kinetic energy is dissipated. 
-             The objects rebound with the same relative speed with which they approached.
- See https://en.wikipedia.org/wiki/Coefficient_of_restitution 
+ The force of a collision, that is the impulse, is transmitted from Body1 to Body2, and can be
+ expressed in the form $nλ$  where $n$ is the (spatial) contact normal from body2 to body1, 
+ and λ a scalar impulse magnitude.
  
 
- Coefficient of Friction
- ------------------------------
- The coefficient of friction is denoted μ and when:
- μ ≈ 0     : near-frictionless (like ice on ice),
- μ ≈ 0.5   : typical wood or plastic contact,
- μ ≈ 1.0   : very grippy (like rubber on dry asphalt),
- μ > 1.0   : extremely high friction (like racing tires or adhesives).
- See  https://en.wikipedia.org/wiki/Friction 
  
- Note an Orientated Bounding Box (OBB) is an Axis Aligned Bounding Box (AABB) with
- an accompanying 3D orientation matrix/quaternion.
- 
- 
- For the special case where all the collider objects under consideration are perfect spheres
- you can replace:  
+ Notes
+
+ i)  an Orientated Bounding Box (OBB) is an Axis Aligned Bounding Box (AABB) with
+     an accompanying 3D orientation matrix/quaternion.
+ ii) For the special case where all the collider objects under consideration are perfect spheres
+     you can replace:  
    
  iscollision = m_detector1.collision( b1, b2, c.depth, c.normal, c.pos ); // openGJHK 
  
@@ -70,34 +57,34 @@
 #endif
 
 
-
-#ifndef __BPOLYTOPE_H__
-#include "BPolytope.h"
-#endif
-
-
 #ifndef __BCOLLIDER_H__
 #include "BCollider.h"
 #endif
 
-
-#include <glm/gtc/matrix_access.hpp> // for glm::column
+#ifndef __BPRODUCTS_H__
+#include "BProducts.h"
+#endif
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/norm.hpp>  // for glm::distance2/glm::length2
+#include <glm/gtx/norm.hpp>          // for glm::distance2/glm::length2
+#include <glm/gtc/matrix_access.hpp> // for glm::column
 
 
-
-BContactManager::BContactManager( int N ) : m_timestamp(0), 
-                                            m_iters(20),
+// All params have been set assuming 1 = 1m 
+// if your scale differes significantly you may need to recalibrate/tune these parameters
+BContactManager::BContactManager( int N ) : m_iters(25), 
+                                            m_cachehits(0),
                                             m_e(0.75),
                                             m_mu(0.5), 
-                                            m_cachehits(0), 
-                                            m_frictionOn(true), 
+                                            m_baumgarte(0.2), 
+                                            m_max_dist(0.01),        // manifold refresh - 1cm
+                                            m_max_tan_dist2(2.0),    // manifold refresh
+                                            m_threshold2(0.000025),  // manifold addPoint - 5mm  
+                                            m_detector(),
                                             m_active(), 
                                             m_history(), 
-                                            m_detector()
-
+                                            m_frictionOn(true)
+                                           
 {
     m_active.reserve(N);  
     m_history.reserve(N);
@@ -105,21 +92,22 @@ BContactManager::BContactManager( int N ) : m_timestamp(0),
 
 BContactManager::~BContactManager( void )
 {
-    std::cout << "BContactManager::m_cachehits " << m_cachehits << std::endl;
+    //std::cout << "BContactManager::m_cachehits " << m_cachehits << std::endl;
 }
-
-//
+ 
+// 
 // Broad-phase - 3D algbra usimg float/double, no AD here
 //
 
 bool 
 BContactManager::sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const glm::dvec3 &extA,
-                          const glm::dmat3 &rotB, const glm::dvec3 &posB, const glm::dvec3 &extB) const
+                          const glm::dmat3 &rotB, const glm::dvec3 &posB, const glm::dvec3 &extB )
 // Separating Axis Theorem (SAT) check for axis Orientated Bounding Boxes (OBB)
-// in this case there are 15 axes to check
+// in this case there are 15 axes to check. This is a glm impemenation of Randy Gaul's q3BoxtoBox 
 {
     // B's frame in A's space
-    glm::dmat3 C = glm::transpose(rotA) * rotB;
+    const glm::dmat3 rotAT = glm::transpose(rotA);
+    const glm::dmat3 C = rotAT * rotB;
 
     glm::dmat3 absC;
     bool parallel = false;
@@ -135,14 +123,14 @@ BContactManager::sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const 
     }
 
     // vector from center A to center B in A's space
-    glm::dvec3 t(glm::transpose(rotA) * (posB - posA)); 
+    const glm::dvec3 t(rotAT * (posB - posA)); 
 
     // face normal axis checks
     for (int i = 0; i < 3; ++i) // A's axes 
     {
         //double s = std::fabs(t[i]) - (extA[i] + glm::dot(glm::row(absC, i), extB)); // slower
-        const glm::dvec3 myrow(absC[0][i], absC[1][i], absC[2][i]);
-        double s = std::fabs(t[i]) - (extA[i] + glm::dot(myrow, extB));
+        const glm::dvec3 row(absC[0][i], absC[1][i], absC[2][i]);
+        double s = std::fabs(t[i]) - (extA[i] + glm::dot(row, extB));
         
         if (s > 0.0)
             return false;
@@ -150,18 +138,16 @@ BContactManager::sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const 
     
     for (int i = 0; i < 3; ++i) // B's axes 
     {
-        //double s = std::fabs(glm::dot(t, glm::column(C, i))) -  (extB[i] + glm::dot(glm::column(absC, i), extA)); // slower
-        const glm::dvec3 mycol1(C[i][0], C[i][1], C[i][2]);
-        const glm::dvec3 mycol2(absC[i][0], absC[i][1], absC[i][2]);
-        double s = std::fabs(glm::dot(t, mycol1)) - (extB[i] + glm::dot(mycol2, extA));
+        //double s = std::fabs(glm::dot(t, glm::column(C, i))) - (extB[i] + glm::dot(glm::column(absC, i), extA)); // slower
+        double s = std::fabs(glm::dot(t, C[i])) - (extB[i] + glm::dot(absC[i], extA));
 
         if (s > 0.0)
             return false;
     }
 
+    // edge cross products axis checks
     if ( !parallel )
     {
-        // edge cross products axis checks
         for (int i = 0; i < 3; ++i) // A edge
         {
             int i1 = next(i);
@@ -178,6 +164,7 @@ BContactManager::sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const 
                 
                 // separation
                 double s = std::fabs(t[i2] * C[j][i1] - t[i1] * C[j][i2]) - (rA + rB);
+                
                 if (s > 0.0)
                     return false;
             }
@@ -197,7 +184,7 @@ BContactManager::compute_basis(const BVector3 &n, BVector3 &b1, BVector3 &b2)
 // "Building an Orthonormal Basis, Revisted", Duff et al. JCGT, 2017. 
 // the tangents remain geometrically consistent as the normal changes/body rotates
 { 
-    //const BScalar sign = std::copysign(BScalar(1.0), n.z);
+    //const BScalar sign = std::copysign(BScalar(1.0), n.z); // does not work with autodiff
     const BScalar sign = (n.z >= 0.0) ? 1.0 : -1.0;
     const BScalar a = -1.0 / (sign + n.z);
     const BScalar b = n.x * n.y * a;
@@ -210,185 +197,174 @@ BContactManager::prepare( BScalar dt )
 // Impulse Dynamics, RBDA, Section 11.7, pages 232-235
 // employs Baumgarte Stabilization Technique (BST) 
 {
-    const BScalar beta = (0.2 / dt);
-    const BScalar slop = 0.001;
+    const BScalar beta = (m_baumgarte / dt);
+    const BScalar slop = 0.002; // 2mm to allow resting/stacking objects some 'space'
 
-    for (BContact &c : m_active)
+    for (BManifold &m : m_active)
     {
-        ABody *b1 = c.body1;
-        ABody *b2 = c.body2;
+        m.refresh(m_max_dist, m_max_tan_dist2); // remove broken/stale points
+
+        ABody *b1 = m.body1();
+        ABody *b2 = m.body2();
         
-        
-        /* // "Cheat" depth for two spheres
-        BVector3 diff = b2->pos() - b1->pos();
-        BScalar dist = arb::length(diff);
-        BScalar analytical_depth = (b1->box().extent().y + b2->box().extent().y) - dist;
-        BVector3 analytical_normal = diff / dist;
-        c.normal = analytical_normal;
-        c.depth  = analytical_depth;
-        // */
-        
-        // 
-        // Two-Body Collisions, RBDA, page 232
-        //
-        BVector3 rel_pos1 = c.pos - b1->pos();
-        BVector3 rel_pos2 = c.pos - b2->pos();
-        
-        // the unit spatial impulse (force) transmitted from b1 to b2 along the contact normal
-        c.n_1 = BVector6(arb::cross(rel_pos1, -c.normal), -c.normal);
-        c.n_2 = BVector6(arb::cross(rel_pos2,  c.normal),  c.normal);
-        
-        // Δv_1, Δv_2 unit spatial motion vectors in world coords (eqns 11.60, 11.61)
-        c.dv_1 = (b1->invI_base() * c.n_1); 
-        c.dv_2 = (b2->invI_base() * c.n_2); 
-        
-        // effective mass - how 'heavy' the collision 'feels' (denominator of (11.65))
-        c.invK  = BScalar(1.0) / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
- 
-        // ζ initial relative or separation velocity at contact c - see eqn 11.62
-        // however here c.n_1 != -c.n_2 unlike eqn 11.62
-        const BScalar n_dot_relvel = arb::dot(c.n_2, b2->v()) + arb::dot(c.n_1, b1->v());
-        
-        // restitution bias: only apply if moving fast enough (prevents jitter)
-        const BScalar e = (n_dot_relvel < -0.5) ? m_e : 0.0; // 0.5 is a restitution threshold
-        
-        const BScalar baumgarte_bias = beta * arb::max(0.0, c.depth - slop); 
-        
-        // this is the total velocity change we want to achieve 
-        c.velBias = std::max((-e * n_dot_relvel), baumgarte_bias);
-     
-        //
-        // Coulomb friction, RBDA, page 233
-        //
-        if (m_frictionOn) // unnecessary branching
+        for (BContact &c : m.points()) 
         {
-            BVector3 normx, normy;
+            // Two-Body Collisions, RBDA, page 232
+            BVector3 rel_pos1 = c.pos - b1->pos();
+            BVector3 rel_pos2 = c.pos - b2->pos();
             
-            // create a coordinate frame from the normal
-            // note c.n_1 and c.n_2 are considered to be nz_1 and nz_2
-            compute_basis(c.normal, normx, normy );  
+            // the unit spatial impulse (force) transmitted from b1 to b2 along the contact normal
+            c.n_1  = BVector6(arb::cross(rel_pos1, -c.normal), -c.normal);
+            c.n_2  = BVector6(arb::cross(rel_pos2,  c.normal),  c.normal);
             
-            // unit spatial impulse (force) vector - tangent plane (x-y axis) of contact space 
-            c.nx_1 = BVector6(arb::cross(rel_pos1, -normx), -normx);
-            c.nx_2 = BVector6(arb::cross(rel_pos2,  normx),  normx);
+            // Δv_1, Δv_2 unit spatial motion vectors in world coords (eqns 11.60, 11.61)
+            c.dv_1 = (b1->invI_base() * c.n_1); 
+            c.dv_2 = (b2->invI_base() * c.n_2); 
+            
+            // effective mass - how 'heavy' the collision 'feels' (denominator of eqn 11.65)
+            c.invK = BScalar(1.0) / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
+            
+            // zeta ζ initial relative or separation velocity at contact c (eqn 11.62)
+            // however unlike eqn 11.62 here n_1 != -n_2
+            const BScalar relvel = arb::dot(c.n_2, b2->v()) + arb::dot(c.n_1, b1->v());
+            
+            // restitution bias: only apply if moving fast enough (prevents jitter)
+            const BScalar restitution = (relvel < -0.5) ? m_e : 0.0; // 0.5 is a restitution threshold
+            
+            // arb::max because Baumgarte expects positive depth
+            const BScalar baumgarte_bias = beta * arb::max(0.0, c.depth - slop); 
+            
+            // this is the total velocity change we want to achieve (see numerator of eqn 11.65)
+            //c.velBias = arb::max((-restitution * relvel), baumgarte_bias);
+            c.velBias = (-restitution * relvel) + baumgarte_bias;
+            
 
-            c.ny_1 = BVector6(arb::cross(rel_pos1, -normy), -normy);
-            c.ny_2 = BVector6(arb::cross(rel_pos2,  normy),  normy);
+            // Coulomb friction, RBDA, page 233
+            if (m_frictionOn) 
+            {
+                BVector3 normx, normy;
+                
+                // create a coordinate frame from the normal
+                // note c.n_1 and c.n_2 are considered to be nz_1 and nz_2
+                compute_basis(c.normal, normx, normy );  
+                
+                // unit spatial impulse (force) vector - tangent plane (x-y axis) of contact space 
+                c.nx_1 = BVector6(arb::cross(rel_pos1, -normx), -normx);
+                c.nx_2 = BVector6(arb::cross(rel_pos2,  normx),  normx);
+                
+                c.ny_1 = BVector6(arb::cross(rel_pos1, -normy), -normy);
+                c.ny_2 = BVector6(arb::cross(rel_pos2,  normy),  normy);
+                
+                // Δv_1, Δv_2 unit spatial motion vectors in world coords (x-y axis)
+                c.dvx_1 = b1->invI_base() * c.nx_1;                 
+                c.dvx_2 = b2->invI_base() * c.nx_2;  
+                
+                c.dvy_1 = b1->invI_base() * c.ny_1;                 
+                c.dvy_2 = b2->invI_base() * c.ny_2;                 
+                
+                // compute effective mass for x-y axis (K_x and K_y)
+                c.invK_x = BScalar(1.0) / (arb::dot(c.nx_1, c.dvx_1) + arb::dot(c.nx_2, c.dvx_2));
+                c.invK_y = BScalar(1.0) / (arb::dot(c.ny_1, c.dvy_1) + arb::dot(c.ny_2, c.dvy_2)); 
+            }
 
-            // Δv_1, Δv_2 unit spatial motion vectors in world coords (x-y axis)
-            c.dvx_1 = b1->invI_base() * c.nx_1;                 
-            c.dvx_2 = b2->invI_base() * c.nx_2;  
-            
-            c.dvy_1 = b1->invI_base() * c.ny_1;                 
-            c.dvy_2 = b2->invI_base() * c.ny_2;                 
-            
-            // compute effective mass for x-y axis (K_x and K_y)
-            c.invK_x = BScalar(1.0) / (arb::dot(c.nx_1, c.dvx_1) +  arb::dot(c.nx_2, c.dvx_2));
-            c.invK_y = BScalar(1.0) / (arb::dot(c.ny_1, c.dvy_1) +  arb::dot(c.ny_2, c.dvy_2)); 
-        }
-        //
-        
-        //
-        // warm start - apply the impulse from the previous frame
-        // this is applied once, before solve iterations begin.
-        //
-        auto fidx = m_history.find(c.contactId);
-        if (fidx != m_history.end()) 
-        {
-            BContact &oldc = fidx->second;
-
-            BScalar d2 = glm::distance2(c.pos, oldc.pos); 
-            if (d2 < 0.00005)  // if same point - note distance2 - must be tuned
+            //
+            // warm start - apply the impulse from the previous frame
+            // this is applied once, before solve iterations begin.
+            //
+            if (m.warmstart()) 
             {
                 // apply old solution impulse 
-                b1->v() += c.dv_1 * oldc.accJ;
-                b2->v() += c.dv_2 * oldc.accJ;
+                b1->v() += c.dv_1 * c.accJ;
+                b2->v() += c.dv_2 * c.accJ;
                 
-                if (m_frictionOn)
+                if (m_frictionOn) 
                 {
                     // apply friction impulses (warm start)
-                    b1->v() += c.dvx_1 * oldc.accJx;
-                    b2->v() += c.dvx_2 * oldc.accJx;
+                    b1->v() += c.dvx_1 * c.accJx;
+                    b2->v() += c.dvx_2 * c.accJx;
                     
-                    b1->v() += c.dvy_1 * oldc.accJy;
-                    b2->v() += c.dvy_2 * oldc.accJy;
+                    b1->v() += c.dvy_1 * c.accJy;
+                    b2->v() += c.dvy_2 * c.accJy;
                 }
-                m_cachehits++;
+                ++m_cachehits;
             }
         }
     }
 }
+
 
 void 
 BContactManager::solve( void ) 
 // Projected Gauss-Seidel (PGS) solver 
 {
+    using std::sqrt;
+    
     for (int i = 0; i < m_iters; ++i) 
     {
-        for (BContact &c : m_active) 
+        for (BManifold &m : m_active) 
         {
-            ABody *b1 = c.body1;
-            ABody *b2 = c.body2;
+            ABody *b1 = m.body1();
+            ABody *b2 = m.body2();
             
-            // current relative velocity (separation velocity at contact i)
-            const BScalar n_dot_dvel = arb::dot(c.n_2, c.body2->v()) + arb::dot(c.n_1, c.body1->v());
-            
-            // how much more impulse j do we need to reach the target bias?
-            const BScalar j = (c.velBias - n_dot_dvel) * c.invK;
-            
-            // clamping - Projected Gauss-Seidel (PGS)
-            BScalar oldJ = c.accJ;
-            c.accJ = arb::max(0.0,  oldJ + j);
-            BScalar applyJ = c.accJ - oldJ; 
-            
-            // apply spatial impulse
-            b1->v() += c.dv_1 * applyJ;
-            b2->v() += c.dv_2 * applyJ;
-            
-            //
-            // Coulomb friction, RBDA, page 233 
-            //
-            if (m_frictionOn) // unnecessary branching
+            for (BContact &c : m.points()) 
             {
-                // solve a few "normal-only" iterations or ensure the normal is 
-                // already solved before starting friction iterations.
-                if (i > 3 || arb::nearZero(applyJ, 1E-2)) 
+                // current relative velocity (separation velocity at contact i)
+                const BScalar relvel = arb::dot(c.n_2, b2->v()) + arb::dot(c.n_1, b1->v());
+
+                // how much more impulse j do we need to reach the target bias?
+                const BScalar j = (c.velBias - relvel) * c.invK;
+                
+                // clamping - Projected Gauss-Seidel (PGS)
+                const BScalar oldJ = c.accJ;
+                c.accJ = arb::max(0.0,  oldJ + j);
+                const BScalar applyJ = c.accJ - oldJ; 
+                
+                // apply spatial impulse
+                b1->v() += c.dv_1 * applyJ;
+                b2->v() += c.dv_2 * applyJ;
+                
+                if (m_frictionOn)
                 {
-                    // calculate desired incremental impulses for both tangents
-                    const BScalar dvx = arb::dot(c.nx_2, b2->v()) + arb::dot(c.nx_1, b1->v());
-                    const BScalar dvy = arb::dot(c.ny_2, b2->v()) + arb::dot(c.ny_1, b1->v());
-                    
-                    // calculate the new total accumulated friction vector
-                    BScalar next_accJx = c.accJx + (-dvx * c.invK_x);
-                    BScalar next_accJy = c.accJy + (-dvy * c.invK_y);
-                    
-                    // circular clamping (friction cone)
-                    BScalar maxFriction   = m_mu * c.accJ;
-                    BScalar maxFrictionSq = maxFriction * maxFriction;
-                    BScalar magnitudeSq   = (next_accJx * next_accJx) + (next_accJy * next_accJy);
-                    
-                    if (magnitudeSq > maxFrictionSq) 
+                    // Coulomb friction, RBDA, page 233 
+                    // solve a few "normal-only" iterations before starting friction iterations
+                    if (i > 3)
                     {
-                        // we only do this for contacts that are 'sliding'
-                        // as we wish to avoid expensive sqrt()
-                        assert(magnitudeSq > 0);
+                        // calculate desired incremental impulses for both tangents
+                        const BScalar dvx = arb::dot(c.nx_2, b2->v()) + arb::dot(c.nx_1, b1->v());
+                        const BScalar dvy = arb::dot(c.ny_2, b2->v()) + arb::dot(c.ny_1, b1->v());
                         
-                        BScalar scale = maxFriction / sqrt(magnitudeSq);
-                        next_accJx *= scale;
-                        next_accJy *= scale;
+                        // calculate the new total accumulated friction vector
+                        BScalar next_accJx = c.accJx + (-dvx * c.invK_x);
+                        BScalar next_accJy = c.accJy + (-dvy * c.invK_y);
+                        
+                        // circular clamping (friction cone)
+                        const BScalar maxFriction   = m_mu * c.accJ;
+                        const BScalar maxFrictionSq = maxFriction * maxFriction;
+                        const BScalar magnitudeSq   = (next_accJx * next_accJx) + (next_accJy * next_accJy);
+                        
+                        if (magnitudeSq > maxFrictionSq) 
+                        {
+                            // we only do this for contacts that are 'sliding'
+                            // as we wish to avoid expensive sqrt()
+                            assert(magnitudeSq > 0);
+                            
+                            const BScalar scale = maxFriction / sqrt(magnitudeSq);
+                            next_accJx *= scale;
+                            next_accJy *= scale;
+                        }
+                        
+                        // calculate the actual impulse to apply this iteration
+                        const BScalar applyJx = next_accJx - c.accJx;
+                        const BScalar applyJy = next_accJy - c.accJy;
+                        
+                        // update accumulated state
+                        c.accJx = next_accJx;
+                        c.accJy = next_accJy;
+                        
+                        // apply spatial impulses
+                        b1->v() += c.dvx_1 * applyJx + c.dvy_1 * applyJy;
+                        b2->v() += c.dvx_2 * applyJx + c.dvy_2 * applyJy;
                     }
-                    
-                    // calculate the actual impulse to apply this iteration
-                    const BScalar applyJx = next_accJx - c.accJx;
-                    const BScalar applyJy = next_accJy - c.accJy;
-                    
-                    // update accumulated state
-                    c.accJx = next_accJx;
-                    c.accJy = next_accJy;
-                    
-                    // apply spatial impulses
-                    b1->v() += c.dvx_1 * applyJx + c.dvy_1 * applyJy;
-                    b2->v() += c.dvx_2 * applyJx + c.dvy_2 * applyJy;
                 }
             }
         }
@@ -396,118 +372,163 @@ BContactManager::solve( void )
 }
 
 
+void
+BContactManager::narrow_check(ABody *b1, ABody *b2, long now)
+// narrow-phase GJK check
+{
+    BVector3 cpos;       // world contact position
+    BVector3 cnormal;    // world contact normal
+    BScalar  cdepth;     // penetration contact depth
+
+    // GJK - a positive depth indicates a penetration
+    bool iscollision = m_detector.collision( b1, b2, cdepth, cnormal, cpos ); 
+    //
+    
+    if (iscollision)
+    {
+        //b1->addMsg(BMsg(BMsg::COLLISION, b2, b1, now));
+        //b2->addMsg(BMsg(BMsg::COLLISION, b1, b2, now ));
+        
+        // find or create a manifold for this contact
+        uint64_t hash =  myhash(b1->objId(), b2->objId());
+        auto fidx = m_history.find(hash);
+        
+        if (fidx != m_history.end())
+        {
+            m_active.push_back(fidx->second);
+            m_active.back().warmstart(true);
+        }
+        else
+        {
+            m_active.emplace_back(b1, b2, hash);
+            //m_active.back().warmstart(false);
+        }
+
+        m_active.back().addPoint(cpos, cnormal, cdepth, m_threshold2);
+    }
+}
+
 int
-BContactManager::detect( const std::vector<ABody*> &body )
+BContactManager::detect( const std::vector<ABody*> &body, const std::vector<ABody*> &fixed )
 // collision detection: broad-phase then narrow-phase
+// check body and fixed objects against one another for collisions
 {
     using std::abs;
     
+    const BScalar pad = 0.1;
+    const long now = 0 ;// theClock->seconds();
+
     m_active.clear();
     
+    // dynamic objects
     for (int i = 0; i < body.size(); ++i)
     {
         ABody *b1 = body[i];
-
-        //BScalar  range1_sq  = 20.0 * 20.0; // b1->range2();
-        BScalar radius1    = b1->box().radius(); 
+        BScalar radius1 = b1->box().radius(); 
 
         for (int j = i+1; j < body.size(); ++j)    
         {
-           ABody *b2 = body[j];
-            
-           if (b1 == b2) 
-               continue;
-            
-            //BScalar  range2_sq  = 20.0 * 20.0; //b2->range2();
+            ABody *b2 = body[j];
             BScalar radius2 = b2->box().radius(); 
-              
             BScalar d2 = glm::distance2(b1->pos(), b2->pos());
             
             // proximity check
-            // if (d2 < range1_sq)
-            //    b1->addMsg(BMsg(BMsg::NEAR, b2));
-
-            // if (d2 < range2_sq)
-            //    b2->addMsg(BMsg(BMsg::NEAR, b1));
+            // if (d2 < range1_sq)  b1->addMsg(BMsg(BMsg::NEAR, b2));
+            // if (d2 < range2_sq)  b2->addMsg(BMsg(BMsg::NEAR, b1));
             
             // sphere intersection check
-            // bool sphere_check = d < (1.0 + (radius1 + radius2)); 
-            bool sphere_check = d2 < ((1.0 + radius1 + radius2) * (1.0 + radius1 + radius2));
+            // bool sphere_check = d < (pad + (radius1 + radius2)); 
+            bool sphere_check = d2 < ((pad + radius1 + radius2) * (pad + radius1 + radius2));
            
             if (sphere_check) 
             {
                 // broad-phase SAT for OBB check 
-                bool box_check = intersect(b1, b2);
+                bool box_check = broad_check(b1, b2);
              
                 if (box_check) 
                 {
                     // narrow-phase GJK check 
-                    BContact c(b1, b2);
-                    bool iscollision = false;
-          
-                    iscollision = m_detector.collision( b1, b2, c.depth, c.normal, c.pos );  
-
-                    if (iscollision)
-                    {
-                        // we expect a positive depth for a collision
-                        assert(c.depth >= 0.0);
-                        
-                        // if bodies collide
-                        //b1->addMsg(BMsg(BMsg::COLLISON, b2));
-                        //b2->addMsg(BMsg(BMsg::COLLISON, b1));
-                        
-                        c.contactId = myhash(b1->objId(), b2->objId()); // must be done here
-                        m_active.push_back(c);
-                    }
+                    narrow_check(b1, b2, now);
                 }
             } 
         }
     } 
     
-    return (int) m_active.size();
+    // fixed/static objects 
+    for (int i = 0; i < body.size(); ++i)
+    {
+        ABody* b1 = body[i];
+        BScalar radius1 = b1->box().radius(); 
+
+        for (int j = 0; j < fixed.size(); ++j)
+        {
+            ABody* b2 = fixed[j];
+            BScalar radius2 = b2->box().radius(); 
+            BScalar d2 = glm::distance2(b1->pos(), b2->pos());
+            
+            // proximity check
+            // if (d2 < range1_sq)  b1->addMsg(BMsg(BMsg::NEAR, b2));
+
+            // sphere intersection check
+            // bool sphere_check = d < (pad + (radius1 + radius2)); 
+            bool sphere_check = d2 < ((pad + radius1 + radius2) * (pad + radius1 + radius2));
+           
+            if (sphere_check) 
+            {
+                // broad-phase SAT for OBB check 
+                bool box_check = broad_check(b1, b2);
+             
+                if (box_check) 
+                {
+                    // narrow-phase GJK check 
+                    narrow_check(b1, b2, now);
+                }
+            }
+        }
+    }
+    
+    return (int) m_active.size(); // the number of collisions detected
 }
 
 void 
 BContactManager::cache( void )
 {
-    // persist for 3 frames
-    int next_time = (m_timestamp + 1) % 3;
-    int prev_time = (m_timestamp + 2) % 3;
-    
-    for (BContact &c : m_active)
+    m_history.clear();
+    for (const BManifold &m : m_active)
     {
-        if (c.accJ > 0.0)
-        {
-            c.timestamp = next_time;  // with new/next time stamp 
-            m_history[c.contactId] = c;
-        }
+        m_history[m.manifoldId()] = m;
     }
-
-    for ( auto i = m_history.begin(); i != m_history.end(); )
-    {
-        i = (i->second.timestamp == prev_time) ? m_history.erase(i) : ++i;
-    }
-    
-    ++m_timestamp;
 }
 
+//
+// main entry point to BContactManager -- return number of collisions, update body_list
+//
+
 int
-BContactManager::resolve( double dt, const std::vector<ABody*> &body_list )
+BContactManager::resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed)
 {
-    if (body_list.empty())
+    if (body.empty())
         return 0;
  
+    if (body.size() == 1 && fixed.empty())
+        return 0;
+    
     // broad-phase then narrow-phase detection
-    int num_contacts = detect(body_list);
+    int num_contacts = detect(body, fixed);
     
     if (num_contacts) 
     {
         // solver phase - prepare contacts, solve them, store useful results
         prepare(dt);
         solve();
-        cache(); 
     }
+    
+    cache(); 
+
     
     return num_contacts;
 }
+
+//
+
 

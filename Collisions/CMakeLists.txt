@@ -15,6 +15,7 @@
 add_library(Collisions 
     OBJECT 
         BCollider.cpp        
+        BManifold.cpp    
         BContactManager.cpp    
         BGJK.cpp        
 )

@@ -1,8 +1,8 @@
 /* BGJK 20/12/2025
 
- $$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$
  $   BGJK.h   $
- $$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
@@ -53,8 +53,14 @@
 #include "ABody.h"
 #endif
 
-#include <ccd/ccd.h>
+#ifndef __BGLM_H__
+#include "BGLM.h"
+#endif
+
 #include <glm/vec3.hpp>
+
+#include <ccd/ccd.h>
+
 
 class BGJK
 {

@@ -8,7 +8,7 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- The abstract-base interface to the BCollisionManager
+ The abstract-base interface used by the BCollisionManager
  
 */
 
@@ -17,26 +17,17 @@
 #define __ABODY_H__
 
 
-#include <string>
-#include <vector>
-
-#ifndef __BMATRIX6_H__
-#include "BMatrix6.h"
-#endif
-
-#ifndef __BBOX_H__
-#include "BBox.h"
-#endif
-
-#ifndef __BRBINERTIA_H__
-#include "BRBInertia.h"
-#endif
-
-#ifndef __BCOLLIDER_H__
-#include "BCollider.h"
+#ifndef __BSPATIALTYPES_H__
+#include "BSpatialTypes.h"
 #endif
 
 
+class BVector6;
+class BMatrix6;
+class BRBInertia;
+class BTransform;
+class BBox;
+class BCollider;
 
 class ABody 
 {
@@ -46,14 +37,13 @@ public:
     ABody( void )=default;   
     virtual ~ABody( void )=default;
     
-    // must be unique
+    
+    //
+    // object identity, position and orientation
+    //
     virtual BBodyId
-    objId( void ) const = 0;
+    objId( void ) const = 0;     // must be unique
     
-    
-    //
-    // object position  and orientation i.e. X_base.r() and X_base.E()
-    //
     virtual const BVector3&
     pos( void ) const = 0;
     
@@ -72,10 +62,19 @@ public:
     virtual void
     orient( const BMatrix3 &q ) = 0;
     
+    //
+    // spatial interface 
+    //
+    virtual const BTransform& 
+    X_base( void ) const = 0;
+
+    virtual BTransform& 
+    X_base( void ) = 0;
+
+    virtual void
+    X_base( const BTransform &X ) = 0;
     
-    //
-    // spatial velocity interface 
-    //
+
     virtual const BVector6&
     v( void ) const = 0;
     
@@ -85,9 +84,7 @@ public:
     virtual void
     v( const BVector6 &v ) = 0; 
     
-    //
-    // spatial inertia
-    //
+
     virtual const BRBInertia& 
     I( void ) const = 0;
     
@@ -99,6 +96,7 @@ public:
     
     virtual const BMatrix6&
     invI_base( void) const = 0;
+    
     
 
     //

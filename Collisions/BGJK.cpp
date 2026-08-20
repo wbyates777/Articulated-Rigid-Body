@@ -39,6 +39,9 @@
 
 
 
+#ifndef __BFUNCTIONS_H__
+#include "BFunctions.h"
+#endif
 
 BGJK::BGJK( void ) : m_ccd{} 
 {
@@ -136,6 +139,25 @@ BGJK::collision( ABody* body1, ABody* body2, BScalar &distance, BVector3 &cnorma
         assert(!arb::isnan(cnormal)); 
         
         cpoint = toGLM(&pos);
+        
+        // large flat surfaces i.e. boxes can produce cpoints outside of object
+        // keep cpoint within object - no orientation takein into considertion
+        const BVector3 top1 = body1->box().top() + body1->pos();
+        const BVector3 bot1 = body1->box().bot() + body1->pos();
+        const BVector3 top2 = body2->box().top() + body2->pos();
+        const BVector3 bot2 = body2->box().bot() + body2->pos();
+        
+        const BVector3 mymin = arb::max(bot1, bot2);
+        const BVector3 mymax = arb::min(top1, top2);
+    
+        for (int i = 0; i < 3; ++i)
+        {
+            if (mymin[i] < mymax[i])
+                cpoint[i] = arb::clamp(cpoint[i], mymin[i], mymax[i]);
+            else cpoint[i] = arb::clamp(cpoint[i], mymax[i], mymin[i]);
+        }
+        // 
+        
         cpoint += (cnormal * abs(BScalar(depth))); 
         
         distance = depth;
