@@ -162,7 +162,7 @@ namespace arb {
     nearZero( BScalar p ) { return ((p > -B_NEAR_ZERO) && (p < B_NEAR_ZERO)); }
 
     inline bool 
-    nearZero( BScalar p, BScalar toll ) { return ((p > -toll) && (p < toll)); }
+    nearZero( BScalar p, BScalar tol ) { return ((p > -tol) && (p < tol)); }
     
     inline bool 
     nearZero( const BVector3 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
@@ -170,20 +170,22 @@ namespace arb {
     inline bool 
     nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
 
+
     inline bool 
     nearZero( const BQuat &q ) { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
     
 
     inline bool 
-    isnan(const BVector3 &v) { using std::isnan; return (isnan(v[0]) || isnan(v[1]) || isnan(v[2])); }
+    isnan(const BVector3 &v) {   return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
 
     inline bool 
     isnan( const BQuat &q )  { using std::isnan; return (isnan(q.w) || isnan(q.x) || isnan(q.y) || isnan(q.z)); }
     
     inline bool 
     isnan( const BMatrix3 &m ) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
+
     
- 
+    
     inline constexpr BScalar 
     min( BScalar v1, BScalar v2 ) { using std::min; return min(v1, v2); }
     
@@ -217,23 +219,20 @@ namespace arb {
         //return BVector3(max(v1[0],v2[0]), max(v1[1],v2[1]), max(v1[2],v2[2]));
     }
     
+    
     inline constexpr BScalar 
-    clamp( BScalar d, BScalar min, BScalar max ) 
-    {
-        using std::clamp;
-        return clamp(d,min,max);
+    clamp( BScalar v, BScalar lo, BScalar hi ) { using std::clamp; return clamp(v, lo, hi); }
+    
+    inline constexpr BVector3 
+    clamp( const BVector3 &v, BScalar lo, BScalar hi ) 
+    { 
+        return BVector3(clamp(v[0], lo, hi), clamp(v[1], lo, hi), clamp(v[2], lo, hi));
     }
     
     inline constexpr BVector3 
-    clamp( const BVector3 &v, BScalar min, BScalar max ) 
+    clamp( const BVector3 &v, const BVector3 &lo, const BVector3 &hi ) 
     { 
-        return BVector3(clamp(v[0], min, max), clamp(v[1], min, max), clamp(v[2], min, max));
-    }
-    
-    inline constexpr BVector3 
-    clamp( const BVector3 &v, const BVector3 &min, const BVector3 &max ) 
-    { 
-        return BVector3(clamp(v[0], min[0], max[0]), clamp(v[1], min[1], max[1]), clamp(v[2], min[2], max[2]));
+        return BVector3(clamp(v[0], lo[0], hi[0]), clamp(v[1], lo[1], hi[1]), clamp(v[2], lo[2], hi[2]));
     }
     
 }

@@ -76,15 +76,15 @@ namespace  glm { using ::operator>>; }
 
 namespace std {
     
-    // autodiff::val(v) is value and autodiff::derivative(v) is gradient 
+    // v[0] or autodiff::val(v) is value and v[1] or autodiff::derivative(v) is gradient 
     inline bool 
     isnan( const autodiff::real &v ) { return std::isnan(autodiff::val(v)) || std::isnan(autodiff::derivative(v)); }
     
     inline constexpr autodiff::real 
-    clamp( const autodiff::real &d, const autodiff::real &min, const autodiff::real &max ) 
+    clamp( const autodiff::real &d, const autodiff::real &lo, const autodiff::real &hi ) 
     {
-        const autodiff::real t = d < min ? min : d;
-        return t > max ? max : t;
+        const autodiff::real t = d < lo ? lo : d;
+        return t > hi ? hi : t;
     }
     
     // some GLM functions i.e. glm::dot and glm::cross have static asserts 

@@ -39,7 +39,7 @@
  
  1) when com = B_ZERO_3, I_o and I_com are identical as 
     arb::cross(m_com) and arb::cross(-m_com) are zero.
- 2) BVector3(m_mass) == (B_IDENTITY_3x3 * m_mass)
+ 2) BMatrix3(m_mass) == (B_IDENTITY_3x3 * m_mass)
  3) arb::cross(-m_h) == arb::transpose(arb::cross(m_h)) - see table 2.1, page 22,
  4) arb::cross(m_h) ==  m_mass * arb::cross(m_com)
  5) arb::cross(m_h) * arb::cross(-m_h) != m_mass * arb::cross(m_com) * arb::cross(-m_com)
@@ -78,11 +78,8 @@ public:
     BRBInertia( void )=default;
     // the moments of mass; zero, one, and two - note mass can be 0
     constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o ): m_mass(mass), m_h(h), m_I(I_o) {}
-    
     constexpr BRBInertia( const BInertia &I ): m_mass(I.mass()), m_h(I.h()), m_I(I.I()) {} 
-    
     explicit BRBInertia( const BMatrix6 &I ) { set(I); }     
-    
     ~BRBInertia( void )=default;
     
     void
@@ -183,6 +180,15 @@ public:
         const BVector3 ang = arb::cross(m_h, v.lin()) + (m_I * v.ang());
         const BVector3 lin = m_mass * v.lin() - arb::cross(m_h, v.ang());
         return BVector6( ang, lin );
+   
+        
+        /*return BVector6((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
+                        (m_h[2] * v[3] - v[5] * m_h[0]) + (m_I[0][1] * v[0])  +  (m_I[1][1] * v[1]) + (m_I[2][1] * v[2]),
+                        (m_h[0] * v[4] - v[3] * m_h[1]) + (m_I[0][2] * v[0])  +  (m_I[1][2] * v[1]) + (m_I[2][2] * v[2]),
+                       
+                        (m_mass * v[3])  -  (m_h[1] * v[2] - v[1] * m_h[2]),
+                        (m_mass * v[4])  -  (m_h[2] * v[0] - v[2] * m_h[0]),
+                        (m_mass * v[5])  -  (m_h[0] * v[1] - v[0] * m_h[1]) );*/
     }
     
     

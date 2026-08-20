@@ -185,6 +185,19 @@ public:
         const BMatrix3 ET = arb::transpose(m_E);
         const BVector3 v_rxw = v.lin() - arb::cross(m_r, v.ang());
         return BVector6(ET * v.ang(), ET * v_rxw);
+        
+        // v_rxw = v.lin() - arb::cross(m_r, v.ang())
+        /*const BVector3 v_rxw( v[3] - m_r[1] * v[2] + m_r[2] * v[1],
+                              v[4] - m_r[2] * v[0] + m_r[0] * v[2],
+                              v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
+        
+        return BVector6(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
+                        m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
+                        m_E[2][0] * v[0]  + m_E[2][1] * v[1]  + m_E[2][2] * v[2],
+                      
+                        m_E[0][0] * v_rxw[0] + m_E[0][1] * v_rxw[1] + m_E[0][2] * v_rxw[2],
+                        m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
+                        m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );*/
     }
 
     BVector6 
@@ -199,6 +212,7 @@ public:
         return BVector6(aux, ETf);
     }
 
+    
     // transform 3D point p to/from coordinate frame 
     BVector3 
     apply( const BVector3 &p ) const { return m_E * (p - m_r); }
@@ -232,6 +246,7 @@ public:
         return BRBInertia( rbi.mass(), h, I );
     }
     
+    
     BABInertia 
     apply( const BABInertia &abi ) const  
     // returns  X^* I X^{-1} 
@@ -253,9 +268,10 @@ public:
         const BMatrix3 H = m_E * abi.H() * ET;
         const BMatrix3 rxM = (rx * M);
         const BMatrix3 I = (m_E * abi.I() * ET) - (rx * H) + (arb::transpose(H) - rxM) * rx; 
-        return BABInertia( M, H + -arb::transpose(rxM), I ); 
-    }
+        return BABInertia( M, H + -arb::transpose(rxM), I );
+    } 
     
+
     bool 
     operator==( const BTransform &v ) const { return (m_r == v.m_r) && (m_E == v.m_E); }
     

@@ -305,8 +305,8 @@ public:
             for ( int j = 0; j < 3; ++j )
                 retVal[i] += m_data[i][j] * v[j];  
         return retVal; */
-
-        return BVector6(arb::transpose(top()) * v, arb::transpose(bot()) * v);
+        
+        return  BVector6(arb::transpose(top()) * v, arb::transpose(bot()) * v);
     }
 
     BMatrix63 
@@ -314,8 +314,8 @@ public:
     {
       /*  BMatrix63 retVal(B_ZERO_6x3);
         for ( int i = 0; i < 6; ++i )
-            for ( int j = 0; j < 3; ++j ) 
-                for ( int k = 0; k < 3; ++k )
+            for ( int k = 0; k < 3; ++k )
+                for ( int j = 0; j < 3; ++j ) 
                     retVal[i][j] += m_data[i][k] * m[k][j];
         return retVal;*/
         
@@ -604,7 +604,7 @@ public:
             for ( int j = 0; j < 6; ++j )
                 retVal[i] += m_data[i][j] * v[j];
         return retVal; */
-        
+       
         return (arb::transpose(left()) * v.ang()) + (arb::transpose(right()) * v.lin());
     }
 
@@ -613,9 +613,9 @@ public:
     { 
         /*BMatrix3 retVal(B_ZERO_3x3);
         for ( int i = 0; i < 3; ++i )
-            for ( int j = 0; j < 3; ++j )
-                for ( int k = 0; k < 6; ++k )
-                    retVal[i][j] += m_data[i][k] * m[k][j];
+            for ( int k = 0; k < 6; ++k )
+               for ( int j = 0; j < 3; ++j )
+                   retVal[i][j] += m_data[i][k] * m[k][j];
         return retVal;*/
         
         return (m.top() * left()) + (m.bot() * right());
@@ -644,9 +644,9 @@ operator*( const BMatrix63 &m1, const BMatrix36 &m2 )
 {
     /*BMatrix6 retVal(B_ZERO_6x6);
     for ( int i = 0; i < 6; ++i )
-        for ( int j = 0; j < 6; ++j )
-            for ( int k = 0; k < 3; ++k )
-                retVal[i][j] += m1[i][k] * m2[k][j];
+        for ( int k = 0; k < 3; ++k )
+            for ( int j = 0; j < 6; ++j )
+                retVal[i][j] += m_data[i][k] * m[k][j];
     return retVal;*/
     
     const BMatrix3 t1 = m1.top();
@@ -662,10 +662,11 @@ operator*( const BMatrix6 &m1, const BMatrix63 &m2 )
 {    
     /*BMatrix63 retVal(B_ZERO_6x3);
     for ( int i = 0; i < 6; ++i ) 
-        for ( int j = 0; j < 3; ++j )
-            for ( int k = 0; k < 6; ++k ) 
+        for ( int k = 0; k < 6; ++k ) 
+            for ( int j = 0; j < 3; ++j )
                 retVal[i][j] += m1[i][k] * m2[k][j];
     return retVal;*/
+    
     
     const BMatrix3 t2 = m2.top();
     const BMatrix3 b2 = m2.bot();

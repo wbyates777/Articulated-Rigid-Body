@@ -36,6 +36,18 @@
      return BInertia(mass, diag);
  }
  
+ 
+ BInertia 
+ cylinder( BScalar mass, BScalar radius, BScalar length )
+ {
+     BVector3 diag;
+     diag[0] = ((1.0 / 12.0) * mass * (3 * radius * radius) + (length * length)); // I_x
+     diag[1] = ((1.0 / 12.0) * mass * (3 * radius * radius) + (length * length)); // I_y
+     diag[2] = ((1.0 / 2.0) * mass * (radius * radius));                          // I_z
+     
+     return BInertia(mass, diag);
+ }
+ 
 */
 
 
@@ -45,6 +57,7 @@
 #ifndef __BSPATIALTYPES_H__
 #include "BSpatialTypes.h"
 #endif
+
 
 
 #ifndef __BPRODUCTS_H__

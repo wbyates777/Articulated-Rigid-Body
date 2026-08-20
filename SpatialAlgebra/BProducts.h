@@ -62,7 +62,7 @@ namespace arb
         //                  x[2] * y[0] - y[2] * x[0],
         //                  x[0] * y[1] - y[0] * x[1] );
     }
-
+    
     // The Euclidian cross product can be written as an equivalent matrix multiplication
     // The operator $v\times$ (pronounced ‘v-cross’) constructs a skew-symmetric matrix $m$ from vector $v$  
     // such that $m * a = v \times a$, (see RBDA, Section 2.8, eqn 2.23, page 21 and table 2.1, page 22).

@@ -21,23 +21,11 @@
 #include <array>
 #include <cassert>
 
-//
-// GLM flags
-//
-// Best to experiment and see which combination suits you best
-// Note some combinations won't compile. See GLM documentation for details. 
-//
-// #define GLM_FORCE_XYZW_ONLY  // remove unions (can prevent internal layout errors)
-//
-// either
-// #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES 
-// or
-// #define GLM_FORCE_INTRINSICS // enable SIMD (needs c++23)
-// or
-// #define GLM_FORCE_PURE       // disable SIMD 
-//
-// or define none of the above 
-//
+
+// basic glm defines
+#ifndef __BGLM_H__
+#include "BGLM.h"
+#endif
 
 // select basic underlying type
 #define ARB_USE_AUTODIFF

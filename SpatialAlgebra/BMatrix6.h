@@ -372,9 +372,9 @@ public:
     {   
         /*BMatrix6 retVal(B_ZERO_6x6);
         for ( int i = 0; i < 6; ++i )
-            for ( int j = 0; j < 6; ++j )
-               for ( int k = 0; k < 6; ++k )
-                    retVal[i][j] += m_data[i][k] * m[k][j];
+            for ( int k = 0; k < 6; ++k )
+               for ( int j = 0; j < 6; ++j )
+                    retVal[i][j] += m_data[i][k] * m[k][j];;
         return retVal;*/
         
         const BMatrix3 tl1 = m.topLeft();
@@ -388,7 +388,7 @@ public:
         const BMatrix3 br2 = botRight();
         
         return BMatrix6( (tl1 * tl2) + (bl1 * tr2), (tr1 * tl2) + (br1 * tr2),
-                         (tl1 * bl2) + (bl1 * br2), (tr1 * bl2) + (br1 * br2) );
+                         (tl1 * bl2) + (bl1 * br2), (tr1 * bl2) + (br1 * br2) ); 
     }
     
     BMatrix6& 
