@@ -17,19 +17,10 @@ It should be noted that GJK/EPA is known to perform badly with aligned flat surf
 Note that OpenGJK is released under a GPL3 license. As a result if this code is used 
   then *all* the ARB code-base in this project is also bound by the GPL3 license.
  
- 
-*/
 
-/*
- *                          _____      _ _  __
- *                         / ____|    | | |/ /
- *   ___  _ __   ___ _ __ | |  __     | | ' /
- *  / _ \| '_ \ / _ \ '_ \| | |_ |_   | |  <
- * | (_) | |_) |  __/ | | | |__| | |__| | . \
- *  \___/| .__/ \___|_| |_|\_____|\____/|_|\_\
- *       | |
- *       |_|
- *
+---
+ 
+
  * Copyright 2022-2026 Mattia Montanari, University of Oxford
  *
  * SPDX-License-Identifier: GPL-3.0-only
@@ -37,4 +28,4 @@ Note that OpenGJK is released under a GPL3 license. As a result if this code is 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3. See https://www.gnu.org/licenses/
- */
+
