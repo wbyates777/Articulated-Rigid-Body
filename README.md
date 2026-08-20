@@ -259,12 +259,9 @@ The openGJK C++ implementation presented here does employ differentiable types.
 However it only supports polytopes; although boxes can be represented as 8-point polytopes, analytical primitives like spheres are not natively supported.
 Furthermore, openGJK is released under the GPLv3 license, and using this module will subject the entire project to GPLv3 copyleft terms.
 
- Although the openGJK implementation  can be used to "differentiate across a contact",  
- the contact derivatives may exhibit jump discontinuities due to discrete contact switching, friction clamping, or simplex transitions. 
-   Applications that require strictly continuous gradients must implement more advanced techniques such as soft contact or gradient-smoothing techniques.
+ Although the openGJK implementation  can be used to "differentiate across a contact", the contact derivatives may exhibit jump discontinuities due to discrete contact switching, friction clamping, or simplex transitions. Applications that require strictly continuous gradients must implement more advanced techniques such as soft contact or gradient-smoothing techniques.
 
- Collisions are resolved by calculating the
- _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
+ Collisions are resolved by calculating the _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
  so that they separate appropriately (see RBDA, Section 11.7). 
 
 The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
