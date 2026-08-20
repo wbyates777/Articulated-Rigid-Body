@@ -224,7 +224,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
  Adding automatic differentiation to the spatial algebra library means that 
  the algebra, ABA, CRBA, RNEA, and collision resolution are completely differentiable. 
  Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
- AD uses the [chain rule] to propagate exact _analytical_ derivatives through the code at the machine level.
+ AD uses the [chain rule] to propagate  _analytical_ derivatives through the code at the machine level.
  This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques
  such as real-time [Model Predictive Control] (MPC), gradient-based trajectory optimisation, or analytical [System Identification]  (SI).
    
@@ -317,7 +317,7 @@ https://youtu.be/gKXwwdfl8QE
  BAutodiff.h is a wrapper for the header-only autodiff library (see below).
  This enables the automatic computation of derivatives in an efficient and intuitive manner.
  It should be noted that the calculated derivatives are
- exact (to machine precision) and not approximated, as is the case for finite difference methods.
+ more accurate than is the case for finite difference methods.
 
 The collision detection component depends on two external libraries _libccd_ and _openGJK_ (see below).
 Libccd is a C library that implements a variant 
