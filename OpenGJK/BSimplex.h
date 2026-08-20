@@ -113,7 +113,7 @@ class BSimplex
 {
 public:
     
-    BSimplex(void) : m_nvrtx(0), m_point(), m_witness() {}
+    BSimplex(void) : m_point(), m_witness(), m_nvrtx(0) {}
     ~BSimplex(void)=default;
     
     void
@@ -225,4 +225,4 @@ operator>>( std::istream &istr, BSimplex &smp )
 
 #endif
 
-
+//

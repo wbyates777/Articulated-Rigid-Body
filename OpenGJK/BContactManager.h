@@ -9,13 +9,15 @@
  History:
 
  A simple impulse based collision detection and resolution system.
+ This code is not a full blown, production ready, collision resolution system 
+ such as Jolt or Bullet. Insetad it is intended as a demonstration of spatial impulse. 
  
- Detect collisions between pairs of objects and resolve any 'contacts' by employing 
+ 
+ The BContactManager detects collisions between pairs of objects and resolves any 'contacts' by employing 
  the physical concept of impulse to vary an object's velocity following a collision
  See https://en.wikipedia.org/wiki/Physics_engine
  
- 
- Performs _broad phase_ and _narrow phase_ collison detection.
+ The BContactManager performs _broad phase_ and _narrow phase_ collison detection.
  
  Broad-phase consists of detecting intersections between orientated bounding boxes (OBB) using 
  the Separating Axis Theorem (SAT). Computationally, this is relatively efficient.
@@ -29,7 +31,8 @@
  spatial impulse resulting from the collision (see RBDA, Section 11.7 Impulsive Dynamics, 
  Subsections: Two-Body Collisions, and Friction, pages 232-235).
  The force of a collision, that is the impulse, is transmitted from Body1 to Body2, and can be
- expressed in the form $nλ$  where $n$ is the (spatial) contact normal, and λ a scalar impulse magnitude.
+ expressed in the form $nλ$  where $n$ is the (spatial) contact normal from body2 to body1, 
+ and λ a scalar impulse magnitude.
  
  Friction is represented by Coulomb's Friction Model which is the simplest physical model for dry friction. 
  Coulomb's friction law relates the (spatial) impulse to two (spatial) tangential, frictional forces. 
@@ -60,7 +63,16 @@
  μ > 1.0   : extremely high friction (like racing tires or adhesives).
  See  https://en.wikipedia.org/wiki/Friction 
  
+ 
+ Other Constants
+ ------------------------------
+ i)   m_iters - PGS solver iterations - 20 is good, 25 is plenty 
+ ii)  m_baumgarte - Baumgarte stabilization factor [0.15, 0.2] are reasonable values
+ ii)  m_max_dist and m_max_tan_dist2 - used by BManifold::refresh() to 'drop' contact points if the contact bodies are 
+      separated beyond the given tolerance.
+ iii) m_threshold2 - used by BManifold::addPoint() to determine if two contact points are equal
 
+ 
  Notes: 
  1) Consider a 3D force f applied to a rigid body at some 3D point p, then the corresponding 
     spatial force (wrench) is $F = (p \times f, f)$, Modern Robotics, page 108, eqn 3.93 
@@ -75,20 +87,21 @@
 #ifndef __BCONTACTMANAGER_H__
 #define __BCONTACTMANAGER_H__
 
-
 #ifndef __ABODY_H__
 #include "ABody.h"
 #endif
 
-#ifndef __BCONTACT_H__
-#include "BContact.h"
+#ifndef __BBOX_H__
+#include "BBox.h"
+#endif
+
+#ifndef __BMANIFOLD_H__
+#include "BManifold.h"
 #endif
 
 #ifndef __BGJK_H__
 #include "BGJK.h"
 #endif
-
-
 
 #include <unordered_map>
 
@@ -107,7 +120,7 @@ public:
         
     // return number of collisions; update velocities of bodies accordingly
     int
-    resolve( double dt, const std::vector<ABody*> &body_list );
+    resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed = std::vector<ABody*>() );
 
     
     void
@@ -117,24 +130,34 @@ public:
     getIters( void ) const { return (int) m_iters; }
 
     // 
-    // coefficients  μ and e
+    // coefficients  μ, e, and Baumgarte
     //
     void
-    setFriction( bool state ) { m_frictionOn = state; }
+    frictionOn( bool b ) { m_frictionOn = b; }
+    
+    bool
+    frictionOn( void ) const { return m_frictionOn; }
+    
     
     void
-    setFriction( BScalar m ) { m_mu = m; }
+    setFriction( BScalar m ) { assert(m_mu >= 0); m_mu = m; }
 
     BScalar
     getFriction( void ) const { return m_mu; }
     
     void
-    setRestitution( BScalar e ) { m_e = e; }
+    setRestitution( BScalar e ) { assert(e >= 0 && e <= 1.0); m_e = e; }
     
     BScalar
     getRestitution( void ) const { return m_e; }
     
+    void
+    setBaumgarte( BScalar b ) { m_baumgarte = b; }
     
+    BScalar
+    getBaumgarte( void ) const { return m_baumgarte; }
+    
+
 private:  
    
     // used in sat_obb
@@ -144,27 +167,30 @@ private:
     static uint64_t
     myhash( BBodyId bid1, BBodyId bid2 )
     { 
-        // WARNING: this depends on BIdType being uint32_t
+        // WARNING: this depends on BIdType being uint32_t and unique
         return ((uint64_t(std::min(bid1, bid2)) << 32) | uint64_t(std::max(bid1, bid2))); 
+        //return ((uint64_t(bid1) << 32) | uint64_t(bid2)); // if order is important
     }
     
     static void 
     compute_basis(const BVector3 &n, BVector3 &b1, BVector3 &b2 );
     
+    static bool 
+    sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const glm::dvec3 &extA,
+             const glm::dmat3 &rotB, const glm::dvec3 &posB, const glm::dvec3 &extB);
+    
     bool
-    intersect( const ABody *b1, const ABody *b2 ) const
-    // check if orientated bounding boxes intersect
+    broad_check( const ABody *b1, const ABody *b2 ) const // SAT
     {
         return sat_obb(b1->orient(), b1->pos() + b1->box().pos(), b1->box().extent(), 
                        b2->orient(), b2->pos() + b2->box().pos(), b2->box().extent());
     }
     
-    bool 
-    sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const glm::dvec3 &extA,
-             const glm::dmat3 &rotB, const glm::dvec3 &posB, const glm::dvec3 &extB) const;
+    void
+    narrow_check(ABody *b1, ABody *b2, long now); // GJK/EPA
     
     int
-    detect( const std::vector<ABody*> &body );
+    detect( const std::vector<ABody*> &body, const std::vector<ABody*> &fixed  );
     
     void 
     prepare( BScalar dt );
@@ -176,21 +202,23 @@ private:
     cache( void );
     
 
-    uint64_t m_timestamp;    // keep track of different frames
-    uint64_t m_iters;        // PGS solver iterations 20 is plenty - 15 is OK
+    uint64_t m_iters;        // PGS solver iterations 25 is plenty - 20 is OK
+    uint64_t m_cachehits;
     
     BScalar m_e;             // coefficient of restitution, denoted e
     BScalar m_mu;            // coefficient of friction, denoted μ
-
-    int     m_cachehits;
-    bool    m_frictionOn;    // test code - remove for production
-
-    std::vector<BContact>        m_active;
-    std::unordered_map<uint64_t, BContact> m_history; 
+    BScalar m_baumgarte;     // coefficient of Baumgarte stabilization 
+ 
+    BScalar m_max_dist;      // see BManifold::refresh 
+    BScalar m_max_tan_dist2; // see BManifold::refresh
+    BScalar m_threshold2;    // see BManifold::addPoint
     
-
     BGJK  m_detector; 
-
+    
+    std::vector<BManifold> m_active;
+    std::unordered_map<uint64_t, BManifold> m_history; 
+    
+    bool m_frictionOn;
 };
 
 #endif

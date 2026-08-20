@@ -10,7 +10,7 @@
  
  This sets up an axis aligned bounding box (AABB)
 
- Note we use double here not float or spatial algebra types
+ Note we use double here - no spatial algebra/diffentiable types
  
  */
  
@@ -18,6 +18,9 @@
 #define __BBOX_H__
 
 
+#ifndef __BSTREAM_H__
+#include "BStream.h"
+#endif
 
 #include <cmath>
 #include <glm/vec3.hpp>
@@ -29,7 +32,7 @@ class BBox
 public:   
     BBox( void ) : m_top(0.0), m_bot(0.0), m_pos(0.0), m_extent(0.0), m_radius(0.0) {}
     
-    BBox( double r ): m_top(glm::dvec3(r)), m_bot(glm::dvec3(-r)), m_pos(0.0), m_extent(glm::dvec3(r)), m_radius(glm::length(m_extent)) {}
+    explicit BBox( double r ): m_top(glm::dvec3(r)), m_bot(glm::dvec3(-r)), m_pos(0.0), m_extent(glm::dvec3(r)), m_radius(glm::length(m_extent)) {}
         
     BBox( const glm::dvec3 &top, const glm::dvec3 &bot ) : m_top(top), m_bot(bot)
     { 
@@ -173,7 +176,12 @@ public:
         return area;
     }
     
-
+    friend std::ostream&
+    operator<<( std::ostream &ostr, const BBox &b );
+    
+    friend std::istream& 
+    operator>>( std::istream &istr, BBox &b ); 
+    
 private:
 
     glm::dvec3 m_top;       // top (max) and bottom (min) opposite corners of box 
@@ -183,5 +191,29 @@ private:
     double m_radius;        // of sphere that contains box
 
 };
+
+inline std::ostream&
+operator<<( std::ostream &ostr, const BBox &b )
+{
+    ostr << b.m_top << ' ';
+    ostr << b.m_bot << ' ';
+    ostr << b.m_pos << ' ';
+    ostr << b.m_extent << ' ';
+    ostr << b.m_radius << ' ';
+
+    return ostr;
+}
+
+inline std::istream& 
+operator>>( std::istream &istr, BBox &b )
+{
+    istr >> b.m_top;
+    istr >> b.m_bot;
+    istr >> b.m_pos;
+    istr >> b.m_extent;
+    istr >> b.m_radius;
+    
+    return istr;
+}
 
 #endif

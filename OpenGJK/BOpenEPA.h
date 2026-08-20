@@ -30,6 +30,7 @@
  Note: OpenGJK is released under a GPL3 license. As a result if this code is used 
  then *all* the ARB code base is also bound by the GPL3 license.
  
+ 
 */
 
 /*
@@ -55,17 +56,21 @@
 #ifndef __BOPENEPA_H__
 #define __BOPENEPA_H__
 
-#include <array>
 
-#ifndef __BPSIMPLEX_H__
-#include "BSimplex.h"
-#endif
 
 #ifndef __ABODY_H__
 #include "ABody.h"
 #endif
 
+#ifndef __BPSIMPLEX_H__
+#include "BSimplex.h"
+#endif
+
+
+#include <array>
+
 class BEPAPolytope;
+
 
 //
 // local EPA types
@@ -90,7 +95,7 @@ struct BEPAVertex
 };
 
 
-// Structure for horizon edge collection
+// structure for horizon edge collection
 struct BEPAEdge
 {
     bool 
@@ -116,8 +121,8 @@ public:
     
 
     BScalar 
-    collision( ABody* body1, ABody* body2, BSimplex &simplex, BScalar distance, 
-               BVector3 &cnormal, BVector3& cpoint );
+    collision( const ABody* body1, const ABody* body2, BSimplex &smp, BScalar distance, 
+               BVector3 &cnormal, BVector3 &cpoint );
     
     void 
     max_iters( int iters ) { m_max_iters = iters; }

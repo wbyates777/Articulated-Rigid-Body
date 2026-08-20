@@ -1,55 +1,25 @@
 # Articulated Rigid Body and OpenGJK
 
- Use these files in your build and you can switch out [libccd] and use the [openGJK] 
+ Use these files in your build and you will switch out libccd and use the openGJK 
  variant of GJK instead.
  
-  OpenGJK is a modern GJK implementation that is both faster and more numerically stable than libccd. 
-  For a  discussion on how this variant improves upon the classic GJK algorithm, 
-  see the  paper included in this subdirectory.
+ See the included paper for a discussion as to how openGJK improves on the basic GJK agorithm.
  
-  OpenGJK has been rewritten with [GLM] to support [automatic differentiation] using [autodiff] types. 
-  This makes it possible to differentiate across a contact boundary and calculate 
-  precise post-collision  derivatives for interacting  bodies. 
- 
- 
-This version of openGJK only supports polytopes (convex hulls); although boxes can be represented 
-as 8-point polytopes, analytical primitives such as spheres are not natively supported.
+ This implementation employs differentiable (autodiff) types and can be used to "differentiate across a contact", that is, to compute post-collision derivatives for interacting bodies. 
+   However, the contact derivatives may exhibit jump discontinuities due to discrete contact switching, friction clamping, or simplex transitions. 
+   Applications that require strictly continuous gradients  must implement more advanced techniques such as soft contact or gradient-smoothing techniques.
+
+This version of openGJK only supports polytopes; although boxes can be represented as 8-point polytopes, analytical primitives such as spheres are not natively supported.
+
+It should be noted that GJK/EPA is known to perform badly with aligned flat surfaces, such as boxes stacked on top of one another.  In these cases, professional collision management systems employ specialist box on box routines.
 
 
-Note that OpenGJK is released under a GPL3 license.
-As the GPLv3 is a "strong copyleft" license, integrating these files into your build structure 
-acts as a combined or derivative work. Consequently, if you use this module, 
-the entire ARB codebase in your project becomes bound by the GPLv3 license, 
-overriding the permissive nature of ARB's default MIT license. 
+Note that OpenGJK is released under a GPL3 license. As a result if this code is used 
+  then *all* the ARB code-base in this project is also bound by the GPL3 license.
+ 
+ 
+*/
 
-# Directory Contents
-
-The specific OpenGJK project files are:
-
- BSimplex.h
- 
- BCollider.h/.cpp
- 
- BOpenGJK.h/.cpp
- 
- BOpenEPA.h/.cpp
- 
- BGJK.h
-  
-The files common to both collision managment modules are:
- 
- ABody.h
- 
- BBox.h
-
- BPolytope.h
- 
- BContact.h
- 
- BContactManager.h/.cpp
- 
-
- ```
 /*
  *                          _____      _ _  __
  *                         / ____|    | | |/ /
@@ -68,21 +38,3 @@ The files common to both collision managment modules are:
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3. See https://www.gnu.org/licenses/
  */
- ```
-
-
-
-[automatic differentiation]: https://en.wikipedia.org/wiki/Automatic_differentiation
-[autodiff]: https://github.com/autodiff/autodiff
-[GJK]: https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
-[openGJK]: https://github.com/MattiaMontanari/openGJK
-[GLM]: https://github.com/g-truc/glm
-[libccd]:  https://github.com/danfis/libccd
-
-
-
-
-
-
-
-

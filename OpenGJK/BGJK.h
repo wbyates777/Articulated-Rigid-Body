@@ -26,8 +26,12 @@
  This code is differentiable using autodiff 
  
 
- Note: OpenGJK is released under a GPL3 license. As a result if this code is used 
+ Notes: 
+ 
+ i) OpenGJK is released under a GPL3 license. As a result if this code is used 
  then *all* the ARB code base is also bound by the GPL3 license.
+ ii) GJK/EPA not good with boxes - big flat collision surfaces can cause problems computing collision point,
+     this is why proffesional systems use (faster) specialised box/box collisions.
  
 */
 
@@ -55,12 +59,13 @@
 #define __BGJK_H__
 
 
-#ifndef __BSPATIALTYPES_H__
-#include "BSpatialTypes.h"
-#endif
 
 #ifndef __ABODY_H__
 #include "ABody.h"
+#endif
+
+#ifndef __BBOX_H__
+#include "BBox.h"
 #endif
 
 #ifndef __BOPENGJK_H__
@@ -70,6 +75,7 @@
 #ifndef __BOPENEPA_H__
 #include "BOpenEPA.h"
 #endif
+
 
 
 class BGJK  
@@ -84,12 +90,35 @@ public:
     // if a collision has taken place fill in the contact depth, normal and point, and return true 
     //
     bool
-    collision( ABody *b1, ABody *b2, BScalar &depth, BVector3 &cnormal, BVector3 &cpoint )
+    collision( ABody *b1, ABody *b2, BScalar &cdepth, BVector3 &cnormal, BVector3 &cpoint )
     {
         BSimplex simplex;
+        
+        // a positive distance indicated the bodies are separated
         BScalar distance = m_gjk.min_distance( b1, b2, simplex );
-        depth = m_epa.collision( b1, b2, simplex, distance, cnormal, cpoint );
-        return (depth > 0) ? true : false;      // a positive depth indicates a collision
+        // a (near) zero distance indicates contact; a penetration or 'just touching'
+        cdepth = m_epa.collision( b1, b2, simplex, distance, cnormal, cpoint );
+
+        // large flat surfaces/boxes can cause a cpoint dimension fall outside the object 
+        // keep cpoint within objects - note no orientation taken into considertion
+        const BVector3 top1 = b1->box().top() + b1->pos();
+        const BVector3 bot1 = b1->box().bot() + b1->pos();
+        const BVector3 top2 = b2->box().top() + b2->pos();
+        const BVector3 bot2 = b2->box().bot() + b2->pos();
+        
+        const BVector3 mymin = arb::max(bot1, bot2);
+        const BVector3 mymax = arb::min(top1, top2);
+    
+        for (int i = 0; i < 3; ++i)
+        {
+            if (mymin[i] < mymax[i])
+                cpoint[i] = arb::clamp(cpoint[i], mymin[i], mymax[i]);
+            else cpoint[i] = arb::clamp(cpoint[i], mymax[i], mymin[i]);
+        }
+        //
+        
+        // a positive depth indicates a penetration
+        return (cdepth > 0) ? true : false; 
     }
     
 private:

@@ -81,11 +81,11 @@ struct BEPAPolytope
 //
 
 void 
-BOpenEPA::set_contact_normal(const BVector3& w1, const BVector3& w2, BVector3& contact_normal) const
+BOpenEPA::set_contact_normal(const BVector3& w1, const BVector3& w2, BVector3& cnormal) const
 {
     BVector3 d = w2 - w1;
     BScalar n = arb::length(d);
-    contact_normal = (n > B_EPS) ? d / n : B_XAXIS;
+    cnormal = (n > B_EPS) ? d / n : B_XAXIS;
 }
 
 
@@ -308,13 +308,14 @@ void
 BOpenEPA::support_epa(const ABody* body1, const ABody* body2, const BVector3& dir, BGJKVertex& result) const
 // support function for EPA but only care about Minkowski difference point
 {
+    
     // search body1
     const glm::dvec3 localDir1 = glm::transpose(body1->orient()) * dir;
     double local_max1 = -std::numeric_limits<double>::max();
     BIndex local_best1(-1,-1); 
     for (int i = 0; i < body1->collider().size(); ++i) 
     {
-        for (int j = 0; j < body1->collider().getPoints(i).size(); ++j) 
+        for (int j = 0; j < body1->collider().getPoints(i).m_coord.size(); ++j) 
         {
             BIndex idx(j,i); // (vertIdx, polyIdx)
             double s = glm::dot(body1->collider().point(idx), localDir1);
@@ -329,11 +330,11 @@ BOpenEPA::support_epa(const ABody* body1, const ABody* body2, const BVector3& di
     
     // search body2 in opposite direction
     const glm::dvec3 localDir2 = glm::transpose(body2->orient()) * dir;
-    double local_max2  = -std::numeric_limits<double>::max();;
+    double local_max2 = -std::numeric_limits<double>::max();
     BIndex local_best2(-1,-1);
     for (int i = 0; i < body2->collider().size(); ++i) 
     {
-        for (int j = 0; j < body2->collider().getPoints(i).size(); ++j) 
+        for (int j = 0; j < body2->collider().getPoints(i).m_coord.size(); ++j) 
         {
             BIndex idx(j,i);  //  (vertIdx, polyIdx)
             double s = glm::dot(body2->collider().point(idx), localDir2);
@@ -654,12 +655,10 @@ BOpenEPA::tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVecto
     }
 }
 
-//*******************************************************************************************
-// Entry point to the EPA Implementation
-//*******************************************************************************************
 
+// entry point to the EPA Implementation
 BScalar
-BOpenEPA::collision( ABody* body1, ABody* body2, BSimplex &smp, BScalar distance, BVector3 &cnormal, BVector3& cpoint ) 
+BOpenEPA::collision( const ABody* body1, const ABody* body2, BSimplex &smp, BScalar distance, BVector3 &cnormal, BVector3 &cpoint ) 
 {
     using std::abs;
 

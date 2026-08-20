@@ -15,6 +15,7 @@
  i)    an extra level of indexing so that each body can have a number of polytopes, and
  ii)   GLM based BVector3 types which can be made differentiable,
  
+ 
  see https://github.com/MattiaMontanari/openGJK 
 
  Note: OpenGJK is released under a GPL3 license. As a result if this code is used 
@@ -45,6 +46,11 @@
 #ifndef __BOPENGJK_H__
 #define __BOPENGJK_H__
 
+
+#ifndef __BSPATIALTYPES_H__
+#include "BSpatialTypes.h"
+#endif
+
 #ifndef __ABODY_H__
 #include "ABody.h"
 #endif
@@ -53,6 +59,13 @@
 #include "BSimplex.h"
 #endif
 
+#ifndef __BFUNCTIONS_H__
+#include "BFunctions.h"
+#endif
+
+#ifndef __BPRODUCTS_H__
+#include "BProducts.h"
+#endif
 
 class BOpenGJK
 {
@@ -64,7 +77,7 @@ public:
     
 
     BScalar 
-    min_distance( ABody *body1, ABody *body2, BSimplex &s );
+    min_distance( ABody *body1, ABody *body2, BSimplex &smp ) const;
   
     
     void 
@@ -84,21 +97,21 @@ private:
     }
 
     void 
-    projectOnPlane( const BVector3 &p, const BVector3 &q, const BVector3 &r, BVector3 &v ) const
+    projectOnPlane( const BVector3 &p, const BVector3 &q, const BVector3 &r, BVector3 &v ) const 
     {
         const BVector3 n = arb::cross(p - q, p - r);
         v = n * (arb::dot(n, p) / arb::dot(n, n));
     }
-
-
+    
+    
     int 
-    hff1( const BVector3 &p, const BVector3 &q ) const 
+    hff1( const BVector3 &p, const BVector3 &q ) const  
     {
         return (arb::dot(p, p) > arb::dot(p, q));
     }
 
     int 
-    hff2( const BVector3 &p, const BVector3 &q,  const BVector3 &r ) const 
+    hff2( const BVector3 &p, const BVector3 &q,  const BVector3 &r ) const  
     {
         const BVector3 pq = q - p;
         const BVector3 pr = r - p;
@@ -106,7 +119,7 @@ private:
     }
 
     int 
-    hff3( const BVector3 &p, const BVector3 &q, const BVector3 &r ) const 
+    hff3( const BVector3 &p, const BVector3 &q, const BVector3 &r ) const  
     {
         return (arb::dot(p, arb::cross(q, r)) <= 0);  // discard s if true
     }
@@ -136,11 +149,11 @@ private:
     
     void 
     W3D( const ABody *body1, const ABody *body2, BSimplex &smp ) const;
-
+    
     void
     calc_witness( const ABody *body1, const ABody *body2, BSimplex &smp ) const;
-
-
+    
+    
     BVector3
     first_point( ABody *body ) const;
     

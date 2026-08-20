@@ -35,9 +35,7 @@
 #include "BOpenGJK.h"
 #endif
 
-#ifndef __BSPATIALTYPES_H__
-#include "BSpatialTypes.h"
-#endif
+
 
 #ifndef __BCOLLIDER_H__
 #include "BCollider.h"
@@ -847,16 +845,18 @@ BOpenGJK::max_point( ABody *body, const BVector3& dir ) const
     return (body->orient() * vert)  + body->pos();
 }
 
+
+// entry point to the GJK Implementation
 BScalar 
-BOpenGJK::min_distance(ABody *bdy1, ABody *bdy2, BSimplex &smp)
+BOpenGJK::min_distance(ABody *body1, ABody *body2, BSimplex &smp) const
 {
     using std::max;
     
-    const BCollider &body1 = bdy1->collider();
-    const BCollider &body2 = bdy2->collider();
+    const BCollider &collider1 = body1->collider();
+    const BCollider &collider2 = body2->collider();
     
     // initialise search direction
-    BVector3 v = first_point(bdy1) - first_point(bdy2); 
+    BVector3 v = first_point(body1) - first_point(body2); 
     
     // initialise simplex 
     smp.init(v);
@@ -870,13 +870,13 @@ BOpenGJK::min_distance(ABody *bdy1, ABody *bdy2, BSimplex &smp)
         BVector3 vminus = -v;
         
         // support function 
-        const BVector3 body1_vert =  max_point(bdy1, vminus);
+        const BVector3 body1_vert =  max_point(body1, vminus);
   
-        const BVector3 body2_vert =  max_point(bdy2, v);
+        const BVector3 body2_vert =  max_point(body2, v);
         
         BGJKVertex w;
         w.vertex = (body1_vert - body2_vert);
-        w.index  = {body1.max_index(), body2.max_index()}; // (vert,poly) body1, (vert,poly) body 2
+        w.index  = {collider1.max_index(), collider2.max_index()}; // (vert,poly) body1, (vert,poly) body 2
         //
 
         BScalar len_sq = arb::length2(v);
@@ -918,7 +918,7 @@ BOpenGJK::min_distance(ABody *bdy1, ABody *bdy2, BSimplex &smp)
         std::cout << "\n* * * GJK MAXIMUM ITERATION NUMBER REACHED!!! * * *\n" << std::endl;
     }
     
-    calc_witness(bdy1, bdy2, smp);
+    calc_witness(body1, body2, smp);
     
     return arb::length(v);
 }
