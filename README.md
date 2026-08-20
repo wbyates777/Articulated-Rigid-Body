@@ -267,7 +267,7 @@ Furthermore, openGJK is released under the GPLv3 license, and using this module 
 The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
 It also uses impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
 
- https://youtu.be/g1jMEpu1sl8
+https://youtu.be/gKXwwdfl8QE
 
 
 
