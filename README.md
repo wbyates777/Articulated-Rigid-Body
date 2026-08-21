@@ -5,13 +5,18 @@
 
 **Compact C++ articulated rigid body simulation library implementing:**
 
-- Forward dynamics via the Articulated Body Algorithm (ABA) —  $O(N_B)$,  
-- Forward dynamics via the Composite Rigid Body Algorithm (CRBA) —  $O(N_B^2)$, 
-- Inverse dynamics via the Recursive Newton–Euler Algorithm (RNEA) -  $O(N_B)$, 
-- Collision detection and spatial impulse-based contact resolution, and  
-- Unified Robot Description Format (URDF) parser for model import and export.
+* Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
+* Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ calculate joint-space inertia matrix $M(q)$ for kinematic trees.
+* Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
+* Spatial algebra implementation (header-only),
+* End-to-end automatic differentiability using autodiff (header-only),
+* Collision Resolution –  spatial impulses and GJK/EPA 4-point persistent contact manifolds,
+* Unified Robot Description Format (URDF) import and export.
+  
   
 Includes **end-to-end automatic differentiation**, enabling system identification, optimisation, and machine learning applications.
+
+Minimal dependencies: STL, GLM, (autodiff, openGJK, and libccd optional).
 
 ---
 
@@ -23,7 +28,10 @@ If you have CMake and a C++23 compliant compiler, you can clone, download all de
 git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articulated-Rigid-Body && mkdir build && cd build && cmake .. && make -j8
 ```
 
+
+
 ---
+
 ### Visual Demos
 
 
@@ -43,7 +51,10 @@ https://youtu.be/g1jMEpu1sl8
 
 https://youtu.be/O9h_phDP_tk
 
+
+
 ---
+
 
 ## Introduction
 
@@ -91,16 +102,7 @@ Additionally, the header-only autodiff library is required for automatic differe
  the openGJK or libccd library for collision detection.
 
 
-### Key Features
 
-* Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
-* Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ calculate joint-space inertia matrix $M(q)$ for kinematic trees.
-* Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
-* Spatial algebra implementation (header-only),
-* End-to-end automatic differentiability using autodiff (header-only),
-* Collision Resolution –  spatial impulses and GJK/EPA 4-point persistent contact manifolds,
-* Unified Robot Description Format (URDF) import and export,
-* Minimal dependencies STL, GLM, (autodiff, openGJK, and libccd optional).
 
 
 ## Implementation 
