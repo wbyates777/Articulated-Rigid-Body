@@ -78,7 +78,7 @@ to a simple hinged mechanism such as a door.
 
  
  Automatic differentiation is provided by the autodiff library.
- Thus the algebra, the ABA, and the RNEA,  are completely differentiable. 
+ Thus the algebra, the ABA, CRBA, and the RNEA, are completely differentiable. 
  This end-to-end differentiability facilitates the application of 
   advanced optimisation, machine learning techniques, and System Identification (SI).
 
@@ -101,6 +101,156 @@ Additionally, the header-only autodiff library is required for automatic differe
 * Collision Resolution –  spatial impulses and GJK/EPA 4-point persistent contact manifolds,
 * Unified Robot Description Format (URDF) import and export,
 * Minimal dependencies STL, GLM, (autodiff, openGJK, and libccd optional).
+
+
+## Implementation 
+
+ The implementations presented here, are intended for use in computer graphics, and are 
+ based on those in the RBDL library.
+ Alternative implementations can be found in the RBDyn library, and the Pinocchio library (see below for links).
+ We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
+ This facilitates numerical comparison testing. 
+ Some variables have been moved to their appropriate classes and accessor methods 
+ have been added throughout. This improves encapsulation and readability.
+ 
+
+ RBDL, RBDyn, and Pinocchio employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
+ fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
+ This code does not depend on Eigen3, and instead relies on the light-weight, header-only GLM library. 
+ GLM (OpenGL Mathematics) is  based on the OpenGL Shading Language (GLSL) specifications, and
+ provides a highly optimised implementation of 3D linear algebra primitives. 
+ 
+ The spatial algebra implementation (though not the algorithms) is also header-only, and depends solely on STL and the 3D GLM types: 
+ ```
+ glm::vec3, glm::mat3, glm::quat,
+ ``` 
+ and the GLM functions:
+ ```
+ glm::cross(u,v), glm::dot(u,v), glm::outerProduct(u,v), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q).
+ ```
+
+ Given the small number of 3D functions and types employed, it is straightforward to convert back to Eigen3 (although see 
+ the note on Eigen3's and GLM's row-major, column-major differences), or 
+ replace GLM with a high(er)-performance alternative, such as a custom std::simd 
+ linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
+ while remaining (mostly) agnostic about the underlying implementation.
+
+ In order to implement automatic differentiation it is sufficient to #include "BAutodiff.h" in the BSpatialTypes.h file.
+ BAutodiff.h is a wrapper for the header-only autodiff library (see below).
+ This enables the automatic computation of derivatives in an efficient and intuitive manner.
+ It should be noted that the calculated derivatives are
+ more accurate than is the case for finite difference methods.
+
+The collision detection component depends on two external libraries _libccd_ and _openGJK_ (see below).
+Libccd is a C library that implements a variant 
+of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). OpenGJK is a more modern and efficient C++ implemenation of GJK/EPA. 
+The OpenGJK used here has been rewritten to use GLM types in order to 
+support  autodiff types, and  automatic  differentiation.
+
+ The URDFManager class depends on [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simiplicity these are included in this codebase.
+
+ 
+ ## Validation
+ 
+ This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. 
+ARB has been tested against standard industrial robot models including: 
+  
+    ur5.urdf,  iiwa7.urdf,  iiwa14.urdf,  r1.urdf,  go1.urdf,  and  tiago_dual-test.urdf
+  
+ The results of testing tiago_dual-test.urdf, a robotic arm with 74 components and 33 degrees of freedom (taken from the RBDL documentation) are shown
+ in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
+ Notice that the maximum difference across all components is 0.00022200.
+
+<details>
+
+<summary>Results Table: RBDL versus ARB </summary>
+
+
+   | Component  | RBDL | ARB  | Error |
+| :---       | ---: | ---: | ---:  |
+| arm_left_1_link | 4.13177335 | 4.13177043 | 0.00000292 |
+| arm_left_2_link | 1.48244894 | 1.48248132 | 0.00003238 |
+| arm_left_3_link | 388.13203494 | 388.13200586 | 0.00002908 |
+| arm_left_4_link | 1.29921370 | 1.29936648 | 0.00015278 |
+| arm_left_5_link | 387.73189698 | 387.73192178 | 0.00002480 |
+| arm_left_6_link | 61.55706876 | 61.55699723 | 0.00007153 |
+| arm_left_7_link | 1221.30829365 | 1221.30817777 | 0.00011588 |
+| arm_right_1_link | 7.19101952 | 7.19101951 | 0.00000001 |
+| arm_right_2_link | 15.15036039 | 15.15037562 | 0.00001523 |
+| arm_right_3_link | 384.31035727 | 384.31037533 | 0.00001806 |
+| arm_right_4_link | 38.83648634 | 38.83657114 | 0.00008480 |
+| arm_right_5_link | 373.76654839 | 373.76653501 | 0.00001338 |
+| arm_right_6_link | 120.93222527 | 120.93236546 | 0.00014019 |
+| arm_right_7_link | 1274.68114277 | 1274.68093087 | 0.00021190 |
+| caster_back_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_back_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| caster_back_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_back_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| caster_front_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_front_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| caster_front_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
+| caster_front_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
+| gripper_left_left_finger_link | -4.24368053 | -4.24382485 | 0.00014432 |
+| gripper_left_right_finger_link | 22.42880510 | 22.42894942 | 0.00014432 |
+| gripper_right_left_finger_link | 30.80009586 | 30.80031786 | **0.00022200** |
+| gripper_right_right_finger_link | -12.61497129 | -12.61519329 | **0.00022200** |
+| head_1_link | 53.72321252 | 53.72321253 | 0.00000001 |
+| head_2_link | 100.89176416 | 100.89176335 | 0.00000081 |
+| suspension_left_link | 0.08457647 | 0.08457647 | 0.00000000 |
+| suspension_right_link | 0.08457647 | 0.08457647 | 0.00000000 |
+| torso_lift_link | 0.74719650 | 0.74719666 | 0.00000016 |
+| wheel_left_link | 119.15547007 | 119.15547007 | 0.00000000 |
+| wheel_right_link | 119.15547007 | 119.15547007 | 0.00000000 |
+
+</details>
+
+The file BSpatialChecks.cpp includes 52 consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+ For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
+ 
+         exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
+         
+is a fundamental property that links adjoints, spatial transforms, inverses, and the exp mapping.
+
+ The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
+ and so, given some joint  accelerations _qddot_, their composition should satisfy the identity:
+
+         ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
+ 
+The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
+
+
+ ## Performance
+
+To measure  perfomance ARB has been benchmarked against RBDL v3.3.1. 
+
+The  table below shows the execution times in milliseconds of forward dynamics (ABA/CRBA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
+
+   | Algorithm  | RBDL | ARB  | Difference |
+| :---       | ---: | ---: | ---:  |
+| ABA | 523.22  | 516.38 | -1.31% |
+| CRBA | 290.23 | 303.99  | +4.74%|
+| RNEA | 201.60 |  213.87 | +6.09% |
+
+#### Notes
+* **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
+* **Compilation Environment:** C++23 clang optimized with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
+
+Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard (RBDL). Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
+
+
+ ## Build Instructions
+ 
+
+On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and enter:
+
+  ```mkdir build ; cd build ; cmake .. ; make ```
+ 
+Cmake will take care of installing the GLM, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
+If you are not using cmake these libraries can be downloaded directly from github (see links below).
+
+The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
+If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes. 
+
 
 ## Background
 
@@ -281,153 +431,6 @@ https://youtu.be/gKXwwdfl8QE
   The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required 
   for the ABA, CRBA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.
   
-## Implementation 
-
- The implementations presented here, are intended for use in computer graphics, and are 
- based on those in the RBDL library.
- Alternative implementations can be found in the RBDyn library, and the Pinocchio library (see below for links).
- We intentionally use similar variable names and the same object structure and hierarchy as RBDL. 
- This facilitates numerical comparison testing. 
- Some variables have been moved to their appropriate classes and accessor methods 
- have been added throughout. This improves encapsulation and readability.
- 
-
- RBDL, RBDyn, and Pinocchio employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
- fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
- This code does not depend on Eigen3, and instead relies on the light-weight, header-only GLM library. 
- GLM (OpenGL Mathematics) is  based on the OpenGL Shading Language (GLSL) specifications, and
- provides a highly optimised implementation of 3D linear algebra primitives. 
- 
- The spatial algebra implementation (though not the algorithms) is also header-only, and depends solely on STL and the 3D GLM types: 
- ```
- glm::vec3, glm::mat3, glm::quat,
- ``` 
- and the GLM functions:
- ```
- glm::cross(u,v), glm::dot(u,v), glm::outerProduct(u,v), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q).
- ```
-
- Given the small number of 3D functions and types employed, it is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3's and GLM's row-major, column-major differences), or 
- replace GLM with a high(er)-performance alternative, such as a custom std::simd 
- linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
- while remaining (mostly) agnostic about the underlying implementation.
-
- In order to implement automatic differentiation it is sufficient to #include "BAutodiff.h" in the BSpatialTypes.h file.
- BAutodiff.h is a wrapper for the header-only autodiff library (see below).
- This enables the automatic computation of derivatives in an efficient and intuitive manner.
- It should be noted that the calculated derivatives are
- more accurate than is the case for finite difference methods.
-
-The collision detection component depends on two external libraries _libccd_ and _openGJK_ (see below).
-Libccd is a C library that implements a variant 
-of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). OpenGJK is a more modern and efficient C++ implemenation of GJK/EPA. 
-The OpenGJK used here has been rewritten to use GLM types in order to 
-support  autodiff types, and  automatic  differentiation.
-
- The URDFManager class depends on [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simiplicity these are included in this codebase.
-
- 
- ## Validation
- 
- This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. 
-ARB has been tested against standard industrial robot models including: 
-  
-    ur5.urdf,  iiwa7.urdf,  iiwa14.urdf,  r1.urdf,  go1.urdf,  and  tiago_dual-test.urdf
-  
- The results of testing tiago_dual-test.urdf, a robotic arm with 74 components and 33 degrees of freedom (taken from the RBDL documentation) are shown
- in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
- Notice that the maximum difference across all components is 0.00022200.
-
-<details>
-
-<summary>Results Table: RBDL versus ARB </summary>
-
-
-   | Component  | RBDL | ARB  | Error |
-| :---       | ---: | ---: | ---:  |
-| arm_left_1_link | 4.13177335 | 4.13177043 | 0.00000292 |
-| arm_left_2_link | 1.48244894 | 1.48248132 | 0.00003238 |
-| arm_left_3_link | 388.13203494 | 388.13200586 | 0.00002908 |
-| arm_left_4_link | 1.29921370 | 1.29936648 | 0.00015278 |
-| arm_left_5_link | 387.73189698 | 387.73192178 | 0.00002480 |
-| arm_left_6_link | 61.55706876 | 61.55699723 | 0.00007153 |
-| arm_left_7_link | 1221.30829365 | 1221.30817777 | 0.00011588 |
-| arm_right_1_link | 7.19101952 | 7.19101951 | 0.00000001 |
-| arm_right_2_link | 15.15036039 | 15.15037562 | 0.00001523 |
-| arm_right_3_link | 384.31035727 | 384.31037533 | 0.00001806 |
-| arm_right_4_link | 38.83648634 | 38.83657114 | 0.00008480 |
-| arm_right_5_link | 373.76654839 | 373.76653501 | 0.00001338 |
-| arm_right_6_link | 120.93222527 | 120.93236546 | 0.00014019 |
-| arm_right_7_link | 1274.68114277 | 1274.68093087 | 0.00021190 |
-| caster_back_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_back_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| caster_back_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_back_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| caster_front_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_front_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| caster_front_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_front_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| gripper_left_left_finger_link | -4.24368053 | -4.24382485 | 0.00014432 |
-| gripper_left_right_finger_link | 22.42880510 | 22.42894942 | 0.00014432 |
-| gripper_right_left_finger_link | 30.80009586 | 30.80031786 | **0.00022200** |
-| gripper_right_right_finger_link | -12.61497129 | -12.61519329 | **0.00022200** |
-| head_1_link | 53.72321252 | 53.72321253 | 0.00000001 |
-| head_2_link | 100.89176416 | 100.89176335 | 0.00000081 |
-| suspension_left_link | 0.08457647 | 0.08457647 | 0.00000000 |
-| suspension_right_link | 0.08457647 | 0.08457647 | 0.00000000 |
-| torso_lift_link | 0.74719650 | 0.74719666 | 0.00000016 |
-| wheel_left_link | 119.15547007 | 119.15547007 | 0.00000000 |
-| wheel_right_link | 119.15547007 | 119.15547007 | 0.00000000 |
-
-</details>
-
-The file BSpatialChecks.cpp includes 52 consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
- For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
- 
-         exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
-         
-is a fundamental property that links adjoints, spatial transforms, inverses, and the exp mapping.
-
- The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
- and so, given some joint  accelerations _qddot_, their composition should satisfy the identity:
-
-         ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
- 
-The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
-
-
- ## Performance
-
-To measure  perfomance ARB has been benchmarked against RBDL v3.3.1. 
-
-The  table below shows the execution times in milliseconds of forward dynamics (ABA/CRBA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
-
-   | Algorithm  | RBDL | ARB  | Difference |
-| :---       | ---: | ---: | ---:  |
-| ABA | 523.22  | 516.38 | -1.31% |
-| CRBA | 290.23 | 303.99  | +4.74%|
-| RNEA | 201.60 |  213.87 | +6.09% |
-
-#### Notes
-* **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
-* **Compilation Environment:** C++23 clang optimized with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
-
-Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard (RBDL). Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
-
-
- ## Build Instructions
- 
-
-On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and enter:
-
-  ```mkdir build ; cd build ; cmake .. ; make ```
- 
-Cmake will take care of installing the GLM, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
-If you are not using cmake these libraries can be downloaded directly from github (see links below).
-
-The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
-If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes. 
 
  ## Libraries
  
