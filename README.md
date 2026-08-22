@@ -6,28 +6,17 @@
 **Compact C++ articulated rigid body simulation library implementing:**
 
 * Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
-* Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ calculate joint-space inertia matrix $M(q)$ for kinematic trees.
+* Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ compute joint-space inertia matrix $M(q)$ for kinematic trees.
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * End-to-end automatic differentiability using autodiff (header-only),
-* Collision Resolution –  spatial impulses and GJK/EPA 4-point persistent contact manifolds,
+* Collision Resolution –  spatial impulses, GJK/EPA, and 4-point persistent contact manifolds,
 * Unified Robot Description Format (URDF) import and export.
   
   
-Includes **end-to-end automatic differentiation**, enabling system identification, optimisation, and machine learning applications.
+**End-to-end automatic differentiation** enables derivatives  to propagate through the physics pipeline supporting  system identification, gradient based optimisation, and machine learning applications.
 
 Minimal dependencies: STL, GLM, (autodiff, openGJK, and libccd optional).
-
----
-
-## ⚡ Quick Start ⚡
-
-If you have CMake and a C++23 compliant compiler, you can clone, download all dependencies, and build ARB with a single command:
-
-```bash
-git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articulated-Rigid-Body && mkdir build && cd build && cmake .. && make -j8
-```
-
 
 
 ---
@@ -56,6 +45,18 @@ https://youtu.be/O9h_phDP_tk
 ---
 
 
+
+## ⚡ Quick Start ⚡
+
+If you have CMake and a C++23 compliant compiler, you can clone, download all dependencies, and build ARB with a single command:
+
+```bash
+git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articulated-Rigid-Body && mkdir build && cd build && cmake .. && make -j8
+```
+
+---
+
+
 ## Introduction
 
 ARB is a compact implementation of a _differentiable spatial algebra_, designed for use in computer graphics, simulation, and robotics. 
@@ -64,7 +65,7 @@ It combines:
 - Spatial algebra (6D motion and force vectors),
 - Automatic differentiation (AD) across the full simulation pipeline (including contacts),    
 - Efficient rigid body dynamics algorithms (ABA, CRBA, RNEA), 
-- Collision detection (GJK/EPA) and impulse based contact resolution (PGS solver, warm start), and
+- Collision detection (GJK/EPA) and impulse based contact resolution (PGS solver, 4-point persistent manifolds), and
 - URDF file parser for model import and export.
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
@@ -145,11 +146,11 @@ Additionally, the header-only autodiff library is required for automatic differe
 
 The collision detection component depends on two external libraries _libccd_ and _openGJK_ (see below).
 Libccd is a C library that implements a variant 
-of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). OpenGJK is a more modern and efficient C++ implemenation of GJK/EPA. 
+of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). OpenGJK is a more modern and efficient C++ implementation of GJK/EPA. 
 The OpenGJK used here has been rewritten to use GLM types in order to 
 support  autodiff types, and  automatic  differentiation.
 
- The URDFManager class depends on [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simiplicity these are included in this codebase.
+ The URDFManager class depends on [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simplicity these are included in this codebase.
 
  
  ## Validation
@@ -223,7 +224,7 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
  ## Performance
 
-To measure  perfomance ARB has been benchmarked against RBDL v3.3.1. 
+To measure  performance ARB has been benchmarked against RBDL v3.3.1. 
 
 The  table below shows the execution times in milliseconds of forward dynamics (ABA/CRBA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
 
@@ -235,20 +236,20 @@ The  table below shows the execution times in milliseconds of forward dynamics (
 
 #### Notes
 * **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
-* **Compilation Environment:** C++23 clang optimized with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
+* **Compilation Environment:** C++23 clang optimised with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
 
-Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard (RBDL). Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
+Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorised (Eigen3) and highly optimised industry standard (RBDL). Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
 
 
  ## Build Instructions
  
 
-On a platform that supports cmake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and enter:
+On a platform that supports CMake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and enter:
 
   ```mkdir build ; cd build ; cmake .. ; make ```
  
-Cmake will take care of installing the GLM, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
-If you are not using cmake these libraries can be downloaded directly from github (see links below).
+CMake will take care of installing the GLM, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
+If you are not using CMake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
 If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes. 
@@ -301,7 +302,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
  | Joint Type | DOF  | Description | Representation | 
 | :---       | ---: | :---        | :---           |
 | Fixed1     |  0   |  Compressible rigid connection between links.  |  Identity Transform |
-| Fixed2     |  0   |  Uncompressible rigid connection between links.  |  Identity Transform |
+| Fixed2     |  0   |  Incompressible rigid connection between links.  |  Identity Transform |
 | Revolute   |  1   |  Rotation about a specified axis.  |  Scalar Angle  |
 | Prismatic  |  1   |  Translation along a specified axis.  |  Scalar Displacement  |
 | Helical    |  1   |  A 'screw' joint with both rotational and translational motion |  Scalar Pitch  |
@@ -416,7 +417,7 @@ Furthermore, openGJK is released under the GPLv3 license, and using this module 
  Collisions are resolved by calculating the _spatial impulses_ resulting from a contact and using these impulses to update the object's velocities
  so that they separate appropriately (see RBDA, Section 11.7). 
 
-The BContactManager class utilizes an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilization for overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behavior than a box-friction approximation.
+The BContactManager class utilises an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilisation for overlap recovery with a circular friction cone (Coulomb friction) model, providing  more realistic sliding and sticking behaviour than a box-friction approximation.
 It also uses impulse caching (_warm starting_) across frames to ensure stability and eliminate _jitter_ in resting or stacked objects.
 
 https://youtu.be/gKXwwdfl8QE
@@ -478,4 +479,3 @@ This project is licensed under the MIT License.
 Stars Welcome. It aids project visibility. Please click here:  
 ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
 ![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body.svg?style=social)
-
