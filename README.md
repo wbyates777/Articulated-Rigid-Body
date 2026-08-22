@@ -65,7 +65,7 @@ It combines:
 - Spatial algebra (6D motion and force vectors),
 - Automatic differentiation (AD) across the full simulation pipeline (including contacts),    
 - Efficient rigid body dynamics algorithms (ABA, CRBA, RNEA), 
-- Collision detection (GJK/EPA) and impulse based contact resolution (PGS solver, 4-point persistent manifolds), and
+- Collision detection (GJK/EPA), impulse based resolution (PGS solver, 4-point persistent manifolds), and
 - URDF file parser for model import and export.
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
