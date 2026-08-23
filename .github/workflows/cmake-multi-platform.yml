@@ -50,11 +50,17 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
+    # This step fixes third-party libccd for CMake 4.0+ compatibility before it configures
+    - name: Patch libccd CMake version
+      shell: bash
+      run: |
+        if [ -f "lib/ccd-src/CMakeLists.txt" ]; then
+          sed -i.bak 's/cmake_minimum_required(VERSION [0-9.]*)/cmake_minimum_required(VERSION 3.5)/g' lib/ccd-src/CMakeLists.txt
+        fi
+
     - name: Configure CMake
       shell: bash
-      # Setting the environment variable forces modern CMake to accept legacy subproject versions like libccd
       run: |
-        export CMAKE_POLICY_VERSION_MINIMUM=3.5
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
               -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
               -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
