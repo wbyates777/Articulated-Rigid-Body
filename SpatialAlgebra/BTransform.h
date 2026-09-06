@@ -315,19 +315,19 @@ namespace arb
     
     // rotations, see RBDA, Section 2.8, table, 2.2, page 23
     // all angles in radians, axis *must* be normalised
-    inline BTransform 
+    inline constexpr BTransform 
     Xrot( BScalar theta, const BVector3 &axis ) { return BTransform(rot(theta, axis)); }
    
-    inline BTransform 
+    inline constexpr BTransform 
     Xrotx( BScalar theta ) { return BTransform(rotx(theta)); }
 
-    inline BTransform 
+    inline constexpr BTransform 
     Xroty( BScalar theta ) { return BTransform(roty(theta)); }
 
-    inline BTransform 
+    inline constexpr BTransform 
     Xrotz( BScalar theta ) { return BTransform(rotz(theta)); }
 
-    inline BTransform 
+    inline constexpr BTransform 
     Xtrans( const BVector3 &r ) { return BTransform( B_IDENTITY_3x3, r ); }
     
 }
