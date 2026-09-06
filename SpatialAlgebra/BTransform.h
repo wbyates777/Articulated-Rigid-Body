@@ -30,6 +30,7 @@
  It also provides some efficient matrix operations such as matrix concatenation 
  and transformation of spatial vectors.
  
+ ///
  
  The BTransform class presented here has been tested against and matches
  the Eigen3 RBDL function:
@@ -49,6 +50,7 @@
 
    return result;
  }
+ 
 ///
  
  Notes:
@@ -142,8 +144,6 @@ public:
     }
     
 
-    ///
-    ///
     // rotation, preserves coordinate frame origin
     const BMatrix3&
     E( void ) const { return m_E; }
@@ -176,20 +176,15 @@ public:
     {
         return BMatrix6(*this) * rhs;
     }
-    
-    // In RBDL called SpatialRigidBodyInertia::apply(const SpatialVector &v_sp)
+
     BVector6 
     operator*( const BVector6 &v ) const 
-    // return X * v
+    // return X * v 
     {
-        const BMatrix3 ET = arb::transpose(m_E);
-        const BVector3 v_rxw = v.lin() - arb::cross(m_r, v.ang());
-        return BVector6(ET * v.ang(), ET * v_rxw);
-        
         // v_rxw = v.lin() - arb::cross(m_r, v.ang())
         /*const BVector3 v_rxw( v[3] - m_r[1] * v[2] + m_r[2] * v[1],
-                              v[4] - m_r[2] * v[0] + m_r[0] * v[2],
-                              v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
+                                v[4] - m_r[2] * v[0] + m_r[0] * v[2],
+                                v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
         
         return BVector6(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
                         m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
@@ -198,8 +193,13 @@ public:
                         m_E[0][0] * v_rxw[0] + m_E[0][1] * v_rxw[1] + m_E[0][2] * v_rxw[2],
                         m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
                         m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );*/
+        
+        const BMatrix3 ET = arb::transpose(m_E);
+        const BVector3 v_rxw = v.lin() - arb::cross(m_r, v.ang());
+        return BVector6(ET * v.ang(), ET * v_rxw);
     }
 
+    
     BVector6 
     apply( const BVector6 &v ) const { return operator*(v); }
 
@@ -277,6 +277,7 @@ public:
     
     bool 
     operator!=( const BTransform &v ) const { return (m_r != v.m_r) || (m_E != v.m_E); }
+    
     
     friend std::istream& 
     operator>>( std::istream &istr, BTransform &m );

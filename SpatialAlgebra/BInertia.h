@@ -36,7 +36,6 @@
      return BInertia(mass, diag);
  }
  
- 
  BInertia 
  cylinder( BScalar mass, BScalar radius, BScalar length )
  {

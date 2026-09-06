@@ -43,8 +43,8 @@ public:
     constexpr BVector6( const std::array<BScalar, 6> &d ): m_data(d) {}
     constexpr explicit BVector6( BScalar s ): m_data{s, s, s, s, s, s} {}
     constexpr explicit BVector6( BScalar s0, BScalar s1 ): m_data{s0, s0, s0, s1, s1, s1} {}
-    explicit BVector6( const std::vector<BScalar> &d ) { assert(d.size() == 6); set(d); }
-    explicit BVector6( const std::vector<std::vector<BScalar>> &d ) { assert(d.size() == 1 && d[0].size() == 6); set(d[0]); }
+    explicit BVector6( const std::vector<BScalar> &d ): m_data{d[0], d[1], d[2], d[3], d[4], d[5]} { assert(d.size() == 6); }
+    explicit BVector6( const std::vector<std::vector<BScalar>> &d ): m_data{d[0][0], d[0][1], d[0][2], d[0][3], d[0][4], d[0][5]}  { assert(d.size() == 1 && d[0].size() == 6); }
     constexpr BVector6( BScalar s0, BScalar s1, BScalar s2, BScalar s3, BScalar s4, BScalar s5 ): m_data{s0, s1, s2, s3, s4, s5} {}
     BVector6( const BVector3 &h, const BVector3 &t ): m_data{h[0], h[1], h[2], t[0], t[1], t[2]} {}
     BVector6( const BVector3 &h, BScalar s3, BScalar s4, BScalar s5 ): m_data{h[0], h[1], h[2], s3, s4, s5} {}

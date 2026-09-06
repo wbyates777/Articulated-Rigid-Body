@@ -29,6 +29,9 @@
       
     M * V =  | AX + BY |
              | CX + DY |
+ 
+    M^T = | A^T C^T |
+          | B^T D^T |
   
 
 */
