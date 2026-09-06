@@ -394,12 +394,6 @@ public:
                          (tl1 * bl2) + (bl1 * br2), (tr1 * bl2) + (br1 * br2) ); 
     }
     
-    BMatrix6& 
-    operator*=(const BMatrix6 &rhs)
-    {
-        return (*this = *this * rhs);
-    }
-
     bool 
     operator==( const BMatrix6 &m ) const { return (m_data == m.m_data); }
     
