@@ -92,7 +92,7 @@ namespace arb {
     
     // 3D rotations - all angles in radians
     
-    inline BMatrix3 
+    inline constexpr BMatrix3 
     rot( BScalar theta, const BVector3 &axis ) 
     // WARNING: axis *must* be normalized
     {
@@ -118,7 +118,7 @@ namespace arb {
     }
     
     
-    inline BMatrix3 
+    inline constexpr BMatrix3 
     rotx( BScalar theta ) 
     {
         using std::sin;
@@ -131,7 +131,7 @@ namespace arb {
                          0.0,  -s,   c );
     }
     
-    inline BMatrix3 
+    inline constexpr BMatrix3 
     roty( BScalar theta ) 
     {
         using std::sin;
@@ -144,7 +144,7 @@ namespace arb {
                            s, 0.0,   c ); 
     }
     
-    inline BMatrix3 
+    inline constexpr BMatrix3 
     rotz( BScalar theta ) 
     {
         using std::sin;
