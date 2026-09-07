@@ -228,7 +228,7 @@ To measure  performance ARB has been benchmarked against RBDL v3.3.1.
 
 The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across various URDF models. Results were averaged over 40 trials.
 
-| Robot (DoF)|  Algorithm | RDBL (ms) | ARB (ms) | Diff (%) |
+| Robot (DoF)|  Algorithm | RBDL (ms) | ARB (ms) | Diff (%) |
 | :--- |  :--- | :---: | :---: | ---: |
 | **ur5** (6)| ABA  | 9.8076 |	9.5432|	**-2.6962** |
 |            | CRBA |5.1290|	4.9009|	**-4.4469** |
@@ -252,8 +252,8 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 * **Compilation Environment:** C++23 clang optimised with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
 * **Processor:** 3.3 GHz 12-Core Intel Xeon W. 
 
-The results show that ARB consistently outperforms RDBL for ABA across all tested degrees of freedom (DoF). However, 
-for CRBA, the results are mixed, while for RNEA, ARB is consistently slower across all models.
+The results show that ARB consistently outperforms RBDL for ABA across all tested degrees of freedom (DoF). However 
+for CRBA and RNEA the results are mixed;  for CRBA, ARB is mostly faster, while for RNEA, ARB is  mostly slower.
 
 Despite ARB's lightweight footprint, when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard - RBDL. 
 Having established these benchmark timings future development cycles will focus on closing the remaining  performance gap.
