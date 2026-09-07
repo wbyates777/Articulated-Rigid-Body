@@ -35,9 +35,28 @@ public:
     
     BMatrix63( void )=default;
     constexpr BMatrix63( const std::array<std::array<BScalar, 3>, 6> &d): m_data(d) {}
-    explicit BMatrix63( const std::vector<std::vector<BScalar>> &d ) { set(d); }
-    explicit BMatrix63( const std::vector<BScalar> &d ) { set(d); }
-
+    constexpr explicit BMatrix63( const std::vector<std::vector<BScalar>> &d ): m_data
+                                                                                {   
+                                                                                    d[0][0],  d[0][1],  d[0][2], 
+                                                                                    d[1][0],  d[1][1],  d[1][2], 
+                                                                                    d[2][0],  d[2][1],  d[2][2], 
+                                                                                    d[3][0],  d[3][1],  d[3][2], 
+                                                                                    d[4][0],  d[4][1],  d[4][2], 
+                                                                                    d[5][0],  d[5][1],  d[5][2] 
+                                                                                } 
+    { assert(d.size() == 6 && d[0].size() == 3); }
+    
+    constexpr explicit BMatrix63( const std::vector<BScalar> &d ) : m_data 
+                                                                    {   
+                                                                        d[0],    d[1],   d[2], 
+                                                                        d[3],    d[4],   d[5], 
+                                                                        d[6],    d[7],   d[8], 
+                                                                        d[9],   d[10],  d[11], 
+                                                                        d[12],  d[13],  d[14], 
+                                                                        d[15],  d[16],  d[17]
+                                                                    } 
+    { assert(d.size() == 18); }
+    
     constexpr explicit BMatrix63( BScalar s ) : m_data 
                                                 {   
                                                     s,  s,  s, 
@@ -378,7 +397,26 @@ public:
 
     BMatrix36( void )=default;
     constexpr BMatrix36( const std::array<std::array<BScalar, 6>, 3> &d ): m_data(d) {}
-    explicit BMatrix36( const std::vector<std::vector<BScalar>> &d ) { set(d); }
+    
+    constexpr explicit BMatrix36( const std::vector<BScalar> &d ) : m_data 
+                                                                    {   
+                                                                        d[0],    d[1],   d[2], 
+                                                                        d[3],    d[4],   d[5], 
+                                                                        d[6],    d[7],   d[8], 
+                                                                        d[9],   d[10],  d[11], 
+                                                                        d[12],  d[13],  d[14], 
+                                                                        d[15],  d[16],  d[17]
+                                                                    } 
+    { assert(d.size() == 18); }
+    
+    constexpr explicit BMatrix36( const std::vector<std::vector<BScalar>> &d ) 
+                                    : m_data  
+                                    {
+                                        d[0][0], d[0][1], d[0][2], d[0][3], d[0][4], d[0][5],
+                                        d[1][0], d[1][1], d[1][2], d[1][3], d[1][4], d[1][5],
+                                        d[2][0], d[2][1], d[2][2], d[2][3], d[2][4], d[2][5] 
+                                    }
+    { assert(d.size() == 3 && d[0].size() == 6);  }
     
     constexpr explicit BMatrix36( BScalar s ) : m_data 
                                                 {
@@ -387,14 +425,14 @@ public:
                                                     s, s, s, s, s, s, 
                                                 } {}
     
-    constexpr BMatrix36( const BMatrix3 &l, const BMatrix3 &r ): m_data
-                                                                 {
-                                                                     l[0][0], l[0][1], l[0][2],  r[0][0], r[0][1], r[0][2],
-                                                                     l[1][0], l[1][1], l[1][2],  r[1][0], r[1][1], r[1][2],
-                                                                     l[2][0], l[2][1], l[2][2],  r[2][0], r[2][1], r[2][2]
-                                                                 } {}
+    constexpr BMatrix36( const BMatrix3 &l, const BMatrix3 &r ) 
+                                    : m_data
+                                    {
+                                        l[0][0], l[0][1], l[0][2],  r[0][0], r[0][1], r[0][2],
+                                        l[1][0], l[1][1], l[1][2],  r[1][0], r[1][1], r[1][2],
+                                        l[2][0], l[2][1], l[2][2],  r[2][0], r[2][1], r[2][2]
+                                    } {}
 
-    
     constexpr BMatrix36( BScalar m00, BScalar m01, BScalar m02, BScalar m03, BScalar m04, BScalar m05,
                          BScalar m10, BScalar m11, BScalar m12, BScalar m13, BScalar m14, BScalar m15,
                          BScalar m20, BScalar m21, BScalar m22, BScalar m23, BScalar m24, BScalar m25 ) 

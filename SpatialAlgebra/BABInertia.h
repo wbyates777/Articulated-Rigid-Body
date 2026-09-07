@@ -181,8 +181,10 @@ public:
     BVector6 
     operator*( const BVector6 &v ) const
     {
-        const BVector3 ang((m_I * v.ang()) + (arb::transpose(m_H) * v.lin()));
-        const BVector3 lin((m_H * v.ang()) + (m_M * v.lin()) );
+        const BVector3 v_lin = v.lin();
+        const BVector3 v_ang = v.ang();
+        const BVector3 ang((m_I * v_ang) + (arb::transpose(m_H) * v_lin));
+        const BVector3 lin((m_H * v_ang) + (m_M * v_lin) );
         return BVector6( ang, lin );
         
         /*return BVector6((m_I[0][0] * v[0]) + (m_I[1][0] * v[1]) + (m_I[2][0] * v[2])  +  (m_H[0][0] * v[3]) + (m_H[0][1] * v[4]) + (m_H[0][2] * v[5]), 
@@ -261,7 +263,9 @@ public:
     operator+=(const BRBInertia &rbi)
     // returns Ia += I
     {
-        m_M += BMatrix3(rbi.mass());
+        m_M[0][0] += rbi.mass();
+        m_M[1][1] += rbi.mass();
+        m_M[2][2] += rbi.mass();
         m_H += arb::cross(rbi.h());
         m_I += rbi.I(); 
         return *this;
@@ -271,12 +275,15 @@ public:
     operator-=(const BRBInertia &rbi)
     // returns Ia -= I
     {
-        m_M -= BMatrix3(rbi.mass());
+        m_M[0][0] -= rbi.mass();
+        m_M[1][1] -= rbi.mass();
+        m_M[2][2] -= rbi.mass();
         m_H -= arb::cross(rbi.h());
         m_I -= rbi.I(); 
         return *this;
     }
 
+    
     bool 
     operator==( const BABInertia &v ) const 
     { 
