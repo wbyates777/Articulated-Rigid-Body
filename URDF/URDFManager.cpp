@@ -141,7 +141,7 @@ URDFManager::toURDFModel( BModel model, bool add_base ) const
     
     dst.m_name = model.name();
     
-    int N = (int) model.numBody();
+    int N = (int) model.bodyNum();
    
     // separate the fixed bodies from their movebale parents (undo addBody())
     for (int i = 0; i < model.fixedBody().size(); ++i)
