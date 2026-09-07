@@ -211,8 +211,8 @@ private:
     //
     // composite rigid body algorithm (CRBA)
     //
-    
-    std::vector<BRBInertia> m_Ic; // I_c is the inertia of the subtree rooted at body i (equation 6.12, page 105)
+    std::vector<BScalar> m_qdot_zero; // zero velocities
+    std::vector<BRBInertia> m_Ic;     // I_c is the inertia of the subtree rooted at body i (equation 6.12, page 105)
     
 };
 

@@ -414,7 +414,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     // $f_{\lambda(i)} += {\lambda(i)}^X_i^{*} f_i$
     
     std::vector<BScalar> &tau  = qstate.tau; // tau
-    tau.resize(qddot.size()); // output forces -- one for each acceleration
+    //tau.resize(qddot.size()); // output forces -- one for each acceleration
     
     for (int i = N_B - 1; i > 0; --i) 
     {
@@ -450,21 +450,25 @@ BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool upda
 // Composite-Rigid-Body Algorithm, RBDA, Section 6.2, page 104
 // Given an empty (zeroed) H matrix, fill in the elements of the 'joint space inertia matrix'
 {    
-    const std::vector<BScalar> qdot_zero(qstate.qdot.size(), 0.0);
-    
     const int N_B = (int) model.numBody();
-    
     m_Ic.resize(N_B);
     m_Ic[0] = B_ZERO_RBI;
-    
-    for (int i = 1; i < N_B; ++i) 
+
+    if (update_kinematics) 
     {
-        if (update_kinematics) 
+        m_qdot_zero.resize(qstate.qdot.size(), 0.0);
+        for (int i = 1; i < N_B; ++i) 
         {
-            model.joint(i).jcalc(qstate.q, qdot_zero);
+            model.joint(i).jcalc(qstate.q, m_qdot_zero);
+            m_Ic[i] =  model.body(i).I();
         }
-        
-        m_Ic[i] =  model.body(i).I();
+    }
+    else
+    {
+        for (int i = 1; i < N_B; ++i) 
+        {
+            m_Ic[i] =  model.body(i).I();
+        }
     }
     
     // fill in the joint space inertia matrix

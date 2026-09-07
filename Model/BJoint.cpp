@@ -435,14 +435,14 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     } 
     else if (m_jtype == JType::TransXYZ)  // 3-DoF
     {
-        m_v_J = BVector6( B_ZERO_3, qdot[m_qidx], qdot[m_qidx + 1], qdot[m_qidx + 2] );
+        m_v_J.lin( qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2] );
  
         m_X_lambda.E( m_X_T.E() );
         m_X_lambda.r( m_X_T.r() + arb::transpose(m_X_T.E()) * BVector3(q[m_qidx], q[m_qidx + 1], q[m_qidx + 2]));
     } 
     else if (m_jtype == JType::Spherical) // 3-DoF
     {
-        m_v_J = BVector6( qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2], B_ZERO_3 );
+        m_v_J.ang( qdot[m_qidx], qdot[m_qidx+1], qdot[m_qidx+2] );
         
         m_X_J = BTransform(glm::mat3_cast(getQuat(q)));
         m_X_lambda = m_X_J * m_X_T;
@@ -496,9 +496,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_X_J = arb::Xrot(q[m_qidx], m_axis[0].ang());
    
         // Note m_S should be non-zero here
-        const BVector6 MS(m_S);
+        m_v_J.ang(qdot[m_qidx] * BVector3(m_S[0], m_S[1], m_S[2])); 
         
-        m_v_J = MS * qdot[m_qidx]; 
         m_X_lambda = m_X_J * m_X_T;
     }
     else if (m_jtype == JType::Prismatic) // 1-DoF
@@ -506,9 +505,8 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_X_J = arb::Xtrans(m_axis[0].lin() * q[m_qidx]);
 
         // Note m_S should be non-zero here
-        const BVector6 MS(m_S);
+        m_v_J.lin(qdot[m_qidx] * BVector3(m_S[0], m_S[1], m_S[2])); 
         
-        m_v_J = MS * qdot[m_qidx]; 
         m_X_lambda = m_X_J * m_X_T;
     } 
     else if (m_jtype == JType::Helical) // 1-DoF
