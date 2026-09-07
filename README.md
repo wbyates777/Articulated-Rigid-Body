@@ -226,19 +226,36 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
 To measure  performance ARB has been benchmarked against RBDL v3.3.1. 
 
-The  table below shows the execution times in milliseconds of forward dynamics (ABA/CRBA) and inverse dynamics (RNEA) algorithms over **100,000 iterations** using the highly jointed,  industrial robot configuration `tiago_dual-test.urdf`.
+The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across various URDF models. Results were averaged over 40 trials.
 
-   | Algorithm  | RBDL | ARB  | Difference |
-| :---       | ---: | ---: | ---:  |
-| ABA | 523.22  | 516.38 | -1.31% |
-| CRBA | 290.23 | 303.99  | +4.74%|
-| RNEA | 201.60 |  213.87 | +6.09% |
+| Robot (DoF)|  Algorithm | RDBL (ms) | ARB (ms) | Diff (%) |
+| :--- |  :--- | :---: | :---: | ---: |
+| **ur5** (6)| ABA | 9.8604 | 9.7914 | **-0.6997** |
+| | CRBA | 5.1619 | 5.0768 | **-1.6489** |
+| | RNEA | 3.9212 | 4.4549 | 13.6109 |
+|  |  |  |  |  |
+| **kuka_iiwa14** (7) | ABA | 11.7627 | 11.5758 | **-1.5889** |
+| | CRBA | 6.5007 | 6.3448 | **-2.3972** |
+| | RNEA | 4.4725 | 5.1286 | 14.6702 |
+|  |  |  |  |  |
+| **go1** (12) | ABA | 17.4309 | 17.1615 | **-1.5455** |
+| | CRBA | 7.5702 | 8.2868 | 9.4666 |
+| | RNEA | 7.4392 | 8.1957 | 10.1693 |
+|  |  |  |  |  |
+| **tiago_dual-test** (33) | ABA | 52.2980 | 50.0173 | **-4.3608** |
+| | CRBA | 30.3049 | 27.8768 | **-8.0122** |
+| | RNEA | 21.4643 | 22.2092 | 3.4702 |
+
 
 #### Notes
 * **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
 * **Compilation Environment:** C++23 clang optimised with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
 
-Despite ARB's lightweight  footprint  when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorised (Eigen3) and highly optimised industry standard (RBDL). Having established some benchmark timings future development cycles will focus on closing the remaining  performance gap.
+Despite ARB's lightweight  footprint,  when intrinsics (SIMD) is enabled, 
+ARB consistently outperforms RDBL for ABA across all tested degrees of freedom (DoF). However, 
+for CRBA, the results are mixed, while for RNEA, ARB is consistently slower across all models.
+
+Having established these benchmark timings future development cycles will focus on closing the remaining  performance gap.
 
 
  ## Build Instructions
