@@ -117,7 +117,7 @@ BDynamics::update_X_base( BModel &m, const BModelState &qstate )
 {
     const std::vector<BScalar> qdot_zero(qstate.qdot.size(), 0.0);
     
-    for (int i = 1; i < m.numBody(); ++i) 
+    for (int i = 1; i < m.bodyNum(); ++i) 
     {
         BBody &body = m.body(i);
         BJoint &joint = m.joint(i);
@@ -138,7 +138,7 @@ BDynamics::update_velocity( BModel &m, const BModelState &qstate )
 // update kinematics - calculates velocities
 // based on UpdateKinematicsCustomin RBDL
 {
-    for (int i = 1; i < m.numBody(); ++i) 
+    for (int i = 1; i < m.bodyNum(); ++i) 
     {
         BBody &body = m.body(i);
         BJoint &joint = m.joint(i);
@@ -168,7 +168,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     const std::vector<BScalar> &qdot = qstate.qdot; // vel 
     const std::vector<BScalar> &tau  = qstate.tau;  // force
     
-    const int N_B = (int) m.numBody();
+    const int N_B = (int) m.bodyNum();
     
     m_dof1_U.resize(N_B);
     m_dof1_d.resize(N_B);
@@ -362,7 +362,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     m.body(0).v(B_ZERO_6);
     m.body(0).a().lin(-m.gravity());
     
-    const int N_B = (int) m.numBody();
+    const int N_B = (int) m.bodyNum();
     
     m_f.resize(N_B);
     m_f[0] = B_ZERO_6;
@@ -465,7 +465,7 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
 // Composite-Rigid-Body Algorithm, RBDA, Section 6.2, page 104
 // Given an empty (zeroed) H matrix, fill in the elements of the 'joint space inertia matrix'
 {    
-    const int N_B = (int) m.numBody();
+    const int N_B = (int) m.bodyNum();
     m_Ic.resize(N_B);
     m_Ic[0] = B_ZERO_RBI;
 

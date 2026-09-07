@@ -79,7 +79,7 @@ public:
     joint( BJointId jid ) const { return m_joint[jid]; } 
     
     size_t 
-    joints( void ) const { return m_joint.size(); } // $N_J$
+    jointNum( void ) const { return m_joint.size(); } // $N_J$
     
     BBody&
     body( BBodyId bid ) { return m_body[bid]; }
@@ -88,7 +88,7 @@ public:
     body( BBodyId bid ) const { return m_body[bid]; }
     
     size_t
-    numBody( void ) const { return m_body.size(); }     // $N_B$
+    bodyNum( void ) const { return m_body.size(); }     // $N_B$
     
     
     BFixedBody&
