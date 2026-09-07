@@ -96,7 +96,7 @@ public:
         BResults::BDataMap results;
         int start = 0;
 
-        for (int i = 1; i < model.numBody(); ++i) 
+        for (int i = 1; i < model.bodyNum(); ++i) 
         {
             int dof = model.joint(i).DoFCount();
             std::string name = model.getBodyName(model.body(i).getId());
@@ -121,7 +121,7 @@ public:
         BResults::BDataMap results;
         int start = 0;
 
-        for (int i = 1; i < model.numBody(); ++i) 
+        for (int i = 1; i < model.bodyNum(); ++i) 
         {
             int dof = model.joint(i).DoFCount();
             std::string name = model.getBodyName(model.body(i).getId());
