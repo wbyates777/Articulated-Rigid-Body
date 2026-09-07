@@ -119,14 +119,17 @@ BDynamics::update_X_base( BModel &m, const BModelState &qstate )
     
     for (int i = 1; i < m.numBody(); ++i) 
     {
-        m.joint(i).jcalc(qstate.q, qdot_zero);
+        BBody &body = m.body(i);
+        BJoint &joint = m.joint(i);
         
-        const BTransform &X_lambda = m.joint(i).X_lambda(); 
+        joint.jcalc(qstate.q, qdot_zero);
+        
+        const BTransform &X_lambda = joint.X_lambda(); 
         const int lambda = m.parentId(i); 
         
         if (lambda != 0) 
-            m.body(i).X_base( X_lambda * m.body(lambda).X_base() );
-        else  m.body(i).X_base( X_lambda );
+            body.X_base( X_lambda * m.body(lambda).X_base() );
+        else  body.X_base( X_lambda );
     }
 }
 
@@ -137,15 +140,18 @@ BDynamics::update_velocity( BModel &m, const BModelState &qstate )
 {
     for (int i = 1; i < m.numBody(); ++i) 
     {
-        m.joint(i).jcalc(qstate.q, qstate.qdot);
+        BBody &body = m.body(i);
+        BJoint &joint = m.joint(i);
+        
+        joint.jcalc(qstate.q, qstate.qdot);
         
         const int lambda = m.parentId(i); 
         
         if (lambda != 0) 
-            m.body(i).v() = (m.joint(i).X_lambda() * m.body(lambda).v()) + m.joint(i).v_J();
-        else m.body(i).v() = m.joint(i).v_J();
+            body.v() = (joint.X_lambda() * m.body(lambda).v()) + joint.v_J();
+        else body.v() = joint.v_J();
 
-        m.body(i).c() = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
+        body.c() = joint.c_J() + arb::crossm( body.v(), joint.v_J() );
     }
 }
 
@@ -158,7 +164,6 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
 // an end-effector, such as a jointed robotic arm, from specified values for the joint forces.
 // see RBDA, Table 7.1
 {
-    
     const std::vector<BScalar> &q    = qstate.q;    // pos
     const std::vector<BScalar> &qdot = qstate.qdot; // vel 
     const std::vector<BScalar> &tau  = qstate.tau;  // force
@@ -180,8 +185,8 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     // $v_0 = 0$
     // $a_0 = -a_g$
     m.body(0).v(B_ZERO_6);
-    m.body(0).a().set(B_ZERO_3, -m.gravity());
-    
+    m.body(0).a().lin(-m.gravity());
+ 
     m_IA[0] = B_ZERO_ABI;
     m_pA[0] = B_ZERO_6;
     
@@ -193,49 +198,56 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     
     for (int i = 1; i < N_B; ++i) 
     {
-        m.joint(i).jcalc(q, qdot);  // calculate [X_lambda, X_J, S_i, c_J, v_J]  for joint i
+        BBody &body = m.body(i);
+        BJoint &joint = m.joint(i);
+        
+        joint.jcalc(q, qdot);  // calculate [X_lambda, X_J, S_i, c_J, v_J]  for joint i
         
         int lambda = m.parentId(i); 
         
         // X_lambda is transformation from the parent body frame to this body frame
-        const BTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform& X_lambda = joint.X_lambda(); 
+        
+        body.v() = joint.v_J();
         
         // set spatial transform X_base in this body 
         if (lambda != 0)
         {
-            m.body(i).X_base( X_lambda * m.body(lambda).X_base() );
-            m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
+            body.X_base( X_lambda * m.body(lambda).X_base() );
+            body.v() += X_lambda * m.body(lambda).v();
         }
         else 
         {
-            m.body(i).X_base( X_lambda );
-            m.body(i).v() = m.joint(i).v_J();
+            body.X_base( X_lambda );
         }
    
-        m.body(i).c()  = m.joint(i).c_J() + arb::crossm( m.body(i).v(), m.joint(i).v_J() );
+        body.c()  = joint.c_J() + arb::crossm( body.v(), joint.v_J() );
         
-        m_IA[i] = m.body(i).I(); // initialise articulated inertia
-        m_pA[i] = arb::crossf( m.body(i).v(), m.body(i).I() * m.body(i).v() );
+        m_IA[i] = body.I(); // initialise articulated inertia
+        m_pA[i] = arb::crossf( body.v(), body.I() * body.v() );
         
         if (!f_ext.empty() && f_ext[i] != B_ZERO_6) 
         { 
             // external forces are assumed to be in world coordinates
             // forces must be applied in body coordinates to each body.
-            m_pA[i] -= arb::applyForce(m.body(i).X_base(), f_ext[i]);
+            m_pA[i] -= arb::applyForce(body.X_base(), f_ext[i]);
         }
     }
-     
+ 
     // second  pass (leaves to root) to calculate  articulated intertia of bodies   
     // 'm_IA' and the spatial bias force 'm_pA' using intermediate results U_i, D_i, and u_i
     // see RBDA, Section 7.3, equations 7.43, 7.44, 7.45, 7.47, 7.48
     
     for (int i = N_B - 1; i > 0; --i) 
     {
-        int qidx     = m.joint(i).qindex();    
-        int dofCount = m.joint(i).DoFCount();   
+        const BBody &body = m.body(i);
+        const BJoint &joint = m.joint(i);
+        
+        int qidx     = joint.qindex();    
+        int dofCount = joint.DoFCount();   
         int lambda   = m.parentId(i); 
         
-        const BTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform& X_lambda = joint.X_lambda(); 
 
         if (dofCount == 0)  // body attached with Fixed2 joint (not merged)
         {
@@ -247,7 +259,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         }
         else if (dofCount == 1) 
         {
-            const BVector6 S(m.joint(i).S());
+            const BVector6 S(joint.S());
             
             // S^T * I * S,
             m_dof1_U[i] = m_IA[i] * S;                       
@@ -259,13 +271,13 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
                 BScalar Dinv = 1.0 / m_dof1_d[i];
                 BABInertia Ia = m_IA[i] - BABInertia(m_dof1_U[i], (m_dof1_U[i] * Dinv)); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
-                BVector6 pa(m_pA[i] + (Ia * m.body(i).c()) + (m_dof1_U[i] * (m_dof1_u[i] * Dinv))); 
+                BVector6 pa(m_pA[i] + (Ia * body.c()) + (m_dof1_U[i] * (m_dof1_u[i] * Dinv))); 
                 m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
         else if (dofCount == 3) 
         {
-            const BMatrix63 S(m.joint(i).S());
+            const BMatrix63 S(joint.S());
             const BVector3 res(tau[qidx], tau[qidx + 1], tau[qidx + 2]); 
             
             // S^T * I * S,
@@ -283,13 +295,12 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
                 //const BABInertia Ia = m_IA[i] - BABInertia(UDinv_tmp * arb::transpose(m_dof3_U[i])); 
                 const BABInertia Ia = m_IA[i] - BABInertia(m_dof3_U[i], m_dof3_Dinv[i]); 
                 m_IA[lambda] += X_lambda.applyTranspose(Ia); 
-                const BVector6 pa(m_pA[i] + Ia * m.body(i).c() + UDinv_tmp * m_dof3_u[i]);
+                const BVector6 pa(m_pA[i] + Ia * body.c() + UDinv_tmp * m_dof3_u[i]);
                 m_pA[lambda] += X_lambda.applyTranspose(pa);
             }
         } 
     }
 
-    
     // third (and final) pass (root to leaves) to calculate the acceleration $a_i$ for each body $i$ and joint qddot
     // $a^{'} = {i}^X_{\lambda(i)} a_{\lambda(i)} + c_i$
     // $\ddot{q}_i = D^{-1}_i (u_i - U_i^T a^{'})$
@@ -300,33 +311,36 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     
     for (int i = 1; i < N_B; ++i) 
     {
-        int qidx     = m.joint(i).qindex();    
-        int dofCount = m.joint(i).DoFCount();   
+        BBody &body = m.body(i);
+        const BJoint &joint = m.joint(i);
+        
+        int qidx     = joint.qindex();    
+        int dofCount = joint.DoFCount();   
         int lambda   = m.parentId(i);
         
-        const BTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform& X_lambda = joint.X_lambda(); 
         
-        m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c();
-        
+        body.a() = (X_lambda * m.body(lambda).a()) + body.c();
+      
         if (dofCount == 1) 
         {
-            qddot[qidx] = (1.0 / m_dof1_d[i]) * (m_dof1_u[i] - arb::dot(m_dof1_U[i], m.body(i).a()));
+            qddot[qidx] = (1.0 / m_dof1_d[i]) * (m_dof1_u[i] - arb::dot(m_dof1_U[i], body.a()));
             
-            const BVector6 S(m.joint(i).S());
+            const BVector6 S(joint.S());
             
-            m.body(i).a() += S * qddot[qidx];
+            body.a() += S * qddot[qidx];
         } 
         else if (dofCount == 3) 
         {
-            const BVector3 acc(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * m.body(i).a())));
+            const BVector3 acc(m_dof3_Dinv[i] * (m_dof3_u[i] - (arb::transpose(m_dof3_U[i]) * body.a())));
     
             qddot[qidx]     = acc[0];
             qddot[qidx + 1] = acc[1];
             qddot[qidx + 2] = acc[2];
             
-            const BMatrix63 S(m.joint(i).S());
+            const BMatrix63 S(joint.S());
             
-            m.body(i).a() += S * acc;
+            body.a() += S * acc;
         } 
     }
 }
@@ -342,12 +356,11 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     const std::vector<BScalar> &qdot  = qstate.qdot;  // vel 
     const std::vector<BScalar> &qddot = qstate.qddot; // acc 
    
-    
     // reset the velocity of the root body
     // $v_0 = 0$
     // $a_0 = -a_g$
     m.body(0).v(B_ZERO_6);
-    m.body(0).a().set(B_ZERO_3, -m.gravity());
+    m.body(0).a().lin(-m.gravity());
     
     const int N_B = (int) m.numBody();
     
@@ -361,37 +374,37 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     
     for (int i = 1; i < N_B; ++i) 
     {
-        m.joint(i).jcalc(q, qdot); // calculate $\[X_lambda, X_J, S_i, c_J, v_J\]$  for joint i
+        BBody &body = m.body(i);
+        BJoint &joint = m.joint(i);
         
-        int qidx     = m.joint(i).qindex();    
-        int dofCount = m.joint(i).DoFCount();   
+        joint.jcalc(q, qdot); // calculate $\[X_lambda, X_J, S_i, c_J, v_J\]$  for joint i
+        
+        int qidx     = joint.qindex();    
+        int dofCount = joint.DoFCount();   
         int lambda   = m.parentId(i);
         
-        const BTransform& X_lambda = m.joint(i).X_lambda(); 
+        const BTransform &X_lambda = joint.X_lambda(); 
         
-        m.body(i).v() = (X_lambda * m.body(lambda).v()) + m.joint(i).v_J();
-        m.body(i).c() = m.joint(i).c_J() + arb::crossm(m.body(i).v(), m.joint(i).v_J());
+        body.a() = (X_lambda * m.body(lambda).a());
+        body.v() = (X_lambda * m.body(lambda).v()) + joint.v_J();
+
+        body.c() = joint.c_J() + arb::crossm(body.v(), joint.v_J());
         
-        if (dofCount == 0)  // body attached with fixed joint (not merged)
+        if (dofCount == 1) 
         {
-            m.body(i).a() = (X_lambda * m.body(lambda).a());
-        } 
-        else if (dofCount == 1) 
-        {
-            const BVector6 S(m.joint(i).S());
-            m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * qddot[qidx];
+            const BVector6 S(joint.S());
+            body.a() += body.c() + S * qddot[qidx];
         } 
         else if (dofCount == 3) 
         {
-            const BMatrix63 S(m.joint(i).S());
+            const BMatrix63 S(joint.S());
             const BVector3 acc(qddot[qidx], qddot[qidx + 1], qddot[qidx + 2]);
-            m.body(i).a() = (X_lambda * m.body(lambda).a()) + m.body(i).c() + S * acc;
+            body.a() += body.c() + S * acc;
         }
 
-        if (!m.body(i).isVirtual()) 
+        if (!body.isVirtual()) 
         {
-            BBody &b(m.body(i));
-            m_f[i] = b.I() * b.a() + arb::crossf(b.v(), b.I() * b.v());
+            m_f[i] = body.I() * body.a() + arb::crossf(body.v(), body.I() * body.v());
         } 
         else 
         {
@@ -414,22 +427,24 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     // $f_{\lambda(i)} += {\lambda(i)}^X_i^{*} f_i$
     
     std::vector<BScalar> &tau  = qstate.tau; // tau
-    //tau.resize(qddot.size()); // output forces -- one for each acceleration
+    tau.resize(qddot.size()); // output forces -- one for each acceleration
     
     for (int i = N_B - 1; i > 0; --i) 
     {
-        int qidx     = m.joint(i).qindex();    
-        int dofCount = m.joint(i).DoFCount();   
+        const BJoint &joint = m.joint(i);
+        
+        int qidx     = joint.qindex();    
+        int dofCount = joint.DoFCount();   
         int lambda   = m.parentId(i);
         
         if (dofCount == 1) 
         {
-            const BVector6 S(m.joint(i).S());
+            const BVector6 S(joint.S());
             tau[qidx] = arb::dot(S, m_f[i]);
         } 
         else if (dofCount == 3) 
         {
-            const BMatrix63 S(m.joint(i).S());
+            const BMatrix63 S(joint.S());
             //const BVector3 res = arb::transpose(S) * m_f[i];
             const BVector3 res = S.top() * m_f[i].ang() + S.bot() * m_f[i].lin();
         
@@ -440,17 +455,17 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
 
         if (lambda != 0) 
         {
-            m_f[lambda] += m.joint(i).X_lambda().applyTranspose(m_f[i]);
+            m_f[lambda] += joint.X_lambda().applyTranspose(m_f[i]);
         }
     }
 }
 
 void 
-BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool update_kinematics ) 
+BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_kinematics ) 
 // Composite-Rigid-Body Algorithm, RBDA, Section 6.2, page 104
 // Given an empty (zeroed) H matrix, fill in the elements of the 'joint space inertia matrix'
 {    
-    const int N_B = (int) model.numBody();
+    const int N_B = (int) m.numBody();
     m_Ic.resize(N_B);
     m_Ic[0] = B_ZERO_RBI;
 
@@ -459,26 +474,28 @@ BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool upda
         m_qdot_zero.resize(qstate.qdot.size(), 0.0);
         for (int i = 1; i < N_B; ++i) 
         {
-            model.joint(i).jcalc(qstate.q, m_qdot_zero);
-            m_Ic[i] =  model.body(i).I();
+            m.joint(i).jcalc(qstate.q, m_qdot_zero);
+            m_Ic[i] =  m.body(i).I();
         }
     }
     else
     {
         for (int i = 1; i < N_B; ++i) 
         {
-            m_Ic[i] =  model.body(i).I();
+            m_Ic[i] =  m.body(i).I();
         }
     }
     
     // fill in the joint space inertia matrix
     for (int i = N_B - 1; i > 0; --i) 
     {
-        int lambda       = model.parentId(i); 
-        int dof_index_i  = model.joint(i).qindex();
-        int dofCount     = model.joint(i).DoFCount();  
+        const BJoint &joint_i = m.joint(i);
         
-        const BTransform& X_lambda = model.joint(i).X_lambda(); 
+        int lambda       = m.parentId(i); 
+        int dof_index_i  = joint_i.qindex();
+        int dofCount     = joint_i.DoFCount();  
+        
+        const BTransform& X_lambda = joint_i.X_lambda(); 
         
         if (lambda != 0) 
         {
@@ -488,64 +505,67 @@ BDynamics::crba( BModel &model, const BModelState &qstate, BMatrix &H, bool upda
         
         if (dofCount == 1) 
         {
-            const BVector6 S(model.joint(i).S());
+            const BVector6 S(joint_i.S());
             BVector6 F = m_Ic[i] * S;
             
             H[dof_index_i][dof_index_i] = arb::dot(S, F);
             
             int j = i;
 
-            while (model.parentId(j) != 0) 
+            while (m.parentId(j) != 0) 
             {
-                F = model.joint(j).X_lambda().applyTranspose(F); 
-                j = model.parentId(j);
-                int dof_index_j = model.joint(j).qindex();
+                const BJoint &joint_j = m.joint(j);
                 
-                if (model.joint(j).DoFCount() == 1) 
+                F = joint_j.X_lambda().applyTranspose(F); 
+                j = m.parentId(j);
+                int dof_index_j = joint_j.qindex();
+                
+                if (joint_j.DoFCount() == 1) 
                 {
-                    const BVector6 S_j(model.joint(j).S());
+                    const BVector6 S_j(joint_j.S());
                     
                     H[dof_index_i][dof_index_j] = H[dof_index_j][dof_index_i] = arb::dot(F, S_j);
                 } 
-                else if (model.joint(j).DoFCount() == 3) 
+                else if (joint_j.DoFCount() == 3) 
                 {
-                    const BMatrix63 S_j(model.joint(j).S());
+                    const BMatrix63 S_j(joint_j.S());
                     const BVector3 val =  arb::transpose(S_j) * F;
                     
                     block_1_3(H, dof_index_i, dof_index_j, val);
                     block_3_1(H, dof_index_j, dof_index_i, val); // transpose not needed here
                 }
-                
             }
         } 
         else if (dofCount == 3) 
         {
-            const BMatrix63 S(model.joint(i).S());
+            const BMatrix63 S(joint_i.S());
             BMatrix63 F = m_Ic[i] * S;
           
             block_3_3(H, dof_index_i, dof_index_i, arb::transpose(S) * F);
             
             int j = i;
             
-            while (model.parentId(j) != 0) 
+            while (m.parentId(j) != 0) 
             {
-                const BTransform  &X_lambda = model.joint(j).X_lambda(); 
+                const BJoint &joint_j = m.joint(j);
+                
+                const BTransform  &X_lambda = joint_j.X_lambda(); 
                 F = arb::toForceInverse(X_lambda) * F; 
                 //F = arb::transpose(X_lambda) * F; // this also works
-                j = model.parentId(j);
-                int dof_index_j = model.joint(j).qindex();
+                j = m.parentId(j);
+                int dof_index_j = joint_j.qindex();
                 
-                if (model.joint(j).DoFCount() == 1) 
+                if (joint_j.DoFCount() == 1) 
                 {
-                    const BVector6 S_j(model.joint(j).S());
+                    const BVector6 S_j(joint_j.S());
                     const BVector3 val = arb::transpose(F) * S_j;
                     
                     block_3_1(H, dof_index_i, dof_index_j, val);
                     block_1_3(H, dof_index_j, dof_index_i, val);
                 } 
-                else if (model.joint(j).DoFCount() == 3) 
+                else if (joint_j.DoFCount() == 3) 
                 {
-                    const BMatrix63 S_j(model.joint(j).S());
+                    const BMatrix63 S_j(joint_j.S());
                     //const BMatrix3 val = arb::transpose(F) * S_j;
                     const BMatrix3 val = arb::transpose(F.top()) * S_j.top() + 
                                          arb::transpose(F.bot()) * S_j.bot();

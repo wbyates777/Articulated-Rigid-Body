@@ -146,7 +146,7 @@ public:
      * have been set to zero, e.g. by calling H.setZero().
      */
     void 
-    crba( BModel &model, const BModelState &Q, BMatrix &H, bool update_kinematics = true ); 
+    crba( BModel &m, const BModelState &Q, BMatrix &H, bool update_kinematics = true ); 
     
     
     // update kinematics - calculates positions
