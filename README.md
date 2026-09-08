@@ -234,21 +234,21 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 
 | Robot (DoF)|  Algorithm | RBDL (ms) | ARB (ms) | Diff (%) |
 | :--- |  :--- | :---: | :---: | ---: |
-| **ur5** (6)| ABA  | 9.8076 |	9.5432|	**-2.6962** |
-|            | CRBA |5.1290|	4.9009|	**-4.4469** |
-|            | RNEA |3.9147|	4.1667|	6.4381 |
+| **ur5** (6)| ABA 	 | 	9.8411	 | 9.1856	 | **-6.6610** | 
+|            | CRBA	 | 	5.1210	 | 4.6198	 | **-9.7863** | 
+|            | RNEA	 | 	3.9052	 | 3.8854	 | **-0.5087** | 
 |  |  |  |  |  |
-| **kuka_iiwa14** (7) | ABA  |11.5448|	11.3178|	**-1.9663** |
-|                     | CRBA | 6.4669|	6.1046|	**-5.6024** |
-|                     | RNEA |4.4322|	4.7707|	7.6365 |
+| **kuka_iiwa14** (7) | ABA 	|	11.6339	| 10.8191 | **-7.0042** | 
+|                     | CRBA	|	6.4581	| 5.7403	| **-11.1148** | 
+|                     | RNEA	|	4.4276	| 4.5450	| 2.6533 |
 |  |  |  |  |  |
-| **go1** (12) | ABA  | 17.3087|	16.2318|	**-6.2216** |
-|              | CRBA | 7.5594|	8.2138|	8.6564|
-|              | RNEA | 7.4180|	7.6488|	3.1115 |
+| **go1** (12) | ABA 	|	17.3310	| 15.5371	| **-10.3508**  |
+|              | CRBA	|	7.5629	| 7.5591	| **-0.0503**  |
+|              | RNEA	|	7.4316	| 7.2671	| **-2.2143**  |
 |  |  |  |  |  |
-| **tiago_dual-test** (33) | ABA  | 52.0349 |	47.3395|	**-9.0237** |
-|                          | CRBA | 29.8880 |	27.3782|	**-8.3973** |
-|                          | RNEA | 21.3645 |	20.5620|	**-3.7564** |
+| **tiago_dual-test** (33) | ABA 	|	51.7814	| 45.8124	| **-11.5273** | 
+|                          |CRBA	|	29.8387	| 25.8174	| **-13.4770** | 
+|                          |RNEA	|	21.0004	| 19.6307	| **-6.5222** | 
 
 
 #### Notes
@@ -258,7 +258,7 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 </details>
 
 The results show that ARB consistently outperforms RBDL for ABA across all tested degrees of freedom (DoF). However 
-for CRBA and RNEA the results are mixed;  for CRBA, ARB is mostly faster, while for RNEA, ARB is  mostly slower.
+for CRBA and RNEA the results are mixed;  for CRBA, ARB is mostly faster (see go1), while for RNEA, ARB  can be slower (see ur5 and kuka_iiwa14).
 
 Despite ARB's lightweight footprint, when intrinsics (SIMD) is enabled, it achieves *near-parity* (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard - RBDL. 
 Having established these benchmark timings future development cycles will focus on closing the remaining  performance gap.
