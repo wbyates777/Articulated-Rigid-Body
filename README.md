@@ -226,7 +226,7 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
 To measure  performance ARB has been benchmarked against RBDL v3.3.1. 
 
-The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **10,000 iterations** across various URDF models. Results were averaged over 40 trials.
+The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across various URDF models. Results were averaged over 40 trials.
 
 <details>
 
@@ -234,21 +234,21 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 
 | Robot (DoF)|  Algorithm | RBDL (ms) | ARB (ms) | Diff (%) |
 | :--- |  :--- | :---: | :---: | ---: |
-| **ur5** (6)| ABA 	 | 	9.8411	 | 9.1856	 | **-6.6610** | 
-|            | CRBA	 | 	5.1210	 | 4.6198	 | **-9.7863** | 
-|            | RNEA	 | 	3.9052	 | 3.8854	 | **-0.5087** | 
+| **ur5** (6)| ABA 	|	98.8101	|	91.2595	|	**-7.6416** | 
+|            | CRBA	|	51.2716	|	46.2104	|	**-9.8713** | 
+|            | RNEA	|	38.5620	|	38.9000	|	0.8763 | 
 |  |  |  |  |  |
-| **kuka_iiwa14** (7) | ABA 	|	11.6339	| 10.8191 | **-7.0042** | 
-|                     | CRBA	|	6.4581	| 5.7403	| **-11.1148** | 
-|                     | RNEA	|	4.4276	| 4.5450	| 2.6533 |
+| **kuka_iiwa14** (7) | ABA 	|	116.3569	|	108.0945	|	**-7.1009** | 
+|                     | CRBA	|	64.6074	|	58.0849	|	**-10.0956** | 
+|                     | RNEA	|	44.4937	|	45.4960	|	2.2527 | 
 |  |  |  |  |  |
-| **go1** (12) | ABA 	|	17.3310	| 15.5371	| **-10.3508**  |
-|              | CRBA	|	7.5629	| 7.5591	| **-0.0503**  |
-|              | RNEA	|	7.4316	| 7.2671	| **-2.2143**  |
+| **go1** (12) | ABA 	|	173.0254	|	155.9425	|	 **-9.8730**| 
+|              | CRBA	|	74.7679	|	75.3958	|	0.8398 | 
+|              | RNEA	|	74.0556	|	73.2206	|	 **-1.1275** | 
 |  |  |  |  |  |
-| **tiago_dual-test** (33) | ABA 	|	51.7814	| 45.8124	| **-11.5273** | 
-|                          |CRBA	|	29.8387	| 25.8174	| **-13.4770** | 
-|                          |RNEA	|	21.0004	| 19.6307	| **-6.5222** | 
+| **tiago_dual-test** (33) | ABA 	|	520.1928	|	458.9617	|	**-11.7708** | 
+|                          | CRBA	|	299.7024	|	263.5766	|	**-12.0539** | 
+|                          | RNEA	|	209.5590	|	196.5837	|	**-6.1917** | 
 
 
 #### Notes
