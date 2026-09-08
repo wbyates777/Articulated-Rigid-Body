@@ -96,10 +96,25 @@ namespace arb {
     rot( BScalar theta, const BVector3 &axis ) 
     // WARNING: axis *must* be normalized
     {
-        using std::abs;
-        assert(abs(arb::length(axis) - 1.0) < 1E-8);
-
-        return glm::mat3_cast(glm::angleAxis(theta, axis));
+        assert(arb::length(axis) - 1.0 < 1E-8);
+        
+        using std::sin;
+        using std::cos;
+        
+        const BScalar s = sin(theta);
+        const BScalar c = cos(theta);
+  
+        return BMatrix3( axis[0] * axis[0] * (1.0 - c) + c,
+                         axis[1] * axis[0] * (1.0 - c) + axis[2] * s,
+                         axis[0] * axis[2] * (1.0 - c) - axis[1] * s,
+                      
+                         axis[0] * axis[1] * (1.0 - c) - axis[2] * s,
+                         axis[1] * axis[1] * (1.0 - c) + c,
+                         axis[1] * axis[2] * (1.0 - c) + axis[0] * s,
+                      
+                         axis[0] * axis[2] * (1.0 - c) + axis[1] * s,
+                         axis[1] * axis[2] * (1.0 - c) - axis[0] * s,
+                         axis[2] * axis[2] * (1.0 - c) + c);
     }
     
     
