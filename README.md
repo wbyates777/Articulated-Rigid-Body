@@ -166,7 +166,7 @@ ARB has been tested against standard industrial robot models including:
 
 <details>
 
-<summary>Results Table: RBDL versus ARB </summary>
+<summary>Table: Accuracy - RBDL versus ARB </summary>
 
 
    | Component  | RBDL | ARB  | Error |
@@ -226,7 +226,11 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
 To measure  performance ARB has been benchmarked against RBDL v3.3.1. 
 
-The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across various URDF models. Results were averaged over 40 trials.
+The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **10,000 iterations** across various URDF models. Results were averaged over 40 trials.
+
+<details>
+
+<summary>Table: Performance - RBDL versus ARB </summary>
 
 | Robot (DoF)|  Algorithm | RBDL (ms) | ARB (ms) | Diff (%) |
 | :--- |  :--- | :---: | :---: | ---: |
@@ -251,11 +255,12 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 * **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
 * **Compilation Environment:** C++23 clang optimised with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
 * **Processor:** 3.3 GHz 12-Core Intel Xeon W. 
+</details>
 
 The results show that ARB consistently outperforms RBDL for ABA across all tested degrees of freedom (DoF). However 
 for CRBA and RNEA the results are mixed;  for CRBA, ARB is mostly faster, while for RNEA, ARB is  mostly slower.
 
-Despite ARB's lightweight footprint, when intrinsics (SIMD) is enabled, it achieves near-parity (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard - RBDL. 
+Despite ARB's lightweight footprint, when intrinsics (SIMD) is enabled, it achieves *near-parity* (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard - RBDL. 
 Having established these benchmark timings future development cycles will focus on closing the remaining  performance gap.
 
 
@@ -315,9 +320,14 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
  It is the simplest, most efficient known algorithm for trees, and also has a computational
  complexity of $O(N_B)$ (see RBDA, Section 5.3). 
 
+
+<details>
+
+<summary>Table: ARB - Supported Joint Types </summary>
+
  ARB supports the following joints:
 
- | Joint Type | DOF  | Description | Representation | 
+ | Joint Type | DoF  | Description | Representation | 
 | :---       | ---: | :---        | :---           |
 | Fixed1     |  0   |  Compressible rigid connection between links.  |  Identity Transform |
 | Fixed2     |  0   |  Incompressible rigid connection between links.  |  Identity Transform |
@@ -328,6 +338,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
 | Planar     |  3   |  Translation in the x,y plane and rotation about z-axis  |  Vector3  |
 | Floating Base  |  6  | Unconstrained 3D motion of the root.  |  Position + Quaternion |
 
+</details>
 
 
 
