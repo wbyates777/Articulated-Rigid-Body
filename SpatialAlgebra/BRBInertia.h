@@ -91,11 +91,7 @@ public:
     void 
     set( const BMatrix6 &I ) 
     {
-#ifdef NEWVEC
-        m_mass = I[3][0][0]; m_h = arb::uncross(I.topRight()); m_I = I.topLeft();
-#else
         m_mass = I[3][3]; m_h = arb::uncross(I.topRight()); m_I = I.topLeft();
-#endif
     }
 
 
@@ -181,19 +177,19 @@ public:
     BVector6 
     operator*( const BVector6 &v ) const
     {
+      /*return BVector6((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
+                 (m_h[2] * v[3] - v[5] * m_h[0]) + (m_I[0][1] * v[0])  +  (m_I[1][1] * v[1]) + (m_I[2][1] * v[2]),
+                 (m_h[0] * v[4] - v[3] * m_h[1]) + (m_I[0][2] * v[0])  +  (m_I[1][2] * v[1]) + (m_I[2][2] * v[2]),
+                
+                 (m_mass * v[3])  -  (m_h[1] * v[2] - v[1] * m_h[2]),
+                 (m_mass * v[4])  -  (m_h[2] * v[0] - v[2] * m_h[0]),
+                 (m_mass * v[5])  -  (m_h[0] * v[1] - v[0] * m_h[1]) );*/
+        
         const BVector3 v_lin = v.lin();
         const BVector3 v_ang = v.ang();
         const BVector3 ang = arb::cross(m_h, v_lin) + (m_I * v_ang);
         const BVector3 lin = (m_mass * v_lin) - arb::cross(m_h, v_ang);
         return BVector6(ang, lin);
-   
-        /*return BVector6((m_h[1] * v[5] - v[4] * m_h[2]) + (m_I[0][0] * v[0])  +  (m_I[1][0] * v[1]) + (m_I[2][0] * v[2]),
-                        (m_h[2] * v[3] - v[5] * m_h[0]) + (m_I[0][1] * v[0])  +  (m_I[1][1] * v[1]) + (m_I[2][1] * v[2]),
-                        (m_h[0] * v[4] - v[3] * m_h[1]) + (m_I[0][2] * v[0])  +  (m_I[1][2] * v[1]) + (m_I[2][2] * v[2]),
-                       
-                        (m_mass * v[3])  -  (m_h[1] * v[2] - v[1] * m_h[2]),
-                        (m_mass * v[4])  -  (m_h[2] * v[0] - v[2] * m_h[0]),
-                        (m_mass * v[5])  -  (m_h[0] * v[1] - v[0] * m_h[1]) );*/
     }
     
     
@@ -235,7 +231,6 @@ operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 
 namespace arb
 {
-
     inline constexpr BMatrix6 
     inverse( const BRBInertia &I ) 
     // Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
@@ -259,7 +254,6 @@ operator<<( std::ostream &ostr, const BRBInertia &m )
     ostr << m.m_mass << '\n' << m.m_h << '\n'  << m.m_I << '\n';
     return ostr;
 }
-
 
 inline std::istream& 
 operator>>( std::istream &istr, BRBInertia &m )
