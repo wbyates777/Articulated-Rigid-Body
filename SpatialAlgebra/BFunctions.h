@@ -91,50 +91,15 @@ namespace arb {
     }
     
     // 3D rotations - all angles in radians
-
-#if defined(ARB_USE_AUTODIFF)
-    
     inline constexpr BMatrix3 
     rot( BScalar theta, const BVector3 &axis ) 
     // WARNING: axis *must* be normalized
     {
-        assert(arb::length(axis) - 1.0 < 1E-8);
-        
-        using std::sin;
-        using std::cos;
-        
-        const BScalar s = sin(theta);
-        const BScalar c = cos(theta);
-        const BScalar omc = (1.0 - c);
-        
-        return BMatrix3( axis[0] * axis[0] * omc + c,
-                         axis[1] * axis[0] * omc + axis[2] * s,
-                         axis[0] * axis[2] * omc - axis[1] * s,
-                      
-                         axis[0] * axis[1] * omc - axis[2] * s,
-                         axis[1] * axis[1] * omc + c,
-                         axis[1] * axis[2] * omc + axis[0] * s,
-                      
-                         axis[0] * axis[2] * omc + axis[1] * s,
-                         axis[1] * axis[2] * omc - axis[0] * s,
-                         axis[2] * axis[2] * omc + c);
-    }
-     
-#else
-     
-     inline constexpr BMatrix3 
-     rot( BScalar theta, const BVector3 &axis ) 
-     // WARNING: axis *must* be normalized
-     {
-         using std::abs;
-         using std::sin;
-         using std::cos;
-         assert(abs(arb::length(axis) - 1.0) < 1E-8);
+        using std::abs;
+        assert(abs(arb::length(axis) - 1.0) < 1E-8);
+        return glm::mat3_cast(glm::angleAxis(theta, axis));
+    }   
 
-         return glm::mat3_cast(glm::angleAxis(theta, axis));
-     }   
-#endif
-    
     inline constexpr BMatrix3 
     rotx( BScalar theta ) 
     {
