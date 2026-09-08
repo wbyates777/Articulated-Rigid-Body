@@ -72,7 +72,31 @@ operator>>(std::istream& istr, autodiff::real& val)
 }
 
 // glm stream operators also need operator>>()
-namespace  glm { using ::operator>>; }
+namespace  glm { 
+
+    using ::operator>>; 
+
+    inline autodiff::real 
+    sin(const autodiff::real& a) 
+    {
+        using std::sin;
+        return sin(a);
+    }
+
+    inline autodiff::real 
+    cos(const autodiff::real& a) 
+    {
+        using std::cos;
+        return cos(a);
+    }
+    
+    inline autodiff::real 
+    tan(const autodiff::real& a) 
+    {
+        using std::tan;
+        return tan(a);
+    }
+}
 
 namespace std {
     
