@@ -505,7 +505,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
         m_X_J = arb::Xtrans(m_axis[0].lin() * q[m_qidx]);
 
         // Note m_S should be non-zero here
-        m_v_J.lin(qdot[m_qidx] * BVector3(m_S[0], m_S[1], m_S[2])); 
+        m_v_J.lin(qdot[m_qidx] * BVector3(m_S[3], m_S[4], m_S[5])); 
         
         m_X_lambda = m_X_J * m_X_T;
     } 
