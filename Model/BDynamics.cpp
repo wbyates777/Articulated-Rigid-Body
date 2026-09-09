@@ -278,16 +278,18 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
         else if (dofCount == 3) 
         {
             const BMatrix63 S(joint.S());
+            const BMatrix3 top = S.top();
+            const BMatrix3 bot = S.bot();
             const BVector3 res(tau[qidx], tau[qidx + 1], tau[qidx + 2]); 
             
             // S^T * I * S,
             m_dof3_U[i] = m_IA[i] * S;
             //m_dof3_Dinv[i] = arb::inverse(arb::transpose(S) * m_dof3_U[i]);
             //m_dof3_u[i]    = res - (arb::transpose(S) * m_pA[i]);
-            const BMatrix3 aux = m_dof3_U[i].top() * arb::transpose(S.top()) 
-                                 + m_dof3_U[i].bot() * arb::transpose(S.bot());
+            const BMatrix3 aux = m_dof3_U[i].top() * arb::transpose(top) 
+                                 + m_dof3_U[i].bot() * arb::transpose(bot);
             m_dof3_Dinv[i] = arb::inverse(aux);
-            m_dof3_u[i] = res - (S.top() * m_pA[i].ang() + S.bot() * m_pA[i].lin());
+            m_dof3_u[i] = res - (top * m_pA[i].ang() + bot * m_pA[i].lin());
             
             if (lambda != 0) 
             {
