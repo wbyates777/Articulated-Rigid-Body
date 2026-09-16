@@ -516,10 +516,10 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
 
             while (m.parentId(j) != 0) 
             {
-                const BJoint &joint_j = m.joint(j);
-                
                 F = joint_j.X_lambda().applyTranspose(F); 
                 j = m.parentId(j);
+                const BJoint &joint_j = m.joint(j);
+             
                 int dof_index_j = joint_j.qindex();
                 
                 if (joint_j.DoFCount() == 1) 
@@ -549,12 +549,12 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
             
             while (m.parentId(j) != 0) 
             {
-                const BJoint &joint_j = m.joint(j);
-                
                 const BTransform  &X_lambda = joint_j.X_lambda(); 
                 F = arb::toForceInverse(X_lambda) * F; 
                 //F = arb::transpose(X_lambda) * F; // this also works
                 j = m.parentId(j);
+                const BJoint &joint_j = m.joint(j);
+             
                 int dof_index_j = joint_j.qindex();
                 
                 if (joint_j.DoFCount() == 1) 
