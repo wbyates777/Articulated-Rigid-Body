@@ -274,7 +274,7 @@ public:
         const BMatrix3 rxM = rx * M;
         const BMatrix3 rxH = rx * H; 
         const BMatrix3 I = I_orig - rxH + (arb::transpose(H) - rxM) * rx;
-        return BABInertia(M, H - arb::transpose(rxM), I);
+        return BABInertia( M, H - arb::transpose(rxM), I );
     }
     
     bool 
