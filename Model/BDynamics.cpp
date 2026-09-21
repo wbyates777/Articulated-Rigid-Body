@@ -93,7 +93,12 @@ BDynamics::BDynamics( int expected_dof ): m_dof1_U(),
                                           m_dof1_u(), 
                                           m_dof3_U(),
                                           m_dof3_Dinv(),
-                                          m_dof3_u() 
+                                          m_dof3_u(),
+                                          m_IA(),
+                                          m_pA(),
+                                          m_f(),
+                                          m_qdot_zero(),
+                                          m_Ic()
 {
     m_dof1_U.reserve(expected_dof);
     m_dof1_d.reserve(expected_dof);
@@ -106,53 +111,10 @@ BDynamics::BDynamics( int expected_dof ): m_dof1_U(),
     m_IA.reserve(expected_dof);
     m_pA.reserve(expected_dof);
     
-    m_Ic.reserve(expected_dof);
-}
-
-
-void 
-BDynamics::update_X_base( BModel &m, const BModelState &qstate ) 
-// update kinematics - calculates positions 
-// based on UpdateKinematicsCustomin RBDL
-{
-    const std::vector<BScalar> qdot_zero(qstate.qdot.size(), 0.0);
+    m_f.reserve(expected_dof);
     
-    for (int i = 1; i < m.bodyNum(); ++i) 
-    {
-        BBody &body = m.body(i);
-        BJoint &joint = m.joint(i);
-        
-        joint.jcalc(qstate.q, qdot_zero);
-        
-        const BTransform &X_lambda = joint.X_lambda(); 
-        const int lambda = m.parentId(i); 
-        
-        if (lambda != 0) 
-            body.X_base( X_lambda * m.body(lambda).X_base() );
-        else  body.X_base( X_lambda );
-    }
-}
-
-void 
-BDynamics::update_velocity( BModel &m, const BModelState &qstate ) 
-// update kinematics - calculates velocities
-// based on UpdateKinematicsCustomin RBDL
-{
-    for (int i = 1; i < m.bodyNum(); ++i) 
-    {
-        BBody &body = m.body(i);
-        BJoint &joint = m.joint(i);
-        
-        joint.jcalc(qstate.q, qstate.qdot);
-        
-        const int lambda = m.parentId(i); 
-        
-        if (lambda != 0) 
-            body.v() = (joint.X_lambda() * m.body(lambda).v()) + joint.v_J();
-        else body.v() = joint.v_J();
-
-        body.c() = joint.c_J() + arb::crossm( body.v(), joint.v_J() );
-    }
+    m_qdot_zero.reserve(expected_dof);
+    m_Ic.reserve(expected_dof);
 }
 
 
@@ -164,9 +126,9 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
 // an end-effector, such as a jointed robotic arm, from specified values for the joint forces.
 // see RBDA, Table 7.1
 {
-    const std::vector<BScalar> &q    = qstate.q;    // pos
-    const std::vector<BScalar> &qdot = qstate.qdot; // vel 
-    const std::vector<BScalar> &tau  = qstate.tau;  // force
+    const std::vector<BScalar> &q    = qstate.q();    // pos
+    const std::vector<BScalar> &qdot = qstate.qdot(); // vel 
+    const std::vector<BScalar> &tau  = qstate.tau();  // force
     
     const int N_B = (int) m.bodyNum();
     
@@ -286,9 +248,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
             m_dof3_U[i] = m_IA[i] * S;
             //m_dof3_Dinv[i] = arb::inverse(arb::transpose(S) * m_dof3_U[i]);
             //m_dof3_u[i]    = res - (arb::transpose(S) * m_pA[i]);
-            const BMatrix3 aux = m_dof3_U[i].top() * arb::transpose(top) 
-                                 + m_dof3_U[i].bot() * arb::transpose(bot);
-            m_dof3_Dinv[i] = arb::inverse(aux);
+            m_dof3_Dinv[i] = arb::inverse(top * m_dof3_U[i].top()  + bot * m_dof3_U[i].bot());
             m_dof3_u[i] = res - (top * m_pA[i].ang() + bot * m_pA[i].lin());
             
             if (lambda != 0) 
@@ -308,7 +268,7 @@ BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // 
     // $\ddot{q}_i = D^{-1}_i (u_i - U_i^T a^{'})$
     // $a_i += S_i \ddot{q}_i$ 
     
-    std::vector<BScalar> &qddot = qstate.qddot;
+    std::vector<BScalar> &qddot = qstate.qddot();
     qddot.resize(tau.size()); // output accelerations -- one for each force
     
     for (int i = 1; i < N_B; ++i) 
@@ -354,9 +314,9 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
 // The reverse calculation, that computes the joint forces that achieve a specified arm position, 
 // see RBDA, Table 5.1
 {
-    const std::vector<BScalar> &q     = qstate.q;     // pos
-    const std::vector<BScalar> &qdot  = qstate.qdot;  // vel 
-    const std::vector<BScalar> &qddot = qstate.qddot; // acc 
+    const std::vector<BScalar> &q     = qstate.q();     // pos
+    const std::vector<BScalar> &qdot  = qstate.qdot();  // vel 
+    const std::vector<BScalar> &qddot = qstate.qddot(); // acc 
    
     // reset the velocity of the root body
     // $v_0 = 0$
@@ -428,7 +388,7 @@ BDynamics::inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext)  // 
     // $\tau_i = S_i^T f_i$ (equation 5.11)
     // $f_{\lambda(i)} += {\lambda(i)}^X_i^{*} f_i$
     
-    std::vector<BScalar> &tau  = qstate.tau; // tau
+    std::vector<BScalar> &tau  = qstate.tau(); // tau
     tau.resize(qddot.size()); // output forces -- one for each acceleration
     
     for (int i = N_B - 1; i > 0; --i) 
@@ -473,10 +433,10 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
 
     if (update_kinematics) 
     {
-        m_qdot_zero.resize(qstate.qdot.size(), 0.0);
+        m_qdot_zero.resize(qstate.qdot().size(), 0.0);
         for (int i = 1; i < N_B; ++i) 
         {
-            m.joint(i).jcalc(qstate.q, m_qdot_zero);
+            m.joint(i).jcalc(qstate.q(), m_qdot_zero);
             m_Ic[i] =  m.body(i).I();
         }
     }
@@ -519,7 +479,7 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
                 F = m.joint(j).X_lambda().applyTranspose(F); 
                 j = m.parentId(j);
                 const BJoint &joint_j = m.joint(j);
-             
+                
                 int dof_index_j = joint_j.qindex();
                 
                 if (joint_j.DoFCount() == 1) 
@@ -554,7 +514,7 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
                 //F = arb::transpose(X_lambda) * F; // this also works
                 j = m.parentId(j);
                 const BJoint &joint_j = m.joint(j);
-             
+                
                 int dof_index_j = joint_j.qindex();
                 
                 if (joint_j.DoFCount() == 1) 

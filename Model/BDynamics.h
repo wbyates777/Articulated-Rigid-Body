@@ -50,6 +50,12 @@
 #ifndef __BDYNAMICS_H__
 #define __BDYNAMICS_H__
 
+
+
+#ifndef __BMODELSTATE_H__
+#include "BModelState.h"
+#endif
+
 #ifndef __BMODEL_H__
 #include "BModel.h"
 #endif
@@ -64,30 +70,8 @@
 
 
 
-
-struct BModelState 
-{
-    BModelState( void )=default;
-    BModelState( const BModel &model )
-    {
-        q.resize(model.qsize(),0.0);
-        qdot.resize(model.qdotsize(), 0.0);
-        qddot.resize(model.qdotsize(), 0.0);
-        tau.resize(model.qdotsize(), 0.0);
-    }
-    ~BModelState( void )=default;
-
-    // joint parameters (joint space)
-    std::vector<BScalar> q;     // positions
-    std::vector<BScalar> qdot;  // velocities
-    std::vector<BScalar> qddot; // accelerations
-    std::vector<BScalar> tau;   // forces
-};
-
 typedef  std::vector<BVector6> BExtForce;
 
-
- 
 
 
 class BDynamics
@@ -95,7 +79,8 @@ class BDynamics
     
 public:
     
-    explicit BDynamics( int expected_dof = 3 );
+    BDynamics( void )=default;
+    explicit BDynamics( int expected_dof );
     ~BDynamics( void )=default;
     
     
@@ -149,14 +134,6 @@ public:
     crba( BModel &m, const BModelState &Q, BMatrix &H, bool update_kinematics = true ); 
     
     
-    // update kinematics - calculates positions
-    static void 
-    update_X_base( BModel &m, const BModelState &qstate );
-
-    // update kinematics - calculates velocities
-    static void 
-    update_velocity( BModel &m, const BModelState &qstate );
-    
 private: 
 
     void
@@ -205,7 +182,6 @@ private:
     //
     // inverse algorithm (RNEA)
     //
-    
     std::vector<BVector6>  m_f;    // $f_i$ the net internal force acting on body $B_i$ (see RBDA, equation 5.9)
     
     //

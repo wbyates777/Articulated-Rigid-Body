@@ -15,6 +15,7 @@ add_library(Model
     OBJECT
         BJoint.cpp
         BModel.cpp
+        BKinematics.cpp
         BDynamics.cpp
 )
 

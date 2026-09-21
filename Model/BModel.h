@@ -56,8 +56,7 @@ class BModel
 
 public:
 
-    
-    BModel( int expected_dof = 3 );
+    explicit BModel( int expected_dof = 3 );
     ~BModel( void )=default;
 
     void 
@@ -89,8 +88,7 @@ public:
     
     size_t
     bodyNum( void ) const { return m_body.size(); }     // $N_B$
-    
-    
+
     BFixedBody&
     fixedBody( BBodyId bid ) { return m_fixed[bid - m_fbd]; }
 
@@ -123,14 +121,11 @@ public:
              const BBody &body, 
              const std::string &body_name = "" );    
 
-
     
     // set a bodies parameters 
     void 
     setBody( BBodyId bid, const BInertia &inertia );
 
-    //
-    
     // set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()
     void 
     setJointFrame( BBodyId bid, const BTransform &transform );
@@ -139,27 +134,6 @@ public:
     BTransform 
     getJointFrame( BBodyId bid ) const;
     
-    // return base coordinates of body_pos where body_pos is expressed in body $bid$ coordinates 
-    BVector3
-    toBasePos( BBodyId bid, const BVector3 &body_pos = B_ZERO_3 ) const;
-    
-    // return body $bid$ coordinates of base_pos where base_pos is expressed in base coordinates 
-    BVector3 
-    toBodyPos( BBodyId bid,  const BVector3 &base_pos ) const;
-
-    // return orientation of body $bid$
-    BMatrix3 
-    orient( BBodyId bid ) const;
-
-    // velocity at point
-    BVector6  
-    v( BBodyId bid, const BVector3 &body_pos );
-    
-    // acceleration at point 
-    BVector6
-    a( BBodyId bid, const BVector3 &body_pos );
-    //
-
     // total mass of body $bid$ and all children bodies (subtree)
     BScalar
     mass( BBodyId bid ) const; 
@@ -201,18 +175,17 @@ public:
     BBodyId
     parentId( BBodyId bid )  const { return m_lambda[bid]; }
     
+    // returns the id of the actual non-virtual parent body.
+    BBodyId 
+    getParentBodyId( BBodyId bid ) const;
+    
     BBodyId 
     getBodyId( const std::string &body_name ) const;
 
     std::string 
     getBodyName( BBodyId bid ) const;
-
-    // returns the id of the actual non-virtual parent body.
-    BBodyId 
-    getParentBodyId( BBodyId bid ) const;
-
     
-    
+
     friend std::ostream&
     operator<<( std::ostream &ostr, const BModel &m );
     
