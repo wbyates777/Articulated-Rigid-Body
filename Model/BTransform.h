@@ -1,0 +1,358 @@
+/* BTransform 20/02/2024
+
+ $$$$$$$$$$$$$$$$$$$$
+ $   BTransform.h   $
+ $$$$$$$$$$$$$$$$$$$$
+
+ by W.B. Yates
+ Copyright (c) W.B. Yates. All rights reserved.
+ History:
+
+ Spatial or Plücker Transforms (see Featherstone, RBDA, Section 2.8, page 20, and Appendix A3, page 245).
+ 
+ Consider a tranform $X$ that maps points from a coordinate frame $A$ to a coordinate frame $B$ 
+ $$ B^X_A : A \rightarrow B. $$
+ The inverse $X^{-1}$ is defined by
+ $$ B^{X^{-1}}_A = A^X_B. $$ 
+
+ We require diﬀerent coordinate transformation matrices for motions and forces. 
+ For motion vectors $v \in M^6$, 
+ $$ B^{X}_A : A \rightarrow B $$
+ For force vectors $v \in F^6$, the dual or 'star' version of the transform must be used 
+ $$ B^{X^*}_A : A \rightarrow B $$
+ If the matrix $X$ performs a coordinate transformation on motion vectors, and $X^*$ performs the same
+ transformation on force vectors, then the two are related by $X^* = X^{-T}$ 
+ (see Featherstone, RBDA, Section 2.6, eqn 2.13, page 18).
+
+ This class employs a compact representation of spatial transformations.
+ Instead of using a full 6x6 matrix, the class only stores a 3x3  rotation matrix $E$
+ and a 3D translation vector $r$ to represent a spatial transformation. 
+ It also provides some efficient matrix operations such as matrix concatenation 
+ and transformation of spatial vectors.
+ 
+ 
+ The BTransform class presented here has been tested against and matches
+ the Eigen3 RBDL function:
+ 
+ SpatialMatrix toMatrix () const {
+   Matrix3d _Erx =
+     E * Matrix3d (
+         0., -r[2], r[1],
+         r[2], 0., -r[0],
+         -r[1], r[0], 0.
+         );
+   SpatialMatrix result;
+   result.block<3,3>(0,0) = E;
+   result.block<3,3>(0,3) = Matrix3d::Zero();
+   result.block<3,3>(3,0) = -_Erx;
+   result.block<3,3>(3,3) = E;
+
+   return result;
+ }
+///
+ 
+ Notes:
+ 
+ 1) All angles in radians
+ 2) BMatrix3 E is a rotation  - the transpose of a rotation E^T is also its inverse E^{-1}
+ 3) BVector3 r is a translation - inverse translation is -r
+ 4) Note X^* = X^{-T} (RBDA, eqn 2.13)
+
+ 5) X(E,r) in block 6x6 matrix form:
+ 
+ |     E      0  |
+ | -rx * E    E  |
+ 
+ where rx = arb::cross(r)
+ 
+ 6) The remaining transforms have analytic block definitions (which differ from 
+   the usual matrix definitions) of inverse and transpose (see RBDA, page 22).
+ 
+ X^{-1}  =  |    E^T      0  |
+            | E^T * rx   E^T |
+ 
+ X^T     =  | E^T    E^T * rx |
+            |  0         E^T  |
+ 
+ X^*  =     | E  -rx * E |
+            | 0      E   |
+ 
+ Note  X^* = X^{-T} 
+ 
+ 7) Transform of inertia see RBDA, eqn 2.66, page 34.
+    When when transforming a spatial inertia I by a spatial transform X note:
+    X.apply(I) returns I' = X^* I X^{-1} 
+    X.applyTranspose(I) returns I' = X^T I X  
+
+  8) As (A * B)^T == (B^T * A^T) and rx^T == -rx then (-E * rx)^T == rx * E^T
+     where the two negatives cancel out
+    
+ See also:
+ 
+ https://en.wikipedia.org/wiki/Rotation_matrix
+ https://en.wikipedia.org/wiki/Frame_of_reference
+ 
+*/
+
+
+
+#ifndef __BTRANSFORM_H__
+#define __BTRANSFORM_H__
+
+
+#ifndef __BRBINERTIA_H__
+#include "BRBInertia.h"
+#endif
+
+#ifndef __BABINERTIA_H__
+#include "BABInertia.h"
+#endif
+
+
+class BTransform
+{
+    
+public:
+    
+    BTransform( void )=default;
+    // BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
+    constexpr BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
+    constexpr BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
+    ~BTransform( void )=default;
+    
+    void
+    clear( void ) {  m_E = B_IDENTITY_3x3; m_r = B_ZERO_3; }
+
+    operator BMatrix6( void ) const 
+    // to motion transform matrix
+    {
+        return BMatrix6( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
+    }
+    
+    void
+    set( const BMatrix3 &E, const BVector3 &r = B_ZERO_3 ) 
+    {
+        m_E = E; m_r = r;
+    }
+    
+    void
+    set( const BVector3 &r ) 
+    {
+        m_E = B_IDENTITY_3x3; m_r = r;
+    }
+    
+
+    ///
+    ///
+    // rotation, preserves coordinate frame origin
+    const BMatrix3&
+    E( void ) const { return m_E; }
+
+    BMatrix3&
+    E( void ) { return m_E; }
+
+    void
+    E( const BMatrix3 &m ) { m_E = m; }
+    
+    // translation, moves coordinate frame origin
+    const BVector3&
+    r( void ) const { return m_r; }
+
+    BVector3&
+    r( void ) { return m_r; }
+    
+    void
+    r( const BVector3 &v ) { m_r = v; }
+    
+ 
+    BTransform 
+    operator*( const BTransform &rhs ) const 
+    {
+        return BTransform(rhs.m_E * m_E, rhs.m_r + (rhs.m_E * m_r));
+    }
+    
+    BMatrix6 
+    operator*( const BMatrix6 &rhs ) const 
+    {
+        return BMatrix6(*this) * rhs;
+    }
+    
+    // In RBDL called SpatialRigidBodyInertia::apply(const SpatialVector &v_sp)
+    BVector6 
+    operator*( const BVector6 &v ) const 
+    // return X * v
+    {
+        const BMatrix3 ET = arb::transpose(m_E);
+        const BVector3 v_ang = v.ang();
+        const BVector3 v_rxw = v.lin() - arb::cross(m_r, v_ang);
+        return BVector6(ET * v_ang, ET * v_rxw);
+        
+        // v_rxw = v.lin() - arb::cross(m_r, v.ang())
+        /*const BVector3 v_rxw( v[3] - m_r[1] * v[2] + m_r[2] * v[1],
+                              v[4] - m_r[2] * v[0] + m_r[0] * v[2],
+                              v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
+        
+        return BVector6(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
+                        m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
+                        m_E[2][0] * v[0]  + m_E[2][1] * v[1]  + m_E[2][2] * v[2],
+                      
+                        m_E[0][0] * v_rxw[0] + m_E[0][1] * v_rxw[1] + m_E[0][2] * v_rxw[2],
+                        m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
+                        m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );*/
+    }
+
+    BVector6 
+    apply( const BVector6 &v ) const { return operator*(v); }
+
+    BVector6 
+    applyTranspose( const BVector6 &f ) const
+    // returns X^T * f 
+    {
+        const BVector3 ETf = m_E * f.lin();
+        const BVector3 aux = m_E * f.ang() + arb::cross(m_r, ETf);
+        return BVector6(aux, ETf);
+    }
+
+    
+    // transform 3D point p to/from coordinate frame 
+    BVector3 
+    apply( const BVector3 &p ) const { return m_E * (p - m_r); }
+    
+    BVector3 
+    applyTranspose( const BVector3 &p ) const { return m_r + (arb::transpose(m_E) * p); }
+
+    
+    BRBInertia 
+    apply( const BRBInertia &rbi ) const
+    // returns  X^* I X^{-1}
+    {
+        const BMatrix3 ET  = arb::transpose(m_E);
+        const BVector3 h   = ET * (rbi.h() - (rbi.mass() * m_r)); 
+        const BMatrix3 rx  = arb::cross(m_r);
+        const BMatrix3 aux = (rx * arb::cross(rbi.h())) + ((arb::cross(rbi.h() - rbi.mass() * m_r) * rx));
+        const BMatrix3 I   =  ET * (rbi.I() + aux) * m_E;
+        return BRBInertia( rbi.mass(), h, I );
+    }
+    
+     
+    BRBInertia 
+    applyTranspose( const BRBInertia &rbi ) const 
+    // returns X^T I X 
+    {
+        const BVector3 Eh = m_E * rbi.h();
+        const BVector3 h  = Eh + (rbi.mass() * m_r); 
+        BMatrix3 I = m_E * rbi.I() * arb::transpose(m_E);
+        BScalar c = arb::dot(Eh + h, m_r);
+        BVector3 col0 = m_r[0] * Eh + h[0] * m_r;
+        BVector3 col1 = m_r[1] * Eh + h[1] * m_r;
+        BVector3 col2 = m_r[2] * Eh + h[2] * m_r;
+        col0[0] -= c; col1[1] -= c; col2[2] -= c;
+        I -= BMatrix3(col0, col1, col2);
+        return BRBInertia( rbi.mass(), h, I );
+    }
+    
+    BABInertia 
+    apply( const BABInertia &abi ) const  
+    // returns  X^* I X^{-1} 
+    {
+        const BMatrix3 rx = arb::cross(m_r);
+        const BMatrix3 H = abi.H() - (rx * abi.M());
+        const BMatrix3 I = abi.I() - (rx * arb::transpose(abi.H()) ) + (H * rx);
+        const BMatrix3 ET = arb::transpose(m_E);
+        return BABInertia( ET * abi.M() * m_E,  ET * H * m_E,  ET * I * m_E );
+    }
+    
+    BABInertia 
+    applyTranspose( const BABInertia &abi ) const
+    // returns X^T I X 
+    {
+        const BMatrix3 ET = arb::transpose(m_E);
+        const BMatrix3 M = m_E * abi.M() * ET;
+        const BMatrix3 H = m_E * abi.H() * ET;
+        const BMatrix3 I_orig = m_E * abi.I() * ET;
+        const BMatrix3 rx = arb::cross(m_r);
+        const BMatrix3 rxM = rx * M;
+        const BMatrix3 rxH = rx * H; 
+        const BMatrix3 I = I_orig - rxH + (arb::transpose(H) - rxM) * rx;
+        return BABInertia( M, H - arb::transpose(rxM), I );
+    }
+    
+    bool 
+    operator==( const BTransform &v ) const { return (m_r == v.m_r) && (m_E == v.m_E); }
+    
+    bool 
+    operator!=( const BTransform &v ) const { return (m_r != v.m_r) || (m_E != v.m_E); }
+    
+    friend std::istream& 
+    operator>>( std::istream &istr, BTransform &m );
+    
+    friend std::ostream&
+    operator<<( std::ostream &ostr, const BTransform &m );
+    
+private:
+    
+    BMatrix3 m_E; // rotation - note the transpose of a rotation is also its inverse
+    BVector3 m_r; // translation - inverse translation is -m_r
+};
+
+ 
+#ifndef GLM_FORCE_INTRINSICS
+constexpr BTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
+#else
+const BTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
+#endif
+
+
+//
+// Articulated Rigid Body
+//
+
+namespace arb
+{
+    // X^{-1}
+    inline constexpr BTransform 
+    inverse( const BTransform &m )  
+    { 
+        const BMatrix3 ET = arb::transpose(m.E()); 
+        return BTransform(ET, -ET * m.r()); 
+    }
+    
+    // rotations, see RBDA, Section 2.8, table, 2.2, page 23
+    // all angles in radians, axis *must* be normalised
+    inline constexpr BTransform 
+    Xrot( BScalar theta, const BVector3 &axis ) { return BTransform(rot(theta, axis)); }
+    
+    inline constexpr BTransform 
+    Xrotx( BScalar theta ) { return BTransform(rotx(theta)); }
+
+    inline constexpr BTransform 
+    Xroty( BScalar theta ) { return BTransform(roty(theta)); }
+
+    inline constexpr BTransform 
+    Xrotz( BScalar theta ) { return BTransform(rotz(theta)); }
+
+    inline constexpr BTransform 
+    Xtrans( const BVector3 &r ) { return BTransform( B_IDENTITY_3x3, r ); }
+    
+}
+
+
+inline std::ostream&
+operator<<( std::ostream &ostr, const BTransform &m )
+{
+    ostr << m.m_E << ' ' << m.m_r  << ' ';
+    return ostr;
+}
+
+
+inline std::istream& 
+operator>>( std::istream &istr, BTransform &m )
+{
+    istr >> m.m_E >> m.m_r;
+    return istr;
+}
+
+
+#endif
+
+
