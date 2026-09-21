@@ -32,10 +32,17 @@ namespace arb {
     inline BScalar
     length( const BVector3 &v ) 
     { 
-        using std::sqrt; 
+        //using std::sqrt; 
         // return sqrt((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2])); 
         // return sqrt(glm::dot(v,v)); 
         return glm::length(v);
+    } 
+    
+    inline BScalar
+    length( const BQuat &q ) 
+    { 
+        using std::sqrt; 
+        return sqrt(glm::dot(q,q)); 
     } 
     
     inline BScalar
@@ -52,6 +59,13 @@ namespace arb {
         return v / arb::length(v);
         //return glm::normalize(v);
     } 
+    
+    inline BQuat
+    normalize( const BQuat &q ) 
+    {
+        return q / arb::length(q);
+        //return glm::normalize(q);
+    }
     
     //  m^{-1} - style choice - I prefer arb::inverse(m) to m.inverse()
     inline constexpr BMatrix3 
