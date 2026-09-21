@@ -48,6 +48,9 @@
 #include "CBody.h"
 #endif
 
+#ifndef __BKINEMATICS_H__
+#include "BKinematics.h"
+#endif
 
 #ifndef __URDFMANAGER_H__
 #include "URDFManager.h"
@@ -61,6 +64,7 @@ std::string path = "../URDF/Examples/";
 #ifndef __BRESULTANALYSIS_H__
 #include "BResultAnalysis.h"
 #endif
+
 
 //
 //
@@ -110,6 +114,8 @@ example1( void )
     BModel model = rdbl_model();
     BModelState qinput(model);
 
+
+    
     dyn.forward(model, qinput);
     
     // std::cout << qinput.qddot << std::endl;
@@ -117,10 +123,10 @@ example1( void )
     res1.print();
     
     std::cout << "\nRNEA Test I\n" << std::endl;
-    qinput.q.assign(model.qsize(),1.0);
-    qinput.qdot.assign(model.qdotsize(), 1.0);
-    qinput.qddot.assign(model.qdotsize(), 0.0);
-    qinput.tau.assign(model.qdotsize(), 0.0);
+    qinput.q().assign(model.qsize(),1.0);
+    qinput.qdot().assign(model.qdotsize(), 1.0);
+    qinput.qddot().assign(model.qdotsize(), 0.0);
+    qinput.tau().assign(model.qdotsize(), 0.0);
     std::vector<BVector6> f_ext(model.bodyNum(), B_ZERO_6);
     f_ext[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
     
@@ -141,10 +147,10 @@ example1( void )
     BModel model2;
     instr >> model2; 
 
-    qinput.q.assign(model2.qsize(),0.0);
-    qinput.qdot.assign(model2.qdotsize(), 0.0);
-    qinput.qddot.assign(model2.qdotsize(), 0.0);
-    qinput.tau.assign(model2.qdotsize(), 0.0);
+    qinput.q().assign(model2.qsize(),0.0);
+    qinput.qdot().assign(model2.qdotsize(), 0.0);
+    qinput.qddot().assign(model2.qdotsize(), 0.0);
+    qinput.tau().assign(model2.qdotsize(), 0.0);
     
     dyn.forward(model2, qinput);
     
@@ -153,20 +159,20 @@ example1( void )
     res3.print();
     
     std::cout << "\nRNEA Test II\n" << std::endl;
-    qinput.q.assign(model2.qsize(),1.0);
-    qinput.qdot.assign(model2.qdotsize(), 1.0);
-    qinput.qddot.assign(model2.qdotsize(), 0.0);
-    qinput.tau.assign(model2.qdotsize(), 0.0);
+    qinput.q().assign(model2.qsize(),1.0);
+    qinput.qdot().assign(model2.qdotsize(), 1.0);
+    qinput.qddot().assign(model2.qdotsize(), 0.0);
+    qinput.tau().assign(model2.qdotsize(), 0.0);
     std::vector<BVector6> f_ext2(model2.bodyNum(), B_ZERO_6);
     f_ext2[2].set(0.0, -0.25, 0.0, 0.0, 0.0, 1.0);
     
 #ifdef ARB_USE_AUTODIFF
     // for each input [i] set independent variables [i][1];  ensure all other gradients are zero
     BBodyId bodyId = model2.getBodyId("body_a");
-    for (int i = 0; i < qinput.q.size(); ++i) 
-        qinput.q[i][1] = 0.0;
+    for (int i = 0; i < qinput.q().size(); ++i) 
+        qinput.q()[i][1] = 0.0;
 
-    qinput.q[bodyId][1] = 1.0; // set the independent variable 
+    qinput.q()[bodyId][1] = 1.0; // set the independent variable 
 #endif
     
     dyn.inverse(model2, qinput, f_ext2);
@@ -179,9 +185,9 @@ example1( void )
 #ifdef ARB_USE_AUTODIFF
     // extract the sensitivities for force from the output
     // sensitivities should be 3.30340671  1.62046474  0.00000000
-    for (int i = 0; i < qinput.tau.size(); ++i) 
+    for (int i = 0; i < qinput.tau().size(); ++i) 
     {
-        double sen = qinput.tau[i][1];
+        double sen = qinput.tau()[i][1];
         std::cout << "Sensitivity of output tau[" << i << "] with respect to input position q[" << bodyId << "]: " << sen << std::endl;
     }
 #endif  
@@ -247,8 +253,8 @@ example2( void )
 
     BModelState qinput(model);
  
-    qinput.q.assign(model.qsize(),1.0);
-    qinput.qdot.assign(model.qdotsize(), 1.0);
+    qinput.q().assign(model.qsize(),1.0);
+    qinput.qdot().assign(model.qdotsize(), 1.0);
 
     
     BDynamics dyn;
@@ -256,10 +262,10 @@ example2( void )
 #ifdef ARB_USE_AUTODIFF
     // set independent variables;  ensure all other gradients are zero
     int bodyId = 3;
-    for(int i = 0; i < qinput.q.size(); ++i) 
-        qinput.q[i][1] = 0.0;
+    for(int i = 0; i < qinput.q().size(); ++i) 
+        qinput.q()[i][1] = 0.0;
 
-    qinput.q[bodyId][1] = 1.0; // set the independent variable
+    qinput.q()[bodyId][1] = 1.0; // set the independent variable
 #endif
     
     dyn.forward(model, qinput, f_ext);
@@ -269,9 +275,9 @@ example2( void )
     
 #ifdef ARB_USE_AUTODIFF
     // extract the acceleration sensitivities from the output
-    for(int i = 0; i < qinput.qddot.size(); ++i) 
+    for(int i = 0; i < qinput.qddot().size(); ++i) 
     {
-        double sen = qinput.qddot[i][1];
+        double sen = qinput.qddot()[i][1];
         std::cout << "Sensitivity of output acc[" << i << "] with respect to input position q[" << bodyId << "]: " << sen << std::endl;
     }
 #endif 
@@ -291,8 +297,8 @@ forward( BModel model )
     BDynamics dyn;
     BModelState qinput(model);
     
-    for (int i = 0; i < qinput.tau.size(); ++i) 
-        qinput.tau[i] = 1.0;
+    for (int i = 0; i < qinput.tau().size(); ++i) 
+        qinput.tau()[i] = 1.0;
 
     // forward dynamics (ABA) - calculate accelerations 'qddot' using 'tau' 
     dyn.forward(model, qinput);
@@ -480,13 +486,13 @@ dynamics_test(void)
     std::vector<BScalar> qddot_target(dof);
     for (int i = 0; i < dof; ++i) 
     {
-        qstate.q[i]    = arb::rndFloat(-M_PI, M_PI);
-        qstate.qdot[i] = arb::rndFloat(-10.0, 10.0);
+        qstate.q()[i]    = arb::rndFloat(-M_PI, M_PI);
+        qstate.qdot()[i] = arb::rndFloat(-10.0, 10.0);
         
         qddot_target[i] = arb::rndFloat(-20.0, 20.0);
     }
     
-    qstate.qddot = qddot_target;
+    qstate.qddot() = qddot_target;
     
     // inverse dynamics (RNEA) - calculate torques 'tau' 
     dynamics.inverse( m, qstate ); 
@@ -495,8 +501,8 @@ dynamics_test(void)
     //tau.print();
 
     // keep the calculated tau, set output qddot to zero - just to be sure
-    std::vector<BScalar> tau_calculated = qstate.tau;
-    qstate.qddot.assign( m.qdotsize(), 0.0 );
+    std::vector<BScalar> tau_calculated = qstate.tau();
+    qstate.qddot().assign( m.qdotsize(), 0.0 );
     
     // forward dynamics (ABA) - calculate accelerations 'qddot' using 'tau' 
     dynamics.forward( m, qstate );
@@ -509,7 +515,7 @@ dynamics_test(void)
     BScalar max_err = 0;
     for (int i = 0; i < dof; ++i) 
     {
-        BScalar err = abs(qstate.qddot[i] - qddot_target[i]);
+        BScalar err = abs(qstate.qddot()[i] - qddot_target[i]);
         if (err > 1E-1) match = false;
         max_err = std::max(max_err, err);
     }
@@ -534,11 +540,11 @@ BModelState
 getState( const BModel &model )
 {
     BModelState qinput;
-    qinput.q.resize(model.qsize(), BScalar(0.0));
-    qinput.qdot.resize(model.qdotsize(), BScalar(0.0));
-    qinput.tau.resize(model.qdotsize(), BScalar(0.0));
-    qinput.q[0] = 0.5; // start the first joint at ~30 degrees
-    qinput.q[1] = 0.5; // start the second joint at ~30 degrees
+    qinput.q().resize(model.qsize(), BScalar(0.0));
+    qinput.qdot().resize(model.qdotsize(), BScalar(0.0));
+    qinput.tau().resize(model.qdotsize(), BScalar(0.0));
+    qinput.q()[0] = 0.5; // start the first joint at ~30 degrees
+    qinput.q()[1] = 0.5; // start the second joint at ~30 degrees
     
     return qinput; 
 }
@@ -577,10 +583,10 @@ propagate(BModel &model, BModelState &qinput)
     {
         dyn.forward( model, qinput );
         
-        for (int j = 0; j < qinput.q.size(); ++j) 
+        for (int j = 0; j < qinput.q().size(); ++j) 
         {
-            qinput.q[j] += qinput.qdot[j] * dt;
-            qinput.qdot[j] += qinput.qddot[j] * dt;
+            qinput.q()[j] += qinput.qdot()[j] * dt;
+            qinput.qdot()[j] += qinput.qddot()[j] * dt;
         }
     }
 }
@@ -593,8 +599,9 @@ getTarget(BScalar m2)
  
     BModel model = getModel(bodyId2, m2);
     BModelState qinput = getState(model);
+    BKinematics K;
     propagate(model, qinput);
-    BVector3 target_end_effector_pos = model.toBasePos(bodyId2);
+    BVector3 target_end_effector_pos = K.toBasePos(model, bodyId2, B_ZERO_3);
     
     return target_end_effector_pos;
 }
@@ -626,12 +633,12 @@ double_pendulum_system_id(void)
         
         BModel model = getModel(bodyId2, m2_guess);
         BModelState qinput = getState(model);
-    
+        BKinematics K;
         // propagate model using m2_guess
         propagate(model, qinput);
 
         // final position of the bodyId2 
-        BVector3 current_pos = model.toBasePos(bodyId2);
+        BVector3 current_pos = K.toBasePos(model, bodyId2, B_ZERO_3);
 
         // the loss function
         BScalar loss = arb::dot(current_pos - target_end_effector_pos, 

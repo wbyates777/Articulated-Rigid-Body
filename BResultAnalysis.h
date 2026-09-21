@@ -106,7 +106,7 @@ public:
 
             for (int j = 0; j < dof; ++j) 
             {
-                joint_accels.push_back((double) state.qddot[start + j]);
+                joint_accels.push_back((double) state.qddot()[start + j]);
             }
 
             results[name] = joint_accels;
@@ -131,7 +131,7 @@ public:
 
             for (int j = 0; j < dof; ++j) 
             {
-                joint_tau.push_back((double) state.tau[start + j]);
+                joint_tau.push_back((double) state.tau()[start + j]);
             }
 
             results[name] = joint_tau;
