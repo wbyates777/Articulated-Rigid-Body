@@ -158,7 +158,7 @@ support  autodiff types, and  automatic  differentiation.
  This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. 
 ARB has been tested against standard industrial robot models including: 
   
-    ur5.urdf,  iiwa7.urdf,  iiwa14.urdf,  r1.urdf,  go1.urdf,  and  tiago_dual-test.urdf
+    ur5.urdf,  iiwa7.urdf,  iiwa14.urdf,  r1.urdf,  go1.urdf,  atlas_v4.urdf, and  tiago_dual-test.urdf.
   
  The results of testing tiago_dual-test.urdf, a robotic arm with 74 components and 33 degrees of freedom (taken from the RBDL documentation) are shown
  in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
@@ -226,7 +226,7 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
 To measure  performance ARB has been benchmarked against RBDL v3.3.1. 
 
-The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across various URDF models. Results were averaged over 40 trials.
+The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across various URDF models. Timings were averaged over 40 trials.
 
 <details>
 
@@ -234,21 +234,25 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 
 | Robot (DoF)|  Algorithm | RBDL (ms) | ARB (ms) | Diff (%) |
 | :--- |  :--- | :---: | :---: | ---: |
-| **ur5** (6)| ABA 	|	98.8101	|	91.2595	|	**-7.6416** | 
-|            | CRBA	|	51.2716	|	46.2104	|	**-9.8713** | 
-|            | RNEA	|	38.5620	|	38.9000	|	0.8763 | 
+| **ur5** (6)| ABA 	|	97.806149	|	91.960921	|	**-5.976340** | 
+|            | CRBA	|	51.814773	|	46.676925	|	**-9.915797** | 
+|            | RNEA	|	38.496968	|	38.874404	|	0.980430 | 
 |  |  |  |  |  |
-| **kuka_iiwa14** (7) | ABA 	|	116.3569	|	108.0945	|	**-7.1009** | 
-|                     | CRBA	|	64.6074	|	58.0849	|	**-10.0956** | 
-|                     | RNEA	|	44.4937	|	45.4960	|	2.2527 | 
+| **kuka_iiwa14** (7) | ABA 	|	116.610593	|	107.976307	|	**-7.404375** | 
+|                     | CRBA	|	64.860906	|	57.747242	|	**-10.967568** |
+|                     | RNEA	|	44.228581	|	45.333145	|	2.497399 |
 |  |  |  |  |  |
-| **go1** (12) | ABA 	|	173.0254	|	155.9425	|	 **-9.8730**| 
-|              | CRBA	|	74.7679	|	75.3958	|	0.8398 | 
-|              | RNEA	|	74.0556	|	73.2206	|	 **-1.1275** | 
+| **go1** (12) | ABA 	|	172.526692	|	155.915456	|	**-9.628212** |
+|              | CRBA	|	75.748188	|	78.038335	|	3.023369 |  
+|              | RNEA	|	73.640291	|	73.027479	|	**-0.832170** |
 |  |  |  |  |  |
-| **tiago_dual-test** (33) | ABA 	|	520.1928	|	458.9617	|	**-11.7708** | 
-|                          | CRBA	|	299.7024	|	263.5766	|	**-12.0539** | 
-|                          | RNEA	|	209.5590	|	196.5837	|	**-6.1917** | 
+| **atlas_v4** (28) | ABA 	|	501.132807	|	419.459267	|	**-16.297783** | 
+|                   | CRBA	|	300.789152	|	251.694642	|	**-16.321902** | 
+|                   | RNEA	|	203.156004	|	170.724233	|	**-15.963974** | 
+|  |  |  |  |  |
+| **tiago_dual-test** (33) | ABA 	|	521.593866	|	460.756188	|	**-11.663802** |
+|                          | CRBA	|	306.178520	|	265.001561	|	**-13.448677** | 
+|                          | RNEA	|	209.228605	|	197.632797	|	**-5.542171** |
 
 
 #### Notes
