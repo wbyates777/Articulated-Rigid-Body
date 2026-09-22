@@ -12,5 +12,5 @@ go1.urdf             - https://github.com/unitreerobotics/unitree_ros
   
 r1.urdf              - https://github.com/unitreerobotics/unitree_ros
 
-
+atlas_v4.urdf        - https://github.com/openhumanoids/oh-distro/tree/master/software/models/atlas_v4
 
