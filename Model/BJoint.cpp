@@ -17,7 +17,7 @@
 
 
 
-constexpr std::array<std::array<BScalar, 3>, 6> B_ONE_ZERO_6x3
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_ONE_ZERO_6x3
 {
      1.0, 0.0, 0.0, 
      0.0, 1.0, 0.0,
@@ -27,7 +27,7 @@ constexpr std::array<std::array<BScalar, 3>, 6> B_ONE_ZERO_6x3
      0.0, 0.0, 0.0 
 };
 
-constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_ONE_6x3
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_ONE_6x3
 {
     0.0, 0.0, 0.0, 
     0.0, 0.0, 0.0,
@@ -38,7 +38,7 @@ constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_ONE_6x3
 };
 
 
-constexpr std::array<std::array<BScalar, 3>, 6> B_PLANAR_6x3
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_PLANAR_6x3
 {
     0.0, 0.0, 0.0,  
     0.0, 0.0, 0.0,  
