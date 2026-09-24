@@ -509,6 +509,5 @@ https://youtu.be/gKXwwdfl8QE
 
 This project is licensed under the MIT License.  
 
-Stars Welcome. It aids project visibility. Please click here:  
-![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body?style=social)
-![GitHub stars](https://img.shields.io/github/stars/wbyates777/Articulated-Rigid-Body.svg?style=social)
+Stars Welcome. It aids project visibility.  
+
