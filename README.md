@@ -6,7 +6,7 @@
 **Compact C++ articulated rigid body simulation library implementing:**
 
 * Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
-* Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ compute joint-space inertia matrix $M(q)$ for kinematic trees.
+* Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ joint-space inertia matrix $M(q)$ for kinematic trees.
 * Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
 * Spatial algebra implementation (header-only),
 * End-to-end automatic differentiability using autodiff (header-only),
