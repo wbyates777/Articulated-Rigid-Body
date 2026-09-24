@@ -149,9 +149,12 @@ operator+( const glm::dvec4 &a, const glm::vec4 &b )
 
 constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 
-constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6
+// if BScalar is float alignmet is 32 else 64
+constexpr std::size_t B_ALIGNMENT = (sizeof(BScalar) == 4) ? 32 : 64;
 
-constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BMatrix6
+alignas(B_ALIGNMENT) constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6
+
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BMatrix6
 {
     1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
@@ -161,7 +164,7 @@ constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BMatrix6
     0.0, 0.0, 0.0, 0.0, 0.0, 1.0
 };
 
-constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6     // BMatrix6
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6     // BMatrix6
 {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -171,14 +174,14 @@ constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6     // BMatrix6
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
 
-constexpr std::array<std::array<BScalar, 6>, 3> B_ZERO_3x6
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 3> B_ZERO_3x6
 {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
 
-constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
 {
     0.0, 0.0, 0.0, 
     0.0, 0.0, 0.0,
