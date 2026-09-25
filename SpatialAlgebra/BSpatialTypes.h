@@ -152,7 +152,7 @@ constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 // if BScalar is float alignmet is 32 else 64
 constexpr std::size_t B_ALIGNMENT = (sizeof(BScalar) == 4) ? 32 : 64;
 
-alignas(B_ALIGNMENT) constexpr std::array<BScalar, 6> B_ZERO_6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6
+alignas(B_ALIGNMENT) constexpr std::array<BScalar, 6> B_ZERO_6{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6
 
 alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BMatrix6
 {
