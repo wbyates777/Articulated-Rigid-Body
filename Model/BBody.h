@@ -38,12 +38,12 @@ public:
 
     BBody( void )=default; 
 
-    explicit BBody( const BRBInertia &I, bool isVirtual = false ) : m_id(0), 
-                                                                    m_v(B_ZERO_6), 
+    explicit BBody( const BRBInertia &I, bool isVirtual = false ) : m_v(B_ZERO_6), 
                                                                     m_a(B_ZERO_6), 
                                                                     m_c(B_ZERO_6),
                                                                     m_I(I),
-                                                                    m_X_base(B_IDENTITY_TRANS), 
+                                                                    m_X_base(B_IDENTITY_TRANS),
+                                                                    m_id(0), 
                                                                     m_isVirtual(isVirtual) {}
         
     ~BBody( void )=default;
@@ -177,18 +177,16 @@ public:
     
 private:
 
-    BBodyId m_id;
-    
     BVector6  m_v;    // spatial velocity of the body
     BVector6  m_a;    // spatial acceleration of the body
     BVector6  m_c;    // spatial velocity-dependent acceleration term
 
-    BRBInertia m_I;   // spatial inertia at origin of the body (mass, com, rotational inertia)
-
-    // transform from base/world coordinate frame to this body's frame 
-    // the body's base/world position and orientation
-    BTransform m_X_base;
+    BRBInertia m_I;       // spatial inertia at origin of the body (mass, com, rotational inertia)
+    BTransform m_X_base;  // transform from base/world coordinate frame to this body's frame 
+    
     BBodyParams m_params; // auxiliary URDF parameters not used by BModel or BDynamics
+   
+    BBodyId m_id;
     bool m_isVirtual;
 };
 
