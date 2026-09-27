@@ -226,7 +226,7 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
 To measure  performance ARB has been benchmarked against RBDL v3.3.1. 
 
-The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across various URDF models. Timings were averaged over 40 trials.
+The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across **12** URDF models. Timings were averaged over **40** trials.
 
 <details>
 
@@ -234,25 +234,56 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 
 | Robot (DoF)|  Algorithm | RBDL (ms) | ARB (ms) | Diff (%) |
 | :--- |  :--- | :---: | :---: | ---: |
-| **ur5** (6)| ABA 	|	97.806149	|	91.960921	|	**-5.976340** | 
-|            | CRBA	|	51.814773	|	46.676925	|	**-9.915797** | 
-|            | RNEA	|	38.496968	|	38.874404	|	0.980430 | 
+| **ur5 (6)** 	| ABA 	|	99.077512	|	91.899875	|	**-7.244467** | 
+|		| CRBA	|	51.320244	|	46.734481	|	**-8.935583** | 
+|		| RNEA	|	38.553116	|	38.915163	|	0.939086 | 
 |  |  |  |  |  |
-| **kuka_iiwa14** (7) | ABA 	|	116.610593	|	107.976307	|	**-7.404375** | 
-|                     | CRBA	|	64.860906	|	57.747242	|	**-10.967568** |
-|                     | RNEA	|	44.228581	|	45.333145	|	2.497399 |
+| **z1 (6)** 	| ABA 	|	101.357551	|	92.679638	|	**-8.561684** | 
+|		| CRBA	|	52.324138	|	47.340483	|	**-9.524580** | 
+|		| RNEA	|	39.108158	|	39.297189	|	0.483355 | 
 |  |  |  |  |  |
-| **go1** (12) | ABA 	|	172.526692	|	155.915456	|	**-9.628212** |
-|              | CRBA	|	75.748188	|	78.038335	|	3.023369 |  
-|              | RNEA	|	73.640291	|	73.027479	|	**-0.832170** |
+| **kuka_iiwa14 (7)** 	| ABA 	|	116.503287	|	108.030405	|	**-7.272655** | 
+|		| CRBA	|	64.317810	|	58.561386	|	**-8.949968** | 
+|		| RNEA	|	44.330677	|	45.303295	|	2.194006 | 
 |  |  |  |  |  |
-| **atlas_v4** (28) | ABA 	|	501.132807	|	419.459267	|	**-16.297783** | 
-|                   | CRBA	|	300.789152	|	251.694642	|	**-16.321902** | 
-|                   | RNEA	|	203.156004	|	170.724233	|	**-15.963974** | 
+| **BarrettHand (8)** 	| ABA 	|	111.643000	|	100.122637	|	**-10.318930** | 
+|		| CRBA	|	47.572238	|	48.252237	|	1.429403 | 
+|		| RNEA	|	49.889918	|	47.954094	|	**-3.880191** | 
 |  |  |  |  |  |
-| **tiago_dual-test** (33) | ABA 	|	521.593866	|	460.756188	|	**-11.663802** |
-|                          | CRBA	|	306.178520	|	265.001561	|	**-13.448677** | 
-|                          | RNEA	|	209.228605	|	197.632797	|	**-5.542171** |
+| **a1 (12)** 	| ABA 	|	175.786222	|	156.897856	|	**-10.745078** | 
+|		| CRBA	|	74.965217	|	77.136260	|	2.896067 | 
+|		| RNEA	|	74.881935	|	72.346720	|	**-3.385617** | 
+|  |  |  |  |  |
+| **aliengo (12)** 	| ABA 	|	174.612308	|	156.656820	|	**-10.283060** | 
+|		| CRBA	|	74.931129	|	76.561228	|	2.175463 | 
+|		| RNEA	|	74.769485	|	72.680904	|	**-2.793361** | 
+|  |  |  |  |  |
+| **b1 (12)** 	| ABA 	|	173.331844	|	155.781154	|	**-10.125485** | 
+|		| CRBA	|	74.102747	|	77.169410	|	4.138393 | 
+|		| RNEA	|	73.993908	|	72.723219	|	**-1.717289** | 
+|  |  |  |  |  |
+| **go1 (12)** 	| ABA 	|	174.728774	|	156.908827	|	**-10.198633** | 
+|		| CRBA	|	74.931871	|	76.699376	|	2.358815 | 
+|		| RNEA	|	74.512867	|	72.223379	|	**-3.072608** | 
+|  |  |  |  |  |
+| **allegro_rh (16)** 	| ABA 	|	252.393121	|	219.664940	|	**-12.967144** | 
+|		| CRBA	|	116.323610	|	110.765171	|	**-4.778427** | 
+|		| RNEA	|	107.090857	|	96.981568	|	**-9.439918** | 
+|  |  |  |  |  |
+| **h1 (19)** 	| ABA 	|	313.120463	|	278.015368	|	**-11.211370** | 
+|		| CRBA	|	155.179362	|	141.874556	|	**-8.573824** | 
+|		| RNEA	|	122.914395	|	115.657414	|	**-5.904094** | 
+|  |  |  |  |  |
+| **atlas_v4 (28)** 	| ABA 	|	503.052015	|	420.373660	|	**-16.435349** | 
+|		| CRBA	|	296.904898	|	251.626655	|	**-15.250083** | 
+|		| RNEA	|	202.175806	|	171.098298	|	**-15.371527** | 
+|  |  |  |  |  |
+| **tiago_dual-test (33)** 	| ABA 	|	519.762809	|	458.228443	|	**-11.838932** | 
+|		| CRBA	|	298.382615	|	263.464817	|	**-11.702357** | 
+|		| RNEA	|	208.786598	|	196.760767	|	**-5.759867** | 
+|  |  |  |  |  |
+|  |  |  |  |  |
+|	**Overall** |		|	433.97	|	392.78	|	**-9.490777**	|
 
 
 #### Notes
@@ -262,9 +293,9 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 </details>
 
 The results show that ARB consistently outperforms RBDL for ABA across all tested degrees of freedom (DoF). However 
-for CRBA and RNEA the results are mixed;  for CRBA, ARB is mostly faster (see go1), while for RNEA, ARB  can be slower (see ur5 and kuka_iiwa14).
+for CRBA and RNEA the results are mixed;  for CRBA and RNEA, ARB  can be slower (see for example ur5 and kuka_iiwa14 or a1 and BarrettHand).
 
-Despite ARB's lightweight footprint, when intrinsics (SIMD) is enabled, it achieves *near-parity* (within single-digit percentage variations) against a heavily vectorized (Eigen3) and highly optimised industry standard - RBDL. 
+Despite ARB's lightweight footprint, when intrinsics (SIMD) is enabled, it achieves *near-parity* (within single-digit percentage variations) or better against a heavily vectorized (Eigen3) and highly optimised industry standard - RBDL. 
 Having established these benchmark timings future development cycles will focus on closing the remaining  performance gap.
 
 
@@ -340,7 +371,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
 | Helical    |  1   |  A 'screw' joint with both rotational and translational motion |  Scalar Pitch  |
 | Spherical  |  3   |  Full 3D rotation (ball-and-socket).  |  Quaternion  |
 | Planar     |  3   |  Translation in the x,y plane and rotation about z-axis  |  Vector3  |
-| Floating Base  |  6  | Unconstrained 3D motion of the root.  |  Position + Quaternion |
+| Floating Base  |  6  | Unconstrained 3D motion of the root.  |  Vector3 + Quaternion |
 
 </details>
 
