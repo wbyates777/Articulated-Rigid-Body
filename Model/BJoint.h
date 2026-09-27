@@ -350,15 +350,19 @@ public:
     const BVector6&
     c_J( void ) const { return m_c_J; } 
     
+
+    void
+    qindex( int q ) { m_qidx = q; }
     
     int
     qindex( void ) const { return m_qidx; }
-    
-    void
-    qindex( int q ) { m_qidx = q; }
 
     void
     windex( int w ) { m_widx = w; }
+    
+    int
+    windex( void ) const { return m_widx; }
+    
 
     BQuat
     getQuat( const std::vector<BScalar> &q ) const;
@@ -417,20 +421,17 @@ private:
 
   
     BTransform m_X_lambda;  // ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
-    BTransform m_X_J;       // action/movement of the joint (see RBDA Section 4.4 and Table 4.1)
-    BTransform m_X_T;       // transform from parent frame to joint frame origin - the joint's position (see RBDA, Section 4.2)
+    BTransform m_X_J;       // action of the joint (see RBDA Section 4.4 and Table 4.1)
+    BTransform m_X_T;       // transform from parent to joint frame origin - the joint's position (see RBDA, Section 4.2)
     
     // joint state variables - spatial velocity and spatial acceleration (see RBDA, Section 4.4)
     BVector6   m_v_J;     
     BVector6   m_c_J;       
-   
-    // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)
-    BMotionSpace m_S; 
+
     BJointParams m_params; // auxiliary URDF parameters not used by BModel or BDynamics
-    
-    // spatial axes of the joint; 1 for each degree of freedom
-    std::vector<BVector6> m_axis;
-    
+   
+    BMotionSpace m_S;      // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)    
+    std::vector<BVector6> m_axis; // spatial axes of the joint; 1 for each degree of freedom
 };
 
 

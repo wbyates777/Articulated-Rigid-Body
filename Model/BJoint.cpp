@@ -48,6 +48,7 @@ alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_PLANAR_6x
     0.0, 0.0, 0.0   
 };
 
+constexpr BScalar B_SMALL_VALUE = 1E-8;
 
 //
 // constructs a 1-DoF joint with the given motion subspaces
@@ -60,6 +61,7 @@ BJoint::BJoint( const BVector6 &axis0 ) : m_id(0),
                                           m_X_T(B_IDENTITY_TRANS),
                                           m_v_J(B_ZERO_6),
                                           m_c_J(B_ZERO_6),
+                                          m_params(),
                                           m_S(),
                                           m_axis(1, axis0)
 {
@@ -125,13 +127,12 @@ BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
                                                        m_X_T(B_IDENTITY_TRANS),
                                                        m_v_J(B_ZERO_6),
                                                        m_c_J(B_ZERO_6),
+                                                       m_params(),
                                                        m_S(),
-                                                       m_axis()
+                                                       m_axis(axes)
 {
     // Constructs a N=2,..,6-DoF joint with the given motion subspaces.
-    int DoF_count = (int) axes.size();
-    
-    m_axis = axes;
+    int DoF_count = (int) m_axis.size();
     
     // emulated 2-6 DoF joint.
     switch (DoF_count)
@@ -165,27 +166,26 @@ BJoint::validate_spatial_axis( const BVector6 &axis )
     BVector3 rot(axis.ang());
     BVector3 trans(axis.lin());
 
-    const BScalar SMALL_VALUE = 1E-8;
-    
+
     BScalar rot_len   = arb::length(rot);
     BScalar trans_len = arb::length(trans);
     
-    if (rot_len > SMALL_VALUE) 
+    if (rot_len > B_SMALL_VALUE) 
     {
         axis_rot = true;
     }
     
-    if (trans_len > SMALL_VALUE) 
+    if (trans_len > B_SMALL_VALUE) 
     {
         axis_trans = true;
     }
     
-    if (axis_rot && rot_len - 1.0 > SMALL_VALUE) 
+    if (axis_rot && rot_len - 1.0 > B_SMALL_VALUE) 
     {
         std::cout << "Warning: joint rotation axis is not unit!" << std::endl;
     }
     
-    if (axis_trans && trans_len - 1.0 > SMALL_VALUE) 
+    if (axis_trans && trans_len - 1.0 > B_SMALL_VALUE) 
     {
         std::cout << "Warning: joint translation axis is not unit! " << std::endl;
     }
@@ -202,6 +202,7 @@ BJoint::BJoint( JType jtype ) : m_id(0),
                                 m_X_T(B_IDENTITY_TRANS),
                                 m_v_J(B_ZERO_6),
                                 m_c_J(B_ZERO_6),
+                                m_params(),
                                 m_S(),
                                 m_axis(1)
 {
@@ -328,15 +329,18 @@ BJoint::BJoint( JType jtype, const BVector3 &jaxis ) :  m_id(0),
                                                         m_X_T(B_IDENTITY_TRANS),
                                                         m_v_J(B_ZERO_6),
                                                         m_c_J(B_ZERO_6),
+                                                        m_params(),
                                                         m_S(),
                                                         m_axis(1)
 {
+    using std::abs;
+    
     assert( m_jtype == JType::Revolute || jtype == JType::Prismatic );
     
     if (m_jtype == JType::Revolute) 
     {
         // make sure we have a unit axis
-        // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
+        assert(abs(arb::length(jaxis) - 1.0) < B_SMALL_VALUE);
         m_axis[0].set( jaxis, B_ZERO_3  );
         
         setMotionSpace(m_axis[0]);
@@ -345,7 +349,7 @@ BJoint::BJoint( JType jtype, const BVector3 &jaxis ) :  m_id(0),
     else if (m_jtype == JType::Prismatic) 
     {
         // make sure we have a unit axis
-        // assert (joint_axis.length() - 1.0 >  BSMALL_VALUE);
+        assert(abs(arb::length(jaxis) - 1.0) < B_SMALL_VALUE);
         m_axis[0].set( B_ZERO_3, jaxis );
         
         setMotionSpace(m_axis[0]);
@@ -382,7 +386,7 @@ BJoint::getQuat(const std::vector<BScalar> &q) const
     quat.y = q[m_qidx+1];
     quat.z = q[m_qidx+2];
     
-    // assert(abs(arb::length(quat) - 1.0) < 1E-8);
+    // assert(abs(arb::length(quat) - 1.0) < B_SMALL_VALUE);
     
     return quat;
 }
@@ -726,7 +730,7 @@ BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot )
     {
         std::cout << "Error jcalc: invalid joint type " << m_jtype << std::endl;
         exit(EXIT_FAILURE);
-    }
+    } 
 }
 
 
