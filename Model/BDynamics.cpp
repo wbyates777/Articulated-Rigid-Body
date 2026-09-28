@@ -487,7 +487,8 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
                 else if (joint_j.DoFCount() == 3) 
                 {
                     const BMatrix63 S_j(joint_j.S());
-                    const BVector3 val =  arb::transpose(S_j) * F;
+                    //const BVector3 val =  arb::transpose(S_j) * F;
+                    const BVector3 val = S_j.top() * F.ang() + S_j.bot() * F.lin();
                     
                     block_1_3(H, dof_index_i, dof_index_j, val);
                     block_3_1(H, dof_index_j, dof_index_i, val); // transpose not needed here
@@ -516,7 +517,8 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
                 if (joint_j.DoFCount() == 1) 
                 {
                     const BVector6 S_j(joint_j.S());
-                    const BVector3 val = arb::transpose(F) * S_j;
+                    //const BVector3 val = arb::transpose(F) * S_j;
+                    const BVector3 val = F.top() * S_j.ang() + F.bot() * S_j.lin();
                     
                     block_3_1(H, dof_index_i, dof_index_j, val);
                     block_1_3(H, dof_index_j, dof_index_i, val);
@@ -524,10 +526,8 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
                 else if (joint_j.DoFCount() == 3) 
                 {
                     const BMatrix63 S_j(joint_j.S());
-                    //const BMatrix3 val = arb::transpose(F) * S_j;
-                    const BMatrix3 val = arb::transpose(F.top()) * S_j.top() + 
-                                         arb::transpose(F.bot()) * S_j.bot();
-                    
+                    const BMatrix3 val = arb::transpose(F) * S_j;
+
                     block_3_3(H, dof_index_i, dof_index_j, val);
                     block_3_3(H, dof_index_j, dof_index_i, arb::transpose(val));
                 }
