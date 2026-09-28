@@ -135,6 +135,12 @@ namespace arb
         return R;
     }
 
+    BMatrix63  
+    rndMat63( void ) 
+    {
+        return BMatrix63(arb::rndMat3(), arb::rndMat3());
+    }
+
     BMatrix3 
     rndRot( void ) 
     {
