@@ -77,7 +77,10 @@ namespace arb
 
     BMatrix6  
     rndMat6( void );
-    
+
+    BMatrix63  
+    rndMat63( void );
+
     BTransform
     rndTransform( void );
 
