@@ -84,7 +84,7 @@ public:
     ~BDynamics( void )=default;
     
     
-    /** \brief Computes forward dynamics with the Articulated Body algorithm (ABA)
+    /** @brief Computes forward dynamics with the Articulated Body algorithm (ABA)
      *
      * This function computes the generalized accelerations $a$ from given
      * generalized states, velocities and forces:
@@ -92,41 +92,41 @@ public:
      * It does this by using the recursive Articulated Body Algorithm that runs
      * in \f$O(n_{dof})\f$ with \f$n_{dof}\f$ being the number of joints.
      *
-     * \param m      rigid body model
-     * \param qstate state  of the internal joints (positions, velocities, accelerations)
-     * \param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
+     * @param m      rigid body model
+     * @param qstate state  of the internal joints (positions, velocities, accelerations)
+     * @param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
      */
     void
     forward( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce() ); 
     
     
-    /** \brief Computes inverse dynamics with the recursive Newton-Euler algorithm (RNEA)
+    /** @brief Computes inverse dynamics with the recursive Newton-Euler algorithm (RNEA)
      *
      * This function computes the generalized forces $\tau$ from given generalized
      * states, velocities, and accelerations:
      *   \f$ \tau = M(q) \ddot{q} + N(q, \dot{q}, f_\textit{ext}) \f$
      *
-     * \param m      rigid body model
-     * \param qstate state of the internal joints (positions, velocities, accelerations)
-     * \param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
+     * @param m      rigid body model
+     * @param qstate state of the internal joints (positions, velocities, accelerations)
+     * @param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
      */
     void  
     inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce() ); 
     
     
 
-    /** \brief Computes the joint space inertia matrix by using the Composite Rigid Body Algorithm
+    /** @brief Computes the joint space inertia matrix by using the Composite Rigid Body Algorithm
      *
      * This function computes the joint space inertia matrix from a given model and
      * the generalized state vector:
      *   \f$ M(q) \f$
      *
-     * \param model rigid body model
-     * \param Q     state of the internal joints (positions, velocities, accelerations)
-     * \param H     a matrix where the result will be stored in
-     * \param update_kinematics  whether the kinematics should be updated (safer, but at a higher computational cost!)
+     * @param model rigid body model
+     * @param Q     state of the internal joints (positions, velocities, accelerations)
+     * @param H     a matrix where the result will be stored in
+     * @param update_kinematics  whether the kinematics should be updated (safer, but at a higher computational cost!)
      *
-     * \note This function only evaluates the entries of H that are non-zero. One
+     * @note This function only evaluates the entries of H that are non-zero. One
      * Before calling this function one has to ensure that all other values
      * have been set to zero, e.g. by calling H.setZero().
      */
