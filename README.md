@@ -88,11 +88,8 @@ to a simple hinged mechanism such as a door.
  Spatial algebra also significantly reduces the complexity of the implementation.
 
 
- 
- Automatic differentiation is provided by the autodiff library.
- Thus the algebra, the ABA, CRBA, and the RNEA, are completely differentiable. 
- This end-to-end differentiability facilitates the application of 
-  advanced optimisation, machine learning techniques, and System Identification (SI).
+Automatic differentiation is provided by the header-only autodiff library. The spatial algebra, ABA, CRBA, and RNEA are fully differentiable, and so derivatives can propagate from joint states and model parameters through to accelerations, torques and the joint-space inertia matrix. This end-to-end differentiability supports gradient-based optimisation, machine learning, and System Identification (SI). Differentiating across contacts is also possible with the openGJK backend (see Collision Detection below).
+  
 
   The BContactManager class can detect collisions between (pairs of) rigid bodies and can resolve multiple 'contacts' 
  by employing the physical concept of spatial impulse.  
@@ -439,7 +436,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
 
  This library also supports [Automatic Differentiation] (AD).
  Adding automatic differentiation to the spatial algebra library means that 
- the algebra, ABA, CRBA, RNEA, and collision resolution are completely differentiable. 
+ the algebra, ABA, CRBA, RNEA, and collision resolution are fully differentiable. 
  Unlike _numerical_ differentiation (finite differences), which is computationally expensive and prone to truncation errors,
  AD uses the [chain rule] to propagate  _analytical_ derivatives through the code at the machine level.
  This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques
