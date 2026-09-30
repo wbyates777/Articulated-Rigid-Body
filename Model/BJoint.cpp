@@ -335,7 +335,7 @@ BJoint::BJoint( JType jtype, const BVector3 &jaxis ) :  m_id(0),
 {
     using std::abs;
     
-    assert( m_jtype == JType::Revolute || jtype == JType::Prismatic );
+    assert( m_jtype == JType::Revolute || m_jtype == JType::Prismatic );
     
     if (m_jtype == JType::Revolute) 
     {
@@ -375,7 +375,7 @@ BJoint::clear( void )
 BQuat
 BJoint::getQuat(const std::vector<BScalar> &q) const
 // NB if q == quat(0,0,0,0) then  glm::mat3_cast(getQuat(q)) -> B_IDENTITY_3x3
-// if quat is not normalizsed then it is not a rotation
+// if quat is not normalised then it is not a rotation
 {
     assert(m_jtype == JType::Spherical);
  
