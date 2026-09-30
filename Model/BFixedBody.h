@@ -8,7 +8,7 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- \brief Keeps the information of a body and how it is attached to another body.
+ @brief Keeps the information of a body and how it is attached to another body.
 
  When using fixed bodies, i.e. a body that is attached to another via a
  fixed joint, the attached body is merged onto its parent. By doing so
