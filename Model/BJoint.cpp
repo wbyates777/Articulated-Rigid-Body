@@ -152,7 +152,7 @@ BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
 } 
 
 
-/** \brief Checks whether we have pure rotational or translational axis.
+/** @brief Checks whether we have pure rotational or translational axis.
  *
  * This function is mainly used to print out warnings when specifying an
  * axis that might not be intended.
@@ -160,6 +160,8 @@ BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
 bool 
 BJoint::validate_spatial_axis( const BVector6 &axis )
 {
+    using std::abs;
+ 
     bool axis_rot = false;
     bool axis_trans = false;
     
@@ -180,12 +182,12 @@ BJoint::validate_spatial_axis( const BVector6 &axis )
         axis_trans = true;
     }
     
-    if (axis_rot && rot_len - 1.0 > B_SMALL_VALUE) 
+    if (axis_rot && abs(rot_len - 1.0) > B_SMALL_VALUE) 
     {
         std::cout << "Warning: joint rotation axis is not unit!" << std::endl;
     }
     
-    if (axis_trans && trans_len - 1.0 > B_SMALL_VALUE) 
+    if (axis_trans && abs(trans_len - 1.0) > B_SMALL_VALUE) 
     {
         std::cout << "Warning: joint translation axis is not unit! " << std::endl;
     }
@@ -422,13 +424,13 @@ BJoint::setMotionSpace( const BMatrix6 &m )
 
 
 
-/** \brief Computes all variables for a joint model
+/** @brief Computes all variables for a joint model
  *
  *  By appropriate modification of this function all types of joints can be
  *  modeled. See RBDA Section 4.4 for details.
  *
- * \param q        joint state variables
- * \param qdot     joint velocity variables
+ * @param q        joint state variables
+ * @param qdot     joint velocity variables
  */
 void 
 BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot ) 
