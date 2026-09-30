@@ -12,9 +12,9 @@
  
  
  
- \page joint_description Joint Modeling
+ @page joint_description Joint Modeling
  
- \section joint_overview Overview
+ @section joint_overview Overview
  
  The Rigid Body Dynamics Library supports a multitude of joints:
  revolute, planar, fixed, singularity-free spherical joints and joints
@@ -53,10 +53,10 @@
     );
  \endcode
  
- \note Please note that in the Rigid %Body Dynamics Library all angles
+ @note Please note that in the Rigid %Body Dynamics Library all angles
  are specified in radians.
  
- \section joint_models_fixed Fixed1 Joints
+ @section joint_models_fixed Fixed1 Joints
  
  Fixed1 joints do not add an additional degree of freedom to the model.
  When adding a body that via a fixed joint (i.e. when the type is
@@ -74,7 +74,7 @@
  To check whether a body is connected by a fixed joint you can use the
  function Model::isFixedBodyId().
  
- \section joint_three_dof 3-DoF Joints
+ @section joint_three_dof 3-DoF Joints
  
  RBDL has highly efficient implementations for the following three degree
  of freedom joints:
@@ -103,7 +103,7 @@
  counterparts as they are considerably faster and describe the same
  kinematics and dynamics.
  
- \section joint_floatingbase Floating-Base Joint (a.k.a. Freeflyer Joint)
+ @section joint_floatingbase Floating-Base Joint (a.k.a. Freeflyer Joint)
  
  RBDL has a special joint type for floating-base systems that uses the
  enum FloatBase. The first three DoF are translations along
@@ -118,7 +118,7 @@
  returned when adding the floating base (i.e. the call to
  Model::AddBody() or Model::AppendBody()).
  
- \section joint_singularities Joint Singularities
+ @section joint_singularities Joint Singularities
  
  Singularities in the models arise when a joint has three rotational
  degrees of freedom and the rotations are described by Euler- or
@@ -162,7 +162,7 @@
  \mathbf{\tau} &=& ( \tau_{tx}, \tau_{1,x}, \tau_{1,y}, \tau_{1,z}, \tau_{ty}, \tau_{2,x}, \tau_{2,y}, \tau_{2,z} )^T
  \f}
  
- \subsection spherical_integration Numerical Integration of Quaternions
+ @subsection spherical_integration Numerical Integration of Quaternions
  
  An additional consequence of this is, that special treatment is required
  when numerically integrating the angular velocities. One possibility is
