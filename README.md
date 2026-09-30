@@ -51,7 +51,7 @@ https://youtu.be/O9h_phDP_tk
 If you have CMake and a C++23 compliant compiler, you can clone, download all dependencies, and build ARB with a single command:
 
 ```bash
-git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articulated-Rigid-Body && mkdir build && cd build && cmake .. && make -j8
+git clone https://github.com/wbyates777/Articulated-Rigid-Body.git && cd Articulated-Rigid-Body && mkdir build && cd build && cmake .. && make -j6
 ```
 
 ---
@@ -280,13 +280,14 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 |		| RNEA	|	208.786598	|	196.760767	|	**-5.759867** | 
 |  |  |  |  |  |
 |  |  |  |  |  |
-|	**Overall** |		|	433.97	|	392.78	|	**-9.490777**	|
+|	**Overall** |		|	433.97 ms	|	392.78 ms	|	**-9.49%**	|
 
 
 #### Notes
 * **Zero Run-Time Allocations:** Tests conducted on pre-allocated data structures. 
-* **Compilation Environment:** C++23 clang optimised with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`.
-* **Processor:** 3.3 GHz 12-Core Intel Xeon W. 
+* **Compilation Environment:** C++23 clang optimised with flags: `-O3 -DNDEBUG -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -march=native`. Autodiff is OFF and BScalar is double.
+* **Processor:** 3.3 GHz 12-Core Intel Xeon W.
+* **Overall** score is mean of per-robot totals.
 </details>
 
 The results show that ARB consistently outperforms RBDL for ABA across all tested degrees of freedom (DoF). However 
@@ -299,9 +300,9 @@ Having established these benchmark timings future development cycles will focus 
  ## Build Instructions
  
 
-On a platform that supports CMake you can use the CMakeList.txt file included in this project. Simply cd to the directory where you have saved this project and enter:
+On a platform that supports CMake you can use the CMakeLists.txt file included in this project. Simply cd to the directory where you have saved this project and enter:
 
-  ```mkdir build ; cd build ; cmake .. ; make ```
+  ```mkdir build ; cd build ; cmake .. ; make -j6 ```
  
 CMake will take care of installing the GLM, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
 If you are not using CMake these libraries can be downloaded directly from github (see links below).
@@ -536,6 +537,5 @@ https://youtu.be/gKXwwdfl8QE
 ## Notes
 
 This project is licensed under the MIT License.  
-
-Stars Welcome. It aids project visibility.  
+ 
 
