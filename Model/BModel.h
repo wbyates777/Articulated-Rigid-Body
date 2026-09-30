@@ -13,7 +13,7 @@
  
  
  
- \brief Contains all information about the rigid body model
+ @brief Contains all information about the rigid body model
 
  This class contains all information required to perform the forward
  dynamics calculation. The variables in this class are also used for
@@ -28,7 +28,7 @@
  and tau however start at 0 such that the first entry (e.g. q[0]) always
  specifies the value for the first moving body.
 
- \note To query the number of degrees of freedom use BModel::dof_count().
+ @note To query the number of degrees of freedom use BModel::dof_count().
 
 
 */
@@ -98,7 +98,7 @@ public:
     const std::vector<BFixedBody>&
     fixedBody( void ) const { return m_fixed; }  
     
-    /** \brief Connects a given body to the model
+    /** @brief Connects a given body to the model
      *
      * The question "where is the new body to be added?" is split up in two
      * parts: first the parent (or successor) body to which it is added and
@@ -109,8 +109,8 @@ public:
      * The last question "by what kind of joint should the body be added?" is
      * again simply contained in the Joint class.
      *
-     * \param parent_id   id of the parent body
-     * \param joint_frame the transformation from the parent frame to the origin
+     * @param parent_id   id of the parent body
+     * @param joint_frame the transformation from the parent frame to the origin
      *                    of the joint frame (used to set X_T in BJoint)
      *
      */
