@@ -293,7 +293,14 @@ public:
     JType 
     jtype( void ) const { return m_jtype; }
     
-    // calculate [X_lambda, X_J, S_i, v_J, c_J] = jcalc(jtype(i), q, qdot, i) (see RBDA, Section 4.4) 
+    /** @brief Computes all variables for a joint model
+    *
+    *  By appropriate modification of this function all types of joints can be
+    *  modeled. Calculate [X_lambda, X_J, S_i, v_J, c_J]. See RBDA Section 4.4 for details.
+    *
+    * @param q        joint state variables
+    * @param qdot     joint velocity variables
+    */
     void
     jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot );
     
