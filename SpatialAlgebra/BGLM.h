@@ -18,8 +18,8 @@
 */
 
 
-#ifndef __BGLM_H__
-#define __BGLM_H__
+#ifndef BGLM_H
+#define BGLM_H
 
 //
 // GLM flags - see GLM documentation for details.

@@ -37,23 +37,23 @@
 */
 
 
-#ifndef __BABINERTIA_H__
-#define __BABINERTIA_H__
+#ifndef BABINERTIA_H
+#define BABINERTIA_H
 
 
-#ifndef __BMATRIX6_H__
+#ifndef BMATRIX6_H
 #include "BMatrix6.h"
 #endif
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 
-#ifndef __BMATRIX63_H__
+#ifndef BMATRIX63_H
 #include "BMatrix63.h"
 #endif
 
-#ifndef __BRBINERTIA_H__
+#ifndef BRBINERTIA_H
 #include "BRBInertia.h"
 #endif
 

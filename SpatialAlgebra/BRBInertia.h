@@ -53,19 +53,19 @@
 */
 
 
-#ifndef __BRBINERTIA_H__
-#define __BRBINERTIA_H__
+#ifndef BRBINERTIA_H
+#define BRBINERTIA_H
 
 
-#ifndef __BINERTIA_H__
+#ifndef BINERTIA_H
 #include "BInertia.h"
 #endif
 
-#ifndef __BMATRIX6_H__
+#ifndef BMATRIX6_H
 #include "BMatrix6.h"
 #endif
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 

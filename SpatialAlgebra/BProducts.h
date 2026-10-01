@@ -23,11 +23,11 @@
 */
 
 
-#ifndef __BPRODUCTS_H__
-#define __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
+#define BPRODUCTS_H
 
 
-#ifndef __BMATRIX6_H__
+#ifndef BMATRIX6_H
 #include "BMatrix6.h"
 #endif
 

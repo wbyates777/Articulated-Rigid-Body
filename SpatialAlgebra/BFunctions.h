@@ -18,10 +18,10 @@
 */
 
 
-#ifndef __BFUNCTIONS_H__
-#define __BFUNCTIONS_H__
+#ifndef BFUNCTIONS_H
+#define BFUNCTIONS_H
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 

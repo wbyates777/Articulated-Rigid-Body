@@ -50,16 +50,16 @@
 */
 
 
-#ifndef __BINERTIA_H__
-#define __BINERTIA_H__
+#ifndef BINERTIA_H
+#define BINERTIA_H
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
 
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 

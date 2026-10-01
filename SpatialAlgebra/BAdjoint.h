@@ -58,11 +58,11 @@
 */
 
 
-#ifndef __BADJOINT_H__
-#define __BADJOINT_H__
+#ifndef BADJOINT_H
+#define BADJOINT_H
 
 
-#ifndef __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
 #include "BTransform.h"
 #endif
 

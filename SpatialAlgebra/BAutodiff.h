@@ -22,8 +22,8 @@
 */
 
 
-#ifndef __BAUTODIFF_H__
-#define __BAUTODIFF_H__
+#ifndef BAUTODIFF_H
+#define BAUTODIFF_H
 
 #define ARB_USE_AUTODIFF
 

@@ -43,15 +43,15 @@
 
 
 
-#ifndef __BEXPONENTIAL_H__
-#define __BEXPONENTIAL_H__
+#ifndef BEXPONENTIAL_H
+#define BEXPONENTIAL_H
 
 
-#ifndef __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
 #include "BTransform.h"
 #endif
 
-#ifndef __BADJOINT_H__
+#ifndef BADJOINT_H
 #include "BAdjoint.h"
 #endif
 

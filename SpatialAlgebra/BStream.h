@@ -13,8 +13,8 @@
 */
 
 
-#ifndef __BSTREAM_H__
-#define __BSTREAM_H__
+#ifndef BSTREAM_H
+#define BSTREAM_H
 
 #include <iostream>
 #include <map>

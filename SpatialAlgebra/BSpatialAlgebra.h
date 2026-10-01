@@ -38,59 +38,59 @@
      
 */
 
-#ifndef __BSPATIALALGEBRA_H__
-#define __BSPATIALALGEBRA_H__
+#ifndef BSPATIALALGEBRA_H
+#define BSPATIALALGEBRA_H
 
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
-#ifndef __BSTREAM_H__
+#ifndef BSTREAM_H
 #include "BStream.h"
 #endif
 
-#ifndef __BFUNCTIONS_H__
+#ifndef BFUNCTIONS_H
 #include "BFunctions.h"
 #endif
 
-#ifndef __BVECTOR6_H__
+#ifndef BVECTOR6_H
 #include "BVector6.h"
 #endif
 
-#ifndef __BMATRIX6_H__
+#ifndef BMATRIX6_H
 #include "BMatrix6.h"
 #endif
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 
-#ifndef __BMATRIX63_H__
+#ifndef BMATRIX63_H
 #include "BMatrix63.h"
 #endif
 
-#ifndef __BINERTIA_H__
+#ifndef BINERTIA_H
 #include "BInertia.h"
 #endif
 
-#ifndef __BRBINERTIA_H__
+#ifndef BRBINERTIA_H
 #include "BRBInertia.h"
 #endif
 
-#ifndef __BABINERTIA_H__
+#ifndef BABINERTIA_H
 #include "BABInertia.h"
 #endif
 
-#ifndef __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
 #include "BTransform.h"
 #endif
 
-#ifndef __BADJOINT_H__
+#ifndef BADJOINT_H
 #include "BAdjoint.h"
 #endif
 
-#ifndef __BEXPONENTIAL_H__
+#ifndef BEXPONENTIAL_H
 #include "BExponential.h"
 #endif
 

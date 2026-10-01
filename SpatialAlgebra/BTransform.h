@@ -96,15 +96,15 @@
 
 
 
-#ifndef __BTRANSFORM_H__
-#define __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
+#define BTRANSFORM_H
 
 
-#ifndef __BRBINERTIA_H__
+#ifndef BRBINERTIA_H
 #include "BRBInertia.h"
 #endif
 
-#ifndef __BABINERTIA_H__
+#ifndef BABINERTIA_H
 #include "BABInertia.h"
 #endif
 

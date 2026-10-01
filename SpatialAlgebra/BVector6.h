@@ -21,15 +21,15 @@
 */
 
 
-#ifndef __BVECTOR6_H__
-#define __BVECTOR6_H__
+#ifndef BVECTOR6_H
+#define BVECTOR6_H
 
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
-#ifndef __BFUNCTIONS_H__
+#ifndef BFUNCTIONS_H
 #include "BFunctions.h"
 #endif
 

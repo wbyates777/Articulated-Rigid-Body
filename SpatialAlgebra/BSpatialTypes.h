@@ -13,8 +13,8 @@
 */
 
 
-#ifndef __BSPATIALTYPES_H__
-#define __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
+#define BSPATIALTYPES_H
 
 
 #include <vector>
@@ -23,7 +23,7 @@
 
 
 // basic glm defines
-#ifndef __BGLM_H__
+#ifndef BGLM_H
 #include "BGLM.h"
 #endif
 
@@ -35,7 +35,7 @@
 //
 #if defined(ARB_USE_AUTODIFF)
 
-    #ifndef __BAUTODIFF_H__
+    #ifndef BAUTODIFF_H
     #include "BAutodiff.h"
     #endif
 
@@ -191,7 +191,7 @@ alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
     0.0, 0.0, 0.0
 };
 
-#ifndef __BSTREAM_H__
+#ifndef BSTREAM_H
 #include "BStream.h"
 #endif
 

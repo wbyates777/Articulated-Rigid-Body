@@ -13,16 +13,16 @@
 */
 
 
-#ifndef __BMATRIX63_H__
-#define __BMATRIX63_H__
+#ifndef BMATRIX63_H
+#define BMATRIX63_H
 
 
 
-#ifndef __BMATRIX6_H__
+#ifndef BMATRIX6_H
 #include "BMatrix6.h"
 #endif
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 

@@ -37,10 +37,10 @@
 */
 
 
-#ifndef __BMATRIX6_H__
-#define __BMATRIX6_H__
+#ifndef BMATRIX6_H
+#define BMATRIX6_H
 
-#ifndef __BVECTOR6_H__
+#ifndef BVECTOR6_H
 #include "BVector6.h"
 #endif
 
