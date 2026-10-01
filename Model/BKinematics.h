@@ -79,7 +79,27 @@ public:
     // return orientation of body $bid$
     BMatrix3 
     orient( const BModel &m, BBodyId bid ) const;
- 
+
+    /** @brief Computes a 6-D Jacobian for a point on a body
+     *
+     * Computes the 6-D Jacobian \f$G(q)\f$ that when multiplied with
+     * \f$\dot{q}\f$ gives a 6-D vector that has the angular velocity as the
+     * first three entries and the linear velocity as the last three entries.
+     *
+     * @param m   rigid body model
+     * @param qstate state of the internal joints (positions, velocities, accelerations)
+     * @param bid the id of the body
+     * @param point_pos the position of the point in body-local data
+     * @param G       a matrix of dimensions 6 x \#qdot_size where the result will be stored in
+     * @param update_kinematics whether UpdateKinematics() should be called or not (default: true)
+     *
+     * The result will be returned via the G argument.
+     *
+     * @note This function only evaluates the entries of G that are non-zero. One
+     * Before calling this function one has to ensure that all other values
+     * have been set to zero, e.g. by calling G.setZero().
+     *
+     */
     void 
     calcPointJacobian( BModel &m, const BModelState &qstate, BBodyId bid,
                        const BVector3 &point_pos, BMatrix &G, bool update_kinematics );
