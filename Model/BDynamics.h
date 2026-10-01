@@ -121,8 +121,8 @@ public:
      * the generalized state vector:
      *   \f$ M(q) \f$
      *
-     * @param model rigid body model
-     * @param Q     state of the internal joints (positions, velocities, accelerations)
+     * @param  m rigid body model
+     * @param qstate     state of the internal joints (positions, velocities, accelerations)
      * @param H     a matrix where the result will be stored in
      * @param update_kinematics  whether the kinematics should be updated (safer, but at a higher computational cost!)
      *
@@ -131,7 +131,7 @@ public:
      * have been set to zero, e.g. by calling H.setZero().
      */
     void 
-    crba( BModel &m, const BModelState &Q, BMatrix &H, bool update_kinematics = true ); 
+    crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_kinematics = true ); 
     
     
 private: 
