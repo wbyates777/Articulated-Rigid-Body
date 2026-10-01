@@ -11,7 +11,7 @@
 */
 
 
-#ifndef __BMODEL_H__
+#ifndef BMODEL_H
 #include "BModel.h"
 #endif
 

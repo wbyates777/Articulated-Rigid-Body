@@ -175,25 +175,25 @@
       
 */
 
-#ifndef __BJOINT_H__
-#define __BJOINT_H__
+#ifndef BJOINT_H
+#define BJOINT_H
 
 
 
-#ifndef __BVECTOR6_H__
+#ifndef BVECTOR6_H
 #include "BVector6.h"
 #endif
 
-#ifndef __BMATRIX63_H__
+#ifndef BMATRIX63_H
 #include "BMatrix63.h"
 #endif
 
-#ifndef __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
 #include "BTransform.h"
 #endif
 
 // auxiliary parameters not used by BModel or BDynamics
-#ifndef __URDFTYPES_H__
+#ifndef URDFTYPES_H
 #include "URDFTypes.h"  // definition of BJointParams
 #endif
 

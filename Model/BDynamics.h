@@ -47,24 +47,24 @@
 */
 
 
-#ifndef __BDYNAMICS_H__
-#define __BDYNAMICS_H__
+#ifndef BDYNAMICS_H
+#define BDYNAMICS_H
 
 
 
-#ifndef __BMODELSTATE_H__
+#ifndef BMODELSTATE_H
 #include "BModelState.h"
 #endif
 
-#ifndef __BMODEL_H__
+#ifndef BMODEL_H
 #include "BModel.h"
 #endif
 
-#ifndef __BABINERTIA_H__
+#ifndef BABINERTIA_H
 #include "BABInertia.h"
 #endif
 
-#ifndef __AMATRIX_H__
+#ifndef AMATRIX_H
 #include "AMatrix.h"
 #endif
 

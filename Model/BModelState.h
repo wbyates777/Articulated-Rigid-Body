@@ -26,20 +26,20 @@
 */
 
 
-#ifndef __BMODELSTATE_H__
-#define __BMODELSTATE_H__
+#ifndef BMODELSTATE_H
+#define BMODELSTATE_H
 
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
 
-#ifndef __BMODEL_H__
+#ifndef BMODEL_H
 #include "BModel.h"
 #endif
 
-#ifndef __BJOINT_H__
+#ifndef BJOINT_H
 #include "BJoint.h"
 #endif
 

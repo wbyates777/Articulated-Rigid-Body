@@ -13,19 +13,19 @@
 */
 
 
-#ifndef __BBODY_H__
-#define __BBODY_H__
+#ifndef BBODY_H
+#define BBODY_H
 
-#ifndef __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
 #include "BTransform.h"
 #endif
 
-#ifndef __BRBINERTIA_H__
+#ifndef BRBINERTIA_H
 #include "BRBInertia.h"
 #endif
 
 // auxiliary parameters not used by BModel or BDynamics
-#ifndef __URDFTYPES_H__
+#ifndef URDFTYPES_H
 #include "URDFTypes.h"  // definition of BBodyParams
 #endif
 

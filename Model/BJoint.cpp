@@ -11,7 +11,7 @@
  */
 
 
-#ifndef __BJOINT_H__
+#ifndef BJOINT_H
 #include "BJoint.h"
 #endif
 

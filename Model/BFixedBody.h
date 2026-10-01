@@ -17,15 +17,15 @@
 */
 
 
-#ifndef __BFIXEDBODY_H__
-#define __BFIXEDBODY_H__
+#ifndef BFIXEDBODY_H
+#define BFIXEDBODY_H
 
 
-#ifndef __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
 #include "BTransform.h"
 #endif
 
-#ifndef __BBODY_H__
+#ifndef BBODY_H
 #include "BBody.h"
 #endif
 

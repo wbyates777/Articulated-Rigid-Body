@@ -81,11 +81,11 @@
 */
 
 
-#ifndef __BDYNAMICS_H__
+#ifndef BDYNAMICS_H
 #include "BDynamics.h"
 #endif
 
-#ifndef __BADJOINT_H__
+#ifndef BADJOINT_H
 #include "BAdjoint.h"
 #endif
 

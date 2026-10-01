@@ -12,8 +12,8 @@
  
 */
 
-#ifndef __AMATRIX_H__
-#define __AMATRIX_H__
+#ifndef AMATRIX_H
+#define AMATRIX_H
 
 
 #include <iostream>
@@ -163,6 +163,6 @@ operator>>( std::istream& istr, AMatrix<T>& m )
 
 typedef AMatrix<BScalar> BMatrix;
 
-#endif // __AMATRIX_H__ 
+#endif // AMATRIX_H 
 
 

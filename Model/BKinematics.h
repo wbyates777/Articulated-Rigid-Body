@@ -22,19 +22,19 @@
 */
 
 
-#ifndef __BKINEMATICS_H__
-#define __BKINEMATICS_H__
+#ifndef BKINEMATICS_H
+#define BKINEMATICS_H
 
 
-#ifndef __BMODELSTATE_H__
+#ifndef BMODELSTATE_H
 #include "BModelState.h"
 #endif
 
-#ifndef __BMODEL_H__
+#ifndef BMODEL_H
 #include "BModel.h"
 #endif
 
-#ifndef __AMATRIX_H__
+#ifndef AMATRIX_H
 #include "AMatrix.h"
 #endif
 

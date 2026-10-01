@@ -34,18 +34,18 @@
 */
 
 
-#ifndef __BMODEL_H__
-#define __BMODEL_H__
+#ifndef BMODEL_H
+#define BMODEL_H
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
-#ifndef __BFIXEDBODY_H__
+#ifndef BFIXEDBODY_H
 #include "BFixedBody.h" 
 #endif
 
-#ifndef __BJOINT_H__
+#ifndef BJOINT_H
 #include "BJoint.h"
 #endif
 

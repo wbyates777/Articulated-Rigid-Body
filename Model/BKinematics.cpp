@@ -18,7 +18,7 @@
 */
 
 
-#ifndef __BKINEMATICS_H__
+#ifndef BKINEMATICS_H
 #include "BKinematics.h"
 #endif
 
