@@ -44,16 +44,16 @@
  *  See the License for more information.
  */
 
-#ifndef __BGJK_H__
-#define __BGJK_H__
+#ifndef BGJK_H
+#define BGJK_H
 
 
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BGLM_H__
+#ifndef BGLM_H
 #include "BGLM.h"
 #endif
 

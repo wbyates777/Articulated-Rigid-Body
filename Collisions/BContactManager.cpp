@@ -52,16 +52,16 @@
 */
 
 
-#ifndef __BCONTACTMANAGER_H__
+#ifndef BCONTACTMANAGER_H
 #include "BContactManager.h"
 #endif
 
 
-#ifndef __BCOLLIDER_H__
+#ifndef BCOLLIDER_H
 #include "BCollider.h"
 #endif
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 

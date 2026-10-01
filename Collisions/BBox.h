@@ -14,11 +14,11 @@
  
  */
  
-#ifndef __BBOX_H__
-#define __BBOX_H__
+#ifndef BBOX_H
+#define BBOX_H
 
 
-#ifndef __BSTREAM_H__
+#ifndef BSTREAM_H
 #include "BStream.h"
 #endif
 

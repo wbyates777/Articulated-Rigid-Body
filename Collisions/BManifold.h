@@ -17,11 +17,11 @@
 */
 
 
-#ifndef __BMANIFOLD_H__
-#define __BMANIFOLD_H__
+#ifndef BMANIFOLD_H
+#define BMANIFOLD_H
 
 
-#ifndef __BVECTOR6_H__
+#ifndef BVECTOR6_H
 #include "BVector6.h"
 #endif
 

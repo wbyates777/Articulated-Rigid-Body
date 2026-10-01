@@ -19,7 +19,7 @@
 */
 
 
-#ifndef __BCOLLIDER_H__
+#ifndef BCOLLIDER_H
 #include "BCollider.h"
 #endif
 
