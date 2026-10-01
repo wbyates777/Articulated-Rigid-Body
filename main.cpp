@@ -19,40 +19,40 @@
 #include <numeric>
 
 
-#ifndef __BSPATIALALGEBRA_H__
+#ifndef BSPATIALALGEBRA_H
 #include "BSpatialAlgebra.h"
 #endif
 
-#ifndef __BSPATIALRANDOM_H__
+#ifndef BSPATIALRANDOM_H
 #include "BSpatialRandom.h"
 #endif
 
-#ifndef __BDYNAMICS_H__
+#ifndef BDYNAMICS_H
 #include "BDynamics.h"
 #endif
 
-#ifndef __BSPATIALCHECKS_H__
+#ifndef BSPATIALCHECKS_H
 #include "BSpatialChecks.h"
 #endif
 
 // needs ASSIMP library 
-//#ifndef __BPOLYTOPELOADER_H__
+//#ifndef BPOLYTOPELOADER_H
 //#include "BPolytopeLoader.h"
 //#endif
 
-#ifndef __BCONTACTMANAGER_H__
+#ifndef BCONTACTMANAGER_H
 #include "BContactManager.h"
 #endif
 
-#ifndef __CBODY_H__
+#ifndef CBODY_H
 #include "CBody.h"
 #endif
 
-#ifndef __BKINEMATICS_H__
+#ifndef BKINEMATICS_H
 #include "BKinematics.h"
 #endif
 
-#ifndef __URDFMANAGER_H__
+#ifndef URDFMANAGER_H
 #include "URDFManager.h"
 #endif
 
@@ -61,7 +61,7 @@ URDFManager urdf;
 //std::string path = "/Users/bill/Projects/src/Graphics/ARB/ARB/URDF/Examples/";
 std::string path = "../URDF/Examples/";
 
-#ifndef __BRESULTANALYSIS_H__
+#ifndef BRESULTANALYSIS_H
 #include "BResultAnalysis.h"
 #endif
 

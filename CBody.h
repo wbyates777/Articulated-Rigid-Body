@@ -17,24 +17,24 @@ of the code.
 */
 
 
-#ifndef __CBODY_H__
-#define __CBODY_H__
+#ifndef CBODY_H
+#define CBODY_H
 
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BBODY_H__
+#ifndef BBODY_H
 #include "BBody.h"
 #endif
 
-#ifndef __BBOX_H__
+#ifndef BBOX_H
 #include "BBox.h"
 #endif
 
 
-#ifndef __BCOLLIDER_H__
+#ifndef BCOLLIDER_H
 #include "BCollider.h"
 #endif
 

@@ -20,15 +20,15 @@
 */
 
 
-#ifndef __CBODY_H__
+#ifndef CBODY_H
 #include "CBody.h"
 #endif
 
-#ifndef __BADJOINT_H__
+#ifndef BADJOINT_H
 #include "BAdjoint.h"
 #endif
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 

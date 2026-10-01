@@ -15,8 +15,8 @@
 
 
 
-#ifndef __BRESULTANALYSIS_H__
-#define __BRESULTANALYSIS_H__
+#ifndef BRESULTANALYSIS_H
+#define BRESULTANALYSIS_H
 
 #include <cmath>
 #include <iomanip>
