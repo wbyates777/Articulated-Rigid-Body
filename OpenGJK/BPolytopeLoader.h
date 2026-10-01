@@ -36,15 +36,15 @@
 */
 
 
-#ifndef __BPOLYTOPELOADER_H__
-#define __BPOLYTOPELOADER_H__
+#ifndef BPOLYTOPELOADER_H
+#define BPOLYTOPELOADER_H
 
 
 #include <string>
 #include <vector>
 
 
-#ifndef __BPOLYTOPE_H__
+#ifndef BPOLYTOPE_H
 #include "BPolytope.h"
 #endif
 

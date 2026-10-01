@@ -84,22 +84,22 @@
 */
 
 
-#ifndef __BCONTACTMANAGER_H__
-#define __BCONTACTMANAGER_H__
+#ifndef BCONTACTMANAGER_H
+#define BCONTACTMANAGER_H
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BBOX_H__
+#ifndef BBOX_H
 #include "BBox.h"
 #endif
 
-#ifndef __BMANIFOLD_H__
+#ifndef BMANIFOLD_H
 #include "BManifold.h"
 #endif
 
-#ifndef __BGJK_H__
+#ifndef BGJK_H
 #include "BGJK.h"
 #endif
 

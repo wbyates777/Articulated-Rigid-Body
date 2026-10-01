@@ -30,23 +30,23 @@
  * the Free Software Foundation, version 3. See https://www.gnu.org/licenses/
  */
 
-#ifndef __BOPENEPA_H__
+#ifndef BOPENEPA_H
 #include "BOpenEPA.h"
 #endif
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
-#ifndef __BCOLLIDER_H__
+#ifndef BCOLLIDER_H
 #include "BCollider.h"
 #endif
 
-#ifndef __BFUNCTIONS_H__
+#ifndef BFUNCTIONS_H
 #include "BFunctions.h"
 #endif
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 

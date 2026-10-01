@@ -35,11 +35,11 @@
 */
 
 
-#ifndef __BPOLYTOPE_H__
-#define __BPOLYTOPE_H__
+#ifndef BPOLYTOPE_H
+#define BPOLYTOPE_H
 
 
-#ifndef __BGLM_H__
+#ifndef BGLM_H
 #include "BGLM.h"
 #endif
 

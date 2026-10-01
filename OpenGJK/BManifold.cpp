@@ -17,15 +17,15 @@
 */
 
 
-#ifndef __BMANIFOLD_H__
+#ifndef BMANIFOLD_H
 #include "BManifold.h"
 #endif
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BTRANSFORM_H__
+#ifndef BTRANSFORM_H
 #include "BTransform.h"
 #endif
 

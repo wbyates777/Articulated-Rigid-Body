@@ -43,27 +43,27 @@
  */
 
 
-#ifndef __BOPENGJK_H__
-#define __BOPENGJK_H__
+#ifndef BOPENGJK_H
+#define BOPENGJK_H
 
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BPSIMPLEX_H__
+#ifndef BPSIMPLEX_H
 #include "BSimplex.h"
 #endif
 
-#ifndef __BFUNCTIONS_H__
+#ifndef BFUNCTIONS_H
 #include "BFunctions.h"
 #endif
 
-#ifndef __BPRODUCTS_H__
+#ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
 
@@ -167,6 +167,6 @@ private:
 };
 
 
-#endif  // __BOPENGJK_H__
+#endif  // __BOPENGJK_H
 
 

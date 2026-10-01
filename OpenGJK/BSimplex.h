@@ -41,15 +41,15 @@
  */
 
 
-#ifndef __BSIMPLEX_H__
-#define __BSIMPLEX_H__
+#ifndef BSIMPLEX_H
+#define BSIMPLEX_H
 
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
-#ifndef __BFUNCTIONS_H__
+#ifndef BFUNCTIONS_H
 #include "BFunctions.h"
 #endif
 

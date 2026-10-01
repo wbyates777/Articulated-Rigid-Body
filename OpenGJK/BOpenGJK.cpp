@@ -31,13 +31,13 @@
  */
 
 
-#ifndef __BOPENGJK_H__
+#ifndef BOPENGJK_H
 #include "BOpenGJK.h"
 #endif
 
 
 
-#ifndef __BCOLLIDER_H__
+#ifndef BCOLLIDER_H
 #include "BCollider.h"
 #endif
 

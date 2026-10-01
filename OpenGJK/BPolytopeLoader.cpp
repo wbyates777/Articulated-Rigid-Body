@@ -20,7 +20,7 @@
 */
 
 
-#ifndef __BPOLYTOPELOADER_H__
+#ifndef BPOLYTOPELOADER_H
 #include "BPolytopeLoader.h"
 #endif
 

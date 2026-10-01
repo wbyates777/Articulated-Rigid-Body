@@ -22,14 +22,14 @@
 */
 
 
-#ifndef __BCOLLIDER_H__
-#define __BCOLLIDER_H__
+#ifndef BCOLLIDER_H
+#define BCOLLIDER_H
 
-#ifndef __BGLM_H__
+#ifndef BGLM_H
 #include "BGLM.h"
 #endif
 
-#ifndef __BPOLYTOPE_H__
+#ifndef BPOLYTOPE_H
 #include "BPolytope.h"
 #endif
 

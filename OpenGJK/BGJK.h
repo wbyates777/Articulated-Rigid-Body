@@ -55,24 +55,24 @@
  */
 
 
-#ifndef __BGJK_H__
-#define __BGJK_H__
+#ifndef BGJK_H
+#define BGJK_H
 
 
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BBOX_H__
+#ifndef BBOX_H
 #include "BBox.h"
 #endif
 
-#ifndef __BOPENGJK_H__
+#ifndef BOPENGJK_H
 #include "BOpenGJK.h"
 #endif
 
-#ifndef __BOPENEPA_H__
+#ifndef BOPENEPA_H
 #include "BOpenEPA.h"
 #endif
 

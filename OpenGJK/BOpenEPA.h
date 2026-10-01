@@ -53,16 +53,16 @@
  */
 
 
-#ifndef __BOPENEPA_H__
-#define __BOPENEPA_H__
+#ifndef BOPENEPA_H
+#define BOPENEPA_H
 
 
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BPSIMPLEX_H__
+#ifndef BPSIMPLEX_H
 #include "BSimplex.h"
 #endif
 
