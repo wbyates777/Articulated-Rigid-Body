@@ -11,12 +11,12 @@
 */
 
 
-#ifndef __BSPATIALRANDOM_H__
+#ifndef BSPATIALRANDOM_H
 #include "BSpatialRandom.h"
 #endif
 
 
-#ifndef __URAND_H__
+#ifndef URAND_H
 #include "URand.h"
 #endif
 

@@ -12,8 +12,8 @@
 */
 
 
-#ifndef __BSPATIALCHECKS_H__
-#define __BSPATIALCHECKS_H__
+#ifndef BSPATIALCHECKS_H
+#define BSPATIALCHECKS_H
 
 
 

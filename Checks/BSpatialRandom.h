@@ -13,11 +13,11 @@
 */
 
 
-#ifndef __BSPATIALRANDOM_H__
-#define __BSPATIALRANDOM_H__
+#ifndef BSPATIALRANDOM_H
+#define BSPATIALRANDOM_H
 
 
-#ifndef __BSPATIALALGEBRA_H__
+#ifndef BSPATIALALGEBRA_H
 #include "BSpatialAlgebra.h"
 #endif
 

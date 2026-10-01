@@ -14,11 +14,11 @@
 */
 
 
-#ifndef __BSPATIALCHECKS_H__
+#ifndef BSPATIALCHECKS_H
 #include "BSpatialChecks.h"
 #endif
 
-#ifndef __BSPATIALRANDOM_H__
+#ifndef BSPATIALRANDOM_H
 #include "BSpatialRandom.h"
 #endif
 

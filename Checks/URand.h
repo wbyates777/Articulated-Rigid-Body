@@ -12,8 +12,8 @@
    Wrapper class for STL random
 */
 
-#ifndef __URAND_H__
-#define __URAND_H__
+#ifndef URAND_H
+#define URAND_H
 
 
 #include <iostream>
@@ -106,4 +106,4 @@ operator>>(std::istream& istr, URand &r)
 }
 
 
-#endif // __URAND_H__
+#endif // __URAND_H
