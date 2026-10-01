@@ -13,8 +13,8 @@
 */
 
 
-#ifndef __ABODY_H__
-#define __ABODY_H__
+#ifndef ABODY_H
+#define ABODY_H
 
 
 #ifndef __BSPATIALTYPES_H__
