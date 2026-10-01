@@ -423,15 +423,6 @@ BJoint::setMotionSpace( const BMatrix6 &m )
 }
 
 
-
-/** @brief Computes all variables for a joint model
- *
- *  By appropriate modification of this function all types of joints can be
- *  modeled. See RBDA Section 4.4 for details.
- *
- * @param q        joint state variables
- * @param qdot     joint velocity variables
- */
 void 
 BJoint::jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot ) 
 // calculate  $\[ X_lambda, X_J, S_i, v_J, c_J \] = jcalc(jtype(i), q, qdot, i)$ 
