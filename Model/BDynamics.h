@@ -137,7 +137,7 @@ public:
 private: 
 
     void
-    block_3_1(BMatrix& H, int dof_index_i, int dof_index_j, const BVector3 &val)
+    block_3_1(BMatrix& H, int dof_index_i, int dof_index_j, const BVector3 &val) const
     {
         H[dof_index_i][dof_index_j]   = val[0];
         H[dof_index_i+1][dof_index_j] = val[1];
@@ -145,7 +145,7 @@ private:
     }
     
     void
-    block_1_3(BMatrix& H, int dof_index_i, int dof_index_j, const BVector3 &val)
+    block_1_3(BMatrix& H, int dof_index_i, int dof_index_j, const BVector3 &val) const
     {
         H[dof_index_i][dof_index_j]   = val[0];
         H[dof_index_i][dof_index_j+1] = val[1];
@@ -153,7 +153,7 @@ private:
     }
 
     void
-    block_3_3(BMatrix& H, int dof_index_i, int dof_index_j, const BMatrix3 &val)
+    block_3_3(BMatrix& H, int dof_index_i, int dof_index_j, const BMatrix3 &val) const
     {
         for ( int i = 0; i < 3; ++i )
             for ( int j = 0; j < 3; ++j )
