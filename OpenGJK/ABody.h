@@ -17,7 +17,7 @@
 #define ABODY_H
 
 
-#ifndef __BSPATIALTYPES_H__
+#ifndef BSPATIALTYPES_H
 #include "BSpatialTypes.h"
 #endif
 
