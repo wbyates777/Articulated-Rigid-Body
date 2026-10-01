@@ -88,14 +88,14 @@ private:
 
 
     void
-    block_6_1(BMatrix& G, int dof_index_i, int dof_index_j, const BVector6 &val)
+    block_6_1(BMatrix& G, int dof_index_i, int dof_index_j, const BVector6 &val) const
     {
         for ( int i = 0; i < 6; ++i )
             G[dof_index_i + i][dof_index_j] = val[i];
     }
     
     void
-    block_6_3(BMatrix& G, int dof_index_i, int dof_index_j, const BMatrix63 &val)
+    block_6_3(BMatrix& G, int dof_index_i, int dof_index_j, const BMatrix63 &val) const
     {
         for ( int i = 0; i < 6; ++i )
             for ( int j = 0; j < 3; ++j )
