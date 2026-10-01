@@ -71,7 +71,7 @@ BKinematics::update_velocity( BModel &m, const BModelState &qstate )
 
 
 BVector6 
-BKinematics::v( BModel &m, BBodyId bid, const BVector3 &body_pos ) 
+BKinematics::v( const BModel &m, BBodyId bid, const BVector3 &body_pos ) const 
 // RBDL Kinematics::CalcPointVelocity6D
 {
     BBodyId  ref_bid = bid;
@@ -90,7 +90,7 @@ BKinematics::v( BModel &m, BBodyId bid, const BVector3 &body_pos )
 }
 
 BVector6 
-BKinematics::a( BModel &m, BBodyId bid,  const BVector3 &body_pos ) 
+BKinematics::a( const BModel &m, BBodyId bid,  const BVector3 &body_pos ) const
 // RBDL Kinematics::CalcPointAcceleration6D
 {
     BBodyId  ref_bid = bid;
@@ -112,7 +112,7 @@ BKinematics::a( BModel &m, BBodyId bid,  const BVector3 &body_pos )
 
 
 BVector3  
-BKinematics::toBasePos( BModel &m, BBodyId bid,  const BVector3 &body_pos ) 
+BKinematics::toBasePos( const BModel &m, BBodyId bid,  const BVector3 &body_pos ) const
 // returns the base coordinates of a position given in body coordinates.
 // see kinematics.cc - Kinematics::CalcBodyToBaseCoordinates
 {
@@ -144,7 +144,7 @@ BKinematics::toBasePos( BModel &m, BBodyId bid,  const BVector3 &body_pos )
 }
 
 BVector3
-BKinematics::toBodyPos( BModel &m, BBodyId bid, const BVector3 &base_pos ) 
+BKinematics::toBodyPos( const BModel &m, BBodyId bid, const BVector3 &base_pos ) const
 {
     BVector3 pos;
     
@@ -175,7 +175,7 @@ BKinematics::toBodyPos( BModel &m, BBodyId bid, const BVector3 &base_pos )
 
 
 BMatrix3
-BKinematics::orient(BModel &m, const BBodyId bid)   
+BKinematics::orient(const BModel &m, const BBodyId bid) const  
 //  an orthonormal 3x3 matrix that rotates vectors from base to body coordinates.
 {
     if (m.isFixedBodyId(bid)) 
@@ -231,7 +231,7 @@ BKinematics::calcPointJacobian(  BModel &m,
             const BVector6 S(joint.S());
             
             BVector6 val = point_trans * (arb::inverse(m.body(j).X_base()) * S);
-            block(G, 0, qidx, val); 
+            block_6_1(G, 0, qidx, val); 
         } 
         else if (dofCount == 3) 
         {
@@ -239,7 +239,7 @@ BKinematics::calcPointJacobian(  BModel &m,
             const BMatrix63 S(joint.S());
             
             BMatrix63 val = (point_trans * arb::inverse(m.body(j).X_base()) * S);
-            block(G, 0, qidx, val);
+            block_6_3(G, 0, qidx, val);
         }
         
         j = m.parentId(j); 
