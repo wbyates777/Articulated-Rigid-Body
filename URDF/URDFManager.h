@@ -46,21 +46,21 @@
 */
 
 
-#ifndef __URDFMANAGER_H__
-#define __URDFMANAGER_H__
+#ifndef URDFMANAGER_H
+#define URDFMANAGER_H
 
 
 #include <string>
 
-#ifndef __BMODEL_H__
+#ifndef BMODEL_H
 #include "BModel.h"
 #endif
 
-#ifndef __URDFREADER_H__
+#ifndef URDFREADER_H
 #include "URDFReader.h"
 #endif
 
-#ifndef __URDFWRITER_H__
+#ifndef URDFWRITER_H
 #include "URDFWriter.h"
 #endif
 

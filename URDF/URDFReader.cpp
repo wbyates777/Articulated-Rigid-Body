@@ -20,7 +20,7 @@
 */
 
 
-#ifndef __URDFREADER_H__
+#ifndef URDFREADER_H
 #include "URDFReader.h"
 #endif
 

@@ -10,7 +10,7 @@
 
 */
 
-#ifndef __URDFTYPES_H__
+#ifndef URDFTYPES_H
 #include "URDFTypes.h" 
 #endif
 

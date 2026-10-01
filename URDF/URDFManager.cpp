@@ -21,7 +21,7 @@
 */
 
 
-#ifndef __URDFMANAGER_H__
+#ifndef URDFMANAGER_H
 #include "URDFManager.h"
 #endif
 

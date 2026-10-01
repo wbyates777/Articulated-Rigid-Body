@@ -37,10 +37,10 @@
  
 */
 
-#ifndef __URDFTYPES_H__
-#define __URDFTYPES_H__
+#ifndef URDFTYPES_H
+#define URDFTYPES_H
 
-#ifndef __BGLM_H__
+#ifndef BGLM_H
 #include "BGLM.h"
 #endif
 

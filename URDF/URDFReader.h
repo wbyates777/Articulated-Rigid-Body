@@ -22,12 +22,12 @@
 */
 
 
-#ifndef __URDFREADER_H__
-#define __URDFREADER_H__
+#ifndef URDFREADER_H
+#define URDFREADER_H
 
 #include <string>
 
-#ifndef __URDFTYPES_H__
+#ifndef URDFTYPES_H
 #include "URDFTypes.h" 
 #endif
 

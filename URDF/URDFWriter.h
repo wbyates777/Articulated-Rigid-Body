@@ -22,12 +22,12 @@
 */
 
 
-#ifndef __URDFWRITER_H__
-#define __URDFWRITER_H__
+#ifndef URDFWRITER_H
+#define URDFWRITER_H
 
 #include <string>
 
-#ifndef __URDFTYPES_H__
+#ifndef URDFTYPES_H
 #include "URDFTypes.h" 
 #endif
 

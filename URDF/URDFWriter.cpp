@@ -31,7 +31,7 @@
 */
 
 
-#ifndef __URDFWRITER_H__
+#ifndef URDFWRITER_H
 #include "URDFWriter.h"
 #endif
 
