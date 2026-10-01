@@ -61,24 +61,24 @@ public:
     
     // velocity at point
     BVector6  
-    v( const BModel &m, BBodyId bid, const BVector3 &body_pos );
+    v( const BModel &m, BBodyId bid, const BVector3 &body_pos ) const;
     
     // acceleration at point 
     BVector6
-    a( const BModel &m, BBodyId bid, const BVector3 &body_pos );
+    a( const BModel &m, BBodyId bid, const BVector3 &body_pos ) const;
 
     
     // return base coordinates of body_pos where body_pos is expressed in body $bid$ coordinates 
     BVector3 
-    toBasePos( const BModel &m, BBodyId bid, const BVector3 &body_pos = B_ZERO_3 );
+    toBasePos( const BModel &m, BBodyId bid, const BVector3 &body_pos = B_ZERO_3 ) const;
     
     // return body $bid$ coordinates of base_pos where base_pos is expressed in base/world coordinates 
     BVector3  
-    toBodyPos( const BModel &m, BBodyId bid,  const BVector3 &base_pos );
+    toBodyPos( const BModel &m, BBodyId bid,  const BVector3 &base_pos ) const;
 
     // return orientation of body $bid$
     BMatrix3 
-    orient( const BModel &m, BBodyId bid );
+    orient( const BModel &m, BBodyId bid ) const;
  
     void 
     calcPointJacobian( BModel &m, const BModelState &qstate, BBodyId bid,
