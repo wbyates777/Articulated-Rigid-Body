@@ -315,7 +315,20 @@ run_transform_tests(BSpatialChecks &st)
     st.expect(power_test, "Transform", "Power Identity - arb::dot(h_w, v_w) == arb::dot(h_b, v_b)");
     
     st.expect(arb::nearZero(invI_b - arb::inverse(I)), "Transform", "inverse inertia transform");
-   
+
+    // transform BMatrix63 
+    BTransform X = arb::rndTransform();
+    BMatrix63 u = arb::rndMat63();
+    BMatrix63 res1 =  X.apply(u);
+    BMatrix63 res2 =  BMatrix6(X) * u;
+    st.expect(arb::nearZero(res2 - res1), "Transform", "X.apply(m63) == BMatrix6(X) * m63");
+ 
+    BMatrix63 res3 =  X.applyTranspose(u);
+    BMatrix63 res4 =  arb::toForceInverse(X) * u;
+    st.expect(arb::nearZero(res3 - res4), "Transform", "X.applyTranspose(m63) == arb::toForceInverse(X) * m63");
+    
+    BMatrix63 res5 =  arb::transpose(X) * u;
+    st.expect(arb::nearZero(res3 - res5), "Transform", "X.applyTranspose(m63) == arb::transpose(X) * m63");
 }
 
 void 
