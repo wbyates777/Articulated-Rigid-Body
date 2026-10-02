@@ -213,7 +213,30 @@ public:
         return BVector6(aux, ETf);
     }
 
+
+    BMatrix63 
+    operator*( const BMatrix63 &u ) const 
+    // returns X * u
+    {
+        const BMatrix3 ang = u.top() * m_E;
+        const BMatrix3 lin = (u.bot() - (u.top() * arb::cross(m_r))) * m_E;                 
+        return BMatrix63(ang, lin);
+    }
     
+    BMatrix63 
+    apply( const BMatrix63 &u ) const { return operator*(u); }
+   
+    BMatrix63 
+    applyTranspose( const BMatrix63 &u ) const
+    // returns X^T * u
+    {
+        const BMatrix3 ET = arb::transpose(m_E);
+        const BMatrix3 ETf = u.bot() * ET; 
+        const BMatrix3 ang = u.top() * ET + ETf * arb::cross(m_r);  
+        return BMatrix63(ang, ETf);
+    }
+
+
     // transform 3D point p to/from coordinate frame 
     BVector3 
     apply( const BVector3 &p ) const { return m_E * (p - m_r); }
