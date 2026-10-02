@@ -507,9 +507,7 @@ BDynamics::crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_k
             
             while (m.parentId(j) != 0) 
             {
-                const BTransform  &X_lambda = m.joint(j).X_lambda(); 
-                F = arb::toForceInverse(X_lambda) * F; 
-                //F = arb::transpose(X_lambda) * F; // this also works
+                F = m.joint(j).X_lambda().applyTranspose(F); 
                 j = m.parentId(j);
                 const BJoint &joint_j = m.joint(j);
                 
