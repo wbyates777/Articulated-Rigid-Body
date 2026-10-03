@@ -142,8 +142,6 @@ public:
     }
     
 
-    ///
-    ///
     // rotation, preserves coordinate frame origin
     const BMatrix3&
     E( void ) const { return m_E; }
