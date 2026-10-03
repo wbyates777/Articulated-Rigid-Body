@@ -65,6 +65,10 @@
 #include "BMatrix6.h"
 #endif
 
+#ifndef BMATRIX63_H
+#include "BMatrix63.h"
+#endif
+
 #ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
@@ -191,7 +195,17 @@ public:
         const BVector3 lin = (m_mass * v_lin) - arb::cross(m_h, v_ang);
         return BVector6(ang, lin);
     }
-    
+
+    BMatrix63 
+    operator*( const BMatrix63 &v ) const
+    {
+        const BMatrix3 top = v.top();
+        const BMatrix3 bot = v.bot();
+        const BMatrix3 rh = arb::cross(m_h);
+        const BMatrix3 ang = bot * rh + top * m_I;
+        const BMatrix3 lin = m_mass * bot - top * rh;       
+        return BMatrix63(ang, lin);
+    }
     
     bool 
     operator==( const BRBInertia &v ) const 
