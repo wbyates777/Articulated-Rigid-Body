@@ -152,8 +152,7 @@ public:
         m_M -= rhs.m_M; m_H -= rhs.m_H; m_I -= rhs.m_I;
         return *this; 
     }
-    
-    
+       
     BABInertia 
     operator+( const BABInertia &rhs ) const
     {
@@ -180,68 +179,29 @@ public:
     // SpaceAlgVec::Operators.h; pass a motion vector returns a force vector
     BVector6 
     operator*( const BVector6 &v ) const
+    // return Ia * v
     {
         const BVector3 v_lin = v.lin();
         const BVector3 v_ang = v.ang();
-        const BVector3 ang((m_I * v_ang) + (arb::transpose(m_H) * v_lin));
-        const BVector3 lin((m_H * v_ang) + (m_M * v_lin) );
-        return BVector6( ang, lin );
-        
-        /*return BVector6((m_I[0][0] * v[0]) + (m_I[1][0] * v[1]) + (m_I[2][0] * v[2])  +  (m_H[0][0] * v[3]) + (m_H[0][1] * v[4]) + (m_H[0][2] * v[5]), 
-                        (m_I[0][1] * v[0]) + (m_I[1][1] * v[1]) + (m_I[2][1] * v[2])  +  (m_H[1][0] * v[3]) + (m_H[1][1] * v[4]) + (m_H[1][2] * v[5]), 
-                        (m_I[0][2] * v[0]) + (m_I[1][2] * v[1]) + (m_I[2][2] * v[2])  +  (m_H[2][0] * v[3]) + (m_H[2][1] * v[4]) + (m_H[2][2] * v[5]), 
-                
-                        (m_H[0][0] * v[0]) + (m_H[1][0] * v[1]) + (m_H[2][0] * v[2])  +  (m_M[0][0] * v[3]) + (m_M[1][0] * v[4]) + (m_M[2][0] * v[5]),
-                        (m_H[0][1] * v[0]) + (m_H[1][1] * v[1]) + (m_H[2][1] * v[2])  +  (m_M[0][1] * v[3]) + (m_M[1][1] * v[4]) + (m_M[2][1] * v[5]),
-                        (m_H[0][2] * v[0]) + (m_H[1][2] * v[1]) + (m_H[2][2] * v[2])  +  (m_M[0][2] * v[3]) + (m_M[1][2] * v[4]) + (m_M[2][2] * v[5]) );*/
+        const BVector3 ang = (m_I * v_ang) + (arb::transpose(m_H) * v_lin);
+        const BVector3 lin = (m_H * v_ang) + (m_M * v_lin);
+        return BVector6(ang, lin);
     }
     
-    
     BMatrix63 
-    operator*( const BMatrix63 &m ) const  
+    operator*( const BMatrix63 &m ) const
+    // return Ia * m
     {
-        return BMatrix63((m_I[0][0] * m[0][0]) + (m_I[1][0] * m[1][0]) + (m_I[2][0] * m[2][0])  +  (m_H[0][0] * m[3][0]) + (m_H[0][1] * m[4][0]) + (m_H[0][2] * m[5][0]), 
-                         (m_I[0][0] * m[0][1]) + (m_I[1][0] * m[1][1]) + (m_I[2][0] * m[2][1])  +  (m_H[0][0] * m[3][1]) + (m_H[0][1] * m[4][1]) + (m_H[0][2] * m[5][1]), 
-                         (m_I[0][0] * m[0][2]) + (m_I[1][0] * m[1][2]) + (m_I[2][0] * m[2][2])  +  (m_H[0][0] * m[3][2]) + (m_H[0][1] * m[4][2]) + (m_H[0][2] * m[5][2]), 
-    
-                         (m_I[0][1] * m[0][0]) + (m_I[1][1] * m[1][0]) + (m_I[2][1] * m[2][0])  +  (m_H[1][0] * m[3][0]) + (m_H[1][1] * m[4][0]) + (m_H[1][2] * m[5][0]), 
-                         (m_I[0][1] * m[0][1]) + (m_I[1][1] * m[1][1]) + (m_I[2][1] * m[2][1])  +  (m_H[1][0] * m[3][1]) + (m_H[1][1] * m[4][1]) + (m_H[1][2] * m[5][1]),
-                         (m_I[0][1] * m[0][2]) + (m_I[1][1] * m[1][2]) + (m_I[2][1] * m[2][2])  +  (m_H[1][0] * m[3][2]) + (m_H[1][1] * m[4][2]) + (m_H[1][2] * m[5][2]), 
-
-                         (m_I[0][2] * m[0][0]) + (m_I[1][2] * m[1][0]) + (m_I[2][2] * m[2][0])  +  (m_H[2][0] * m[3][0]) + (m_H[2][1] * m[4][0]) + (m_H[2][2] * m[5][0]), 
-                         (m_I[0][2] * m[0][1]) + (m_I[1][2] * m[1][1]) + (m_I[2][2] * m[2][1])  +  (m_H[2][0] * m[3][1]) + (m_H[2][1] * m[4][1]) + (m_H[2][2] * m[5][1]),
-                         (m_I[0][2] * m[0][2]) + (m_I[1][2] * m[1][2]) + (m_I[2][2] * m[2][2])  +  (m_H[2][0] * m[3][2]) + (m_H[2][1] * m[4][2]) + (m_H[2][2] * m[5][2]), 
-                         
-                         (m_H[0][0] * m[0][0]) + (m_H[1][0] * m[1][0]) + (m_H[2][0] * m[2][0])  +  (m_M[0][0] * m[3][0]) + (m_M[1][0] * m[4][0]) + (m_M[2][0] * m[5][0]),
-                         (m_H[0][0] * m[0][1]) + (m_H[1][0] * m[1][1]) + (m_H[2][0] * m[2][1])  +  (m_M[0][0] * m[3][1]) + (m_M[1][0] * m[4][1]) + (m_M[2][0] * m[5][1]),
-                         (m_H[0][0] * m[0][2]) + (m_H[1][0] * m[1][2]) + (m_H[2][0] * m[2][2])  +  (m_M[0][0] * m[3][2]) + (m_M[1][0] * m[4][2]) + (m_M[2][0] * m[5][2]),
-                         
-                         (m_H[0][1] * m[0][0]) + (m_H[1][1] * m[1][0]) + (m_H[2][1] * m[2][0])  +  (m_M[0][1] * m[3][0]) + (m_M[1][1] * m[4][0]) + (m_M[2][1] * m[5][0]),
-                         (m_H[0][1] * m[0][1]) + (m_H[1][1] * m[1][1]) + (m_H[2][1] * m[2][1])  +  (m_M[0][1] * m[3][1]) + (m_M[1][1] * m[4][1]) + (m_M[2][1] * m[5][1]),
-                         (m_H[0][1] * m[0][2]) + (m_H[1][1] * m[1][2]) + (m_H[2][1] * m[2][2])  +  (m_M[0][1] * m[3][2]) + (m_M[1][1] * m[4][2]) + (m_M[2][1] * m[5][2]),
-                        
-                         (m_H[0][2] * m[0][0]) + (m_H[1][2] * m[1][0]) + (m_H[2][2] * m[2][0])  +  (m_M[0][2] * m[3][0]) + (m_M[1][2] * m[4][0]) + (m_M[2][2] * m[5][0]),
-                         (m_H[0][2] * m[0][1]) + (m_H[1][2] * m[1][1]) + (m_H[2][2] * m[2][1])  +  (m_M[0][2] * m[3][1]) + (m_M[1][2] * m[4][1]) + (m_M[2][2] * m[5][1]),
-                         (m_H[0][2] * m[0][2]) + (m_H[1][2] * m[1][2]) + (m_H[2][2] * m[2][2])  +  (m_M[0][2] * m[3][2]) + (m_M[1][2] * m[4][2]) + (m_M[2][2] * m[5][2]));
-    
-        /* BMatrix63 retVal(B_ZERO_6x3);
-        for (int i = 0; i < 3; ++i)   
-        {         
-            for (int k = 0; k < 3; ++k) 
-            {     
-                for (int j = 0; j < 3; ++j)  
-                {
-                    retVal[i][j]   += m_I[k][i] * m[k][j] + m_H[i][k] * m[k+3][j];       
-                    retVal[i+3][j] += m_H[k][i] * m[k][j] + m_M[k][i] * m[k+3][j];      
-                }
-            }
-        }
-        return retVal; */
+        const BMatrix3 top = m.top();
+        const BMatrix3 bot = m.bot();
+        const BMatrix3 ang = (top * glm::transpose(m_I)) + (bot * m_H);
+        const BMatrix3 lin = (top * glm::transpose(m_H)) + (bot * glm::transpose(m_M));
+        return BMatrix63(ang, lin);
     }
     
     BABInertia  
     operator+(const BRBInertia &rbi) const
-    // returns Ia + I
+    // return Ia + I
     {
         const BMatrix3 M_ = m_M + BMatrix3(rbi.mass());
         const BMatrix3 H_ = m_H + arb::cross(rbi.h());
@@ -251,7 +211,7 @@ public:
 
     BABInertia  
     operator-(const BRBInertia &rbi) const
-    // returns Ia - I
+    // return Ia - I
     {
         const BMatrix3 M_ = m_M - BMatrix3(rbi.mass());
         const BMatrix3 H_ = m_H - arb::cross(rbi.h());
@@ -261,7 +221,7 @@ public:
 
     BABInertia& 
     operator+=(const BRBInertia &rbi)
-    // returns Ia += I
+    // return Ia += I
     {
         m_M[0][0] += rbi.mass();
         m_M[1][1] += rbi.mass();
@@ -273,7 +233,7 @@ public:
 
     BABInertia& 
     operator-=(const BRBInertia &rbi)
-    // returns Ia -= I
+    // return Ia -= I
     {
         m_M[0][0] -= rbi.mass();
         m_M[1][1] -= rbi.mass();
