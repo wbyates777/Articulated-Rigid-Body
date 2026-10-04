@@ -159,7 +159,7 @@ ARB has been tested against standard industrial robot models including:
   
  The results of testing tiago_dual-test.urdf, a robotic arm with 74 components and 33 degrees of freedom (taken from the RBDL documentation) are shown
  in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
- Notice that the maximum difference across all components is 0.00022200.
+ Notice that the maximum difference across all components is **0.00022200**.
 
 <details>
 
@@ -204,7 +204,7 @@ ARB has been tested against standard industrial robot models including:
 
 </details>
 
-The file BSpatialChecks.cpp includes 58 consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+The file BSpatialChecks.cpp includes **60** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
  
          exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
