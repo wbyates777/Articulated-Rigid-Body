@@ -339,19 +339,30 @@ run_transform_tests(BSpatialChecks &st)
     
     st.expect(arb::nearZero(invI_b - arb::inverse(I)), "Transform", "inverse inertia transform");
 
-    // transform BMatrix63 
     BTransform X = arb::rndTransform();
-    BMatrix63 u = arb::rndMat63();
-    BMatrix63 res1 =  X.apply(u);
-    BMatrix63 res2 =  BMatrix6(X) * u;
-    st.expect(arb::nearZero(res2 - res1), "Transform", "X.apply(m63) == BMatrix6(X) * m63");
- 
-    BMatrix63 res3 =  X.applyTranspose(u);
-    BMatrix63 res4 =  arb::toForceInverse(X) * u;
-    st.expect(arb::nearZero(res3 - res4), "Transform", "X.applyTranspose(m63) == arb::toForceInverse(X) * m63");
     
-    BMatrix63 res5 =  arb::transpose(X) * u;
-    st.expect(arb::nearZero(res3 - res5), "Transform", "X.applyTranspose(m63) == arb::transpose(X) * m63");
+    // transform BVector6
+    BVector6 v = arb::rndVec6();
+    BVector6 res1 =  X.apply(v);
+    BVector6 res2 =  BMatrix6(X) * v;
+    st.expect(arb::nearZero(res2 - res1), "Transform", "X.apply(v6) == BMatrix6(X) * v6");
+    
+    BVector6 res3 =  X.applyTranspose(v);
+    BVector6 res4 =  arb::transpose(X) * v;
+    st.expect(arb::nearZero(res4 - res3), "Transform", "X.applyTranspose(v6) == arb::transpose(X) * v6");
+    
+    // transform BMatrix63 
+    BMatrix63 m = arb::rndMat63();
+    BMatrix63 res5 =  X.apply(m);
+    BMatrix63 res6 =  BMatrix6(X) * m;
+    st.expect(arb::nearZero(res6 - res5), "Transform", "X.apply(m63) == BMatrix6(X) * m63");
+ 
+    BMatrix63 res7 =  X.applyTranspose(m);
+    BMatrix63 res8 =  arb::toForceInverse(X) * m;
+    st.expect(arb::nearZero(res7 - res8), "Transform", "X.applyTranspose(m63) == arb::toForceInverse(X) * m63");
+    
+    BMatrix63 res9 =  arb::transpose(X) * m;
+    st.expect(arb::nearZero(res7 - res9), "Transform", "X.applyTranspose(m63) == arb::transpose(X) * m63");
 }
 
 void 
