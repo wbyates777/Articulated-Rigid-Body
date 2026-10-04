@@ -184,19 +184,6 @@ public:
         const BVector3 v_ang = v.ang();
         const BVector3 v_rxw = v.lin() - arb::cross(m_r, v_ang);
         return BVector6(ET * v_ang, ET * v_rxw);
-        
-        // v_rxw = v.lin() - arb::cross(m_r, v.ang())
-        /*const BVector3 v_rxw( v[3] - m_r[1] * v[2] + m_r[2] * v[1],
-                              v[4] - m_r[2] * v[0] + m_r[0] * v[2],
-                              v[5] - m_r[0] * v[1] + m_r[1] * v[0] );
-        
-        return BVector6(m_E[0][0] * v[0]  + m_E[0][1] * v[1]  + m_E[0][2] * v[2],
-                        m_E[1][0] * v[0]  + m_E[1][1] * v[1]  + m_E[1][2] * v[2],
-                        m_E[2][0] * v[0]  + m_E[2][1] * v[1]  + m_E[2][2] * v[2],
-                      
-                        m_E[0][0] * v_rxw[0] + m_E[0][1] * v_rxw[1] + m_E[0][2] * v_rxw[2],
-                        m_E[1][0] * v_rxw[0] + m_E[1][1] * v_rxw[1] + m_E[1][2] * v_rxw[2],
-                        m_E[2][0] * v_rxw[0] + m_E[2][1] * v_rxw[1] + m_E[2][2] * v_rxw[2] );*/
     }
 
     BVector6 
@@ -204,7 +191,7 @@ public:
 
     BVector6 
     applyTranspose( const BVector6 &f ) const
-    // returns X^T * f 
+    // return X^T * f 
     {
         const BVector3 ETf = m_E * f.lin();
         const BVector3 aux = m_E * f.ang() + arb::cross(m_r, ETf);
@@ -214,7 +201,7 @@ public:
 
     BMatrix63 
     operator*( const BMatrix63 &u ) const 
-    // returns X * u
+    // return X * u
     {
         const BMatrix3 ang = u.top() * m_E;
         const BMatrix3 lin = (u.bot() - (u.top() * arb::cross(m_r))) * m_E;                 
@@ -226,7 +213,7 @@ public:
    
     BMatrix63 
     applyTranspose( const BMatrix63 &u ) const
-    // returns X^T * u
+    // return X^T * u
     {
         const BMatrix3 ET = arb::transpose(m_E);
         const BMatrix3 ETf = u.bot() * ET; 
@@ -245,7 +232,7 @@ public:
     
     BRBInertia 
     apply( const BRBInertia &rbi ) const
-    // returns  X^* I X^{-1}
+    // return X^* I X^{-1}
     {
         const BMatrix3 ET  = arb::transpose(m_E);
         const BVector3 h   = ET * (rbi.h() - (rbi.mass() * m_r)); 
@@ -258,7 +245,7 @@ public:
      
     BRBInertia 
     applyTranspose( const BRBInertia &rbi ) const 
-    // returns X^T I X 
+    // return X^T I X 
     {
         const BVector3 Eh = m_E * rbi.h();
         const BVector3 h  = Eh + (rbi.mass() * m_r); 
@@ -274,7 +261,7 @@ public:
     
     BABInertia 
     apply( const BABInertia &abi ) const  
-    // returns  X^* I X^{-1} 
+    // return X^* I X^{-1} 
     {
         const BMatrix3 rx = arb::cross(m_r);
         const BMatrix3 H = abi.H() - (rx * abi.M());
@@ -285,7 +272,7 @@ public:
     
     BABInertia 
     applyTranspose( const BABInertia &abi ) const
-    // returns X^T I X 
+    // return X^T I X 
     {
         const BMatrix3 ET = arb::transpose(m_E);
         const BMatrix3 M = m_E * abi.M() * ET;
