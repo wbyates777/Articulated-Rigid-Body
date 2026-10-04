@@ -204,7 +204,7 @@ ARB has been tested against standard industrial robot models including:
 
 </details>
 
-The file BSpatialChecks.cpp includes **60** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+The file BSpatialChecks.cpp includes **62** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
  
          exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
