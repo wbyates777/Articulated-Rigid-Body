@@ -288,7 +288,18 @@ run_abinertia_tests(BSpatialChecks &st)
     st.expect(arb::nearZero(E - H), "BABInertia", "I' = X^T * I * X");
     st.expect(arb::nearZero(F - H), "BABInertia", "I' = X^T * I * X (a)");
     st.expect(arb::nearZero(G - H), "BABInertia", "I' = X^T * I * X (b)");
-
+   
+    BVector6 v1 = arb::rndVec6();
+    BVector6 rhs1 = (I * v1);
+    BVector6 lhs1 = (BMatrix6(I) * v1);
+    bool test1 = arb::nearZero(lhs1 - rhs1); 
+    st.expect(test1, "BABInertia", "I * v == BMatrix6(I) * v");
+    
+    BMatrix63 V1 = arb::rndMat63();
+    BMatrix63 rhs2 = (I * V1);
+    BMatrix63 lhs2 = (BMatrix6(I) * V1);
+    bool test2 = arb::nearZero(lhs2 - rhs2); 
+    st.expect(test2, "BABInertia", "I * m63 == BMatrix6(I) * m63");
 }
 
 void 
