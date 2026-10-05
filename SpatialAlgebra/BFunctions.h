@@ -38,7 +38,8 @@ namespace arb {
     
     inline BQuat
     normalize( const BQuat &q ) { return q / arb::length(q); }
-    
+
+
     inline constexpr BMatrix3 
     inverse( const BMatrix3 &m ) { return glm::inverse(m); }
     
@@ -129,7 +130,6 @@ namespace arb {
     
     inline bool 
     isnan( const BMatrix3 &m ) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
-
     
     
     inline constexpr BScalar 
@@ -142,10 +142,7 @@ namespace arb {
     min( BScalar v1, const BVector3 &v2 ) { return min(BVector3(v1), v2); }
     
     inline constexpr BVector3 
-    min( const BVector3 &v1, const BVector3 &v2 ) 
-    { 
-        return glm::min(v1, v2);
-    }
+    min( const BVector3 &v1, const BVector3 &v2 ) { return glm::min(v1, v2); }
       
     inline constexpr BScalar 
     max( BScalar v1, BScalar v2 ) { using std::max; return max(v1, v2); }
@@ -157,10 +154,7 @@ namespace arb {
     max( BScalar v1, const BVector3 &v2 ) { return max(BVector3(v1), v2); }
     
     inline constexpr BVector3 
-    max( const BVector3 &v1, const BVector3 &v2 )
-    { 
-        return glm::max(v1, v2);
-    }
+    max( const BVector3 &v1, const BVector3 &v2 ) { return glm::max(v1, v2); }
     
     
     inline constexpr BScalar 
