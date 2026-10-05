@@ -8,12 +8,8 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- 
+
  3D functions - mostly from GLM.
-
-
- #define GLM_ENABLE_EXPERIMENTAL
- #include <glm/gtx/norm.hpp>  // For glm::distance2/glm::length2
 
 */
 
@@ -28,82 +24,37 @@
 
 namespace arb {
 
-
     inline BScalar
-    length( const BVector3 &v ) 
-    { 
-        //using std::sqrt; 
-        // return sqrt((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2])); 
-        // return sqrt(glm::dot(v,v)); 
-        return glm::length(v);
-    } 
+    length( const BVector3 &v )  { return glm::length(v); } 
     
     inline BScalar
-    length( const BQuat &q ) 
-    { 
-        using std::sqrt; 
-        return sqrt(glm::dot(q,q)); 
-    } 
+    length( const BQuat &q )  { using std::sqrt; return sqrt(glm::dot(q,q)); } 
     
     inline BScalar
-    length2( const BVector3 &v ) 
-    { 
-         // return (v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2]); 
-         return glm::dot(v,v);
-         //return glm::length2(v);
-    } 
+    length2( const BVector3 &v ) { return glm::dot(v,v); } 
     
     inline BVector3
-    normalize( const BVector3 &v ) 
-    {
-        return v / arb::length(v);
-        //return glm::normalize(v);
-    } 
+    normalize( const BVector3 &v ) { return v / arb::length(v); } 
     
     inline BQuat
-    normalize( const BQuat &q ) 
-    {
-        return q / arb::length(q);
-        //return glm::normalize(q);
-    }
+    normalize( const BQuat &q ) { return q / arb::length(q); }
     
-    //  m^{-1} - style choice - I prefer arb::inverse(m) to m.inverse()
     inline constexpr BMatrix3 
-    inverse( const BMatrix3 &m ) 
-    { 
-        return glm::inverse(m);
-    }
+    inverse( const BMatrix3 &m ) { return glm::inverse(m); }
     
     inline BScalar
     trace( const BMatrix3 &m )  {  return  m[0][0] + m[1][1] + m[2][2]; }
     
     inline constexpr BScalar 
-    determinant( const BMatrix3 &m ) 
-    { 
-        return glm::determinant(m);
-        //return   m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
-        //       - m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1])
-        //       + m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
-    }
+    determinant( const BMatrix3 &m ) { return glm::determinant(m); }
     
     inline bool
-    isinvertible( const BMatrix3 &m )
-    {
-        using std::abs; return abs(arb::determinant(m)) > B_EPS;
-    }
+    isinvertible( const BMatrix3 &m ) { using std::abs; return abs(arb::determinant(m)) > B_EPS; }
     
-    //  m^{T} - style choice - I prefer arb::transpose(m) to m.transpose() 
     inline constexpr BMatrix3 
-    transpose( const BMatrix3 &m ) 
-    { 
-        return glm::transpose(m);
-        //BMatrix3 retVal;
-        //for ( int i = 0; i < 3; ++i )
-        //    for ( int j = 0; j < 3; ++j )
-        //        retVal[i][j] = m[j][i];
-        //return retVal;  
-    }
-    
+    transpose( const BMatrix3 &m )  { return glm::transpose(m); }
+
+
     // 3D rotations - all angles in radians
     inline constexpr BMatrix3 
     rot( BScalar theta, const BVector3 &axis ) 
@@ -166,7 +117,6 @@ namespace arb {
     inline bool 
     nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
 
-
     inline bool 
     nearZero( const BQuat &q ) { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
     
@@ -195,10 +145,8 @@ namespace arb {
     min( const BVector3 &v1, const BVector3 &v2 ) 
     { 
         return glm::min(v1, v2);
-        //return BVector3(min(v1[0],v2[0]), min(v1[1],v2[1]), min(v1[2],v2[2]));
     }
-    
-    
+      
     inline constexpr BScalar 
     max( BScalar v1, BScalar v2 ) { using std::max; return max(v1, v2); }
     
@@ -212,7 +160,6 @@ namespace arb {
     max( const BVector3 &v1, const BVector3 &v2 )
     { 
         return glm::max(v1, v2);
-        //return BVector3(max(v1[0],v2[0]), max(v1[1],v2[1]), max(v1[2],v2[2]));
     }
     
     
