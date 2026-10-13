@@ -117,7 +117,7 @@ public:
     BTransform( void )=default;
     // BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
     constexpr BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
-    constexpr BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
+    constexpr explicit BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
     ~BTransform( void )=default;
     
     void
