@@ -10,7 +10,17 @@
 
  Conversion functions between spatial transforms X and 4x4-homogeneous matricies M
 
- Notes
+ Given a spatial transform BTransform X and any BVector3 p then
+ 
+       X.applyTranspose(p) == arb::toHomogeneous(X) * BVector4(p, 1.0);
+
+and
+
+       X.apply(p) == arb::toHomogeneousInverse(X) * BVector4(p, 1.0);
+
+
+ Notes:
+ 
  i) M must be a rigid transform (orthonormal rotation, no scale or shear)
  
 */
@@ -32,7 +42,7 @@ namespace arb
     inline BMatrix4 
     toHomogeneous( const BTransform &X ) 
     {
-        BMatrix4 res(glm::transpose(X.E()));
+        BMatrix4 res(arb::transpose(X.E()));
         res[3] = BVector4(X.r(), 1.0);
         return res;
     }
@@ -57,8 +67,8 @@ namespace arb
     fromHomogeneous( const BMatrix4 &M ) 
     {
         const BMatrix3 R = BMatrix3(M);          // body-to-base rotation
-        const BVector3 r = BVector3(M[3]);      // base-to-body position
-        const BMatrix3 E = arb::transpose(R);     // base-to-body rotation
+        const BVector3 r = BVector3(M[3]);       // base-to-body position
+        const BMatrix3 E = arb::transpose(R);    // base-to-body rotation
         return BTransform(E, r);
     }
 
@@ -69,8 +79,8 @@ namespace arb
     inline BTransform 
     fromHomogeneousInverse( const BMatrix4 &M ) 
     {
-        const BMatrix3 E = BMatrix3(M);             // base-to-body rotation
-        const BVector3 t = BVector3(M[3]);         // translation component (-E * r)
+        const BMatrix3 E = BMatrix3(M);              // base-to-body rotation
+        const BVector3 t = BVector3(M[3]);           // translation component (-E * r)
         const BVector3 r = -(arb::transpose(E) * t); // recover base-to-body position
         return BTransform(E, r);
     }
