@@ -479,6 +479,52 @@ run_cross_tests(BSpatialChecks &st)
     st.expect(arb::nearZero(res), "Cross", "spatial triple product (the Jacobi identity)");    
 }
 
+
+void
+run_homogeneous_tests(BSpatialChecks &st)
+{
+    st.section("Homogeneous Conversions");
+    
+    BTransform X = arb::rndTransform();
+    
+    bool test1 = arb::nearZero(arb::toHomogeneous(X) * arb::toHomogeneousInverse(X) - B_IDENTITY_4x4);
+    st.expect(test1, "Homogeneous", "Homogeneous inverse");
+
+    bool test2 = arb::nearZero(arb::toHomogeneousInverse(X) - glm::inverse(arb::toHomogeneous(X)));
+    st.expect(test2, "Homogeneous", "Homogeneous inverse (a)");
+    
+    BMatrix4 M = arb::toHomogeneous(X);
+    BTransform X_recovered = arb::fromHomogeneous(M);
+    bool test3 = arb::nearZero(X_recovered.E() - X.E()); // All zeros
+    bool test4 = arb::nearZero(X_recovered.r() - X.r()); // All zeros
+    st.expect(test3 && test4, "Homogeneous", "Homogeneous round trip X -> M -> X");
+    
+    BVector3 posN = arb::rndVec3();
+    BVector3 out1 = BTransform(X).applyTranspose(posN);
+    BVector3 out2 = arb::toHomogeneous(X) * BVector4(posN,1.0);
+    bool test5 = arb::nearZero(out1 - out2);
+    st.expect(test5, "Homogeneous", "X.applyTranspose() * p ==  toHomogeneous(X) * p");
+                               
+    BVector3 out3 = BTransform(X).apply(posN);
+    BVector3 out4 = arb::toHomogeneousInverse(X) * BVector4(posN,1.0);
+    bool test6 = arb::nearZero(out3-out4);
+    st.expect(test6, "Homogeneous", "X.apply() * p ==  toHomogeneousInverse(X) * p");
+    
+    bool test7 = arb::nearZero(arb::fromHomogeneous(arb::toHomogeneous(X)).E() - X.E());
+    bool test8 = arb::nearZero(arb::fromHomogeneous(arb::toHomogeneous(X)).r() - X.r());
+    st.expect(test7 && test8, "Homogeneous", "fromHomogeneous(toHomogeneous(X)) == X");
+    
+    bool test9 = arb::nearZero(arb::fromHomogeneousInverse(arb::toHomogeneousInverse(X)).E() - X.E());
+    bool test10 = arb::nearZero(arb::fromHomogeneousInverse(arb::toHomogeneousInverse(X)).r() - X.r());
+    st.expect(test9 && test10, "Homogeneous", "fromHomogeneousInverse(toHomogeneousInverse(X)) == X");
+    
+    bool test11 = arb::nearZero(arb::toHomogeneous(arb::fromHomogeneous(M)) - M);
+    st.expect(test11, "Homogeneous", "toHomogeneous(fromHomogeneous(M)) == M");
+    
+    bool test12 = arb::nearZero(arb::toHomogeneousInverse(arb::fromHomogeneousInverse(M)) - M);
+    st.expect(test12, "Homogeneous", "toHomogeneousInverse(fromHomogeneousInverse(X)) == X");
+}
+
 //
 //
 //
@@ -502,6 +548,7 @@ check(int count, int seed)
         run_transform_tests(runner);
         run_lie_group_tests(runner);
         run_cross_tests(runner);
+        run_homogeneous_tests(runner);
         
         if (runner.failedTests > 0) 
             break; 
