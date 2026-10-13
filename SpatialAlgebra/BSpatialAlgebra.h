@@ -94,6 +94,10 @@
 #include "BExponential.h"
 #endif
 
+#ifndef BHOMOGENEOUS_H
+#include "BHomogeneous.h"
+#endif
+
 #endif
 
 

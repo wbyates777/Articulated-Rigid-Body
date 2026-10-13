@@ -70,7 +70,7 @@
 namespace arb
 {
     
-    inline BMatrix6 
+    inline constexpr BMatrix6 
     toMotion( const BTransform &X )  
     // motion A -> B
     // matches Featherstone's X (spatial motion transform)
@@ -79,7 +79,7 @@ namespace arb
         return BMatrix6( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E(), X.E() );
     }
 
-    inline BVector6 
+    inline constexpr BVector6 
     applyMotion( const BTransform &X, const BVector6 &f )  
     {
         const BMatrix3 ET = arb::transpose(X.E());
@@ -89,7 +89,7 @@ namespace arb
     }
 
     
-    inline BMatrix6 
+    inline constexpr BMatrix6 
     toMotionInverse( const BTransform &X )  
     // motion B -> A
     {
@@ -97,7 +97,7 @@ namespace arb
         return BMatrix6( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
     }
 
-    inline BVector6 
+    inline constexpr BVector6 
     applyMotionInverse( const BTransform &X, const BVector6 &f ) 
     {
         const BVector3 lin  = arb::cross(-X.r()) *  X.E() * f.ang() + X.E() * f.lin();
@@ -109,7 +109,7 @@ namespace arb
     //
     //
     
-    inline BMatrix6 
+    inline constexpr BMatrix6 
     toForce( const BTransform &X )  
     // force A -> B
     // matches Featherstone's X* (spatial force transform)
@@ -119,7 +119,7 @@ namespace arb
         return BMatrix6( X.E(), Erx, B_ZERO_3x3, X.E() );
     }
 
-    inline BVector6
+    inline constexpr BVector6
     applyForce(const BTransform &X, const BVector6 &f)   
     {
         const BMatrix3 ET = arb::transpose(X.E());
@@ -129,7 +129,7 @@ namespace arb
     }
 
     
-    inline BMatrix6 
+    inline constexpr BMatrix6 
     toForceInverse( const BTransform &X )  
     // force B -> A
     {
@@ -137,7 +137,7 @@ namespace arb
         return BMatrix6( ET, ET * arb::cross(X.r()), B_ZERO_3x3, ET );
     }
 
-    inline BVector6 
+    inline constexpr BVector6 
     applyForceInverse( const BTransform &X, const BVector6 &v ) 
     {
         const BVector3 lin  = X.E() * v.lin();

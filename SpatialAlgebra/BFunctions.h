@@ -116,21 +116,36 @@ namespace arb {
     nearZero( const BVector3 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])); }
 
     inline bool 
+    nearZero( const BVector4 &v ) { return (nearZero(v[0]) && nearZero(v[1]) && nearZero(v[2])  && nearZero(v[3])); }
+    
+    inline bool 
     nearZero( const BMatrix3 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2])); }
+
+    inline bool 
+    nearZero( const BMatrix4 &m ) { return (nearZero(m[0]) && nearZero(m[1]) && nearZero(m[2]) && nearZero(m[3])); }
 
     inline bool 
     nearZero( const BQuat &q ) { return (nearZero(q.w) && nearZero(q.x) && nearZero(q.y) && nearZero(q.z)); }
     
 
     inline bool 
-    isnan(const BVector3 &v) {   return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
+    isnan( BScalar p ) { using std::isnan; return isnan(p); }
+    
+    inline bool 
+    isnan(const BVector3 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2])); }
 
     inline bool 
-    isnan( const BQuat &q )  { using std::isnan; return (isnan(q.w) || isnan(q.x) || isnan(q.y) || isnan(q.z)); }
+    isnan(const BVector4 &v) { return (std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]) || std::isnan(v[3])); }
+    
+    inline bool 
+    isnan( const BQuat &q )  { return (isnan(q.w) || isnan(q.x) || isnan(q.y) || isnan(q.z)); }
     
     inline bool 
     isnan( const BMatrix3 &m ) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2])); }
-    
+
+    inline bool 
+    isnan( const BMatrix4 &m ) { return (isnan(m[0]) || isnan(m[1]) || isnan(m[2]) || isnan(m[3])); }
+
     
     inline constexpr BScalar 
     min( BScalar v1, BScalar v2 ) { using std::min; return min(v1, v2); }
