@@ -29,7 +29,7 @@ namespace arb
     /**
      * converts a body-to-base spatial transform X to a body-to-base homogeneous matrix M (for graphics)
      */
-    inline constexpr BMatrix4 
+    inline BMatrix4 
     toHomogeneous( const BTransform &X ) 
     {
         BMatrix4 res(glm::transpose(X.E()));
@@ -41,7 +41,7 @@ namespace arb
      * converts a body-to-base spatial transform directly to a base-to-body homogeneous matrix M (for raycasting/collisions)
      * avoids arb::inverse() by constructing matrix analytically
      */
-    inline constexpr BMatrix4 
+    inline BMatrix4 
     toHomogeneousInverse( const BTransform &X ) 
     // this is Featherstone's pluho - Plücker-to-homogeneous
     {
@@ -53,7 +53,7 @@ namespace arb
     /**
      * converts a body-to-base homogeneous matrix M back into a spatial transform X(E, r)
      */
-    inline constexpr BTransform
+    inline BTransform
     fromHomogeneous( const BMatrix4 &M ) 
     {
         const BMatrix3 R = BMatrix3(M);          // body-to-base rotation
@@ -66,7 +66,7 @@ namespace arb
      * converts a base-to-body homogeneous matrix M back into a spatial transform X(E, r)
      * avoids arb::inverse() by constructing matrix analytically
      */
-    inline constexpr BTransform 
+    inline BTransform 
     fromHomogeneousInverse( const BMatrix4 &M ) 
     {
         const BMatrix3 E = BMatrix3(M);             // base-to-body rotation
