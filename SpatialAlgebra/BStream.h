@@ -17,6 +17,7 @@
 #define BSTREAM_H
 
 #include <iostream>
+#include <utility> 
 #include <map>
 #include <vector>
 
@@ -140,7 +141,7 @@ namespace  glm
 //
 
 template <class T, class U>
-inline std::ostream&
+std::ostream&
 operator<<(std::ostream &ostr, const std::pair<T,U> &v)
 {
     ostr << v.first << ' ' << v.second << ' ';
@@ -148,7 +149,7 @@ operator<<(std::ostream &ostr, const std::pair<T,U> &v)
 }
 
 template <class T, class U>
-inline std::istream&
+std::istream&
 operator>>(std::istream &istr, std::pair<T,U> &v)
 {
     istr >> v.first >> v.second;
