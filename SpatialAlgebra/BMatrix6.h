@@ -177,10 +177,10 @@ public:
         };
     }
      
-    std::array<BScalar, 6>&
+    constexpr std::array<BScalar, 6>&
     operator[]( int i ) { return m_data[i]; }
     
-    const std::array<BScalar, 6>&
+    constexpr const std::array<BScalar, 6>&
     operator[]( int i ) const { return m_data[i]; }
     
     static size_t 
