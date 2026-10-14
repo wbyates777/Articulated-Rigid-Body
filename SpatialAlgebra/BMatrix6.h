@@ -115,7 +115,7 @@ public:
     void 
     set( const std::vector<std::vector<BScalar>> &d )  
     {  
-        assert(m_data.size() == 6 && m_data[0].size() == 6);  
+        assert(d.size() == 6 && d[0].size() == 6);  
         m_data = 
         {
             d[0][0],  d[0][1],  d[0][2],  d[0][3],  d[0][4],  d[0][5],
@@ -130,7 +130,7 @@ public:
     void
     set( const std::vector<BScalar> &d )
     {
-        assert(m_data.size() == 36);  
+        assert(d.size() == 36);  
         m_data = 
         {
              d[0],   d[1],   d[2],   d[3],   d[4],   d[5],
