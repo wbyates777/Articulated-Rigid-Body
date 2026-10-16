@@ -204,14 +204,14 @@ ARB has been tested against standard industrial robot models including:
 
 </details>
 
-The file BSpatialChecks.cpp includes **62** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+The file BSpatialChecks.cpp includes **72** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
  
          exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
          
 is a fundamental property that links adjoints, spatial transforms, inverses, and the exp mapping.
 
- The RNEA is a linear mapping from accelerations to torques, while the ABA is the inverse mapping, 
+ The RNEA is am affine mapping from accelerations to torques, while the ABA is the inverse mapping, 
  and so, given some joint  accelerations _qddot_, their composition should satisfy the identity:
 
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
@@ -308,7 +308,7 @@ CMake will take care of installing the GLM, autodiff, and libccd libraries, and 
 If you are not using CMake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
-If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes. 
+If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with snprintf). 
 
 
 ## Background
