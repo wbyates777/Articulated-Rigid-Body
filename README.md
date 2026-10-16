@@ -211,7 +211,7 @@ The file BSpatialChecks.cpp includes **72** consistency checks, tested on random
          
 is a fundamental property that links adjoints, spatial transforms, inverses, and the exp mapping.
 
- The RNEA is am affine mapping from accelerations to torques, while the ABA is the inverse mapping, 
+ The RNEA is an affine mapping from accelerations to torques, while the ABA is the inverse mapping, 
  and so, given some joint  accelerations _qddot_, their composition should satisfy the identity:
 
          ABA(q, qdot, RNEA(q, qdot, qddot)) ==  qddot  
