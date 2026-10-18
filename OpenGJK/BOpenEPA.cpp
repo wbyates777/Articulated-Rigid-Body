@@ -8,7 +8,6 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
-
 */
 
 /*
@@ -81,11 +80,11 @@ struct BEPAPolytope
 //
 
 void 
-BOpenEPA::set_contact_normal(const BVector3& w1, const BVector3& w2, BVector3& cnormal) const
+BOpenEPA::set_contact_normal(const BVector3 &w1, const BVector3 &w2, BVector3 &contact_normal) const
 {
     BVector3 d = w2 - w1;
     BScalar n = arb::length(d);
-    cnormal = (n > B_EPS) ? d / n : B_XAXIS;
+    contact_normal = (n > B_EPS) ? d / n : B_XAXIS;
 }
 
 
@@ -93,7 +92,7 @@ BOpenEPA::set_contact_normal(const BVector3& w1, const BVector3& w2, BVector3& c
 // Winding is already fixed at face creation time, so the cross product
 // direction is trusted directly — no centroid-based orientation check needed.
 void 
-BOpenEPA::compute_face_normal_distance(BEPAPolytope& poly) const
+BOpenEPA::compute_face_normal_distance(BEPAPolytope &poly) const
 {
     using std::sqrt;
     
@@ -101,11 +100,11 @@ BOpenEPA::compute_face_normal_distance(BEPAPolytope& poly) const
     {
         if (poly.faces[i].valid) 
         {
-            BEPAFace& face = poly.faces[i];
+            BEPAFace &face = poly.faces[i];
             
-            const BVector3& v0 = poly[face[0]];
-            const BVector3& v1 = poly[face[1]];
-            const BVector3& v2 = poly[face[2]];
+            const BVector3 &v0 = poly[face[0]];
+            const BVector3 &v1 = poly[face[1]];
+            const BVector3 &v2 = poly[face[2]];
             
             const BVector3 e0 = v1 - v0;
             const BVector3 e1 = v2 - v0;
@@ -142,9 +141,9 @@ BOpenEPA::compute_face_normal_distance(BEPAPolytope& poly) const
 
 // Check if a face is visible from a point (point is on positive side of face) Needed to determine which faces to restructure when vertex is added
 bool 
-BOpenEPA::face_visible( const BEPAPolytope& poly, int face_idx, const BVector3& point ) const
+BOpenEPA::face_visible( const BEPAPolytope &poly, int face_idx, const BVector3 &point ) const
 {
-    const BEPAFace& face = poly.faces[face_idx];
+    const BEPAFace &face = poly.faces[face_idx];
     
     if (!face.valid) 
         return false;
@@ -155,7 +154,7 @@ BOpenEPA::face_visible( const BEPAPolytope& poly, int face_idx, const BVector3& 
 
 
 void
-BOpenEPA::init_epa_polytope( BEPAPolytope &poly,  const BSimplex& smp, BVector3& centroid ) const
+BOpenEPA::init_epa_polytope( BEPAPolytope &poly,  const BSimplex &smp, BVector3 &centroid ) const
 {
     poly.num_vertices = 4;
     poly.max_face_index = 4;
@@ -211,9 +210,9 @@ BOpenEPA::init_epa_polytope( BEPAPolytope &poly,  const BSimplex& smp, BVector3&
     {
         BEPAFace &face = poly.faces[f];
 
-        const BVector3& v0 = poly[face[0]];
-        const BVector3& v1 = poly[face[1]];
-        const BVector3& v2 = poly[face[2]];
+        const BVector3 &v0 = poly[face[0]];
+        const BVector3 &v1 = poly[face[1]];
+        const BVector3 &v2 = poly[face[2]];
         
         const BVector3 e0 = v1 - v0;
         const BVector3 e1 = v2 - v0;
@@ -233,7 +232,7 @@ BOpenEPA::init_epa_polytope( BEPAPolytope &poly,  const BSimplex& smp, BVector3&
 
 // barycentric coordinate compute closest point on triangle to origin
 void 
-BOpenEPA::barycentric_origin(const BVector3& v0, const BVector3& v1, const BVector3& v2, BVector3 &a) const
+BOpenEPA::barycentric_origin(const BVector3 &v0, const BVector3 &v1, const BVector3 &v2, BVector3 &a) const
 {
     using std::abs;
     using std::clamp;
@@ -305,48 +304,47 @@ BOpenEPA::point(const ABody *body, const  BIndex &idx) const
 }
 
 void
-BOpenEPA::support_epa(const ABody* body1, const ABody* body2, const BVector3& dir, BGJKVertex& result) const
+BOpenEPA::support_epa( const ABody *body1, int polyIdx1, const ABody *body2, int polyIdx2, const BVector3 &dir, BGJKVertex &result ) const
 // support function for EPA but only care about Minkowski difference point
 {
+    const glm::dvec3 localDir1 = glm::transpose(body1->orient()) * dir;
     
     // search body1
-    const glm::dvec3 localDir1 = glm::transpose(body1->orient()) * dir;
-    double local_max1 = -std::numeric_limits<double>::max();
+    double local_max1 = -std::numeric_limits<double>::max();;
     BIndex local_best1(-1,-1); 
-    for (int i = 0; i < body1->collider().size(); ++i) 
+
+
+    for (int j = 0; j < body1->collider().polytope(polyIdx1).m_coord.size(); ++j) 
     {
-        for (int j = 0; j < body1->collider().getPoints(i).m_coord.size(); ++j) 
+        BIndex idx(j, polyIdx1); // (vertIdx, polyIdx)
+        double s = glm::dot(body1->collider().point(idx), localDir1);
+        
+        if (s > local_max1) 
         {
-            BIndex idx(j,i); // (vertIdx, polyIdx)
-            double s = glm::dot(body1->collider().point(idx), localDir1);
-            
-            if (s > local_max1) 
-            {
-                local_max1 = s;
-                local_best1 = idx;
-            }
+            local_max1 = s;
+            local_best1 = idx;
         }
     }
+
+    
+    const glm::dvec3 localDir2 = glm::transpose(body2->orient()) * dir;
     
     // search body2 in opposite direction
-    const glm::dvec3 localDir2 = glm::transpose(body2->orient()) * dir;
-    double local_max2 = -std::numeric_limits<double>::max();
+    double local_max2 = -std::numeric_limits<double>::max();;
     BIndex local_best2(-1,-1);
-    for (int i = 0; i < body2->collider().size(); ++i) 
+
+    for (int j = 0; j < body2->collider().polytope(polyIdx2).m_coord.size(); ++j) 
     {
-        for (int j = 0; j < body2->collider().getPoints(i).m_coord.size(); ++j) 
+        BIndex idx(j, polyIdx2);  //  (vertIdx, polyIdx)
+        double s = glm::dot(body2->collider().point(idx), localDir2);
+        
+        if (-s > local_max2) 
         {
-            BIndex idx(j,i);  //  (vertIdx, polyIdx)
-            double s = glm::dot(body2->collider().point(idx), localDir2);
-            
-            if (-s > local_max2) 
-            {
-                local_max2 = -s;
-                local_best2 = idx;
-            }
+            local_max2 = -s;
+            local_best2 = idx;
         }
     }
-    
+
     // compute Minkowski difference point
     if (local_best1[0] >= 0 && local_best2[0] >= 0) 
     {
@@ -379,7 +377,7 @@ BOpenEPA::find_closest_face( const BEPAPolytope &poly ) const
 }
 
 bool
-BOpenEPA::expand_simplex_to_tetrahedron( const ABody *body1, const ABody *body2, BSimplex &smp ) const
+BOpenEPA::expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &smp  ) const
 {
     // If GJK returned a degenerate simplex, rebuild it properly for EPA
     if (smp.vertexNum() != 4) 
@@ -393,7 +391,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( const ABody *body1, const ABody *body2,
       
             // Parallel EPA support in that direction.
             BGJKVertex new_point;
-            support_epa(body1, body2, smp[0], new_point);
+            support_epa(body1, polyIdx1, body2, polyIdx2, smp[0], new_point);
             
             // Check if this is a new point relative to the existing simplex vertex.
             bool is_new = smp.is_new(new_point);
@@ -441,7 +439,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( const ABody *body1, const ABody *body2,
             
             // Parallel EPA support in that direction.
             BGJKVertex new_point;
-            support_epa(body1, body2, dir, new_point);
+            support_epa(body1, polyIdx1, body2, polyIdx2, dir, new_point);
             
             // Check if this is a new point relative to both existing simplex vertices.
             if (smp.is_new(new_point)) 
@@ -471,7 +469,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( const ABody *body1, const ABody *body2,
             
             // Parallel EPA support in that direction.
             BGJKVertex new_point;
-            support_epa(body1, body2, dir, new_point);
+            support_epa(body1, polyIdx1, body2, polyIdx2, dir, new_point);
             
             // Check if this is a new point relative to all three existing simplex vertices.
             if (smp.is_new(new_point)) 
@@ -489,7 +487,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( const ABody *body1, const ABody *body2,
             // If first direction didn't work, try opposite
             if (smp.vertexNum() == 3) 
             {
-                support_epa(body1, body2, dir, new_point);
+                support_epa(body1, polyIdx1, body2, polyIdx2, dir, new_point);
                 
                 if (smp.is_new(new_point)) 
                 {
@@ -630,9 +628,9 @@ BOpenEPA::tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVecto
         //
         
         // Check winding and fix if necessary
-        const BVector3& fv0 = poly[face[0]];
-        const BVector3& fv1 = poly[face[1]];
-        const BVector3& fv2 = poly[face[2]];
+        const BVector3 &fv0 = poly[face[0]];
+        const BVector3 &fv1 = poly[face[1]];
+        const BVector3 &fv2 = poly[face[2]];
         
         const BVector3 fe0 = fv1 - fv0;
         const BVector3 fe1 = fv2 - fv0;
@@ -655,10 +653,13 @@ BOpenEPA::tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVecto
     }
 }
 
+//*******************************************************************************************
+// Entry point to the EPA Implementation
+//*******************************************************************************************
 
-// entry point to the EPA Implementation
 BScalar
-BOpenEPA::collision( const ABody* body1, const ABody* body2, BSimplex &smp, BScalar distance, BVector3 &cnormal, BVector3 &cpoint ) 
+BOpenEPA::collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &smp, BScalar distance, 
+                     BVector3 &cnormal, BVector3 &cpoint ) 
 {
     using std::abs;
 
@@ -671,7 +672,7 @@ BOpenEPA::collision( const ABody* body1, const ABody* body2, BSimplex &smp, BSca
 
     // ensure we have a volume (tetrahedron) to start EPA.
     // Degenerate cases handled inside expand_simplex_to_tetrahedron
-    if (expand_simplex_to_tetrahedron(body1, body2, smp) == false)
+    if (expand_simplex_to_tetrahedron(body1, polyIdx1, body2, polyIdx2, smp) == false)
     {
         // No new support point means penetration depth effectively zero.
         set_contact_normal(smp.witness(B1), smp.witness(B2), cnormal);
@@ -701,11 +702,11 @@ BOpenEPA::collision( const ABody* body1, const ABody* body2, BSimplex &smp, BSca
             calc_witness = false; // just exit
             break;
         }
-        const BEPAFace& closest = poly.faces[closest_face_idx];
+        const BEPAFace &closest = poly.faces[closest_face_idx];
         
         // get new support point in direction of closest face normal
         BGJKVertex new_point;
-        support_epa(body1, body2, closest.normal, new_point);
+        support_epa(body1, polyIdx1, body2, polyIdx2, closest.normal, new_point);
         
         // check for termination 
         BScalar dist_to_new = arb::dot(closest.normal, new_point.vertex);
@@ -742,7 +743,7 @@ BOpenEPA::collision( const ABody* body1, const ABody* body2, BSimplex &smp, BSca
     }
     
     BScalar cdepth(0.0);
-    
+
     if (calc_witness)
     {
         int closest_face_idx = find_closest_face(poly);
@@ -777,3 +778,4 @@ BOpenEPA::collision( const ABody* body1, const ABody* body2, BSimplex &smp, BSca
     
     return cdepth;
 }
+

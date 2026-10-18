@@ -8,20 +8,15 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- My c++ rewrite of openGJK/openEPA so we can use GLM functions and therefore autodiff
- 
- openEPA provides us with the indices into the two polytopes; libccd did not provide this.
- 
- openEPA returns positive depth for penetration or zero otherwise. 
+ My c++ rewrite of the EPA in openGJK 
  
  The main changes are:
  
- i)    an extra level of indexing so that each body can have a number of polytopes.
- ii)   GLM based BVector3 types which can be made differentiable,
- iii)  the structs EPAVertex and BIndex with operators that simplify the syntax
- iv)   broke up the large collisions function into more managable logical chunks,
-       by adding find_closest_face(), expand_simplex_to_tetrahedron(),
-       and tessellate_polytope().
+ i)   glm based Vector3 types which can be made differentiable,
+ ii)  the structs EPAVertex and BIndex with operators that simplify the syntax
+ iii) broke up the large collisions function into more managable logical chunks,
+      by adding find_closest_face(), expand_simplex_to_tetrahedron(),
+      tessellate_polytope(), and compute_contact()
 
  
  see https://github.com/MattiaMontanari/openGJK 
@@ -56,7 +51,9 @@
 #ifndef BOPENEPA_H
 #define BOPENEPA_H
 
-
+#include <string>
+#include <vector>
+#include <map>
 
 #ifndef ABODY_H
 #include "ABody.h"
@@ -67,9 +64,8 @@
 #endif
 
 
-#include <array>
-
 class BEPAPolytope;
+class BEPAFace;
 
 
 //
@@ -95,7 +91,7 @@ struct BEPAVertex
 };
 
 
-// structure for horizon edge collection
+// Structure for horizon edge collection
 struct BEPAEdge
 {
     bool 
@@ -119,22 +115,36 @@ public:
     BOpenEPA( void ): m_max_iters(25) {}
     ~BOpenEPA( void )=default;
     
-
+    /*! @brief Invoke the EPA algorithm to compute the collision information between two colliding
+     * polytopes.
+     *
+     * @param[in]     body1                 First body (passed by pointer, modified internally).
+     * @param[in]     polyIdx1              First polytope index (passed by value).
+     * @param[in]     body2                 Second body (passed by pointer, modified internally).
+     * @param[in]     polyIdx2              Second polytope index (passed by value).
+     * @param[in,out] simplex               Simplex structure. Must be initialized. 
+     *                                      After return, contains the final
+     *                                      simplex and witness points in s->witnesses.
+     * @param[in]     distance              Takes in the distance computed by the GJK algorithm 
+     *                                      (0 -> collision detected, run EPA), otherwise return early.
+     * @param[out]    cnormal               The contact normal computed by the EPA algorithm.
+     * @param[out]    cpoint                The contact point computed by the EPA algorithm.
+     * @note Witness points are automatically computed and stored in s.witnesses. */
     BScalar 
-    collision( const ABody* body1, const ABody* body2, BSimplex &smp, BScalar distance, 
+    collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &simplex, BScalar distance, 
                BVector3 &cnormal, BVector3 &cpoint );
     
     void 
-    max_iters( int iters ) { m_max_iters = iters; }
+    maxIters( int iters ) { m_max_iters = iters; }
     
     int 
-    max_iters( void ) const { return m_max_iters; }
+    maxIters( void ) const { return m_max_iters; }
     
 
 private:
 
     void 
-    compute_face_normal_distance( BEPAPolytope& poly ) const;
+    compute_face_normal_distance( BEPAPolytope &poly ) const;
     
     bool 
     face_visible( const BEPAPolytope &poly, int face_idx, const BVector3 &point ) const;
@@ -146,7 +156,7 @@ private:
     barycentric_origin( const BVector3 &v0, const BVector3 &v1, const BVector3 &v2, BVector3 &a ) const;
     
     void
-    support_epa( const ABody *body1, const ABody *body2, const BVector3 &dir, BGJKVertex &result ) const;
+    support_epa( const ABody *body1, int polyIdx1, const ABody *body2, int polyIdx2, const BVector3 &dir, BGJKVertex &result ) const;
     
     void 
     set_contact_normal( const BVector3 &w1, const BVector3 &w2, BVector3 &cnormal ) const;
@@ -155,7 +165,7 @@ private:
     find_closest_face( const BEPAPolytope &poly ) const;
     
     bool        
-    expand_simplex_to_tetrahedron( const ABody *body1, const ABody *body2, BSimplex &smp ) const;
+    expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &smp ) const;
     
     void
     tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVector3 &centroid );

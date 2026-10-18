@@ -8,13 +8,11 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
  
- My c++ rewrite of openGJK/openEPA so we can use GLM functions and therefore autodiff
+ My c++ rewrite of openGJK/openEPA so we can use glm functions and therefore autodiff
  
- The main changes are:
+ openEPA provides us with the indices into the two polytopes; libccd did not provide this.
  
- i)    an extra level of indexing so that each body can have a number of polytopes, and
- ii)   GLM based BVector3 types which can be made differentiable,
- 
+ We have added an extra level of indexing so that each body can have a number of polytopes.
  
  see https://github.com/MattiaMontanari/openGJK 
 
@@ -46,10 +44,7 @@
 #ifndef BOPENGJK_H
 #define BOPENGJK_H
 
-
-#ifndef BSPATIALTYPES_H
-#include "BSpatialTypes.h"
-#endif
+#include <vector>
 
 #ifndef ABODY_H
 #include "ABody.h"
@@ -59,13 +54,13 @@
 #include "BSimplex.h"
 #endif
 
-#ifndef BFUNCTIONS_H
-#include "BFunctions.h"
-#endif
 
 #ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
+
+
+class BCollider;
 
 class BOpenGJK
 {
@@ -75,9 +70,22 @@ public:
     BOpenGJK(void) : m_max_iters(25) {}
     ~BOpenGJK(void)=default;
     
-
+    /*! @brief Invoke the GJK algorithm to compute the minimum distance between two
+     * polytopes.
+     *
+     * @param[in]     bdy1  First polytope (passed by value, modified internally).
+     * @param[in]     bdy2  Second polytope (passed by value, modified internally).
+     * @param[in,out] smp   Simplex structure. Must be initialized (set nvrtx = 0)
+     *                       before first call. After return, contains the final
+     *                       simplex and witness points in s->witnesses.
+     * @return The minimum Euclidean distance between the two polytopes.
+     *         Returns 0 if the polytopes are intersecting or touching.
+     *
+     * @note The simplex has to be initialised prior the call to this function.
+     *       Witness points are automatically computed and stored in s.witnesses.
+     */
     BScalar 
-    min_distance( ABody *body1, ABody *body2, BSimplex &smp ) const;
+    min_distance( ABody *bdy1, int polyIdx1, ABody *bdy2, int polyIdx2, BSimplex &smp );
   
     
     void 
@@ -97,21 +105,20 @@ private:
     }
 
     void 
-    projectOnPlane( const BVector3 &p, const BVector3 &q, const BVector3 &r, BVector3 &v ) const 
+    projectOnPlane( const BVector3 &p, const BVector3 &q, const BVector3 &r, BVector3 &v ) const
     {
         const BVector3 n = arb::cross(p - q, p - r);
         v = n * (arb::dot(n, p) / arb::dot(n, n));
     }
     
-    
     int 
-    hff1( const BVector3 &p, const BVector3 &q ) const  
+    hff1( const BVector3 &p, const BVector3 &q ) const 
     {
         return (arb::dot(p, p) > arb::dot(p, q));
     }
 
     int 
-    hff2( const BVector3 &p, const BVector3 &q,  const BVector3 &r ) const  
+    hff2( const BVector3 &p, const BVector3 &q,  const BVector3 &r ) const 
     {
         const BVector3 pq = q - p;
         const BVector3 pr = r - p;
@@ -119,7 +126,7 @@ private:
     }
 
     int 
-    hff3( const BVector3 &p, const BVector3 &q, const BVector3 &r ) const  
+    hff3( const BVector3 &p, const BVector3 &q, const BVector3 &r ) const 
     {
         return (arb::dot(p, arb::cross(q, r)) <= 0);  // discard s if true
     }
@@ -153,12 +160,11 @@ private:
     void
     calc_witness( const ABody *body1, const ABody *body2, BSimplex &smp ) const;
     
+    BVector3
+    first_point( ABody *body, int polyIdx ) const;
     
     BVector3
-    first_point( ABody *body ) const;
-    
-    BVector3
-    max_point( ABody *body, const BVector3& dir ) const; 
+    max_point( ABody *body, const BVector3& dir, int polyIdx ) const; 
     
     BVector3
     point(const ABody *body, const  BIndex &idx) const;
@@ -167,6 +173,6 @@ private:
 };
 
 
-#endif  // __BOPENGJK_H
+#endif  // __BOPENGJK_H__
 
 

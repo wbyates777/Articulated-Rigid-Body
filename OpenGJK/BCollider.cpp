@@ -23,111 +23,98 @@
 #include "BCollider.h"
 #endif
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/norm.hpp>  // For glm::distance2/glm::length2
 
 constexpr  double B_SMALL_NUM = 1E-12;
 constexpr  double B_LARGE_NUM = 1E12;
 constexpr  double B_MIN = -std::numeric_limits<double>::max();
 
-const glm::dvec3 B_ZERO(0.0);
 
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>  // For glm::distance2/glm::length2
 
 glm::dvec3
-BCollider::linear_max_point( const glm::dvec3 &dir ) const
+BCollider::linear_max_point( const glm::dvec3 &dir, int polyIdx ) const
 // basic, robust, brute force linear search 
-{  
-    m_lastVert = 0;
-    m_lastPoly = 0;
-    
-    // degenerate direction
-    double len = glm::length2(dir);
-    if (len < B_SMALL_NUM || len > B_LARGE_NUM)
-    {
-        // this value will do
-        return m_polytope[0].m_coord[0];
-    }
-
-    double maxDot = B_MIN; 
-    for (int j = 0; j < m_polytope.size(); ++j) 
-    {
-        const BPolytope &poly = m_polytope[j];
-        
-        for (int i = 0; i < poly.m_coord.size(); ++i) 
-        {
-            double d = glm::dot(glm::dvec3(poly.m_coord[i]), dir);
-            
-            if (d > maxDot) 
-            {
-                maxDot = d;
-                m_lastVert = i;
-                m_lastPoly = j;
-                
-                poly.m_lastVertex = i;
-            }
-        }
-    }
-    
-    return m_polytope[m_lastPoly].m_coord[m_lastVert];
-}
-
-
-glm::dvec3
-BCollider::adjacency_max_point( const glm::dvec3 &dir ) const
 {
+    const BPolytope &poly = m_polytope[polyIdx];
+    
     // degenerate direction
     double len = glm::length2(dir);
     if (len < B_SMALL_NUM || len > B_LARGE_NUM)
     {
         // any/this value will do
         m_lastVert = 0;
-        m_lastPoly = 0;
-        return m_polytope[0].m_coord[0];
+        m_lastPoly = polyIdx;
+        return poly.m_coord[0];
+    }
+   
+    // m_lastVert and m_lastPoly are declared mutable
+    m_lastVert = 0;
+    m_lastPoly = polyIdx;
+
+    double maxDot = B_MIN; 
+    for (int i = 0; i < poly.m_coord.size(); ++i) 
+    {
+        double d = glm::dot(glm::dvec3(poly.m_coord[i]), dir);
+        
+        if (d > maxDot) 
+        {
+            maxDot = d;
+            m_lastVert = i;
+            m_lastPoly = polyIdx;
+            poly.m_lastVertex = i; // m_lastVertex is declared mutable
+        }
     }
 
-    double globalMaxDot = B_MIN;
-    glm::dvec3 bestLocalVertex(B_ZERO);
+    return m_polytope[m_lastPoly].m_coord[m_lastVert];
+}
 
-    for (int j = 0; j < m_polytope.size(); ++j) 
+
+glm::dvec3
+BCollider::adjacency_max_point( const glm::dvec3 &dir, int polyIdx ) const
+{
+    const BPolytope &poly = m_polytope[polyIdx];
+    
+    // degenerate direction
+    double len = glm::length2(dir);
+    if (len < B_SMALL_NUM || len > B_LARGE_NUM)
     {
-        const BPolytope &poly = m_polytope[j];
-        
-        // warm start
-        int currentIdx = poly.m_lastVertex; 
-        
-        double currentDot = glm::dot(glm::dvec3(poly.m_coord[currentIdx]), dir);
-        
-        bool improved = true;
-        while (improved)
+        // any/this value will do
+        m_lastVert = 0;
+        m_lastPoly = polyIdx;
+        return poly.m_coord[0];
+    }
+    
+    // forget warm start; in practice this works better
+    int currentIdx = 0 ; // poly.m_lastVertex; 
+    
+    double currentDot = glm::dot(glm::dvec3(poly.m_coord[currentIdx]), dir);
+    
+    bool improved = true;
+    while (improved)
+    {
+        improved = false;
+        for (int neighbourIdx : poly.m_adjacency[currentIdx])
         {
-            improved = false;
-            for (int neighbourIdx : poly.m_adjacency[currentIdx])
+            double nDot = glm::dot(glm::dvec3(poly.m_coord[neighbourIdx]), dir);
+            if (nDot > currentDot)
             {
-                double nDot = glm::dot(glm::dvec3(poly.m_coord[neighbourIdx]), dir);
-                if (nDot > currentDot)
-                {
-                    currentDot = nDot;
-                    currentIdx = neighbourIdx;
-                    improved = true;
-                    break; // keep walking
-                }
+                currentDot = nDot;
+                currentIdx = neighbourIdx;
+                improved = true;
+                // keep walking -- 
+                // comment this break out and we search more, slower but better results
+                break; 
             }
         }
-        
-        // track the best 
-        if (currentDot > globalMaxDot)
-        {
-            globalMaxDot = currentDot;
-            bestLocalVertex = poly.m_coord[currentIdx];
-            
-            m_lastVert = currentIdx;
-            m_lastPoly = j;
-            m_polytope[j].m_lastVertex = currentIdx;
-        }
     }
+    
+    m_lastVert = currentIdx;
+    m_lastPoly = polyIdx;
+    m_polytope[m_lastPoly].m_lastVertex = currentIdx;
 
-    return bestLocalVertex;
+    return m_polytope[m_lastPoly].m_coord[m_lastVert]; // best local vertex
 }
 
 

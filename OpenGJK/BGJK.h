@@ -19,19 +19,23 @@
 
  Computes penetration of body2 into body1. 
  
- Returns positive depth of penetration, contact normal direction, and contact position. 
-
+ Returns true if collision with depth of penetration, contact normal direction, and contact position. 
+ Note  penetration depth is always positive.
+ 
+ 
  see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
  
- This code is differentiable using autodiff 
+ This code is differentiable. 
  
 
- Notes: 
+ Notes 
  
- i) OpenGJK is released under a GPL3 license. As a result if this code is used 
- then *all* the ARB code base is also bound by the GPL3 license.
- ii) GJK/EPA not good with boxes - big flat collision surfaces can cause problems computing collision point,
-     this is why proffesional systems use (faster) specialised box/box collisions.
+ i) OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used 
+    then *all* the code in the release/product is also bound by the GPL3 license.
+ 
+ ii) EPA returns positive depth for penetration; 
+ 
+ iii) GJK is not great when working with large flat surfaces or boxes 
  
 */
 
@@ -60,6 +64,11 @@
 
 
 
+#include <string>
+#include <vector>
+#include <map>
+
+
 #ifndef ABODY_H
 #include "ABody.h"
 #endif
@@ -68,12 +77,20 @@
 #include "BBox.h"
 #endif
 
+#ifndef BMANIFOLD_H
+#include "BManifold.h"
+#endif
+
 #ifndef BOPENGJK_H
 #include "BOpenGJK.h"
 #endif
 
 #ifndef BOPENEPA_H
 #include "BOpenEPA.h"
+#endif
+
+#ifndef BCOLLIDER_H
+#include "BCollider.h"
 #endif
 
 
@@ -86,46 +103,24 @@ public:
     BGJK( void )=default;
     ~BGJK( void )=default;
     
-    //
-    // if a collision has taken place fill in the contact depth, normal and point, and return true 
-    //
-    bool
-    collision( ABody *b1, ABody *b2, BScalar &cdepth, BVector3 &cnormal, BVector3 &cpoint )
-    {
-        BSimplex simplex;
-        
-        // a positive distance indicated the bodies are separated
-        BScalar distance = m_gjk.min_distance( b1, b2, simplex );
-        // a (near) zero distance indicates contact; a penetration or 'just touching'
-        cdepth = m_epa.collision( b1, b2, simplex, distance, cnormal, cpoint );
-
-        // large flat surfaces/boxes can cause a cpoint dimension fall outside the object 
-        // keep cpoint within objects - note no orientation taken into considertion
-        const BVector3 top1 = b1->box().top() + b1->pos();
-        const BVector3 bot1 = b1->box().bot() + b1->pos();
-        const BVector3 top2 = b2->box().top() + b2->pos();
-        const BVector3 bot2 = b2->box().bot() + b2->pos();
-        
-        const BVector3 mymin = arb::max(bot1, bot2);
-        const BVector3 mymax = arb::min(top1, top2);
-    
-        for (int i = 0; i < 3; ++i)
-        {
-            if (mymin[i] < mymax[i])
-                cpoint[i] = arb::clamp(cpoint[i], mymin[i], mymax[i]);
-            else cpoint[i] = arb::clamp(cpoint[i], mymax[i], mymin[i]);
-        }
-        //
-        
-        // a positive depth indicates a penetration
-        return (cdepth > 0) ? true : false; 
-    }
+ 
+    /*! @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point).
+     *
+     * @param b1 [in]      pointer to body1
+     * @param b2 [in]      pointer to body2
+     * @param cinfo [out]  contact infomation (depth, normal and point)
+     */
+    void
+    collision( ABody *b1, ABody *b2, std::vector<BContactInfo> &cinfo );
     
 private:
 
-    BOpenGJK                     m_gjk;  
-    BOpenEPA                     m_epa;
 
+    BBox 
+    toBaseBox( const BMatrix4 &trans, const BVector3 &lo, const BVector3 &hi ) const;
+    
+    BOpenGJK m_gjk;  
+    BOpenEPA m_epa;
 };
 
 #endif

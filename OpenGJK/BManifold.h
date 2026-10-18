@@ -30,6 +30,20 @@
 
 class ABody;
 
+
+// a single point of contact
+struct BContactInfo 
+{
+    BContactInfo(void): normal(0.0), pos(0.0), depth(0.0) {}
+    BContactInfo(const BScalar &d, const BVector3 &n, const BVector3 &p): normal(n), pos(p), depth(d) {}
+    ~BContactInfo(void)=default;
+
+    BVector3 normal;
+    BVector3 pos;
+    BScalar  depth;
+};
+
+
 // a single point of contact
 struct BContact 
 {
@@ -55,6 +69,9 @@ struct BContact
     BVector6 nx_1, nx_2, dvx_1, dvx_2;
     BVector6 ny_1, ny_2, dvy_1, dvy_2;
 };
+
+
+
 
 // a collection of upto 4 points of contact
 class BManifold 
@@ -97,17 +114,16 @@ public:
     
     // add a new point and reduces the set to the 4 best points
     void 
-    addPoint( const BVector3 &cpoint, const BVector3 &cnormal, BScalar cdepth, BScalar threshold2 );
-
+    addPoint( const BContactInfo &cinfo, BScalar threshold2 );
 
 private:
     
     BScalar 
-    calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, const BVector3& p3) const;
+    calcArea( const BVector3 &p0, const BVector3 &p1, const BVector3 &p2, const BVector3 &p3 ) const;
     
     // remove excess points from the manifold
     void
-    reducePoints( const BContact& pt );
+    reducePoints( const BContact &pt );
     
     ABody* m_body1;
     ABody* m_body2;

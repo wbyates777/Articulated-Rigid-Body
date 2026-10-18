@@ -69,7 +69,7 @@ constexpr  int B1 = 0;
 constexpr  int B2 = 1;
 
 
-typedef glm::vec<2,short>   BIndex; 
+typedef glm::vec<2,short>   BIndex; // (vertIdx,polyIdx)
 
 
 struct BGJKVertex 
@@ -82,7 +82,7 @@ struct BGJKVertex
     
     BVector3 vertex;// = BVector3(0.0);
     
-    // (vertId, polyId) for body1, (verIdt, polyId) for body2,
+    // (vertIdx, polyIdx) for body1, (vertIdx, polyIdx) for body2,
     std::array<BIndex, 2> index;// = {BIndex(-1),BIndex(-1)};   
 };
 
@@ -113,7 +113,7 @@ class BSimplex
 {
 public:
     
-    BSimplex(void) : m_point(), m_witness(), m_nvrtx(0) {}
+    BSimplex(void) : m_nvrtx(0), m_point(), m_witness() {}
     ~BSimplex(void)=default;
     
     void
@@ -225,4 +225,4 @@ operator>>( std::istream &istr, BSimplex &smp )
 
 #endif
 
-//
+

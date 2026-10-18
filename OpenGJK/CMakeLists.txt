@@ -18,7 +18,8 @@ add_library(Collisions
         BManifold.cpp    
         BContactManager.cpp    
         BOpenGJK.cpp        
-        BOpenEPA.cpp        
+        BOpenEPA.cpp   
+        BGJK.cpp     
 )
 
 
