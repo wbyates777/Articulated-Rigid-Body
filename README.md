@@ -36,6 +36,8 @@ https://youtu.be/N8p0sYgtOSg
 
 https://youtu.be/g1jMEpu1sl8
 
+https://youtu.be/R9WmyyQPwlE
+
 **Example of simulating doors with revolute and prismatic joints:**
 
 https://youtu.be/O9h_phDP_tk
