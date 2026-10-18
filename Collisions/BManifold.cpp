@@ -35,11 +35,12 @@
 
 constexpr int BManifold::m_index[4][3] = 
 {
-    {1, 2, 3},
-    {0, 2, 3},
-    {0, 1, 3},
-    {0, 1, 2}
+    {1, 2, 3}, // miss out 0
+    {0, 2, 3}, // miss out 1
+    {0, 1, 3}, // miss out 2
+    {0, 1, 2}  // miss out 3
 };
+
 
 void 
 BManifold::refresh( BScalar max_dist, BScalar max_tan_dist2 ) 
@@ -51,10 +52,10 @@ BManifold::refresh( BScalar max_dist, BScalar max_tan_dist2 )
     {
         BContact &c = m_points[i];
 
-        // convert body coords to world coords
+        // convert body to world coords - note you must use X_base transform
         const BVector3 w1 = m_body1->X_base().applyTranspose(c.localPos1);
         const BVector3 w2 = m_body2->X_base().applyTranspose(c.localPos2);
- 
+        
         // check separation along the current contact normal
         // i)   positive (+): objects are separated
         // ii)  zero     (0): objects are exactly touching
@@ -79,11 +80,10 @@ BManifold::refresh( BScalar max_dist, BScalar max_tan_dist2 )
                 // drop stale contact i.e. m_points.erase(m_points.begin() + i); 
                 m_points[i] = m_points.back();
                 m_points.pop_back(); 
-              
             }
             else
             {
-                // Note we can get positive and negative separations here
+                // NB we can get positive and negative separations here
                 c.pos = (w1 + w2) * BScalar(0.5);
                 c.depth = separation;
                 ++i;
@@ -92,13 +92,18 @@ BManifold::refresh( BScalar max_dist, BScalar max_tan_dist2 )
     }
 }
 
+
 void 
-BManifold::addPoint( const BVector3 &cpoint, const BVector3 &cnormal, BScalar cdepth, BScalar threshold2 ) 
+BManifold::addPoint( const BContactInfo &cinfo, BScalar threshold2 ) 
 {
-    // convert world to body coords
+    const BVector3 &cpoint   = cinfo.pos;
+    const BVector3 &cnormal  = cinfo.normal;
+    BScalar         cdepth   = cinfo.depth;
+
+    // convert world to body coords - note you must use X_base transform
     const BVector3 local1 = m_body1->X_base().apply(cpoint);
     const BVector3 local2 = m_body2->X_base().apply(cpoint);
-
+    
     // check for matching existing point (within say ~5mm)
     for (BContact &c : m_points) 
     {
@@ -133,7 +138,7 @@ BManifold::addPoint( const BVector3 &cpoint, const BVector3 &cnormal, BScalar cd
 
 
 BScalar 
-BManifold::calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, const BVector3& p3) const
+BManifold::calcArea( const BVector3 &p0, const BVector3 &p1, const BVector3 &p2, const BVector3 &p3 ) const
 // calculate the area of four points -- adapted from persistent manifold class in Bullet
 {
     // pack the vectors into matrices
@@ -156,7 +161,7 @@ BManifold::calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, 
 }
 
 void
-BManifold::reducePoints( const BContact& pt ) 
+BManifold::reducePoints( const BContact &pt ) 
 {
     // find and keep the point i0 with 'deepest' penetration 
     int maxDepthIdx = 0; 
@@ -171,7 +176,7 @@ BManifold::reducePoints( const BContact& pt )
     }
     
     int maxAreaIdx = -1;
-    BScalar maxArea = 0.0;
+    BScalar maxArea = -1.0;
     for (int i = 0; i < 4; ++i)
     {
         BScalar res = 0.0;
@@ -195,11 +200,11 @@ BManifold::reducePoints( const BContact& pt )
     // keep only the 4 chosen points (preserves impulse cache)
     std::vector<BContact> keptPoints(4);
     
-    keptPoints[0] = pt;
-    keptPoints[1] = m_points[m_index[maxAreaIdx][0]];
-    keptPoints[2] = m_points[m_index[maxAreaIdx][1]];
-    keptPoints[3] = m_points[m_index[maxAreaIdx][2]];
- 
+    keptPoints[0] = m_points[m_index[maxAreaIdx][0]];
+    keptPoints[1] = m_points[m_index[maxAreaIdx][1]];
+    keptPoints[2] = m_points[m_index[maxAreaIdx][2]];
+    keptPoints[3] = pt;
+    
     m_points = keptPoints;
 }
 

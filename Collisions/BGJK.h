@@ -1,8 +1,8 @@
 /* BGJK 20/12/2025
 
- $$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$
  $   BGJK.h   $
- $$$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
@@ -53,14 +53,12 @@
 #include "ABody.h"
 #endif
 
-#ifndef BGLM_H
-#include "BGLM.h"
+#ifndef BMANIFOLD_H
+#include "BManifold.h"
 #endif
 
-#include <glm/vec3.hpp>
-
 #include <ccd/ccd.h>
-
+#include <glm/vec3.hpp>
 
 class BGJK
 {
@@ -70,24 +68,35 @@ public:
     BGJK( void );
     ~BGJK( void )=default;
 
-    // if a collision has taken place fill in the contact distance, normal and point, and return true 
-    bool
-    collision( ABody* body1, ABody* body2, BScalar &distance, BVector3 &cnormal, BVector3 &cpoint ); 
+    /*! @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point).
+     *
+     * @param b1 [in]      pointer to body1
+     * @param b2 [in]      pointer to body2
+     * @param cinfo [out]  contact infomation (depth, normal and point)
+     */
+    void
+    collision( ABody* body1, ABody* body2, std::vector<BContactInfo> &cinfo ); 
     
 private:
 
+    BBox 
+    toBaseBox( const BMatrix4 &trans, const BVector3 &lo, const BVector3 &hi ) const;
+    
+    bool
+    collision( ABody* b1, ABody* b2, BScalar &distance, BVector3 &cnormal, BVector3 &cpoint );
+    
     
     static glm::dvec3 
-    toGLM(const ccd_vec3_t *v) { return glm::dvec3(ccdVec3X(v), ccdVec3Y(v), ccdVec3Z(v)); }
+    toGLM( const ccd_vec3_t *v ) { return glm::dvec3(ccdVec3X(v), ccdVec3Y(v), ccdVec3Z(v)); }
 
     static void
-    setVec3(ccd_vec3_t *v1, const glm::dvec3 &v2) { ccdVec3Set(v1, v2.x, v2.y, v2.z); }
+    setVec3( ccd_vec3_t *v1, const glm::dvec3 &v2 ) { ccdVec3Set(v1, v2.x, v2.y, v2.z); }
     
     static void 
-    first_dir_fn(const void *obj1, const void *obj2, ccd_vec3_t *dir);
+    first_dir_fn( const void *obj1, const void *obj2, ccd_vec3_t *dir );
     
     static void
-    support_fn(const void *obj, const ccd_vec3_t *dir, ccd_vec3_t *vec);
+    support_fn( const void *obj, const ccd_vec3_t *dir, ccd_vec3_t *vec );
     
     static BVector3
     first_point( const ABody *body );

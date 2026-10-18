@@ -65,126 +65,90 @@
 #include "BProducts.h"
 #endif
 
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>          // for glm::distance2/glm::length2
 #include <glm/gtc/matrix_access.hpp> // for glm::column
+#include <glm/gtx/transform.hpp>
 
+#include <glm/gtc/quaternion.hpp>
+
+#include <algorithm> // std::sort
 
 // All params have been set assuming 1 = 1m 
 // if your scale differes significantly you may need to recalibrate/tune these parameters
-BContactManager::BContactManager( int N ) : m_iters(25), 
+BContactManager::BContactManager( int N ) : m_iters(30), 
                                             m_cachehits(0),
-                                            m_e(0.75),
-                                            m_mu(0.5), 
-                                            m_baumgarte(0.2), 
+                                            m_e(0.0),
+                                            m_mu(1.0), 
+                                            m_baumgarte(0.25), 
                                             m_max_dist(0.01),        // manifold refresh - 1cm
-                                            m_max_tan_dist2(2.0),    // manifold refresh
-                                            m_threshold2(0.000025),  // manifold addPoint - 5mm  
+                                            m_max_tan_dist2(20.0),   // manifold refresh
+                                            m_threshold2(0.000025),  // manifold addPoint - 5mm  // 0.000025
                                             m_detector(),
                                             m_active(), 
                                             m_history(), 
                                             m_frictionOn(true)
                                            
 {
-    m_active.reserve(N);  
+    m_active.reserve(N); 
+    m_collisions.reserve(N);
     m_history.reserve(N);
 }
 
 BContactManager::~BContactManager( void )
 {
-    //std::cout << "BContactManager::m_cachehits " << m_cachehits << std::endl;
+    std::cout << "BContactManager::m_cachehits " << m_cachehits << std::endl;
 }
  
 // 
 // Broad-phase - 3D algbra usimg float/double, no AD here
 //
 
-bool 
-BContactManager::sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const glm::dvec3 &extA,
-                          const glm::dmat3 &rotB, const glm::dvec3 &posB, const glm::dvec3 &extB )
-// Separating Axis Theorem (SAT) check for axis Orientated Bounding Boxes (OBB)
-// in this case there are 15 axes to check. This is a glm impemenation of Randy Gaul's q3BoxtoBox 
+
+BBox 
+BContactManager::toBaseBox(const ABody *b) const 
+// // the resulting box is 'generous' - it contains the orientated bounding box
 {
-    // B's frame in A's space
-    const glm::dmat3 rotAT = glm::transpose(rotA);
-    const glm::dmat3 C = rotAT * rotB;
+    const BMatrix4 trans = glm::translate(b->pos()) * BMatrix4(b->orient());
 
-    glm::dmat3 absC;
-    bool parallel = false;
-    const double kCosToll = 1.0E-6;
+    const BVector3 &hi = b->box().top();
+    const BVector3 &lo = b->box().bot();
     
-    for ( int i = 0; i < 3; ++i )
+    const BVector4 corners[8] = 
     {
-        for ( int j = 0; j < 3; ++j )
-        {
-            absC[i][j] = std::fabs(C[i][j]);
-            parallel = parallel || ((absC[i][j] + kCosToll) >= 1.0);
-        }
-    }
-
-    // vector from center A to center B in A's space
-    const glm::dvec3 t(rotAT * (posB - posA)); 
-
-    // face normal axis checks
-    for (int i = 0; i < 3; ++i) // A's axes 
+        {lo.x, lo.y, lo.z, 1.0},
+        {hi.x, lo.y, lo.z, 1.0},
+        {lo.x, hi.y, lo.z, 1.0},
+        {hi.x, hi.y, lo.z, 1.0},
+        {lo.x, lo.y, hi.z, 1.0},
+        {hi.x, lo.y, hi.z, 1.0},
+        {lo.x, hi.y, hi.z, 1.0},
+        {hi.x, hi.y, hi.z, 1.0}
+    };
+    
+    BVector3 top(B_SCALAR_MIN), bot(B_SCALAR_MAX);
+    
+    for (int c = 0; c < 8; ++c) 
     {
-        //double s = std::fabs(t[i]) - (extA[i] + glm::dot(glm::row(absC, i), extB)); // slower
-        const glm::dvec3 row(absC[0][i], absC[1][i], absC[2][i]);
-        double s = std::fabs(t[i]) - (extA[i] + glm::dot(row, extB));
+        BVector3 p(trans * corners[c]);
         
-        if (s > 0.0)
-            return false;
+        top = arb::max(p, top);
+        bot = arb::min(p, bot);
     }
-    
-    for (int i = 0; i < 3; ++i) // B's axes 
-    {
-        //double s = std::fabs(glm::dot(t, glm::column(C, i))) - (extB[i] + glm::dot(glm::column(absC, i), extA)); // slower
-        double s = std::fabs(glm::dot(t, C[i])) - (extB[i] + glm::dot(absC[i], extA));
-
-        if (s > 0.0)
-            return false;
-    }
-
-    // edge cross products axis checks
-    if ( !parallel )
-    {
-        for (int i = 0; i < 3; ++i) // A edge
-        {
-            int i1 = next(i);
-            int i2 = prev(i);
-
-            for (int j = 0; j < 3; ++j) // B edge
-            {
-                int j1 = next(j);
-                int j2 = prev(j);
-
-                // projected radii
-                double rA = extA[i1] * absC[j][i2] + extA[i2] * absC[j][i1];
-                double rB = extB[j1] * absC[j2][i] + extB[j2] * absC[j1][i];
-                
-                // separation
-                double s = std::fabs(t[i2] * C[j][i1] - t[i1] * C[j][i2]) - (rA + rB);
-                
-                if (s > 0.0)
-                    return false;
-            }
-        }
-    }
-    
-    return true;
+    return BBox(top, bot);
 }
-
 
 //
 // Narrow-phase -- here we use spatial algebra (which is differentiable)
 //
 void 
-BContactManager::compute_basis(const BVector3 &n, BVector3 &b1, BVector3 &b2)
+BContactManager::computeBasis( const BVector3 &n, BVector3 &b1, BVector3 &b2 ) const
 // improved version of Frisvad's method in: 
 // "Building an Orthonormal Basis, Revisted", Duff et al. JCGT, 2017. 
 // the tangents remain geometrically consistent as the normal changes/body rotates
 { 
-    //const BScalar sign = std::copysign(BScalar(1.0), n.z); // does not work with autodiff
+    //const BScalar sign = std::copysign(one, n.z); // does not work with autodiff
     const BScalar sign = (n.z >= 0.0) ? 1.0 : -1.0;
     const BScalar a = -1.0 / (sign + n.z);
     const BScalar b = n.x * n.y * a;
@@ -198,8 +162,9 @@ BContactManager::prepare( BScalar dt )
 // employs Baumgarte Stabilization Technique (BST) 
 {
     const BScalar beta = (m_baumgarte / dt);
-    const BScalar slop = 0.002; // 2mm to allow resting/stacking objects some 'space'
-
+    const BScalar slop = BScalar(0.003); // 3mm to allow resting/stacking objects some 'space'
+    const BScalar one  = BScalar(1.0);
+    
     for (BManifold &m : m_active)
     {
         m.refresh(m_max_dist, m_max_tan_dist2); // remove broken/stale points
@@ -222,7 +187,7 @@ BContactManager::prepare( BScalar dt )
             c.dv_2 = (b2->invI_base() * c.n_2); 
             
             // effective mass - how 'heavy' the collision 'feels' (denominator of eqn 11.65)
-            c.invK = BScalar(1.0) / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
+            c.invK = one / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
             
             // zeta ζ initial relative or separation velocity at contact c (eqn 11.62)
             // however unlike eqn 11.62 here n_1 != -n_2
@@ -246,7 +211,7 @@ BContactManager::prepare( BScalar dt )
                 
                 // create a coordinate frame from the normal
                 // note c.n_1 and c.n_2 are considered to be nz_1 and nz_2
-                compute_basis(c.normal, normx, normy );  
+                computeBasis(c.normal, normx, normy );  
                 
                 // unit spatial impulse (force) vector - tangent plane (x-y axis) of contact space 
                 c.nx_1 = BVector6(arb::cross(rel_pos1, -normx), -normx);
@@ -263,8 +228,8 @@ BContactManager::prepare( BScalar dt )
                 c.dvy_2 = b2->invI_base() * c.ny_2;                 
                 
                 // compute effective mass for x-y axis (K_x and K_y)
-                c.invK_x = BScalar(1.0) / (arb::dot(c.nx_1, c.dvx_1) + arb::dot(c.nx_2, c.dvx_2));
-                c.invK_y = BScalar(1.0) / (arb::dot(c.ny_1, c.dvy_1) + arb::dot(c.ny_2, c.dvy_2)); 
+                c.invK_x = one / (arb::dot(c.nx_1, c.dvx_1) + arb::dot(c.nx_2, c.dvx_2));
+                c.invK_y = one / (arb::dot(c.ny_1, c.dvy_1) + arb::dot(c.ny_2, c.dvy_2)); 
             }
 
             //
@@ -292,7 +257,6 @@ BContactManager::prepare( BScalar dt )
     }
 }
 
-
 void 
 BContactManager::solve( void ) 
 // Projected Gauss-Seidel (PGS) solver 
@@ -318,7 +282,7 @@ BContactManager::solve( void )
                 const BScalar oldJ = c.accJ;
                 c.accJ = arb::max(0.0,  oldJ + j);
                 const BScalar applyJ = c.accJ - oldJ; 
-                
+    
                 // apply spatial impulse
                 b1->v() += c.dv_1 * applyJ;
                 b2->v() += c.dv_2 * applyJ;
@@ -371,26 +335,22 @@ BContactManager::solve( void )
     }
 }
 
-
 void
-BContactManager::narrow_check(ABody *b1, ABody *b2, long now)
-// narrow-phase GJK check
+BContactManager::narrowCheck( ABody *b1, ABody *b2, long now )
+// narrow-phase GJK check - a positive depth indicates a penetration
 {
-    BVector3 cpos;       // world contact position
-    BVector3 cnormal;    // world contact normal
-    BScalar  cdepth;     // penetration contact depth
-
-    // GJK - a positive depth indicates a penetration
-    bool iscollision = m_detector.collision( b1, b2, cdepth, cnormal, cpos ); 
+    // GJK fills m_collisions
+    m_collisions.clear();
+    m_detector.collision( b1, b2, m_collisions ); 
     //
-    
-    if (iscollision)
+
+    if (!m_collisions.empty())
     {
         //b1->addMsg(BMsg(BMsg::COLLISION, b2, b1, now));
         //b2->addMsg(BMsg(BMsg::COLLISION, b1, b2, now ));
         
         // find or create a manifold for this contact
-        uint64_t hash =  myhash(b1->objId(), b2->objId());
+        uint64_t hash = myhash(b1->objId(), b2->objId());
         auto fidx = m_history.find(hash);
         
         if (fidx != m_history.end())
@@ -403,8 +363,14 @@ BContactManager::narrow_check(ABody *b1, ABody *b2, long now)
             m_active.emplace_back(b1, b2, hash);
             //m_active.back().warmstart(false);
         }
-
-        m_active.back().addPoint(cpos, cnormal, cdepth, m_threshold2);
+        
+        // largest depth first is best  
+        auto gt = [](const BContactInfo &a, const BContactInfo &b) { return a.depth > b.depth; };
+        std::sort(m_collisions.begin(), m_collisions.end(), gt);
+        for (int i = 0; i < m_collisions.size(); ++i)
+        {
+            m_active.back().addPoint(m_collisions[i], m_threshold2);
+        }
     }
 }
 
@@ -416,7 +382,7 @@ BContactManager::detect( const std::vector<ABody*> &body, const std::vector<ABod
     using std::abs;
     
     const BScalar pad = 0.1;
-    const long now = 0 ;// theClock->seconds();
+    const long now = 0; //theClock->seconds();
 
     m_active.clear();
     
@@ -442,19 +408,19 @@ BContactManager::detect( const std::vector<ABody*> &body, const std::vector<ABod
            
             if (sphere_check) 
             {
-                // broad-phase SAT for OBB check 
-                bool box_check = broad_check(b1, b2);
+                // broad-phase check 
+                bool box_check = broadCheck(b1, b2);
              
                 if (box_check) 
                 {
                     // narrow-phase GJK check 
-                    narrow_check(b1, b2, now);
+                    narrowCheck(b1, b2, now);
                 }
             } 
         }
     } 
     
-    // fixed/static objects 
+    // fixed/static objects  
     for (int i = 0; i < body.size(); ++i)
     {
         ABody* b1 = body[i];
@@ -475,13 +441,13 @@ BContactManager::detect( const std::vector<ABody*> &body, const std::vector<ABod
            
             if (sphere_check) 
             {
-                // broad-phase SAT for OBB check 
-                bool box_check = broad_check(b1, b2);
+                // broad-phase check 
+                bool box_check = broadCheck(b1, b2);
              
                 if (box_check) 
                 {
                     // narrow-phase GJK check 
-                    narrow_check(b1, b2, now);
+                    narrowCheck(b1, b2, now);
                 }
             }
         }
@@ -496,7 +462,8 @@ BContactManager::cache( void )
     m_history.clear();
     for (const BManifold &m : m_active)
     {
-        m_history[m.manifoldId()] = m;
+        //m_history[m.manifoldId()] = m;
+        m_history.emplace(m.manifoldId(), m);
     }
 }
 
@@ -505,7 +472,7 @@ BContactManager::cache( void )
 //
 
 int
-BContactManager::resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed)
+BContactManager::resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed )
 {
     if (body.empty())
         return 0;
@@ -525,7 +492,6 @@ BContactManager::resolve( double dt, const std::vector<ABody*> &body, const std:
     
     cache(); 
 
-    
     return num_contacts;
 }
 

@@ -33,11 +33,9 @@
 #include <assimp/postprocess.h>
 
 
-
-
 // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 void
-BPolytopeLoader::loadPolytope(std::vector<BPolytope>  &poly, const std::string &path, float scale)
+BPolytopeLoader::loadPolytope( std::vector<BPolytope>  &poly, const std::string &path, float scale )
 {
     // read file via ASSIMP 
     Assimp::Importer importer; 
@@ -125,6 +123,9 @@ BPolytopeLoader::processSubPoly( BPolytope &poly, aiMesh *mesh, const aiScene *s
         vertex.z = mesh->mVertices[i].z * scale;
  
         poly.m_coord.push_back( vertex );
+        
+        poly.m_min = glm::min(poly.m_min, vertex);
+        poly.m_max = glm::max(poly.m_max, vertex);
     }
     
     //
@@ -142,17 +143,7 @@ BPolytopeLoader::processSubPoly( BPolytope &poly, aiMesh *mesh, const aiScene *s
         int b = face.mIndices[1];
         int c = face.mIndices[2];
    
-        
-        /*
-         // Get vertex positions
-             aiVector3D a = mesh->mVertices[face.mIndices[0]];
-             aiVector3D b = mesh->mVertices[face.mIndices[1]];
-             aiVector3D c = mesh->mVertices[face.mIndices[2]];
-
-             // Calculate normal: (B-A) cross (C-A)
-             aiVector3D normal = glm::normalize(((b - a) ^ (c - a)));
-         */
-         // edge adjacency; we assume triangulated mesh
+        // edge adjacency; we assume triangulated mesh
         adjSet[a].insert(b);
         adjSet[b].insert(a);
          

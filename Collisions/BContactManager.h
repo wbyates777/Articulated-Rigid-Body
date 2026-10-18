@@ -159,10 +159,6 @@ public:
     
 
 private:  
-   
-    // used in sat_obb
-    static int next(uint64_t i) { return (i + 1) % 3; }
-    static int prev(uint64_t i) { return (i + 2) % 3; }
     
     static uint64_t
     myhash( BBodyId bid1, BBodyId bid2 )
@@ -172,22 +168,21 @@ private:
         //return ((uint64_t(bid1) << 32) | uint64_t(bid2)); // if order is important
     }
     
-    static void 
-    compute_basis(const BVector3 &n, BVector3 &b1, BVector3 &b2 );
+    void 
+    computeBasis( const BVector3 &n, BVector3 &b1, BVector3 &b2 ) const;
     
-    static bool 
-    sat_obb( const glm::dmat3 &rotA, const glm::dvec3 &posA, const glm::dvec3 &extA,
-             const glm::dmat3 &rotB, const glm::dvec3 &posB, const glm::dvec3 &extB);
+    BBox 
+    toBaseBox( const ABody *b ) const;
     
+
     bool
-    broad_check( const ABody *b1, const ABody *b2 ) const // SAT
+    broadCheck( const ABody *b1, const ABody *b2 ) const 
     {
-        return sat_obb(b1->orient(), b1->pos() + b1->box().pos(), b1->box().extent(), 
-                       b2->orient(), b2->pos() + b2->box().pos(), b2->box().extent());
+        return arb::intersect(toBaseBox(b1), toBaseBox(b2)); 
     }
     
     void
-    narrow_check(ABody *b1, ABody *b2, long now); // GJK/EPA
+    narrowCheck( ABody *b1, ABody *b2, long now ); // GJK/EPA
     
     int
     detect( const std::vector<ABody*> &body, const std::vector<ABody*> &fixed  );
@@ -217,6 +212,8 @@ private:
     
     std::vector<BManifold> m_active;
     std::unordered_map<uint64_t, BManifold> m_history; 
+    
+    std::vector<BContactInfo> m_collisions; // individual contacts detected
     
     bool m_frictionOn;
 };

@@ -148,33 +148,6 @@ public:
     }
     
 
-    bool 
-    intersect(const BBox &b) const
-    // assumes axis aligned bounding box (AABB)
-    { 
-        return  m_bot.x <= b.top().x && m_bot.y <= b.top().y && m_bot.z <= b.top().z && 
-                b.bot().x <= m_top.x && b.bot().y <= m_top.y && b.bot().z <= m_top.z;
-    }
-
-    
-    double 
-    intersectArea(const BBox& b) const
-    // assumes axis aligned bounding box (AABB)
-    { 
-        double area = 0;
-        
-        if (intersect(b))
-        {
-            glm::dvec3 side(glm::min(b.top(), m_top) - glm::max(b.bot(), m_bot));
-      
-            // for 2D case
-            if (side.z == 0.0) side.z = 1.0;
-               
-            area = side.x * side.y * side.z;
-        }
-        
-        return area;
-    }
     
     friend std::ostream&
     operator<<( std::ostream &ostr, const BBox &b );
@@ -191,6 +164,7 @@ private:
     double m_radius;        // of sphere that contains box
 
 };
+
 
 inline std::ostream&
 operator<<( std::ostream &ostr, const BBox &b )
@@ -214,6 +188,53 @@ operator>>( std::istream &istr, BBox &b )
     istr >> b.m_radius;
     
     return istr;
+}
+
+
+namespace arb
+{
+    
+    inline bool 
+    intersect(const BBox &b1, const BBox &b2) 
+    // assumes axis aligned bounding boxes b1, b2 (AABB)
+    { 
+        return  b1.bot().x <= b2.top().x && b1.bot().y <= b2.top().y && b1.bot().z <= b2.top().z && 
+        b2.bot().x <= b1.top().x && b2.bot().y <= b1.top().y && b2.bot().z <= b1.top().z;
+    }
+    
+    inline double 
+    intersectArea(const BBox& b1, const BBox& b2) 
+    // assumes axis aligned bounding box (AABB)
+    { 
+        double area = 0;
+        
+        if (intersect(b1, b2))
+        {
+            glm::dvec3 side(glm::min(b1.top(), b2.top()) - glm::max(b1.bot(), b2.bot()));
+            
+            // for 2D case
+            if (side.z == 0.0) side.z = 1.0;
+            
+            area = side.x * side.y * side.z;
+        }
+        
+        return area;
+    }
+    
+    inline BBox 
+    intersection(const BBox& b1, const BBox& b2) 
+    {
+        if (!intersect(b1, b2))
+        {
+            return BBox(); 
+        }
+        
+        const glm::dvec3 newBot = glm::max(b1.bot(), b2.bot());
+        const glm::dvec3 newTop = glm::min(b1.top(), b2.top());
+        
+        return BBox(newTop, newBot);
+    }
+
 }
 
 #endif

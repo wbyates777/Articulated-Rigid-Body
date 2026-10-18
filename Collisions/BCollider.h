@@ -28,10 +28,9 @@
 #define BCOLLIDER_H
 
 
+#include <vector>
+#include <glm/vec3.hpp>
 
-#ifndef BGLM_H
-#include "BGLM.h"
-#endif
 
 #ifndef BPOLYTOPE_H
 #include "BPolytope.h"
@@ -41,34 +40,30 @@
 #include "BBox.h"
 #endif
 
-#include <vector>
-#include <glm/vec3.hpp>
-
-
 
 class BCollider
 {
 
 public:
 
-    enum ColliderType { Sphere, Box, Linear, Adjacency, MAXCOLLIDER };
+    enum CType { Sphere, Box, Linear, Adjacency, MAXCOLLIDER };
     
-    BCollider( void ) : m_lastVert(0), m_lastPoly(0), m_box(), m_polytope(), m_type(Linear) {}
-    explicit BCollider( const std::vector<BPolytope>& p ) : m_lastVert(0), m_lastPoly(0), m_box(), m_polytope(p), m_type(Linear) {}
-    explicit BCollider( const BPolytope& p ) : BCollider(std::vector<BPolytope>(1,p)) {}
-    explicit BCollider( const BBox& box ) : m_lastVert(0), m_lastPoly(0), m_box(box), m_polytope(), m_type(Box)  {}
-    explicit BCollider( double r ) : m_lastVert(0), m_lastPoly(0), m_box() , m_polytope(), m_type(Sphere)
+    BCollider( void ) : m_type(Linear), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box() {}
+    BCollider( const std::vector<BPolytope>& p ) : m_type(Linear), m_lastVert(0), m_polyIdx(0), m_lastPoly(0), m_polytope(p), m_box() {}
+    BCollider( const BPolytope& p ) : BCollider(std::vector<BPolytope>(1,p)) {}
+    BCollider( const BBox& box ) : m_type(Box), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box(box)  {}
+    BCollider( double r ) : m_type(Sphere), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box() 
     {
         m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
     }
     ~BCollider( void )=default;
     
     
-    ColliderType 
+    CType 
     getType( void ) const { return m_type; }
     
     void 
-    setType( ColliderType c ) { m_type = c; }
+    setType( CType c ) { m_type = c; }
     
     void 
     setType( const BBox &box ) { m_type = BCollider::Box; m_box = box; }
@@ -77,28 +72,47 @@ public:
     setType( double r ) 
     { 
         m_type = BCollider::Sphere; 
-        m_polytope = std::vector<BPolytope>(1,BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
+        m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
     }
+    
+    
+    void
+    set( const std::vector<BPolytope>& p, CType type = Linear ) { m_polytope = p; m_type = type; }
+    
+    void
+    set( const BPolytope& p, CType type = Linear ) { m_polytope = std::vector<BPolytope>(1,p); m_type = type; }
+    
+    
+    std::vector<BPolytope>&
+    polytopes( void ) { return m_polytope; }
+    
+    const std::vector<BPolytope>&
+    polytopes( void ) const { return m_polytope; }
+    
+    BPolytope&
+    polytope( int i ) { return m_polytope[i]; }
+    
+    
+    const BPolytope&
+    polytope( int i ) const { return m_polytope[i]; }
+    
+    int
+    size( void ) const { return (int) m_polytope.size(); }
 
-    void
-    setPoints( const std::vector<BPolytope>& p, ColliderType type = Linear ) 
-    { 
-        m_type = type; m_polytope = p;
-    }
-    
-    void
-    setPoints( const BPolytope& p, ColliderType type = Linear ) 
-    { 
-        m_type = type; m_polytope = std::vector<BPolytope>(1,p);
-    }
-    
     //
     // support functions
     //
     
+    
+    void 
+    setPolyIdx( int p ) { m_polyIdx = p; } // set polytope index
+    
+    //int 
+    //polyIdx( void ) const { return m_polyIdx; }
+    
+
     glm::dvec3  
     first_point( void ) const;
-    
     
     glm::dvec3
     max_point( const glm::dvec3 &dir ) const;
@@ -106,21 +120,23 @@ public:
 private:
 
     glm::dvec3 
-    linear_max_point( const glm::dvec3 &dir ) const;
+    linear_max_point( const glm::dvec3 &dir, int polyIdx ) const;
     
     glm::dvec3
-    adjacency_max_point( const glm::dvec3 &dir ) const;
+    adjacency_max_point( const glm::dvec3 &dir, int polyIdx ) const;
     
-  
+    CType m_type;
+    
     mutable int m_lastVert;
     mutable int m_lastPoly;
-    BBox m_box;
+    int m_polyIdx;
     std::vector<BPolytope> m_polytope; 
-    ColliderType m_type;
-
+    BBox m_box;
+    
 };
+
 
 
 #endif
 
-//
+
