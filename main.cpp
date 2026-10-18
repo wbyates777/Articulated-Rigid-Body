@@ -363,8 +363,8 @@ collisions( void )
     std::vector<glm::vec3> Q = {b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7] };
     BPolytope p(P);
     BPolytope q(Q);
-    bodies[0].collider().setPoints(p, BCollider::Linear);
-    bodies[1].collider().setPoints(q, BCollider::Linear);
+    bodies[0].collider().set(p, BCollider::Linear);
+    bodies[1].collider().set(q, BCollider::Linear);
 
     // box test
     //bodies[0].collider().setType(a);
