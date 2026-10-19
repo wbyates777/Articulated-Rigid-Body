@@ -17,6 +17,9 @@
 #ifndef BBOX_H
 #define BBOX_H
 
+#ifndef BGLM_H
+#include "BGLM.h"
+#endif
 
 #ifndef BSTREAM_H
 #include "BStream.h"
