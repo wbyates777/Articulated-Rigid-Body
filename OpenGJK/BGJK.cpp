@@ -1,9 +1,9 @@
 
 /* BGJK 17/05/2026
 
- $$$$$$$$$$$$$$
- $   BGJK.h   $
- $$$$$$$$$$$$$$
+ $$$$$$$$$$$$$$$$
+ $   BGJK.cpp   $
+ $$$$$$$$$$$$$$$$
 
  by W.B. Yates
  Copyright (c) W.B. Yates. All rights reserved.
