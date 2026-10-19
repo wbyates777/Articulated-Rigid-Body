@@ -27,11 +27,11 @@
 
 #include <iostream>
 
-#ifndef __ABODY_H__
+#ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef __BCOLLIDER_H__
+#ifndef BCOLLIDER_H
 #include "BCollider.h"
 #endif
 
