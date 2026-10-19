@@ -28,10 +28,6 @@
 #define BCOLLIDER_H
 
 
-#include <vector>
-#include <glm/vec3.hpp>
-
-
 #ifndef BPOLYTOPE_H
 #include "BPolytope.h"
 #endif
@@ -40,6 +36,8 @@
 #include "BBox.h"
 #endif
 
+#include <vector>
+#include <glm/vec3.hpp>
 
 class BCollider
 {
