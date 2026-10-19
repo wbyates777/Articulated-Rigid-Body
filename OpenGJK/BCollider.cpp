@@ -14,8 +14,7 @@
  the rotation BMatrix3 m_body->orient() and the BVector3 m_body->pos()
  respectively.
  
- Note we use  spatial algebra types
- 
+
 */
 
 
