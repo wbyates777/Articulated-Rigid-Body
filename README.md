@@ -310,7 +310,7 @@ CMake will take care of installing the GLM, autodiff, and libccd libraries, and 
 If you are not using CMake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
-If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with snprintf). 
+If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with std::snprintf). 
 
 
 ## Background
