@@ -68,17 +68,16 @@
 #include <vector>
 #include <map>
 
-
 #ifndef ABODY_H
 #include "ABody.h"
 #endif
 
-#ifndef BBOX_H
-#include "BBox.h"
-#endif
-
 #ifndef BMANIFOLD_H
 #include "BManifold.h"
+#endif
+
+#ifndef BBOX_H
+#include "BBox.h"
 #endif
 
 #ifndef BOPENGJK_H
@@ -106,12 +105,12 @@ public:
  
     /*! @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point).
      *
-     * @param b1 [in]      pointer to body1
-     * @param b2 [in]      pointer to body2
-     * @param cinfo [out]  contact infomation (depth, normal and point)
+     * @param[in] body1       pointer to body1
+     * @param[in] body2       pointer to body2
+     * @param[out] cinfo      contact infomation (depth, normal and point)
      */
     void
-    collision( ABody *b1, ABody *b2, std::vector<BContactInfo> &cinfo );
+    collision( ABody *body1, ABody *body2, std::vector<BContactInfo> &cinfo );
     
 private:
 

@@ -13,8 +13,8 @@
  A body orientation and position is given (in world/base coordinates) by
  the rotation BMatrix3 m_body->orient() and the BVector3 m_body->pos()
  respectively.
- 
 
+ 
 */
 
 
@@ -111,7 +111,7 @@ BCollider::adjacency_max_point( const glm::dvec3 &dir, int polyIdx ) const
     
     m_lastVert = currentIdx;
     m_lastPoly = polyIdx;
-    m_polytope[m_lastPoly].m_lastVertex = currentIdx;
+    m_polytope[polyIdx].m_lastVertex = currentIdx;
 
     return m_polytope[m_lastPoly].m_coord[m_lastVert]; // best local vertex
 }

@@ -54,11 +54,9 @@
 #include "BSimplex.h"
 #endif
 
-
 #ifndef BPRODUCTS_H
 #include "BProducts.h"
 #endif
-
 
 class BCollider;
 
@@ -73,11 +71,11 @@ public:
     /*! @brief Invoke the GJK algorithm to compute the minimum distance between two
      * polytopes.
      *
-     * @param[in]     bdy1  First polytope (passed by value, modified internally).
-     * @param[in]     bdy2  Second polytope (passed by value, modified internally).
-     * @param[in,out] smp   Simplex structure. Must be initialized (set nvrtx = 0)
-     *                       before first call. After return, contains the final
-     *                       simplex and witness points in s->witnesses.
+     * @param[in]     body1  First polytope (passed by value, modified internally).
+     * @param[in]     body2  Second polytope (passed by value, modified internally).
+     * @param[in,out] simplex   Simplex structure. Must be initialized (set nvrtx = 0)
+     *                          before first call. After return, contains the final
+     *                          simplex and witness points in simplex.witnesses.
      * @return The minimum Euclidean distance between the two polytopes.
      *         Returns 0 if the polytopes are intersecting or touching.
      *
@@ -85,7 +83,7 @@ public:
      *       Witness points are automatically computed and stored in s.witnesses.
      */
     BScalar 
-    min_distance( ABody *bdy1, int polyIdx1, ABody *bdy2, int polyIdx2, BSimplex &smp );
+    min_distance( ABody *body1, ABody *body2, BSimplex &simplex );
   
     
     void 
@@ -161,10 +159,10 @@ private:
     calc_witness( const ABody *body1, const ABody *body2, BSimplex &smp ) const;
     
     BVector3
-    first_point( ABody *body, int polyIdx ) const;
+    first_point( ABody *body ) const;
     
     BVector3
-    max_point( ABody *body, const BVector3& dir, int polyIdx ) const; 
+    max_point( ABody *body, const BVector3& dir ) const; 
     
     BVector3
     point(const ABody *body, const  BIndex &idx) const;

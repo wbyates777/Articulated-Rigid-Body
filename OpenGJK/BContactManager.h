@@ -10,7 +10,7 @@
 
  A simple impulse based collision detection and resolution system.
  This code is not a full blown, production ready, collision resolution system 
- such as Jolt or Bullet. Insetad it is intended as a demonstration of spatial impulse. 
+ such as Jolt or Bullet. Instead it is intended as a demonstration of spatial impulse. 
  
  
  The BContactManager detects collisions between pairs of objects and resolves any 'contacts' by employing 
@@ -19,9 +19,9 @@
  
  The BContactManager performs _broad phase_ and _narrow phase_ collison detection.
  
- Broad-phase consists of detecting intersections between orientated bounding boxes (OBB) using 
- the Separating Axis Theorem (SAT). Computationally, this is relatively efficient.
- See https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
+ Broad-phase consists of detecting intersections between axis-aligned (AABB) or orientated bounding boxes (OBB). 
+ Computationally, this is relatively efficient.
+
  
  Narrow-phase consists of detecting intersections between mesh polytopes/convex hulls 
  using the GJK and EPA algorithms. This is very precise but computationally expensive.
@@ -169,10 +169,10 @@ private:
     }
     
     void 
-    computeBasis( const BVector3 &n, BVector3 &b1, BVector3 &b2 ) const;
+    computeBasis(const BVector3 &n, BVector3 &b1, BVector3 &b2 ) const;
     
     BBox 
-    toBaseBox( const ABody *b ) const;
+    toBaseBox(const ABody *b) const;
     
 
     bool
@@ -182,7 +182,7 @@ private:
     }
     
     void
-    narrowCheck( ABody *b1, ABody *b2, long now ); // GJK/EPA
+    narrowCheck(ABody *b1, ABody *b2, long now); // GJK/EPA
     
     int
     detect( const std::vector<ABody*> &body, const std::vector<ABody*> &fixed  );
@@ -203,6 +203,7 @@ private:
     BScalar m_e;             // coefficient of restitution, denoted e
     BScalar m_mu;            // coefficient of friction, denoted μ
     BScalar m_baumgarte;     // coefficient of Baumgarte stabilization 
+    BScalar m_slop;          // Baumgarte acceptable penetration
  
     BScalar m_max_dist;      // see BManifold::refresh 
     BScalar m_max_tan_dist2; // see BManifold::refresh

@@ -304,7 +304,7 @@ BOpenEPA::point(const ABody *body, const  BIndex &idx) const
 }
 
 void
-BOpenEPA::support_epa( const ABody *body1, int polyIdx1, const ABody *body2, int polyIdx2, const BVector3 &dir, BGJKVertex &result ) const
+BOpenEPA::support_epa( const ABody *body1, const ABody *body2, const BVector3 &dir, BGJKVertex &result ) const
 // support function for EPA but only care about Minkowski difference point
 {
     const glm::dvec3 localDir1 = glm::transpose(body1->orient()) * dir;
@@ -314,9 +314,9 @@ BOpenEPA::support_epa( const ABody *body1, int polyIdx1, const ABody *body2, int
     BIndex local_best1(-1,-1); 
 
 
-    for (int j = 0; j < body1->collider().polytope(polyIdx1).m_coord.size(); ++j) 
+    for (int j = 0; j < body1->collider().polytope().m_coord.size(); ++j) 
     {
-        BIndex idx(j, polyIdx1); // (vertIdx, polyIdx)
+        BIndex idx(j, body1->collider().polyIdx()); // (vertIdx, polyIdx)
         double s = glm::dot(body1->collider().point(idx), localDir1);
         
         if (s > local_max1) 
@@ -333,9 +333,9 @@ BOpenEPA::support_epa( const ABody *body1, int polyIdx1, const ABody *body2, int
     double local_max2 = -std::numeric_limits<double>::max();;
     BIndex local_best2(-1,-1);
 
-    for (int j = 0; j < body2->collider().polytope(polyIdx2).m_coord.size(); ++j) 
+    for (int j = 0; j < body2->collider().polytope().m_coord.size(); ++j) 
     {
-        BIndex idx(j, polyIdx2);  //  (vertIdx, polyIdx)
+        BIndex idx(j, body2->collider().polyIdx());  //  (vertIdx, polyIdx)
         double s = glm::dot(body2->collider().point(idx), localDir2);
         
         if (-s > local_max2) 
@@ -377,7 +377,7 @@ BOpenEPA::find_closest_face( const BEPAPolytope &poly ) const
 }
 
 bool
-BOpenEPA::expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &smp  ) const
+BOpenEPA::expand_simplex_to_tetrahedron( ABody* body1, ABody* body2, BSimplex &smp  ) const
 {
     // If GJK returned a degenerate simplex, rebuild it properly for EPA
     if (smp.vertexNum() != 4) 
@@ -391,7 +391,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body
       
             // Parallel EPA support in that direction.
             BGJKVertex new_point;
-            support_epa(body1, polyIdx1, body2, polyIdx2, smp[0], new_point);
+            support_epa(body1, body2, smp[0], new_point);
             
             // Check if this is a new point relative to the existing simplex vertex.
             bool is_new = smp.is_new(new_point);
@@ -439,7 +439,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body
             
             // Parallel EPA support in that direction.
             BGJKVertex new_point;
-            support_epa(body1, polyIdx1, body2, polyIdx2, dir, new_point);
+            support_epa(body1, body2, dir, new_point);
             
             // Check if this is a new point relative to both existing simplex vertices.
             if (smp.is_new(new_point)) 
@@ -469,7 +469,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body
             
             // Parallel EPA support in that direction.
             BGJKVertex new_point;
-            support_epa(body1, polyIdx1, body2, polyIdx2, dir, new_point);
+            support_epa(body1, body2, dir, new_point);
             
             // Check if this is a new point relative to all three existing simplex vertices.
             if (smp.is_new(new_point)) 
@@ -487,7 +487,7 @@ BOpenEPA::expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body
             // If first direction didn't work, try opposite
             if (smp.vertexNum() == 3) 
             {
-                support_epa(body1, polyIdx1, body2, polyIdx2, dir, new_point);
+                support_epa(body1, body2, dir, new_point);
                 
                 if (smp.is_new(new_point)) 
                 {
@@ -658,7 +658,7 @@ BOpenEPA::tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVecto
 //*******************************************************************************************
 
 BScalar
-BOpenEPA::collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &smp, BScalar distance, 
+BOpenEPA::collision( ABody* body1, ABody* body2, BSimplex &simplex, BScalar distance, 
                      BVector3 &cnormal, BVector3 &cpoint ) 
 {
     using std::abs;
@@ -666,16 +666,16 @@ BOpenEPA::collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSi
     if (distance > B_EPS) 
     {
         //  no penetration has been detected
-        set_contact_normal(smp.witness(B1), smp.witness(B2), cnormal);
+        set_contact_normal(simplex.witness(B1), simplex.witness(B2), cnormal);
         return 0.0;
     }
 
-    // ensure we have a volume (tetrahedron) to start EPA.
+    // Ensure we have a volume (tetrahedron) to start EPA.
     // Degenerate cases handled inside expand_simplex_to_tetrahedron
-    if (expand_simplex_to_tetrahedron(body1, polyIdx1, body2, polyIdx2, smp) == false)
+    if (expand_simplex_to_tetrahedron(body1, body2, simplex) == false)
     {
         // No new support point means penetration depth effectively zero.
-        set_contact_normal(smp.witness(B1), smp.witness(B2), cnormal);
+        set_contact_normal(simplex.witness(B1), simplex.witness(B2), cnormal);
         //cpoint = (smp.witness(B1) + smp.witness(B2)) * BScalar(0.5);  
         return 0.0; 
     }   
@@ -684,7 +684,7 @@ BOpenEPA::collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSi
     BEPAPolytope poly;
     BVector3 centroid;
     
-    init_epa_polytope(poly, smp, centroid);
+    init_epa_polytope(poly, simplex, centroid);
     
     int iters = 0;
     bool calc_witness = false;
@@ -706,7 +706,7 @@ BOpenEPA::collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSi
         
         // get new support point in direction of closest face normal
         BGJKVertex new_point;
-        support_epa(body1, polyIdx1, body2, polyIdx2, closest.normal, new_point);
+        support_epa(body1, body2, closest.normal, new_point);
         
         // check for termination 
         BScalar dist_to_new = arb::dot(closest.normal, new_point.vertex);
@@ -718,7 +718,7 @@ BOpenEPA::collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSi
         }
         
         // check for duplicate vertex to prevent infinite loops
-        if (!smp.is_new(new_point)) 
+        if (!simplex.is_new(new_point)) 
         {
             calc_witness = true; // found duplicate vertex
             break; 
@@ -758,19 +758,19 @@ BOpenEPA::collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSi
             barycentric_origin(poly[face[0]], poly[face[1]], poly[face[2]], bary);
             
             // calc witness points
-            smp.witness(B1) =  point(body1, face[0][B1]) * bary[0] 
-                             + point(body1, face[1][B1]) * bary[1]  
-                             + point(body1, face[2][B1]) * bary[2];
+            simplex.witness(B1) =  point(body1, face[0][B1]) * bary[0] 
+                                 + point(body1, face[1][B1]) * bary[1]  
+                                 + point(body1, face[2][B1]) * bary[2];
             
-            smp.witness(B2) =  point(body2, face[0][B2]) * bary[0]  
-                             + point(body2, face[1][B2]) * bary[1] 
-                             + point(body2, face[2][B2]) * bary[2];
+            simplex.witness(B2) =  point(body2, face[0][B2]) * bary[0]  
+                                 + point(body2, face[1][B2]) * bary[1] 
+                                 + point(body2, face[2][B2]) * bary[2];
             
             //
             // set contact parameters
             //
             //cpoint = smp.witness(B1) - (cnormal * (depth * BScalar(0.5)));
-            cpoint   = (smp.witness(B1) + smp.witness(B2)) * BScalar(0.5); // matches libccd
+            cpoint   = (simplex.witness(B1) + simplex.witness(B2)) * BScalar(0.5); // matches libccd
             cnormal  = face.normal;
             cdepth   = face.distance; // collision and penetration  results in poitive depth/distance
         }

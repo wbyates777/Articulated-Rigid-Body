@@ -12,7 +12,7 @@
  
  The main changes are:
  
- i)   glm based Vector3 types which can be made differentiable,
+ i)   glm based BVector3 types which can be made differentiable,
  ii)  the structs EPAVertex and BIndex with operators that simplify the syntax
  iii) broke up the large collisions function into more managable logical chunks,
       by adding find_closest_face(), expand_simplex_to_tetrahedron(),
@@ -62,6 +62,7 @@
 #ifndef BPSIMPLEX_H
 #include "BSimplex.h"
 #endif
+
 
 
 class BEPAPolytope;
@@ -119,19 +120,18 @@ public:
      * polytopes.
      *
      * @param[in]     body1                 First body (passed by pointer, modified internally).
-     * @param[in]     polyIdx1              First polytope index (passed by value).
      * @param[in]     body2                 Second body (passed by pointer, modified internally).
-     * @param[in]     polyIdx2              Second polytope index (passed by value).
      * @param[in,out] simplex               Simplex structure. Must be initialized. 
      *                                      After return, contains the final
-     *                                      simplex and witness points in s->witnesses.
+     *                                      simplex and witness points in simplex.witnesses.
      * @param[in]     distance              Takes in the distance computed by the GJK algorithm 
      *                                      (0 -> collision detected, run EPA), otherwise return early.
      * @param[out]    cnormal               The contact normal computed by the EPA algorithm.
      * @param[out]    cpoint                The contact point computed by the EPA algorithm.
-     * @note Witness points are automatically computed and stored in s.witnesses. */
+     * @return                              Return the penetration depth; cdepth >= 0
+     * @note Witness points are automatically computed and stored in simplex.witnesses. */
     BScalar 
-    collision( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &simplex, BScalar distance, 
+    collision( ABody* body1, ABody* body2, BSimplex &simplex, BScalar distance, 
                BVector3 &cnormal, BVector3 &cpoint );
     
     void 
@@ -156,7 +156,7 @@ private:
     barycentric_origin( const BVector3 &v0, const BVector3 &v1, const BVector3 &v2, BVector3 &a ) const;
     
     void
-    support_epa( const ABody *body1, int polyIdx1, const ABody *body2, int polyIdx2, const BVector3 &dir, BGJKVertex &result ) const;
+    support_epa( const ABody *body1, const ABody *body2, const BVector3 &dir, BGJKVertex &result ) const;
     
     void 
     set_contact_normal( const BVector3 &w1, const BVector3 &w2, BVector3 &cnormal ) const;
@@ -165,12 +165,12 @@ private:
     find_closest_face( const BEPAPolytope &poly ) const;
     
     bool        
-    expand_simplex_to_tetrahedron( ABody* body1, int polyIdx1, ABody* body2, int polyIdx2, BSimplex &smp ) const;
+    expand_simplex_to_tetrahedron( ABody* body1, ABody* body2, BSimplex &smp ) const;
     
     void
     tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVector3 &centroid );
     
-    
+    // this function is where derivatives are injected into the collision subsytem
     BVector3
     point(const ABody *body, const BIndex &idx) const;
     

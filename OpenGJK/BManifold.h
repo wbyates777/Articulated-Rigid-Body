@@ -119,11 +119,11 @@ public:
 private:
     
     BScalar 
-    calcArea( const BVector3 &p0, const BVector3 &p1, const BVector3 &p2, const BVector3 &p3 ) const;
+    calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, const BVector3& p3) const;
     
     // remove excess points from the manifold
     void
-    reducePoints( const BContact &pt );
+    reducePoints( const BContact& pt );
     
     ABody* m_body1;
     ABody* m_body2;

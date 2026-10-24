@@ -16,6 +16,7 @@
 #include "BGJK.h"
 #endif
 
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
@@ -50,14 +51,14 @@ BGJK::toBaseBox( const BMatrix4 &trans, const BVector3 &lo, const BVector3 &hi )
 
 
 void
-BGJK::collision( ABody *b1, ABody *b2, std::vector<BContactInfo> &cinfo ) 
+BGJK::collision( ABody *body1, ABody *body2, std::vector<BContactInfo> &cinfo ) 
 {
-    const BCollider &c1 = b1->collider();
-    const BCollider &c2 = b2->collider();
+    const BCollider &c1 = body1->collider();
+    const BCollider &c2 = body2->collider();
     
     // model transform body (local) to base (world)
-    const BMatrix4 m1 = glm::translate(b1->pos()) * BMatrix4(b1->orient());
-    const BMatrix4 m2 = glm::translate(b2->pos()) * BMatrix4(b2->orient()); 
+    const BMatrix4 m1 = glm::translate(body1->pos()) * BMatrix4(body1->orient());
+    const BMatrix4 m2 = glm::translate(body2->pos()) * BMatrix4(body2->orient()); 
     
     // broad-phase - test all sub-polytopes pairs between b1 and b2
     for (int i = 0; i < c1.polytopes().size(); ++i) 
@@ -78,10 +79,14 @@ BGJK::collision( ABody *b1, ABody *b2, std::vector<BContactInfo> &cinfo )
             // a positive distance indicated the bodies are separated -- index i is poly1, index j is poly2
             // a (near) zero distance indicates contact; a penetration or 'just touching'
             // a positive cdepth indicates a penetration 
-            BSimplex smp;
+            BSimplex simplex;
             BVector3 cnormal, cpoint;
-            BScalar distance = m_gjk.min_distance( b1, i, b2, j, smp);
-            BScalar cdepth = m_epa.collision(b1, i, b2, j, smp, distance, cnormal, cpoint);
+            
+            body1->collider().setPolyIdx(i);
+            body2->collider().setPolyIdx(j);
+            
+            BScalar distance = m_gjk.min_distance( body1, body2, simplex);
+            BScalar cdepth = m_epa.collision(body1, body2, simplex, distance, cnormal, cpoint);
             
             if (cdepth > 0) 
                 cinfo.emplace_back(cdepth, cnormal, cpoint);
