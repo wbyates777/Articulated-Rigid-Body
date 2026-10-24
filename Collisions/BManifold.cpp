@@ -94,7 +94,7 @@ BManifold::refresh( BScalar max_dist, BScalar max_tan_dist2 )
 
 
 void 
-BManifold::addPoint( const BContactInfo &cinfo, BScalar threshold2 ) 
+BManifold::addPoint(const BContactInfo &cinfo, BScalar threshold2 ) 
 {
     const BVector3 &cpoint   = cinfo.pos;
     const BVector3 &cnormal  = cinfo.normal;
@@ -138,7 +138,7 @@ BManifold::addPoint( const BContactInfo &cinfo, BScalar threshold2 )
 
 
 BScalar 
-BManifold::calcArea( const BVector3 &p0, const BVector3 &p1, const BVector3 &p2, const BVector3 &p3 ) const
+BManifold::calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, const BVector3& p3) const
 // calculate the area of four points -- adapted from persistent manifold class in Bullet
 {
     // pack the vectors into matrices
@@ -161,7 +161,7 @@ BManifold::calcArea( const BVector3 &p0, const BVector3 &p1, const BVector3 &p2,
 }
 
 void
-BManifold::reducePoints( const BContact &pt ) 
+BManifold::reducePoints( const BContact& pt ) 
 {
     // find and keep the point i0 with 'deepest' penetration 
     int maxDepthIdx = 0; 

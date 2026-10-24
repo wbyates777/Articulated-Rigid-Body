@@ -65,14 +65,11 @@
 #include "BProducts.h"
 #endif
 
-
 #define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtx/norm.hpp>          // for glm::distance2/glm::length2
 #include <glm/gtc/matrix_access.hpp> // for glm::column
 #include <glm/gtx/transform.hpp>
-
-#include <glm/gtc/quaternion.hpp>
-
 #include <algorithm> // std::sort
 
 // All params have been set assuming 1 = 1m 
@@ -82,6 +79,7 @@ BContactManager::BContactManager( int N ) : m_iters(30),
                                             m_e(0.0),
                                             m_mu(1.0), 
                                             m_baumgarte(0.25), 
+                                            m_slop(0.003),           // Baumgarte - 3mm to allow stacking objects some 'space'
                                             m_max_dist(0.01),        // manifold refresh - 1cm
                                             m_max_tan_dist2(20.0),   // manifold refresh
                                             m_threshold2(0.000025),  // manifold addPoint - 5mm  // 0.000025
@@ -98,7 +96,7 @@ BContactManager::BContactManager( int N ) : m_iters(30),
 
 BContactManager::~BContactManager( void )
 {
-    std::cout << "BContactManager::m_cachehits " << m_cachehits << std::endl;
+   // std::cout << "BContactManager::m_cachehits " << m_cachehits << std::endl;
 }
  
 // 
@@ -143,7 +141,7 @@ BContactManager::toBaseBox(const ABody *b) const
 // Narrow-phase -- here we use spatial algebra (which is differentiable)
 //
 void 
-BContactManager::computeBasis( const BVector3 &n, BVector3 &b1, BVector3 &b2 ) const
+BContactManager::computeBasis(const BVector3 &n, BVector3 &b1, BVector3 &b2) const
 // improved version of Frisvad's method in: 
 // "Building an Orthonormal Basis, Revisted", Duff et al. JCGT, 2017. 
 // the tangents remain geometrically consistent as the normal changes/body rotates
@@ -162,7 +160,6 @@ BContactManager::prepare( BScalar dt )
 // employs Baumgarte Stabilization Technique (BST) 
 {
     const BScalar beta = (m_baumgarte / dt);
-    const BScalar slop = BScalar(0.003); // 3mm to allow resting/stacking objects some 'space'
     const BScalar one  = BScalar(1.0);
     
     for (BManifold &m : m_active)
@@ -197,7 +194,7 @@ BContactManager::prepare( BScalar dt )
             const BScalar restitution = (relvel < -0.5) ? m_e : 0.0; // 0.5 is a restitution threshold
             
             // arb::max because Baumgarte expects positive depth
-            const BScalar baumgarte_bias = beta * arb::max(0.0, c.depth - slop); 
+            const BScalar baumgarte_bias = beta * arb::max(0.0, c.depth - m_slop); 
             
             // this is the total velocity change we want to achieve (see numerator of eqn 11.65)
             //c.velBias = arb::max((-restitution * relvel), baumgarte_bias);
@@ -336,7 +333,7 @@ BContactManager::solve( void )
 }
 
 void
-BContactManager::narrowCheck( ABody *b1, ABody *b2, long now )
+BContactManager::narrowCheck(ABody *b1, ABody *b2, long now)
 // narrow-phase GJK check - a positive depth indicates a penetration
 {
     // GJK fills m_collisions
@@ -382,7 +379,7 @@ BContactManager::detect( const std::vector<ABody*> &body, const std::vector<ABod
     using std::abs;
     
     const BScalar pad = 0.1;
-    const long now = 0; //theClock->seconds();
+    const long now = 0; // theClock->seconds();
 
     m_active.clear();
     
@@ -472,7 +469,7 @@ BContactManager::cache( void )
 //
 
 int
-BContactManager::resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed )
+BContactManager::resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed)
 {
     if (body.empty())
         return 0;

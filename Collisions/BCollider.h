@@ -73,6 +73,12 @@ public:
         m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
     }
     
+    void 
+    setPolyIdx( int p ) { m_polyIdx = p; } // set polytope index
+    
+    //int 
+    //polyIdx( void ) const { return m_polyIdx; }
+    
     
     void
     set( const std::vector<BPolytope>& p, CType type = Linear ) { m_polytope = p; m_type = type; }
@@ -90,31 +96,28 @@ public:
     BPolytope&
     polytope( int i ) { return m_polytope[i]; }
     
-    
     const BPolytope&
     polytope( int i ) const { return m_polytope[i]; }
+    
+    //BPolytope&
+    //polytope( void ) { return m_polytope[m_polyIdx]; }
+
+    //const BPolytope&
+    //polytope( void ) const { return m_polytope[m_polyIdx]; }
     
     int
     size( void ) const { return (int) m_polytope.size(); }
 
     //
-    // support functions
+    // Support functions called by ccd
     //
-    
-    
-    void 
-    setPolyIdx( int p ) { m_polyIdx = p; } // set polytope index
-    
-    //int 
-    //polyIdx( void ) const { return m_polyIdx; }
-    
 
     glm::dvec3  
     first_point( void ) const;
     
     glm::dvec3
     max_point( const glm::dvec3 &dir ) const;
-    
+
 private:
 
     glm::dvec3 
