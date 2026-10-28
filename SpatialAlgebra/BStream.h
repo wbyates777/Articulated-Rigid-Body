@@ -8,7 +8,8 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- All stream operators in one place.
+ Underlying stream operator templates for glm and stdlib. 
+
  
 */
 
@@ -28,7 +29,7 @@
 
 
 //
-// my glm template stream operators -- customise spatial algebra output
+// my glm template stream operators
 //
 
 namespace  glm 
