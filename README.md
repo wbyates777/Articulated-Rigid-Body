@@ -154,14 +154,14 @@ support  autodiff types, and  automatic  differentiation.
  
  ## Validation
  
- This implementation has been numerically validated against RBDL v3.3.1 and tested extensively in a graphics environment. 
+ This implementation has been numerically validated against RBDL v3.4.0 and tested extensively in a graphics environment. 
 ARB has been tested against standard industrial robot models including: 
   
     ur5.urdf,  iiwa7.urdf,  iiwa14.urdf,  r1.urdf,  go1.urdf,  atlas_v4.urdf, and  tiago_dual-test.urdf.
   
  The results of testing tiago_dual-test.urdf, a robotic arm with 74 components and 33 degrees of freedom (taken from the RBDL documentation) are shown
  in the table below. The table shows the accelerations for each component calculated using the ABA by RBDL and ARB.
- Notice that the maximum difference across all components is **0.00022200**.
+ Notice that the maximum difference across all components is **0.00004228**.
 
 <details>
 
@@ -170,39 +170,39 @@ ARB has been tested against standard industrial robot models including:
 
    | Component  | RBDL | ARB  | Error |
 | :---       | ---: | ---: | ---:  |
-| arm_left_1_link | 4.13177335 | 4.13177043 | 0.00000292 |
-| arm_left_2_link | 1.48244894 | 1.48248132 | 0.00003238 |
-| arm_left_3_link | 388.13203494 | 388.13200586 | 0.00002908 |
-| arm_left_4_link | 1.29921370 | 1.29936648 | 0.00015278 |
-| arm_left_5_link | 387.73189698 | 387.73192178 | 0.00002480 |
-| arm_left_6_link | 61.55706876 | 61.55699723 | 0.00007153 |
-| arm_left_7_link | 1221.30829365 | 1221.30817777 | 0.00011588 |
-| arm_right_1_link | 7.19101952 | 7.19101951 | 0.00000001 |
-| arm_right_2_link | 15.15036039 | 15.15037562 | 0.00001523 |
-| arm_right_3_link | 384.31035727 | 384.31037533 | 0.00001806 |
-| arm_right_4_link | 38.83648634 | 38.83657114 | 0.00008480 |
-| arm_right_5_link | 373.76654839 | 373.76653501 | 0.00001338 |
-| arm_right_6_link | 120.93222527 | 120.93236546 | 0.00014019 |
-| arm_right_7_link | 1274.68114277 | 1274.68093087 | 0.00021190 |
-| caster_back_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_back_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| caster_back_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_back_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| caster_front_left_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_front_left_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| caster_front_right_1_link | 19509.83371063 | 19509.83371063 | 0.00000000 |
-| caster_front_right_2_link | 93023.25581386 | 93023.25581386 | 0.00000000 |
-| gripper_left_left_finger_link | -4.24368053 | -4.24382485 | 0.00014432 |
-| gripper_left_right_finger_link | 22.42880510 | 22.42894942 | 0.00014432 |
-| gripper_right_left_finger_link | 30.80009586 | 30.80031786 | **0.00022200** |
-| gripper_right_right_finger_link | -12.61497129 | -12.61519329 | **0.00022200** |
-| head_1_link | 53.72321252 | 53.72321253 | 0.00000001 |
-| head_2_link | 100.89176416 | 100.89176335 | 0.00000081 |
-| suspension_left_link | 0.08457647 | 0.08457647 | 0.00000000 |
-| suspension_right_link | 0.08457647 | 0.08457647 | 0.00000000 |
-| torso_lift_link | 0.74719650 | 0.74719666 | 0.00000016 |
-| wheel_left_link | 119.15547007 | 119.15547007 | 0.00000000 |
-| wheel_right_link | 119.15547007 | 119.15547007 | 0.00000000 |
+ | arm_left_1_link (RevoluteZ) | 1.13334594  | 1.13334587 | 0.00000007 | 0.00004228 
+ | arm_left_2_link (RevoluteZ) | 1.33469597  | 1.33469690 | 0.00000093 |  
+ | arm_left_3_link (RevoluteZ) | 6.03906027  | 6.03905926 | 0.00000101 |  
+ | arm_left_4_link (RevoluteZ) | -0.48494582 | -0.48494217 | 0.00000365 |  
+ | arm_left_5_link (RevoluteZ) | -14.81612088  | -14.81615380 | 0.00003292 |  
+ | arm_left_6_link (RevoluteZ) | 7.32885147  | 7.32883392 | 0.00001755 |  
+ | arm_left_7_link (RevoluteZ) | 20.14656743  | 20.14659509 | 0.00002766 |  
+ | arm_right_1_link (RevoluteZ) | -0.93252818  | -0.93252727 | 0.00000091 |  
+ | arm_right_2_link (RevoluteZ) | -1.47084100  | -1.47084152 | 0.00000052 |  
+ | arm_right_3_link (RevoluteZ) | -5.38877947 | -5.38877411 | 0.00000536 |  
+ | arm_right_4_link (RevoluteZ) | 0.29798950  | 0.29798830 | 0.00000120 |  
+ | arm_right_5_link (RevoluteZ) | 9.84282851  | 9.84286743 | 0.00003892 |  
+ | arm_right_6_link (RevoluteZ) | -4.25062650  | -4.25058422 | **0.00004228** |  
+ | arm_right_7_link (RevoluteZ) | -15.98574725 | -15.98578116 | 0.00003391 |  
+ | caster_back_left_1_link (RevoluteZ) | 326.76781224  | 326.76781224 | 0.00000000 |  
+ | caster_back_left_2_link (RevoluteZ) | -0.00172242  | -0.00172242 | 0.00000000 |  
+ | caster_back_right_1_link (RevoluteZ) | 326.76781224  | 326.76781224 | 0.00000000 |  
+ | caster_back_right_2_link (RevoluteZ) | -0.00172242 | -0.00172242 | 0.00000000 |  
+ | caster_front_left_1_link (RevoluteZ) | 326.76781224  | 326.76781224 | 0.00000000 |  
+ | caster_front_left_2_link (RevoluteZ) | -0.00172242  | -0.00172242 | 0.00000000 |  
+ | caster_front_right_1_link (RevoluteZ) | 326.76781224 | 326.76781224 | 0.00000000 |  
+ | caster_front_right_2_link (RevoluteZ) | -0.00172242  | -0.00172242 | 0.00000000 |  
+ | gripper_left_left_finger_link (Prismatic) | 0.96888746 | 0.96888319 | 0.00000427 |  
+ | gripper_left_right_finger_link (Prismatic) | -0.96066978  | -0.96066551 | 0.00000427 |  
+ | gripper_right_left_finger_link (Prismatic) | 1.06607904  | 1.06607951 | 0.00000047 |  
+ | gripper_right_right_finger_link (Prismatic) | -1.05786136  | -1.05786183 | 0.00000047 |  
+ | head_1_link (RevoluteZ) | -50.00053072  | -50.00053072 | 0.00000000 |  
+ | head_2_link (RevoluteZ) | 6.14592839  | 6.14592835 | 0.00000004 |  
+ | suspension_left_link (Prismatic) | 0.00000000  | 0.00000000 | 0.00000000 |  
+ | suspension_right_link (Prismatic) | 0.00000000  | 0.00000000 | 0.00000000 |  
+ | torso_lift_link (Prismatic) | -0.01603243  | -0.01603242 | 0.00000001 |  
+ | wheel_left_link (RevoluteZ) | 0.00000000 | 0.00000000 | 0.00000000 |  
+ | wheel_right_link (RevoluteZ) | 0.00000000  | 0.00000000 | 0.00000000 |
 
 </details>
 
@@ -223,7 +223,7 @@ The test example 5 in `dynamics_test` (see main.cpp) demonstrates this.
 
  ## Performance
 
-To measure  performance ARB has been benchmarked against RBDL v3.3.1. 
+To measure  performance ARB has been benchmarked against RBDL v3.4.0. 
 
 The  table below shows a comparison of the execution times in milliseconds between ARB and RBDL. Performance was evaluated on the forward (ABA/CRBA) and inverse (RNEA) dynamics algorithms over **100,000 iterations** across **12** URDF models. Timings were averaged over **40** trials.
 
@@ -233,56 +233,56 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 
 | Robot (DoF)|  Algorithm | RBDL (ms) | ARB (ms) | Diff (%) |
 | :--- |  :--- | :---: | :---: | ---: |
-| **ur5 (6)** 	| ABA 	|	99.077512	|	91.899875	|	**-7.244467** | 
-|		| CRBA	|	51.320244	|	46.734481	|	**-8.935583** | 
-|		| RNEA	|	38.553116	|	38.915163	|	0.939086 | 
+| **ur5 (6)** 	| ABA 	|	98.50	|	89.95	|	**-8.68** | 
+|		| CRBA	|	51.77	|	46.86	|	**-9.50** | 
+|		| RNEA	|	38.19	|	38.90	|	1.86 |  
 |  |  |  |  |  |
-| **z1 (6)** 	| ABA 	|	101.357551	|	92.679638	|	**-8.561684** | 
-|		| CRBA	|	52.324138	|	47.340483	|	**-9.524580** | 
-|		| RNEA	|	39.108158	|	39.297189	|	0.483355 | 
+| **z1 (6)** 	| ABA 	|	99.44	|	91.02	|	**-8.47** | 
+|		| CRBA	|	52.23	|	47.62	|	**-8.83** | 
+|		| RNEA	|	38.49	|	39.28	|	2.06 | 
 |  |  |  |  |  |
-| **kuka_iiwa14 (7)** 	| ABA 	|	116.503287	|	108.030405	|	**-7.272655** | 
-|		| CRBA	|	64.317810	|	58.561386	|	**-8.949968** | 
-|		| RNEA	|	44.330677	|	45.303295	|	2.194006 | 
+| **kuka_iiwa14 (7)** 	| ABA 	|	116.71	|	107.30	|	**-8.06** | 
+|		| CRBA	|	65.51	|	58.60	|	**-10.54** | 
+|		| RNEA	|	43.95	|	45.87	|	4.37 |  
 |  |  |  |  |  |
-| **BarrettHand (8)** 	| ABA 	|	111.643000	|	100.122637	|	**-10.318930** | 
-|		| CRBA	|	47.572238	|	48.252237	|	1.429403 | 
-|		| RNEA	|	49.889918	|	47.954094	|	**-3.880191** | 
+| **BarrettHand (8)** 	| ABA 	|	111.17	|	98.15	|	**-11.72** | 
+|		| CRBA	|	47.65	|	49.18	|	3.20 | 
+|		| RNEA	|	48.61	|	48.50	|	**-0.22** | 
 |  |  |  |  |  |
-| **a1 (12)** 	| ABA 	|	175.786222	|	156.897856	|	**-10.745078** | 
-|		| CRBA	|	74.965217	|	77.136260	|	2.896067 | 
-|		| RNEA	|	74.881935	|	72.346720	|	**-3.385617** | 
+| **a1 (12)** 	| ABA 	|	176.57	|	155.05	|	**-12.19** | 
+|		| CRBA	|	77.06	|	78.18	|	1.45 | 
+|		| RNEA	|	74.75	|	73.90	|	**-1.14** | 
 |  |  |  |  |  |
-| **aliengo (12)** 	| ABA 	|	174.612308	|	156.656820	|	**-10.283060** | 
-|		| CRBA	|	74.931129	|	76.561228	|	2.175463 | 
-|		| RNEA	|	74.769485	|	72.680904	|	**-2.793361** | 
+| **aliengo (12)** 	| ABA 	|	177.47	|	155.61	|	**-12.32** | 
+|		| CRBA	|	77.06	|	79.65	|	3.37 | 
+|		| RNEA	|	75.19	|	73.93	|	**-1.67** |
 |  |  |  |  |  |
-| **b1 (12)** 	| ABA 	|	173.331844	|	155.781154	|	**-10.125485** | 
-|		| CRBA	|	74.102747	|	77.169410	|	4.138393 | 
-|		| RNEA	|	73.993908	|	72.723219	|	**-1.717289** | 
+| **b1 (12)** 	| ABA 	|	178.64	|	156.38	|	**-12.46** | 
+|		| CRBA	|	77.98	|	79.76	|	2.29 | 
+|		| RNEA	|	75.42	|	74.67	|	**-1.00** | 
 |  |  |  |  |  |
-| **go1 (12)** 	| ABA 	|	174.728774	|	156.908827	|	**-10.198633** | 
-|		| CRBA	|	74.931871	|	76.699376	|	2.358815 | 
-|		| RNEA	|	74.512867	|	72.223379	|	**-3.072608** | 
+| **go1 (12)** 	| ABA 	|	174.05	|	152.27	|	**-12.51** | 
+|		| CRBA	|	75.79	|	76.96	|	1.55 | 
+|		| RNEA	|	73.41	|	72.48	|	**-1.26** | 
 |  |  |  |  |  |
-| **allegro_rh (16)** 	| ABA 	|	252.393121	|	219.664940	|	**-12.967144** | 
-|		| CRBA	|	116.323610	|	110.765171	|	**-4.778427** | 
-|		| RNEA	|	107.090857	|	96.981568	|	**-9.439918** | 
+| **allegro_rh (16)** 	| ABA 	|	251.92	|	214.06	|	**-15.03** | 
+|		| CRBA	|	117.86	|	111.05	|	**-5.78** | 
+|		| RNEA	|	106.74	|	97.34	|	**-8.81** | 
 |  |  |  |  |  |
-| **h1 (19)** 	| ABA 	|	313.120463	|	278.015368	|	**-11.211370** | 
-|		| CRBA	|	155.179362	|	141.874556	|	**-8.573824** | 
-|		| RNEA	|	122.914395	|	115.657414	|	**-5.904094** | 
+| **h1 (19)** 	| ABA 	|	319.58	|	273.48	|	**-14.42** | 
+|		| CRBA	|	160.43	|	146.32	|	**-8.79** | 
+|		| RNEA	|	124.32	|	117.27	|	**-5.68** | 
 |  |  |  |  |  |
-| **atlas_v4 (28)** 	| ABA 	|	503.052015	|	420.373660	|	**-16.435349** | 
-|		| CRBA	|	296.904898	|	251.626655	|	**-15.250083** | 
-|		| RNEA	|	202.175806	|	171.098298	|	**-15.371527** | 
+| **atlas_v4 (28)** 	| ABA 	|	499.51	|	410.90	|	**-17.74** | 
+|		| CRBA	|	300.85	|	253.81	|	**-15.63** | 
+|		| RNEA	|	200.91	|	170.57	|	**-15.10** |
 |  |  |  |  |  |
-| **tiago_dual-test (33)** 	| ABA 	|	519.762809	|	458.228443	|	**-11.838932** | 
-|		| CRBA	|	298.382615	|	263.464817	|	**-11.702357** | 
-|		| RNEA	|	208.786598	|	196.760767	|	**-5.759867** | 
+| **tiago_dual-test (33)** 	| ABA 	|	519.77	|	458.37	|	**-11.81** | 
+|		| CRBA	|	303.61	|	276.09	|	**-9.06** | 
+|		| RNEA	|	208.30	|	200.38	|	**-3.80** | 
 |  |  |  |  |  |
 |  |  |  |  |  |
-|	**Overall** |		|	433.97 ms	|	392.78 ms	|	**-9.49%**	|
+|	**Overall** |	  	|	436.62 ms	|	393.31 ms	|	**-9.92%**	|
 
 
 #### Notes
