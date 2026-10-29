@@ -1,4 +1,6 @@
-/* BKinematics 13/09/2026
+/*! 
+ @file BKinematics.h 
+ @date 13/09/2026
 
  $$$$$$$$$$$$$$$$$$$$$
  $   BKinematics.h   $

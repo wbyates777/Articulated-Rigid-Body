@@ -1,4 +1,6 @@
-/* BJoint 31/01/2024
+/*!
+ @file BJoint.h
+ @date 31/01/2024
 
  $$$$$$$$$$$$$$$$
  $   BJoint.h   $

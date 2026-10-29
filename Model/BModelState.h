@@ -1,4 +1,6 @@
-/* BModelState 29/11/2025
+/*!
+ @file BModelState.h
+ @date 29/11/2025
 
  $$$$$$$$$$$$$$$$$$$$$
  $   BModelState.h   $

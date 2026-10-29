@@ -1,4 +1,6 @@
-/* BDynamics 20/02/2024
+/*! 
+ @file BDynamics.h
+ @date 20/02/2024
 
  $$$$$$$$$$$$$$$$$$$
  $   BDynamics.h   $

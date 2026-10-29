@@ -1,4 +1,6 @@
-/* BModel 31/01/2024
+/*! 
+ @file BModel.h 
+ @date 31/01/2024
 
  $$$$$$$$$$$$$$$$
  $   BModel.h   $

@@ -1,4 +1,6 @@
-/* BFixedBody 16/04/2024
+/*! 
+ @file BFixedBody.h
+ @date 16/04/2024
 
  $$$$$$$$$$$$$$$$$$$$
  $   BFixedBody.h   $

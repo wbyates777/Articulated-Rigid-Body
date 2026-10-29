@@ -1,4 +1,6 @@
-/* AMatrix Template Class
+/*! 
+ @file AMatrix.h
+ @date 01/10/26
  
  $$$$$$$$$$$$$$$$$$$$$$$$
  $   AMatrix.h - defs   $
@@ -8,6 +10,7 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
+ AMatrix Template Class
  A simple, disposable 2D structure to hold values
  
 */
