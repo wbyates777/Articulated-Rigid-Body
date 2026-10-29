@@ -1,4 +1,6 @@
-/* BSpatialRandom 07/04/2026
+/*! 
+ @file BSpatialRandom.h
+ @date 07/04/2026
 
  $$$$$$$$$$$$$$$$$$$$$$$$
  $   BSpatialRandom.h   $

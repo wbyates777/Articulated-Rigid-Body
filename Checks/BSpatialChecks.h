@@ -1,5 +1,6 @@
-
-/* BSpatialChecks 07/04/2026
+/*! 
+ @file BSpatialChecks.h 
+ @date 07/04/2026
 
  $$$$$$$$$$$$$$$$$$$$$$$$
  $   BSpatialChecks.h   $

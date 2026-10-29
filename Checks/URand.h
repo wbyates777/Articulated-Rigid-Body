@@ -1,4 +1,6 @@
-/* Header file for uniform random number generator 09/02/06
+/*!
+ @file URand.h 
+ @date 09/02/06
 
                 $$$$$$$$$$$$$$$$$$$$$$$
                 $   URand.h - header  $ 
@@ -8,6 +10,7 @@
    Copyright (c) W.B. Yates. All rights reserved.
    History:
  
+   Header file for uniform random number generator 
    Uniform Distribution (0,1)
    Wrapper class for STL random
 */
