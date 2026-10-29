@@ -1,4 +1,6 @@
-/* URDFTypes 28/03/2026
+/*!
+ @file URDFTypes.h
+ @date 28/03/2026
 
  $$$$$$$$$$$$$$$$$$$
  $   URDFTypes.h   $

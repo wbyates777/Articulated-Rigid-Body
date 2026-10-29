@@ -1,4 +1,6 @@
-/* URDFWriter 29/03/2026
+/*!
+ @file URDFWriter.h
+ @date 29/03/2026
 
  $$$$$$$$$$$$$$$$$$$$
  $   URDFWriter.h   $
