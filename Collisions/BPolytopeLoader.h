@@ -1,4 +1,6 @@
-/* BPolytopeLoader 17/12/2025
+/*!
+ @file BPolytopeLoader.h 
+ @date 17/12/2025
 
  $$$$$$$$$$$$$$$$$$$$$$$$$
  $   BPolytopeLoader.h   $

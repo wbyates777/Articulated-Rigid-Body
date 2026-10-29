@@ -1,4 +1,6 @@
-/* BContactManager 17/12/2025
+/*!
+ @file BContactManager.h 
+ @date 17/12/2025
 
  $$$$$$$$$$$$$$$$$$$$$$$$$
  $   BContactManager.h   $
