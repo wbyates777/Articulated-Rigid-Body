@@ -1,4 +1,6 @@
-/* BExponential 04/04/2026
+/*!
+ @file BExponential.h
+ @date 04/04/2026
 
  $$$$$$$$$$$$$$$$$$$$$$
  $   BExponential.h   $
@@ -106,7 +108,8 @@ namespace arb {
     }
 
     inline BTransform 
-    exp( const BVector6 &vec ) //  must be motion vector or twist
+    exp( const BVector6 &vec ) 
+    //  must be motion vector or twist
     {
         const BVector3 w = vec.ang();
         const BVector3 v = vec.lin();

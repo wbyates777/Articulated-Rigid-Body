@@ -1,4 +1,6 @@
-/* Spatial Algebra 15/08/2025
+/*! 
+ @file BSpatialAlgebra.h
+ @date 15/08/2025
 
  $$$$$$$$$$$$$$$$$$$$$$$$$
  $   BSpatialAlgebra.h   $

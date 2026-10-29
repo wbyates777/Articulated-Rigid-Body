@@ -1,4 +1,6 @@
-/* BSpatialTypes 19/02/2026
+/*!
+ @file BSpatialTypes.h 
+ @date 19/02/2026
 
  $$$$$$$$$$$$$$$$$$$$$$$
  $   BSpatialTypes.h   $
@@ -30,9 +32,9 @@
 // select basic underlying type
 #define ARB_USE_AUTODIFF
 
-//
-// Basic Underlying Type BScalar
-//
+///
+/// Basic Underlying Type BScalar
+///
 #if defined(ARB_USE_AUTODIFF)
 
     #ifndef BAUTODIFF_H
@@ -57,9 +59,9 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-//
-// vector and matrix types -- these are potentially differentiable
-//
+///
+/// vector and matrix types -- these are potentially differentiable
+///
 
 typedef unsigned int          BJointId;
 typedef unsigned int          BBodyId;
@@ -84,9 +86,9 @@ constexpr  BScalar B_SCALAR_MIN     = -std::numeric_limits<BScalar>::max();
 constexpr  BScalar B_EPS            =  std::numeric_limits<BScalar>::epsilon();
 constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() * std::numeric_limits<BScalar>::epsilon();
 
-//
-// vector and matrix constants
-//
+///
+/// vector and matrix constants
+///
 #ifdef GLM_FORCE_INTRINSICS
     const BVector3 B_XAXIS(1.0, 0.0, 0.0);
     const BVector3 B_YAXIS(0.0, 1.0, 0.0);
@@ -122,9 +124,9 @@ constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() *
 #endif
 
 #if defined(ARB_USE_FLOAT)
-//
-// inter-operability between glm float and glm double 
-//
+///
+/// inter-operability between glm float and glm double 
+///
 inline glm::dvec3 
 operator+( const glm::vec3 &a, const glm::dvec3 &b ) 
 {
@@ -149,7 +151,7 @@ operator+( const glm::dvec4 &a, const glm::vec4 &b )
 
 constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 
-// if BScalar is float alignmet is 32 else 64
+/// if BScalar is float alignmet is 32 else 64
 constexpr std::size_t B_ALIGNMENT = (sizeof(BScalar) == 4) ? 32 : 64;
 
 alignas(B_ALIGNMENT) constexpr std::array<BScalar, 6> B_ZERO_6{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6

@@ -1,4 +1,6 @@
-/* BStream 11/05/2026
+/*!
+ @file BStream.h 
+ @date 11/05/2026
 
  $$$$$$$$$$$$$$$$$
  $   BStream.h   $
@@ -28,13 +30,13 @@
 
 
 
-//
-// my glm template stream operators
-//
+///
+/// my glm template stream operators
+///
 
 namespace  glm 
 {
-    // vectors
+
     template<typename T> inline std::ostream&
     operator<<( std::ostream &ostr, const  glm::vec<2,T> &v )
     {
@@ -137,9 +139,9 @@ namespace  glm
     }
 }
 
-//
-// my stdlib template stream operators 
-//
+///
+/// my stdlib template stream operators 
+///
 
 template <class T, class U>
 std::ostream&

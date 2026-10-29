@@ -1,5 +1,7 @@
-/* Articulated Body Spatial Inertia 09/08/2025
-
+/*!
+ @file BABInertia.h 
+ @date 09/08/2025
+ 
  $$$$$$$$$$$$$$$$$$$$
  $   BABInertia.h   $
  $$$$$$$$$$$$$$$$$$$$
@@ -65,20 +67,20 @@ public:
     
     BABInertia( void )=default;
     
-    // inertia I_o at body frame origin
+    /// inertia I_o at body frame origin
     constexpr BABInertia( const BMatrix3 &M, const BMatrix3 &H, const BMatrix3 &I_o ): m_M(M), m_H(H), m_I(I_o) {}
     
     constexpr BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {} 
     
     explicit BABInertia( const BMatrix6 &I ) { set(I); }  
     
-    // called from BDynamics  (U * Dinv * U^T) for 1-DoF
+    // (U * Dinv * U^T) for 1-DoF - called from BDynamics  
     explicit BABInertia( const BVector6 &a, const BVector6 &b ): m_M(arb::outer(a.lin(), b.lin())), 
                                                                  m_H(arb::outer(a.ang(), b.lin())),
                                                                  m_I(arb::outer(a.ang(), b.ang()))  {}
-    // called from BDynamics
+ 
     BABInertia( const BMatrix63 &U, const BMatrix3 &Dinv ) 
-    // (U * Dinv * U^T) for 3-DoF
+    // (U * Dinv * U^T) for 3-DoF - called from BDynamics
     {
         const BMatrix3 U_top  = U.top();   
         const BMatrix3 U_topT = arb::transpose(U_top);
@@ -124,15 +126,15 @@ public:
         return BMatrix6( m_I, m_H, arb::transpose(m_H), m_M );
     }
     
-    // generalized mass 
+    /// generalized mass 
     const BMatrix3&
     M( void ) const { return m_M; } 
     
-    // generalised inertia
+    /// generalised inertia
     const BMatrix3&
     H( void ) const { return m_H; } 
     
-    // rotational inertia at body origin
+    /// rotational inertia at body origin
     const BMatrix3&
     I( void ) const { return m_I; } 
     
@@ -176,10 +178,9 @@ public:
         return *this; 
     }
     
-    // SpaceAlgVec::Operators.h; pass a motion vector returns a force vector
     BVector6 
     operator*( const BVector6 &v ) const
-    // return Ia * v
+    // return Ia * v - SpaceAlgVec::Operators.h; pass a motion vector returns a force vector
     {
         const BVector3 v_lin = v.lin();
         const BVector3 v_ang = v.ang();
@@ -271,7 +272,7 @@ private:
 };
 
 
-// scalar multiplication
+/// scalar multiplication
 inline BABInertia 
 operator*( BScalar s, const BABInertia &m ) { return m * s; }
 
@@ -287,8 +288,8 @@ namespace arb
 {
     inline constexpr BMatrix6 
     inverse( const BABInertia &abi ) 
-    // Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
-    // WARNING: ensure arb::inverses(m) exist i.e.  i.e. arb::isinvertible(m)
+    /// Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
+    /// WARNING: ensure arb::inverses(m) exist i.e.  i.e. arb::isinvertible(m)
     {  
         const BMatrix3 invM = arb::inverse(abi.M());
         const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();

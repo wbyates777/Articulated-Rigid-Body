@@ -1,4 +1,6 @@
-/* BInertia 06/01/2026
+/*!
+ @file BInertia.h
+ @date 06/01/2026
 
  $$$$$$$$$$$$$$$$$$
  $   BInertia.h   $
@@ -272,7 +274,7 @@ private:
 };
 
 
-// scalar multiplication
+/// scalar multiplication
 inline BInertia 
 operator*( BScalar s, const BInertia &m ) { return m * s; }
 

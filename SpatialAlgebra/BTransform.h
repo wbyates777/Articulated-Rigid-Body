@@ -1,4 +1,6 @@
-/* BTransform 20/02/2024
+/*! 
+ @file BTransform.h 
+ @date 20/02/2024
 
  $$$$$$$$$$$$$$$$$$$$
  $   BTransform.h   $
@@ -49,7 +51,7 @@
 
    return result;
  }
-///
+//
  
  Notes:
  
@@ -115,7 +117,7 @@ class BTransform
 public:
     
     BTransform( void )=default;
-    // BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); // translate then rotate
+    /// BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); performs a translate then rotate
     constexpr BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
     constexpr explicit BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
     ~BTransform( void )=default;
@@ -123,8 +125,8 @@ public:
     void
     clear( void ) {  m_E = B_IDENTITY_3x3; m_r = B_ZERO_3; }
 
+    /// to motion transform matrix
     operator BMatrix6( void ) const 
-    // to motion transform matrix
     {
         return BMatrix6( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
     }
@@ -142,7 +144,7 @@ public:
     }
     
 
-    // rotation, preserves coordinate frame origin
+    /// rotation, preserves coordinate frame origin
     const BMatrix3&
     E( void ) const { return m_E; }
 
@@ -152,7 +154,7 @@ public:
     void
     E( const BMatrix3 &m ) { m_E = m; }
     
-    // translation, moves coordinate frame origin
+    /// translation, moves coordinate frame origin
     const BVector3&
     r( void ) const { return m_r; }
 
@@ -175,7 +177,6 @@ public:
         return BMatrix6(*this) * rhs;
     }
     
-    // In RBDL called SpatialRigidBodyInertia::apply(const SpatialVector &v_sp)
     BVector6 
     operator*( const BVector6 &v ) const 
     // return X * v
@@ -222,7 +223,7 @@ public:
     }
 
 
-    // transform 3D point p to/from coordinate frame 
+    /// transform 3D point p to/from coordinate frame (see fromHomogeneous)
     BVector3 
     apply( const BVector3 &p ) const { return m_E * (p - m_r); }
     
@@ -311,22 +312,20 @@ const BTransform B_IDENTITY_TRANS(B_IDENTITY_3x3, B_ZERO_3);
 #endif
 
 
-//
-// Articulated Rigid Body
-//
 
 namespace arb
 {
-    // X^{-1}
+
     inline constexpr BTransform 
     inverse( const BTransform &m )  
+    // return  X^{-1}
     { 
         const BMatrix3 ET = arb::transpose(m.E()); 
         return BTransform(ET, -ET * m.r()); 
     }
     
-    // rotations, see RBDA, Section 2.8, table, 2.2, page 23
-    // all angles in radians, axis *must* be normalised
+    /// rotations, see RBDA, Section 2.8, table, 2.2, page 23
+    /// all angles in radians, axis *must* be normalised
     inline constexpr BTransform 
     Xrot( BScalar theta, const BVector3 &axis ) { return BTransform(rot(theta, axis)); }
     

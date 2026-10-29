@@ -1,4 +1,6 @@
-/* Rigid Body Spatial Inertia 20/02/2024
+/*!
+ @file BRBInertia.h 
+ @date 20/02/2024
 
  $$$$$$$$$$$$$$$$$$$$
  $   BRBInertia.h   $
@@ -9,7 +11,7 @@
  History:
  
  
- Spatial Inertia (see Featherstone, RBDA, Section 2.13, page 32).
+ Rigid Body Spatial Inertia (see Featherstone, RBDA, Section 2.13, page 32).
  
  A compact represention of the distribution of mass in a rigid body 
  Consists of three moments of mass:
@@ -220,9 +222,9 @@ public:
     
 private:
 
-    BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
-    BVector3 m_h;    // linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
-    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin (0,0,0); second moment of mass 
+    BScalar  m_mass; //!< total mass (kg) - zeroth moment of mass 
+    BVector3 m_h;    //!< linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
+    BMatrix3 m_I;    //!< rotational inertia $I$ at body frame origin (0,0,0); second moment of mass 
 };
 
 #ifndef GLM_FORCE_INTRINSICS
@@ -231,7 +233,7 @@ constexpr BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 const BRBInertia B_ZERO_RBI(0.0, B_ZERO_3, B_ZERO_3x3);
 #endif
 
-// scalar multiplication
+/// scalar multiplication
 inline BRBInertia 
 operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 
@@ -239,9 +241,9 @@ namespace arb
 {
     inline constexpr BMatrix6 
     inverse( const BRBInertia &I ) 
-    // Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
-    // https://en.wikipedia.org/wiki/Schur_complement
-    // WARNING: ensure arb::inverses(m) exist i.e. arb::isinvertible(m) 
+    /// Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
+    /// https://en.wikipedia.org/wiki/Schur_complement
+    /// WARNING: ensure arb::inverses(m) exist i.e. arb::isinvertible(m) 
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 invI(arb::inverse(I.Icom()));

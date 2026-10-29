@@ -1,4 +1,6 @@
-/* BVector6 31/01/2024
+/*!
+ @file BVector6.h
+ @date 31/01/2024
 
  $$$$$$$$$$$$$$$$$$
  $   BVector6.h   $
@@ -198,7 +200,7 @@ private:
     std::array<BScalar, 6> m_data;
 };
 
-// scalar multiplication
+/// scalar multiplication
 inline BVector6 
 operator*( BScalar s, const BVector6 &v ) { return v * s; } 
 

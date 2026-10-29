@@ -1,5 +1,6 @@
-
-/* BAdjoint 19/11/2025
+/*!
+ @file BAdjoint.h
+ @date 19/11/2025
 
  $$$$$$$$$$$$$$$$$$
  $   BAdjoint.h   $
@@ -39,7 +40,6 @@
  The matricies are: 
  
 
- 
  toMotion(X)         =  |    E      0 |
   X : A -> B            | -rx * E   E |
  

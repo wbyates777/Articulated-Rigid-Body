@@ -1,4 +1,6 @@
-/* BMatrix63 20/02/2024
+/*! 
+ @file BMatrix63.h 
+ @date 20/02/2024
 
  $$$$$$$$$$$$$$$$$$$
  $   BMatrix63.h   $
@@ -354,7 +356,7 @@ private:
 
 };
 
-// scalar multiplication
+/// scalar multiplication
 inline BMatrix63 
 operator*( BScalar s, const BMatrix63 &v ) { return v * s; }
 
@@ -671,7 +673,7 @@ private:
     std::array<std::array<BScalar, 6>, 3> m_data;
 };
 
-// scalar multiplication
+/// scalar multiplication
 inline BMatrix36 
 operator*( BScalar s, const BMatrix36 &m ) { return m * s; }
 

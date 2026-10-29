@@ -1,4 +1,6 @@
-/* BFunctions 21/02/2026
+/*! 
+ @file BFunctions.h
+ @date 21/02/2026
 
  $$$$$$$$$$$$$$$$$$$$
  $   BFunctions.h   $
@@ -55,8 +57,9 @@ namespace arb {
     inline constexpr BMatrix3 
     transpose( const BMatrix3 &m )  { return glm::transpose(m); }
 
-
-    // 3D rotations - all angles in radians
+    ///
+    /// 3D rotations - all angles in radians
+    /// 
     inline constexpr BMatrix3 
     rot( BScalar theta, const BVector3 &axis ) 
     // WARNING: axis *must* be normalized

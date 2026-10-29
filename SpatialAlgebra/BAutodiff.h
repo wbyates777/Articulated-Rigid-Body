@@ -1,4 +1,6 @@
-/* BAutodiff 20/02/2026
+/*!
+ @file BAutodiff.h
+ @date 20/02/2026
 
  $$$$$$$$$$$$$$$$$$$
  $   BAutodiff.h   $
@@ -35,9 +37,9 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp> 
 
-//
-// inter-operability between glm and autodiff 
-//
+///
+/// inter-operability between glm and autodiff 
+///
 inline glm::dvec3 
 operator+( const glm::vec<3,autodiff::real> &a, const glm::dvec3 &b ) 
 {
@@ -111,10 +113,10 @@ namespace std {
         return t > hi ? hi : t;
     }
     
-    // some GLM functions i.e. glm::dot and glm::cross have static asserts 
-    // static_assert(std::numeric_limits<T>::is_iec559, "this function accepts only floating-point inputs");
-    // this ensures that autodiff::real is considered as a floating-point input
-    // WARNING: always check that the glm function you are using preserves gradients
+    /// some GLM functions i.e. glm::dot and glm::cross have static asserts 
+    /// static_assert(std::numeric_limits<T>::is_iec559, "this function accepts only floating-point inputs");
+    /// this ensures that autodiff::real is considered as a floating-point input
+    /// WARNING: always check that the glm function you are using preserves gradients
     template <>
     struct numeric_limits<autodiff::real> : public numeric_limits<double> 
     {

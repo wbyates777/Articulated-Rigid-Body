@@ -1,4 +1,6 @@
-/* BProducts 20/02/2026
+/*!
+ @file BProducts.h
+ @date 20/02/2026
 
  $$$$$$$$$$$$$$$$$$$
  $   BProducts.h   $
@@ -35,14 +37,14 @@
 namespace arb
 {
     
-    // standard dot or inner product a·b 
+    /// standard dot or inner product a·b 
     inline BScalar 
     dot( const BVector3 &v1, const BVector3 &v2 ) 
     {
          return glm::dot(v1, v2);
     }
     
-    // spatial dot or inner product a·b
+    /// spatial dot or inner product a·b
     inline BScalar 
     dot( const BVector6 &v1, const BVector6 &v2 )
     {
@@ -50,17 +52,17 @@ namespace arb
     }
 
     
-    // standard Euclidian cross product a⨉b
+    /// standard Euclidian cross product a⨉b
     inline constexpr BVector3   
     cross( const BVector3 &x, const BVector3 &y )
     {
         return glm::cross(x, y);
     }
     
-    // The Euclidian cross product can be written as an equivalent matrix multiplication
-    // The operator $v\times$ (pronounced ‘v-cross’) constructs a skew-symmetric matrix $m$ from vector $v$  
-    // such that $m * a = v \times a$, (see RBDA, Section 2.8, eqn 2.23, page 21 and table 2.1, page 22).
-    // note arb::cross(-v) = arb::transpose(arb::cross(v))
+    /// The Euclidian cross product can be written as an equivalent matrix multiplication
+    /// The operator $v\times$ (pronounced ‘v-cross’) constructs a skew-symmetric matrix $m$ from vector $v$  
+    /// such that $m * a = v \times a$, (see RBDA, Section 2.8, eqn 2.23, page 21 and table 2.1, page 22).
+    /// note arb::cross(-v) = arb::transpose(arb::cross(v))
     inline constexpr BMatrix3 
     cross( const BVector3 &v ) 
     {
@@ -69,20 +71,21 @@ namespace arb
                         -v[1],  v[0],   0.0 );
     }
 
-    // extracts the 3D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra
+    /// extracts the 3D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra
     inline constexpr BVector3 
     uncross( const BMatrix3 &m ) 
     { 
         return BVector3(m[2][1], m[0][2], m[1][0]);
     }
     
+    /// extracts the 6D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra
     inline BVector6 
     uncross( const BMatrix6 &m ) 
     {
         return BVector6(uncross(m.topLeft()), uncross(m.botLeft()));
     }
 
-    // return arb::cross(v) * arb::cross(-v)
+    /// return arb::cross(v) * arb::cross(-v)
     inline  BMatrix3 
     crosst( const BVector3 &v ) 
     {
@@ -99,14 +102,14 @@ namespace arb
 
     }
     
-    // Euclidian outer product a⨂b
+    /// Euclidian outer product a⨂b
     inline constexpr BMatrix3  
     outer( const BVector3 &a, const BVector3 &b )
     { 
         return glm::outerProduct(b,a);
     }
 
-    // spatial outer product a⨂b
+    /// spatial outer product a⨂b
     inline constexpr BMatrix6
     outer( const BVector6 &a, const BVector6 &b )
     { 
@@ -115,8 +118,8 @@ namespace arb
     }
 
    
-    // spatial cross product for 'motion cross motion' vectors $v$ and $m$
-    // such that $\dot{m} = v \times m$, see RBDA, Section 2.9, eqn 2.29, page 23
+    /// spatial cross product for 'motion cross motion' vectors $v$ and $m$
+    /// such that $\dot{m} = v \times m$, see RBDA, Section 2.9, eqn 2.29, page 23
     inline constexpr BVector6 
     crossm( const BVector6 &v, const BVector6 &m ) 
     {
@@ -128,8 +131,8 @@ namespace arb
         return BVector6(arb::cross(v_ang, m_ang), arb::cross(v_ang, m_lin) + arb::cross(v_lin, m_ang));
     }
 
-    // spatial cross product for 'motion cross force' vectors $v$ and $f$
-    // such that $\dot{f} = v \times^* f$, see RBDA, Section 2.9, eqn 2.30, page 23
+    /// spatial cross product for 'motion cross force' vectors $v$ and $f$
+    /// such that $\dot{f} = v \times^* f$, see RBDA, Section 2.9, eqn 2.30, page 23
     inline constexpr BVector6 
     crossf( const BVector6 &v, const BVector6 &f ) 
     {
@@ -142,14 +145,14 @@ namespace arb
     }
 
 
-    // motion vector operator $v\times$, see RBDA, Section 2.9, eqn 2.31, page 25
+    /// motion vector operator $v\times$, see RBDA, Section 2.9, eqn 2.31, page 25
     inline constexpr BMatrix6 
     crossm( const BVector6 &v ) 
     {
          return BMatrix6(arb::cross(v.ang()), B_ZERO_3x3, arb::cross(v.lin()), arb::cross(v.ang()));
     }
 
-    // force vector operator $v\times^*$, see RBDA, Section 2.9, eqn 2.32, page 25
+    /// force vector operator $v\times^*$, see RBDA, Section 2.9, eqn 2.32, page 25
     inline constexpr BMatrix6 
     crossf( const BVector6 &v ) 
     {

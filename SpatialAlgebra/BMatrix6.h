@@ -1,4 +1,6 @@
-/* Spatial Matrix  20/02/2024
+/*! 
+ @file BMatrix6.h  
+ @date 20/02/2024
 
  $$$$$$$$$$$$$$$$$$
  $   BMatrix6.h   $
@@ -406,7 +408,7 @@ private:
     std::array<std::array<BScalar, 6>, 6> m_data;
 };
 
-// scalar multiplication
+/// scalar multiplication
 inline BMatrix6 
 operator*( BScalar s, const BMatrix6 &m ) { return m * s; } 
 
