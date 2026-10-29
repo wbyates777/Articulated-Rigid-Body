@@ -1,4 +1,6 @@
-/* BCollider 01/03/2026
+/*! 
+ @file BCollider.h 
+ @dare 01/03/2026
 
  $$$$$$$$$$$$$$$$$$$
  $   BCollider.h   $

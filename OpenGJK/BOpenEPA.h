@@ -1,4 +1,6 @@
-/* BOpenEPA 17/03/2026
+/*! 
+ @file BOpenEPA.h 
+ @date 17/03/2026
 
  $$$$$$$$$$$$$$$$$$
  $   BOpenEPA.h   $

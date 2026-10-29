@@ -1,4 +1,6 @@
-/* BSimplex 17/12/2025
+/*! 
+ @file BSimplex.h
+ @date 17/12/2025
 
  $$$$$$$$$$$$$$$$$$
  $   BSimplex.h   $

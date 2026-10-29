@@ -1,4 +1,6 @@
-/* BPolytope 01/03/2026
+/*! 
+ @file BPolytope.h 
+ @date 01/03/2026
 
  $$$$$$$$$$$$$$$$$$$
  $   BPolytope.h   $

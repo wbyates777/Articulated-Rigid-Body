@@ -1,4 +1,6 @@
-/* BOpenGJK 15/12/2025
+/*! 
+ @file BOpenGJK.h
+ @date 15/12/2025
 
  $$$$$$$$$$$$$$$$$$
  $   BOpenGJK.h   $

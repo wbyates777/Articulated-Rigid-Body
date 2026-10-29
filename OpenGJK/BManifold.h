@@ -1,4 +1,6 @@
-/* BManifold 23/07/2026
+/*! 
+ @file BManifold.h 
+ @date 23/07/2026
 
  $$$$$$$$$$$$$$$$$$$
  $   BManifold.h   $
