@@ -538,6 +538,8 @@ https://youtu.be/gKXwwdfl8QE
  
 ## Notes
 
-This project is licensed under the MIT License.  
+This project is licensed under the MIT License. 
+
+The codebase is documented using Doxygen-compliant comments.
  
 
