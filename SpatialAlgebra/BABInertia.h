@@ -69,9 +69,7 @@ public:
     
     /// inertia I_o at body frame origin
     constexpr BABInertia( const BMatrix3 &M, const BMatrix3 &H, const BMatrix3 &I_o ): m_M(M), m_H(H), m_I(I_o) {}
-    
     constexpr BABInertia( const BInertia &I ): m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {} 
-    
     explicit BABInertia( const BMatrix6 &I ) { set(I); }  
     
     // (U * Dinv * U^T) for 1-DoF - called from BDynamics  
@@ -95,7 +93,6 @@ public:
     }
     
     BABInertia( const BRBInertia &I ):  m_M(BMatrix3(I.mass())), m_H(arb::cross(I.h())), m_I(I.I()) {}
-    
 
     ~BABInertia( void )=default;
 
@@ -134,7 +131,7 @@ public:
     const BMatrix3&
     H( void ) const { return m_H; } 
     
-    /// rotational inertia at body origin
+    /// rotational inertia at body frame origin
     const BMatrix3&
     I( void ) const { return m_I; } 
     
@@ -180,7 +177,7 @@ public:
     
     BVector6 
     operator*( const BVector6 &v ) const
-    // return Ia * v - SpaceAlgVec::Operators.h; pass a motion vector returns a force vector
+    // return Ia * v - multiply motion vector v return a force vector
     {
         const BVector3 v_lin = v.lin();
         const BVector3 v_ang = v.ang();
@@ -265,9 +262,9 @@ public:
     
 private:
     
-    BMatrix3 m_M; // mass matrix, initially (m * B_IDENTITY_3x3)
-    BMatrix3 m_H; // generalised inertia coupling 
-    BMatrix3 m_I; // rotational inertia at zero (see RBInertia)
+    BMatrix3 m_M; /// mass matrix, initially (m * B_IDENTITY_3x3)
+    BMatrix3 m_H; /// generalised inertia coupling 
+    BMatrix3 m_I; /// rotational inertia at body frame origin @see BRBInertia
     
 };
 
@@ -288,8 +285,9 @@ namespace arb
 {
     inline constexpr BMatrix6 
     inverse( const BABInertia &abi ) 
-    /// Schur complement - analytical inverse - https://en.wikipedia.org/wiki/Schur_complement
-    /// WARNING: ensure arb::inverses(m) exist i.e.  i.e. arb::isinvertible(m)
+    /// Schur complement - analytical inverse 
+    /// @see https://en.wikipedia.org/wiki/Schur_complement
+    /// @warning ensure arb::inverse(m) exists i.e. arb::isinvertible(m)
     {  
         const BMatrix3 invM = arb::inverse(abi.M());
         const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();

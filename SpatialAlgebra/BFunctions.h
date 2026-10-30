@@ -62,7 +62,7 @@ namespace arb {
     /// 
     inline constexpr BMatrix3 
     rot( BScalar theta, const BVector3 &axis ) 
-    // WARNING: axis *must* be normalized
+    /// @warning axis *must* be normalized
     {
         using std::abs;
         assert(abs(arb::length(axis) - 1.0) < 1E-8);

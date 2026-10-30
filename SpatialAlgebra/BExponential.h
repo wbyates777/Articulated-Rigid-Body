@@ -59,13 +59,13 @@
 
 namespace arb {
     
-    //
-    // exp
-    //
+    ///
+    /// exp
+    ///
     
     inline BMatrix3 
     exp( const BVector3 &w )
-    // best to keep angular variables in range [-M_PI_2, M_PI_2]
+    /// best to keep angular variables in range [-M_PI_2, M_PI_2]
     {
         using std::sin;
         using std::cos;
@@ -109,7 +109,7 @@ namespace arb {
 
     inline BTransform 
     exp( const BVector6 &vec ) 
-    //  must be motion vector or twist
+    ///  vec must be motion vector or twist
     {
         const BVector3 w = vec.ang();
         const BVector3 v = vec.lin();
@@ -127,9 +127,9 @@ namespace arb {
         return BTransform(E, r);
     }
     
-    //
-    // log
-    //
+    ///
+    /// log
+    ///
     
     inline BVector3 
     log( const BMatrix3 &R )
@@ -197,7 +197,7 @@ namespace arb {
     
     inline BVector6 
     log( const BTransform &X )
-    // return the spatial twist (motion vector) whose exponetial produces the given X
+    /// return the spatial twist (motion vector) whose exponential produces the given X
     {
         const BMatrix3 &R = X.E();
         const BVector3  p =  -X.r(); 
@@ -226,7 +226,6 @@ namespace arb {
         const BMatrix3 E = X.topLeft();
         const BMatrix3 Z = X.botLeft() * arb::transpose(E);
         const BVector3 r = -arb::uncross(Z);
-        
         return arb::logm(BTransform(E, r));
     }
 

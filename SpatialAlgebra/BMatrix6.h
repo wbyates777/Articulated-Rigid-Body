@@ -376,12 +376,12 @@ public:
     BMatrix6 
     operator*( const BMatrix6 &m ) const
     {   
-        /*BMatrix6 retVal(B_ZERO_6x6);
-        for ( int i = 0; i < 6; ++i )
-            for ( int k = 0; k < 6; ++k )
-               for ( int j = 0; j < 6; ++j )
-                    retVal[i][j] += m_data[i][k] * m[k][j];;
-        return retVal;*/
+        // BMatrix6 retVal(B_ZERO_6x6);
+        // for ( int i = 0; i < 6; ++i )
+        //     for ( int k = 0; k < 6; ++k )
+        //        for ( int j = 0; j < 6; ++j )
+        //           retVal[i][j] += m_data[i][k] * m[k][j];;
+        // return retVal;
         
         const BMatrix3 tl1 = m.topLeft();
         const BMatrix3 tr1 = m.topRight();

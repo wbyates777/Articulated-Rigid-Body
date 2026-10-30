@@ -62,7 +62,7 @@ namespace arb
     /// The Euclidian cross product can be written as an equivalent matrix multiplication
     /// The operator $v\times$ (pronounced ‘v-cross’) constructs a skew-symmetric matrix $m$ from vector $v$  
     /// such that $m * a = v \times a$, (see RBDA, Section 2.8, eqn 2.23, page 21 and table 2.1, page 22).
-    /// note arb::cross(-v) = arb::transpose(arb::cross(v))
+    /// @note arb::cross(-v) = arb::transpose(arb::cross(v))
     inline constexpr BMatrix3 
     cross( const BVector3 &v ) 
     {

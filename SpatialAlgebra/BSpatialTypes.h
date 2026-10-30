@@ -49,7 +49,7 @@
 
 #elif defined(ARB_USE_FLOAT)
 
-    // causes internal checks to fails due to prec - use B_NEAR_ZERO=1E-1
+    /// @warning can cause internal checks to fails due to prec - use B_NEAR_ZERO=1E-1
     typedef float BScalar; 
 
 #endif

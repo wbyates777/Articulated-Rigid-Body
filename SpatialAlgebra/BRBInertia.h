@@ -82,7 +82,8 @@ class BRBInertia
 public:
 
     BRBInertia( void )=default;
-    // the moments of mass; zero, one, and two - note mass can be 0
+    /// the moments of mass; zero, one, and two
+    /// @note mass can be 0
     constexpr BRBInertia( BScalar mass, const BVector3 &h, const BMatrix3 &I_o ): m_mass(mass), m_h(h), m_I(I_o) {}
     constexpr BRBInertia( const BInertia &I ): m_mass(I.mass()), m_h(I.h()), m_I(I.I()) {} 
     explicit BRBInertia( const BMatrix6 &I ) { set(I); }     
@@ -107,26 +108,23 @@ public:
         return BMatrix6( m_I, arb::cross(m_h), arb::cross(-m_h), BMatrix3(m_mass) );
     }
     
-    // total mass; zeroth moment of mass
+    /// total mass; zeroth moment of mass
     BScalar
     mass( void ) const { return m_mass; }
 
-    //  magnitude and direction of linear momentum; first moment of mass
+    ///  magnitude and direction of linear momentum; first moment of mass
     const BVector3&
     h( void ) const { return m_h; }
     
-    // rotational inertia at body frame origin; second moment of mass
+    /// rotational inertia at body frame origin; second moment of mass
     const BMatrix3& 
     I( void ) const { return m_I; } 
     
-    // rotational inertia at com; second moment of mass
+    /// rotational inertia at com; second moment of mass
     BMatrix3 
     Icom( void ) const { return m_I - m_mass * arb::crosst(com()); } 
  
-    // centre of mass in body coordinates
-    //BVector3
-    //com( void ) const { assert(m_mass != 0); return  m_h / m_mass; }
-    
+    /// centre of mass in body coordinates
     BVector3
     com( void ) const { return (m_mass < B_EPS) ? B_ZERO_3 : (m_h / m_mass); }
 
@@ -222,9 +220,9 @@ public:
     
 private:
 
-    BScalar  m_mass; //!< total mass (kg) - zeroth moment of mass 
-    BVector3 m_h;    //!< linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
-    BMatrix3 m_I;    //!< rotational inertia $I$ at body frame origin (0,0,0); second moment of mass 
+    BScalar  m_mass; /// total mass (kg) - zeroth moment of mass 
+    BVector3 m_h;    /// linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
+    BMatrix3 m_I;    /// rotational inertia $I$ at body frame origin; second moment of mass 
 };
 
 #ifndef GLM_FORCE_INTRINSICS
@@ -241,9 +239,9 @@ namespace arb
 {
     inline constexpr BMatrix6 
     inverse( const BRBInertia &I ) 
-    /// Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36)
-    /// https://en.wikipedia.org/wiki/Schur_complement
-    /// WARNING: ensure arb::inverses(m) exist i.e. arb::isinvertible(m) 
+    /// Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36) 
+    /// @see https://en.wikipedia.org/wiki/Schur_complement
+    /// @warning ensure arb::inverse(m) exist i.e. arb::isinvertible(m) 
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 invI(arb::inverse(I.Icom()));

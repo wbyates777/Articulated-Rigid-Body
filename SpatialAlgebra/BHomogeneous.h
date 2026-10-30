@@ -15,15 +15,14 @@
  Given a spatial transform BTransform X and any BVector3 p then
  
        X.applyTranspose(p) == arb::toHomogeneous(X) * BVector4(p, 1.0);
-
-and
-
+ 
+ and
+ 
        X.apply(p) == arb::toHomogeneousInverse(X) * BVector4(p, 1.0);
 
-
- Notes:
+ Note:
  
- i) M must be a rigid transform (orthonormal rotation, no scale or shear)
+ 1) M must be a rigid transform (orthonormal rotation, no scale or shear)
  
 */
 
@@ -38,7 +37,7 @@ and
 namespace arb
 {
 
-    /// converts a body-to-base spatial transform X to a body-to-base homogeneous matrix M (for graphics) 
+    /// converts a body-to-base spatial transform X to a body-to-base homogeneous matrix M 
     inline BMatrix4 
     toHomogeneous( const BTransform &X ) 
     {
@@ -48,8 +47,9 @@ namespace arb
     }
     
     
-    /// converts a body-to-base spatial transform directly to a base-to-body homogeneous matrix M (for raycasting/collisions)
-    /// avoids arb::inverse() by constructing matrix analytically. This is Featherstone's pluho - Plücker-to-homogeneous
+    /// converts a body-to-base spatial transform directly to a base-to-body homogeneous matrix M 
+    /// avoids arb::inverse() by constructing matrix analytically 
+    /// This is Featherstone's pluho - Plücker-to-homogeneous
     inline BMatrix4 
     toHomogeneousInverse( const BTransform &X ) 
     {

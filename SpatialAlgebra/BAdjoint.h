@@ -11,12 +11,12 @@
  History:
 
  
- Converts compact BTransforms into 6x6 spatial transformation matrices.
-
+ Converts compact BTransforms $X(E,r)$ into 6x6 spatial transformation matrices.
 
  The function arb::toForce() presented here has been tested against and matches 
  the Eigen3 RBDL function:
  
+ @code{.cpp}
      SpatialMatrix toMatrixAdjoint () const {
        Matrix3d _Erx =
          E * Matrix3d (
@@ -32,26 +32,28 @@
 
        return result;
      }
-
+ @endcode
  
  
  The remaining matricies are constructed from this basic definition.
  
  The matricies are: 
  
-
+ X : A -> B
  toMotion(X)         =  |    E      0 |
-  X : A -> B            | -rx * E   E |
+                        | -rx * E   E |
  
+ X^{-1} : B -> A 
  toMotionInverse(X)  =  |    E^T      0  |
-  X^{-1} : B -> A       | E^T * rx   E^T |
+                        | E^T * rx   E^T |
  
-
+ X^{T} : A -> B 
  toForce(X)          =  | E   -rx * E |
-  X^{T} : A -> B        | 0       E   |
+                        | 0       E   |
  
+ X^{-T} : B -> A 
  toForceInverse(X)   =  | E^T   E^T * rx |
-  X^{-T} : B -> A       | 0        E^T   |
+                        | 0        E^T   |
  
  where rx = arb::cross(r)
  
@@ -72,36 +74,34 @@ namespace arb
     
     inline BMatrix6 
     toMotion( const BTransform &X )  
-    // motion A -> B
-    // matches Featherstone's X (spatial motion transform)
-    // use: transform twist from parent to child (forward pass)
+    // matches Featherstone's spatial motion transform X
+    // transforms a twist from parent to child frame (forward pass)
     {
         return BMatrix6( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E(), X.E() );
     }
 
     inline BVector6 
-    applyMotion( const BTransform &X, const BVector6 &f )  
+    applyMotion( const BTransform &X, const BVector6 &v )  
     {
         const BMatrix3 ET = arb::transpose(X.E());
-        const BVector3 lin = ET * (f.lin() - arb::cross(X.r(), f.ang()));
-        const BVector3 ang = ET * f.ang();
+        const BVector3 lin = ET * (v.lin() - arb::cross(X.r(), v.ang()));
+        const BVector3 ang = ET * v.ang();
         return BVector6(ang, lin);
     }
 
     
     inline BMatrix6 
     toMotionInverse( const BTransform &X )  
-    // motion B -> A
     {
         const BMatrix3 ET = arb::transpose(X.E());
         return BMatrix6( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
     }
 
     inline BVector6 
-    applyMotionInverse( const BTransform &X, const BVector6 &f ) 
+    applyMotionInverse( const BTransform &X, const BVector6 &v ) 
     {
-        const BVector3 lin  = arb::cross(-X.r()) *  X.E() * f.ang() + X.E() * f.lin();
-        const BVector3 ang = X.E() * f.ang();
+        const BVector3 lin  = arb::cross(-X.r()) *  X.E() * v.ang() + X.E() * v.lin();
+        const BVector3 ang = X.E() * v.ang();
         return BVector6(ang, lin);
     }
 
@@ -111,27 +111,25 @@ namespace arb
     
     inline BMatrix6 
     toForce( const BTransform &X )  
-    // force A -> B
-    // matches Featherstone's X* (spatial force transform)
-    // use: transform wrench from parent to child
+    // matches Featherstone's spatial force transform X^{T} 
+    // transforms a wrench from parent to child frame
     {
         const BMatrix3 Erx = arb::cross(-X.r()) * X.E();
         return BMatrix6( X.E(), Erx, B_ZERO_3x3, X.E() );
     }
 
     inline BVector6
-    applyForce(const BTransform &X, const BVector6 &f)   
+    applyForce(const BTransform &X, const BVector6 &v)   
     {
         const BMatrix3 ET = arb::transpose(X.E());
-        const BVector3 lin = ET * f.lin();
-        const BVector3 ang = ET * (f.ang() - arb::cross(X.r(), f.lin()));
+        const BVector3 lin = ET * v.lin();
+        const BVector3 ang = ET * (v.ang() - arb::cross(X.r(), v.lin()));
         return BVector6(ang,  lin);
     }
 
     
     inline BMatrix6 
     toForceInverse( const BTransform &X )  
-    // force B -> A
     {
         const BMatrix3 ET = arb::transpose(X.E());
         return BMatrix6( ET, ET * arb::cross(X.r()), B_ZERO_3x3, ET );
@@ -144,7 +142,6 @@ namespace arb
         const BVector3 ang = (X.E() * v.ang()) + (arb::cross(-X.r()) * X.E() * v.lin());
         return BVector6(ang, lin);
     }
-
 
 }
 

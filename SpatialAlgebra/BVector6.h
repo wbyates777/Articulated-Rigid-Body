@@ -18,7 +18,7 @@
  By convention, spatial velocity vectors are called twists, 
  and spatial force vectors are called wrenches.
  
- It should be noted that we employ an (ang, lin) represenation, following Featherstone and RBDL.
+ @note Following Featherstone and RBDL, we employ an (ang, lin) spatial vector representation.
  
 */
 
@@ -79,7 +79,9 @@ public:
         m_data = { h[0], h[1], h[2], t[0], t[1], t[2] };
     }
     
-    // angular
+    ///
+    /// angular
+    ///
     void
     ang( BScalar s ) { m_data[0] = s; m_data[1] = s; m_data[2] = s; }
 
@@ -92,7 +94,9 @@ public:
     constexpr BVector3
     ang( void ) const { return BVector3(m_data[0], m_data[1], m_data[2]); }
 
-    // linear
+    ///    
+    /// linear
+    ///
     void
     lin( BScalar s ) { m_data[3] = s; m_data[4] = s; m_data[5] = s; }
 
@@ -104,6 +108,7 @@ public:
     
     constexpr BVector3
     lin( void ) const { return BVector3(m_data[3], m_data[4], m_data[5]); }
+    
     
     constexpr BScalar&
     operator[]( int i ) { return m_data[i]; }

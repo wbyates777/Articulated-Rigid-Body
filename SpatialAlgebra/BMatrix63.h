@@ -45,8 +45,7 @@ public:
                                                                                     d[3][0],  d[3][1],  d[3][2], 
                                                                                     d[4][0],  d[4][1],  d[4][2], 
                                                                                     d[5][0],  d[5][1],  d[5][2] 
-                                                                                } 
-    { assert(d.size() == 6 && d[0].size() == 3); }
+                                                                                } {}
     
     constexpr explicit BMatrix63( const std::vector<BScalar> &d ) : m_data 
                                                                     {   
@@ -56,8 +55,7 @@ public:
                                                                         d[9],   d[10],  d[11], 
                                                                         d[12],  d[13],  d[14], 
                                                                         d[15],  d[16],  d[17]
-                                                                    } 
-    { assert(d.size() == 18); }
+                                                                    } {}
     
     constexpr explicit BMatrix63( BScalar s ) : m_data 
                                                 {   
@@ -204,7 +202,6 @@ public:
         return retVal; 
     }
     
-
     void
     top( const BMatrix3 &m )  
     {
@@ -321,11 +318,11 @@ public:
     BVector6 
     operator*( const BVector3 &v ) const 
     {
-       /* BVector6 retVal(B_ZERO_6);
-        for ( int i = 0; i < 6; ++i )
-            for ( int j = 0; j < 3; ++j )
-                retVal[i] += m_data[i][j] * v[j];  
-        return retVal; */
+       // BVector6 retVal(B_ZERO_6);
+       // for ( int i = 0; i < 6; ++i )
+       //     for ( int j = 0; j < 3; ++j )
+       //         retVal[i] += m_data[i][j] * v[j];  
+       // return retVal; 
         
         return  BVector6(arb::transpose(top()) * v, arb::transpose(bot()) * v);
     }
@@ -333,12 +330,12 @@ public:
     BMatrix63 
     operator*( const BMatrix3 &m ) const
     {
-      /*  BMatrix63 retVal(B_ZERO_6x3);
-        for ( int i = 0; i < 6; ++i )
-            for ( int k = 0; k < 3; ++k )
-                for ( int j = 0; j < 3; ++j ) 
-                    retVal[i][j] += m_data[i][k] * m[k][j];
-        return retVal;*/
+      //  BMatrix63 retVal(B_ZERO_6x3);
+      //  for ( int i = 0; i < 6; ++i )
+      //      for ( int k = 0; k < 3; ++k )
+      //          for ( int j = 0; j < 3; ++j ) 
+      //              retVal[i][j] += m_data[i][k] * m[k][j];
+      //  return retVal;
         
         return BMatrix63(m * top(), m * bot());
     }
@@ -408,8 +405,7 @@ public:
                                                                         d[9],   d[10],  d[11], 
                                                                         d[12],  d[13],  d[14], 
                                                                         d[15],  d[16],  d[17]
-                                                                    } 
-    { assert(d.size() == 18); }
+                                                                    } {}
     
     constexpr explicit BMatrix36( const std::vector<std::vector<BScalar>> &d ) 
                                     : m_data  
@@ -417,8 +413,7 @@ public:
                                         d[0][0], d[0][1], d[0][2], d[0][3], d[0][4], d[0][5],
                                         d[1][0], d[1][1], d[1][2], d[1][3], d[1][4], d[1][5],
                                         d[2][0], d[2][1], d[2][2], d[2][3], d[2][4], d[2][5] 
-                                    }
-    { assert(d.size() == 3 && d[0].size() == 6);  }
+                                    } {}
     
     constexpr explicit BMatrix36( BScalar s ) : m_data 
                                                 {
@@ -639,11 +634,11 @@ public:
     BVector3
     operator*( const BVector6 &v ) const 
     {
-       /* BVector3 retVal(B_ZERO_3);
-        for ( int i = 0; i < 3; ++i )
-            for ( int j = 0; j < 6; ++j )
-                retVal[i] += m_data[i][j] * v[j];
-        return retVal; */
+       // BVector3 retVal(B_ZERO_3);
+       // for ( int i = 0; i < 3; ++i )
+       //     for ( int j = 0; j < 6; ++j )
+       //         retVal[i] += m_data[i][j] * v[j];
+       // return retVal; 
        
         return (arb::transpose(left()) * v.ang()) + (arb::transpose(right()) * v.lin());
     }
@@ -651,12 +646,12 @@ public:
     BMatrix3 
     operator*( const BMatrix63 &m ) const  
     { 
-        /*BMatrix3 retVal(B_ZERO_3x3);
-        for ( int i = 0; i < 3; ++i )
-            for ( int k = 0; k < 6; ++k )
-               for ( int j = 0; j < 3; ++j )
-                   retVal[i][j] += m_data[i][k] * m[k][j];
-        return retVal;*/
+        // BMatrix3 retVal(B_ZERO_3x3);
+        // for ( int i = 0; i < 3; ++i )
+        //    for ( int k = 0; k < 6; ++k )
+        //       for ( int j = 0; j < 3; ++j )
+        //           retVal[i][j] += m_data[i][k] * m[k][j];
+        // return retVal;
         
         return (m.top() * left()) + (m.bot() * right());
     }
@@ -682,12 +677,12 @@ operator*( BScalar s, const BMatrix36 &m ) { return m * s; }
 inline BMatrix6 
 operator*( const BMatrix63 &m1, const BMatrix36 &m2 )  
 {
-    /*BMatrix6 retVal(B_ZERO_6x6);
-    for ( int i = 0; i < 6; ++i )
-        for ( int k = 0; k < 3; ++k )
-            for ( int j = 0; j < 6; ++j )
-                retVal[i][j] += m_data[i][k] * m[k][j];
-    return retVal;*/
+    // BMatrix6 retVal(B_ZERO_6x6);
+    // for ( int i = 0; i < 6; ++i )
+    //    for ( int k = 0; k < 3; ++k )
+    //        for ( int j = 0; j < 6; ++j )
+    //            retVal[i][j] += m_data[i][k] * m[k][j];
+    // return retVal;
     
     const BMatrix3 t1 = m1.top();
     const BMatrix3 b1 = m1.bot();
@@ -700,12 +695,12 @@ operator*( const BMatrix63 &m1, const BMatrix36 &m2 )
 inline BMatrix63 
 operator*( const BMatrix6 &m1, const BMatrix63 &m2 ) 
 {    
-    /*BMatrix63 retVal(B_ZERO_6x3);
-    for ( int i = 0; i < 6; ++i ) 
-        for ( int k = 0; k < 6; ++k ) 
-            for ( int j = 0; j < 3; ++j )
-                retVal[i][j] += m1[i][k] * m2[k][j];
-    return retVal;*/
+    // BMatrix63 retVal(B_ZERO_6x3);
+    // for ( int i = 0; i < 6; ++i ) 
+    //    for ( int k = 0; k < 6; ++k ) 
+    //        for ( int j = 0; j < 3; ++j )
+    //            retVal[i][j] += m1[i][k] * m2[k][j];
+    // return retVal;
     
     
     const BMatrix3 t2 = m2.top();

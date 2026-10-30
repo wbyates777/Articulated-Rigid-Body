@@ -36,6 +36,7 @@
  The BTransform class presented here has been tested against and matches
  the Eigen3 RBDL function:
  
+ @code{.cpp}
  SpatialMatrix toMatrix () const {
    Matrix3d _Erx =
      E * Matrix3d (
@@ -51,7 +52,7 @@
 
    return result;
  }
-//
+ @endcode
  
  Notes:
  
@@ -59,7 +60,6 @@
  2) BMatrix3 E is a rotation  - the transpose of a rotation E^T is also its inverse E^{-1}
  3) BVector3 r is a translation - inverse translation is -r
  4) Note X^* = X^{-T} (RBDA, eqn 2.13)
-
  5) X(E,r) in block 6x6 matrix form:
  
  |     E      0  |
@@ -85,9 +85,8 @@
     When when transforming a spatial inertia I by a spatial transform X note:
     X.apply(I) returns I' = X^* I X^{-1} 
     X.applyTranspose(I) returns I' = X^T I X  
-
-  8) As (A * B)^T == (B^T * A^T) and rx^T == -rx then (-E * rx)^T == rx * E^T
-     where the two negatives cancel out
+ 8) As (A * B)^T == (B^T * A^T) and rx^T == -rx then (-E * rx)^T == rx * E^T
+    where the two negatives cancel out
     
  See also:
  
@@ -117,7 +116,7 @@ class BTransform
 public:
     
     BTransform( void )=default;
-    /// BTransform = Xrot(glm::radians(theta), axis) * Xtrans(trans); performs a translate then rotate
+    /// performs a translate then rotate i.e. Xrot(glm::radians(theta), axis) * Xtrans(trans); 
     constexpr BTransform( const BMatrix3 &rot, const BVector3 &trans = B_ZERO_3 ): m_E(rot), m_r(trans) {}
     constexpr explicit BTransform( const BVector3 &trans ): m_E(B_IDENTITY_3x3), m_r(trans) {}
     ~BTransform( void )=default;
@@ -144,7 +143,7 @@ public:
     }
     
 
-    /// rotation, preserves coordinate frame origin
+    /// rotation preserves coordinate frame origin
     const BMatrix3&
     E( void ) const { return m_E; }
 
@@ -154,7 +153,7 @@ public:
     void
     E( const BMatrix3 &m ) { m_E = m; }
     
-    /// translation, moves coordinate frame origin
+    /// translation moves coordinate frame origin
     const BVector3&
     r( void ) const { return m_r; }
 
@@ -223,7 +222,7 @@ public:
     }
 
 
-    /// transform 3D point p to/from coordinate frame (see fromHomogeneous)
+    /// transform 3D point p to/from coordinate frame @see toHomogeneous()
     BVector3 
     apply( const BVector3 &p ) const { return m_E * (p - m_r); }
     
@@ -300,8 +299,8 @@ public:
     
 private:
     
-    BMatrix3 m_E; // rotation - note the transpose of a rotation is also its inverse
-    BVector3 m_r; // translation - inverse translation is -m_r
+    BMatrix3 m_E; /// rotation - note the transpose of a rotation is also its inverse
+    BVector3 m_r; /// translation - inverse translation is -m_r
 };
 
  
@@ -317,15 +316,15 @@ namespace arb
 {
 
     inline constexpr BTransform 
-    inverse( const BTransform &m )  
-    // return  X^{-1}
+    inverse( const BTransform &X )  
+    /// return  X^{-1}
     { 
-        const BMatrix3 ET = arb::transpose(m.E()); 
-        return BTransform(ET, -ET * m.r()); 
+        const BMatrix3 ET = arb::transpose(X.E()); 
+        return BTransform(ET, -ET * X.r()); 
     }
     
     /// rotations, see RBDA, Section 2.8, table, 2.2, page 23
-    /// all angles in radians, axis *must* be normalised
+    /// @warning all angles in radians, axis *must* be normalised
     inline constexpr BTransform 
     Xrot( BScalar theta, const BVector3 &axis ) { return BTransform(rot(theta, axis)); }
     

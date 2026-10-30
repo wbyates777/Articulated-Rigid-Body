@@ -31,8 +31,8 @@
 
 #include <autodiff/forward/real.hpp>
 
-#define GLM_FORCE_UNRESTRICTED_GENTYPE  // required by GLM
-#define GLM_FORCE_CTOR_INIT             // required by GLM
+#define GLM_FORCE_UNRESTRICTED_GENTYPE  /// @note required by GLM
+#define GLM_FORCE_CTOR_INIT             /// @note required by GLM
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp> 
@@ -63,21 +63,29 @@ operator+( const glm::dvec4 &a, const glm::vec<4,autodiff::real> &b )
 {
     return glm::dvec4(a.x + b.x[0], a.y + b.y[0], a.z + b.z[0], a.w + b.w[0]); 
 }
-//
 
-// my stream operators need operator>>()
+
+///
+/// stream operators 
+///
 inline std::istream& 
 operator>>(std::istream& istr, autodiff::real& val) 
+/// my stream operators need operator>>()
 {
     istr >> val.val();
     return istr;
 }
 
-// glm stream operators also need operator>>()
-namespace  glm { 
-
+namespace glm { 
+    /// glm stream operators also need operator>>() 
     using ::operator>>; 
+}
 
+///
+/// trigonometry operators 
+///
+namespace glm { 
+    
     inline autodiff::real 
     sin(const autodiff::real& a) 
     {
@@ -116,15 +124,13 @@ namespace std {
     /// some GLM functions i.e. glm::dot and glm::cross have static asserts 
     /// static_assert(std::numeric_limits<T>::is_iec559, "this function accepts only floating-point inputs");
     /// this ensures that autodiff::real is considered as a floating-point input
-    /// WARNING: always check that the glm function you are using preserves gradients
+    /// @warning always check that the glm function you are using preserves gradients
     template <>
     struct numeric_limits<autodiff::real> : public numeric_limits<double> 
     {
         static constexpr bool is_iec559 = true; 
     };
 }
-
-
 
 
 #endif
