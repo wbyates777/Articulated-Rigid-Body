@@ -70,12 +70,11 @@ public:
     BGJK( void );
     ~BGJK( void )=default;
 
-    /*! @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point).
-     *
-     * @param[in] body1       pointer to body1
-     * @param[in] body2       pointer to body2
-     * @param[out] cinfo      contact infomation (depth, normal and point)
-     */
+    /// @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point)
+    ///
+    /// @param[in] body1       pointer to body1
+    /// @param[in] body2       pointer to body2
+    /// @param[out] cinfo      contact infomation (depth, normal and point)
     void
     collision( ABody* body1, ABody* body2, std::vector<BContactInfo> &cinfo ); 
     

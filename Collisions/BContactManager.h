@@ -68,11 +68,11 @@
  
  Other Constants
  ------------------------------
- i)   m_iters - PGS solver iterations - 20 is good, 25 is plenty 
- ii)  m_baumgarte - Baumgarte stabilization factor [0.15, 0.2] are reasonable values
- ii)  m_max_dist and m_max_tan_dist2 - used by BManifold::refresh() to 'drop' contact points if the contact bodies are 
+ 1)   m_iters - PGS solver iterations - 20 is good, 25 is plenty 
+ 2)  m_baumgarte - Baumgarte stabilization factor [0.15, 0.2] are reasonable values
+ 3)  m_max_dist and m_max_tan_dist2 - used by BManifold::refresh() to 'drop' contact points if the contact bodies are 
       separated beyond the given tolerance.
- iii) m_threshold2 - used by BManifold::addPoint() to determine if two contact points are equal
+ 4) m_threshold2 - used by BManifold::addPoint() to determine if two contact points are equal
 
  
  Notes: 
@@ -120,7 +120,7 @@ public:
     void
     clear( void ) { m_active.clear(); m_history.clear(); }
         
-    // return number of collisions; update velocities of bodies accordingly
+    /// return number of collisions; update velocities of bodies accordingly
     int
     resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed = std::vector<ABody*>() );
 
@@ -165,7 +165,7 @@ private:
     static uint64_t
     myhash( BBodyId bid1, BBodyId bid2 )
     { 
-        // WARNING: this depends on BIdType being uint32_t and unique
+        /// @warning this depends on BIdType being uint32_t and unique
         return ((uint64_t(std::min(bid1, bid2)) << 32) | uint64_t(std::max(bid1, bid2))); 
         //return ((uint64_t(bid1) << 32) | uint64_t(bid2)); // if order is important
     }
@@ -184,7 +184,7 @@ private:
     }
     
     void
-    narrowCheck(ABody *b1, ABody *b2, long now); // GJK/EPA
+    narrowCheck(ABody *b1, ABody *b2, long now); /// use GJK/EPA
     
     int
     detect( const std::vector<ABody*> &body, const std::vector<ABody*> &fixed  );
@@ -199,24 +199,24 @@ private:
     cache( void );
     
 
-    uint64_t m_iters;        // PGS solver iterations 25 is plenty - 20 is OK
+    uint64_t m_iters;        /// PGS solver iterations 25 is plenty - 20 is OK
     uint64_t m_cachehits;
     
-    BScalar m_e;             // coefficient of restitution, denoted e
-    BScalar m_mu;            // coefficient of friction, denoted μ
-    BScalar m_baumgarte;     // coefficient of Baumgarte stabilization 
-    BScalar m_slop;          // Baumgarte acceptable penetration
+    BScalar m_e;             /// coefficient of restitution, denoted e
+    BScalar m_mu;            /// coefficient of friction, denoted μ
+    BScalar m_baumgarte;     /// coefficient of Baumgarte stabilization 
+    BScalar m_slop;          /// Baumgarte acceptable penetration
  
-    BScalar m_max_dist;      // see BManifold::refresh 
-    BScalar m_max_tan_dist2; // see BManifold::refresh
-    BScalar m_threshold2;    // see BManifold::addPoint
+    BScalar m_max_dist;      /// see BManifold::refresh 
+    BScalar m_max_tan_dist2; /// see BManifold::refresh
+    BScalar m_threshold2;    /// see BManifold::addPoint
     
     BGJK  m_detector; 
     
     std::vector<BManifold> m_active;
     std::unordered_map<uint64_t, BManifold> m_history; 
     
-    std::vector<BContactInfo> m_collisions; // individual contacts detected
+    std::vector<BContactInfo> m_collisions; /// individual contacts detected
     
     bool m_frictionOn;
 };
