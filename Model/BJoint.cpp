@@ -151,12 +151,6 @@ BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
     }
 } 
 
-
-/*! @brief Checks whether we have pure rotational or translational axis.
- *
- * This function is mainly used to print out warnings when specifying an
- * axis that might not be intended.
- */
 bool 
 BJoint::validate_spatial_axis( const BVector6 &axis )
 {
@@ -167,7 +161,6 @@ BJoint::validate_spatial_axis( const BVector6 &axis )
     
     BVector3 rot(axis.ang());
     BVector3 trans(axis.lin());
-
 
     BScalar rot_len   = arb::length(rot);
     BScalar trans_len = arb::length(trans);
@@ -376,8 +369,8 @@ BJoint::clear( void )
 
 BQuat
 BJoint::getQuat(const std::vector<BScalar> &q) const
-// NB if q == quat(0,0,0,0) then  glm::mat3_cast(getQuat(q)) -> B_IDENTITY_3x3
-// if quat is not normalised then it is not a rotation
+/// if quat is not normalised then it is not a rotation
+/// @note if q == quat(0,0,0,0) then  glm::mat3_cast(getQuat(q)) -> B_IDENTITY_3x3
 {
     assert(m_jtype == JType::Spherical);
  
