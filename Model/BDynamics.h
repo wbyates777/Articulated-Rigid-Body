@@ -24,8 +24,10 @@
  https://en.wikipedia.org/wiki/Inverse_kinematics
 
  BDynamics is an implementation of 
- i) the articulated-body algorithm (ABA) and  
- ii) the recursive Newton-Euler algorithm (RNEA), 
+ 1) the articulated-body algorithm (ABA),  
+ 2) the composite rigid-body algorithm (CRBA), and 
+ 3) the recursive Newton-Euler algorithm (RNEA)
+
  presented in: 
  "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008 (see https://royfeatherstone.org). 
  
@@ -34,14 +36,17 @@
  where $N_B$ is the number of bodies/joints. 
  This is the theoretical minimum for solving the forward dynamics problem (see RBDA, Section 7.3). 
  
+ CRBA also calculates forward dynamics. In contrast to ABA, it forms an equation of motion for the whole system, and then solves it for the acceleration variables. Although CRBA is $O(N_B)^2$ it can match or slightly exceed the speed of the  $O(N_B)$
+ ABA on trees with only a few bodies, or that are branched enough to have a small depth (see RBDA, Section 6.2).
+ 
  RNEA calculate the inverse dynamics of a kinematic tree. 
  It is the simplest, most efficient known algorithm for trees, and also has a computational complexity 
  of $O(N_B)$ (see RBDA, Section 5.3). 
  
- The implementations presented here are based on those in the RBDL library ( see https://github.com/rbdl/rbdl ).
+ The implementations presented here are based on those in the RBDL library (see https://github.com/rbdl/rbdl).
  
  The implemenations here do NOT depend on Eigen3, instead they depend soly on the 
- GLM linear algebra library ( see https://github.com/g-truc/glm ).
+ GLM linear algebra library (see https://github.com/g-truc/glm).
   
  It is straightforward to convert back to Eigen3 (although see 
  the note on Eigen3 and GLM differences), or  replace GLM with some other simple
@@ -51,7 +56,6 @@
 
 #ifndef BDYNAMICS_H
 #define BDYNAMICS_H
-
 
 
 #ifndef BMODELSTATE_H
@@ -71,9 +75,7 @@
 #endif
 
 
-
 typedef  std::vector<BVector6> BExtForce;
-
 
 
 class BDynamics
@@ -86,52 +88,45 @@ public:
     ~BDynamics( void )=default;
     
     
-    /** @brief Computes forward dynamics with the Articulated Body algorithm (ABA)
-     *
-     * This function computes the generalized accelerations $a$ from given
-     * generalized states, velocities and forces:
-     *   \f$ \ddot{q} = M(q)^{-1} ( -N(q, \dot{q}) + \tau)\f$
-     * It does this by using the recursive Articulated Body Algorithm that runs
-     * in \f$O(n_{dof})\f$ with \f$n_{dof}\f$ being the number of joints.
-     *
-     * @param m      rigid body model
-     * @param qstate state  of the internal joints (positions, velocities, accelerations)
-     * @param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
-     */
+    /// @brief Computes forward dynamics with the Articulated Body algorithm (ABA)
+    ///
+    /// This function computes the generalized accelerations $a$ from given
+    /// generalized states, velocities and forces.
+    /// It does this by using the recursive Articulated Body Algorithm that runs
+    /// in $O(n_{dof})$ with $n_{dof}$ being the number of joints.
+    ///
+    /// @param[in,out] m  rigid body model
+    /// @param[in,out] qstate  state  of the internal joints (positions, velocities, accelerations)
+    /// @param[in] f_ext  external forces acting on the body in base/world coordinates (optional, defaults to empty)
     void
     forward( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce() ); 
     
     
-    /** @brief Computes inverse dynamics with the recursive Newton-Euler algorithm (RNEA)
-     *
-     * This function computes the generalized forces $\tau$ from given generalized
-     * states, velocities, and accelerations:
-     *   \f$ \tau = M(q) \ddot{q} + N(q, \dot{q}, f_\textit{ext}) \f$
-     *
-     * @param m      rigid body model
-     * @param qstate state of the internal joints (positions, velocities, accelerations)
-     * @param f_ext  External forces acting on the body in base/world coordinates (optional, defaults to empty)
-     */
+    /// @brief Computes inverse dynamics with the recursive Newton-Euler algorithm (RNEA)
+    ///
+    /// This function computes the generalized forces $\tau$ from given generalized
+    /// states, velocities, and accelerations.
+    /// 
+    /// @param[in,out] m      rigid body model
+    /// @param[in,out] qstate  state of the internal joints (positions, velocities, accelerations)
+    /// @param[in] f_ext   external forces acting on the body in base/world coordinates (optional, defaults to empty)
     void  
     inverse( BModel &m, BModelState &qstate, const BExtForce &f_ext = BExtForce() ); 
     
-    
 
-    /** @brief Computes the joint space inertia matrix by using the Composite Rigid Body Algorithm
-     *
-     * This function computes the joint space inertia matrix from a given model and
-     * the generalized state vector:
-     *   \f$ M(q) \f$
-     *
-     * @param  m rigid body model
-     * @param qstate     state of the internal joints (positions, velocities, accelerations)
-     * @param H     a matrix where the result will be stored in
-     * @param update_kinematics  whether the kinematics should be updated (safer, but at a higher computational cost!)
-     *
-     * @note This function only evaluates the entries of H that are non-zero. One
-     * Before calling this function one has to ensure that all other values
-     * have been set to zero, e.g. by calling H.setZero().
-     */
+    /// @brief Computes the joint space inertia matrix by using the Composite Rigid Body Algorithm (CRBA)
+    ///
+    /// This function computes the joint space inertia matrix from a given model and
+    /// the generalized state vector.
+    ///
+    /// @param[in,out]  m  rigid body model
+    /// @param[in] qstate  state of the internal joints (positions, velocities, accelerations)
+    /// @param[out] H  a matrix where the result will be stored in
+    /// @param[in] update_kinematics  whether the kinematics should be updated (safer, but at a higher computational cost!)
+    ///
+    /// @note This function only evaluates the entries of H that are non-zero. 
+    /// Before calling this function ensure that all other values
+    /// have been set to zero.
     void 
     crba( BModel &m, const BModelState &qstate, BMatrix &H, bool update_kinematics = true ); 
     

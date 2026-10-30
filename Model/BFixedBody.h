@@ -10,7 +10,7 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- @brief Keeps the information of a body and how it is attached to another body.
+ Hold information about a fixed body and how it is attached its parent.
 
  When using fixed bodies, i.e. a body that is attached to another via a
  fixed joint, the attached body is merged onto its parent. By doing so
@@ -82,12 +82,12 @@ public:
     parentTrans( const BTransform &pt )  { m_parent = pt; }
     
 
-
     bool 
     operator==( const BFixedBody &v ) const { return (m_id == v.m_id); }
     
     bool 
     operator!=( const BFixedBody &v ) const { return (m_id != v.m_id); }
+    
     
     friend std::ostream&
     operator<<( std::ostream &ostr, const BFixedBody &b );
@@ -97,13 +97,10 @@ public:
     
 private: 
 
-    BBodyId m_id;
-    BBodyId m_parentId;    // bid of the movable body that this fixed body is attached to.
-    
-    BInertia  m_inertia;
-
-    // transforms spatial quantities expressed for the parent to the fixed body.
-    BTransform m_parent; // m_X_lambda - the transformation from the parent body frame $\lambda(i)$ to body $i$ 
+    BBodyId    m_id;
+    BBodyId    m_parentId;    /// bid of the movable body that this fixed body is attached to.
+    BInertia   m_inertia;
+    BTransform m_parent;      /// the transformation from the parent body frame $\lambda(i)$ to body $i$ 
 
 };
 

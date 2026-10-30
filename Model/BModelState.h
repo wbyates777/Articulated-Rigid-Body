@@ -19,11 +19,11 @@
 
  The q, qdot, qddot, tau notation is taken from Featherstone's RBDA.
  
- Notes 
- when using spherical joints (i.e FloatBase)
-   initialising q to zero is safe because glm::mat3_cast(glm::quat(0,0,0,0)) -> B_IDENTITY_3x3
-   initialising q to one is not safe as glm::mat3_cast(glm::quat(1,1,1,1)) is not 
-   normalized and therefore not a rotation
+ Note when using spherical joints (i.e FloatBase):
+ 
+ 1)  initialising q to zero is safe because glm::mat3_cast(glm::quat(0,0,0,0)) -> B_IDENTITY_3x3
+ 2)  initialising q to one is not safe as glm::mat3_cast(glm::quat(1,1,1,1)) is not 
+     normalized and therefore not a rotation
  
 */
 
@@ -95,25 +95,25 @@ public:
     // joint state values
     //
     std::vector<BScalar>&
-    q( void )  { return m_q; }               // position
+    q( void )  { return m_q; }               /// position
     
     const std::vector<BScalar>&
     q( void ) const { return m_q; }         
     
     std::vector<BScalar>&
-    qdot( void ) { return m_qdot; }          // velocity
+    qdot( void ) { return m_qdot; }          /// velocity
     
     const std::vector<BScalar>&
     qdot( void ) const { return m_qdot; }   
     
     std::vector<BScalar>&
-    qddot( void ) { return m_qddot; }        // acceleration
+    qddot( void ) { return m_qddot; }        /// acceleration
     
     const std::vector<BScalar>&
     qddot( void ) const { return m_qddot; }  
     
     std::vector<BScalar>&
-    tau( void ) { return m_tau; }           // forces
+    tau( void ) { return m_tau; }           /// force
     
     const std::vector<BScalar>&
     tau( void ) const { return m_tau; }    
@@ -129,11 +129,11 @@ public:
 private:
     
 
-    // joint state parameters for all joints in a BFloatBase
-    std::vector<BScalar>  m_q;     // positions
-    std::vector<BScalar>  m_qdot;  // velocities
-    std::vector<BScalar>  m_qddot; // accelerations
-    std::vector<BScalar>  m_tau;   // forces
+    /// state parameters for all joints in a model
+    std::vector<BScalar>  m_q;     /// positions
+    std::vector<BScalar>  m_qdot;  /// velocities
+    std::vector<BScalar>  m_qddot; /// accelerations
+    std::vector<BScalar>  m_tau;   /// forces
 };
 
 inline std::ostream&

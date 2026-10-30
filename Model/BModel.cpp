@@ -118,13 +118,12 @@ BModel::getBodyName( BBodyId bid ) const
     return std::string();
 }
 
-/** Determines id the actual parent body.
- *
- * When adding bodies using joints with multiple degrees of
- * freedom, additional virtual bodies are added for each degree of
- * freedom. This function returns the id of the actual
- * non-virtual parent body.
- */
+/// Determines id the actual parent body.
+///
+/// When adding bodies using joints with multiple degrees of
+/// freedom, additional virtual bodies are added for each degree of
+/// freedom. This function returns the id of the actual
+/// non-virtual parent body.
 BBodyId 
 BModel::getParentBodyId( BBodyId bid ) const
 {

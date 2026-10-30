@@ -152,7 +152,7 @@ BJoint::BJoint( const std::vector<BVector6> &axes )  : m_id(0),
 } 
 
 
-/** @brief Checks whether we have pure rotational or translational axis.
+/*! @brief Checks whether we have pure rotational or translational axis.
  *
  * This function is mainly used to print out warnings when specifying an
  * axis that might not be intended.
@@ -408,7 +408,7 @@ void
 BJoint::setMotionSpace( const BMatrix63 &m )
 {
     m_S.resize(18);
-    // WARNING: assumes std::array<std::array<BScalar, 3>, 6> is contiguous memory - no padding
+    /// @warning assumes std::array<std::array<BScalar, 3>, 6> is contiguous memory - no padding
     const BScalar* src_ptr = reinterpret_cast<const BScalar*>(m.data().data());
     std::copy_n(src_ptr, 18, m_S.begin());
 }
@@ -417,7 +417,7 @@ void
 BJoint::setMotionSpace( const BMatrix6 &m )
 {
     m_S.resize(36);
-    // WARNING: assumes std::array<std::array<BScalar, 6>, 6> is contiguous memory - no padding
+    /// @warning assumes std::array<std::array<BScalar, 6>, 6> is contiguous memory - no padding
     const BScalar* src_ptr = reinterpret_cast<const BScalar*>(m.data().data());
     std::copy_n(src_ptr, 36, m_S.begin());
 }

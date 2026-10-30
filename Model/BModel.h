@@ -10,17 +10,13 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
  
- 
- Note: The following comments has been copied from the RBDL code.
- 
- 
- 
- @brief Contains all information about the rigid body model
+
+ Contains all information about the rigid body model
 
  This class contains all information required to perform the forward
  dynamics calculation. The variables in this class are also used for
  storage of temporary values. It is designed for use of the Articulated
- Rigid Body Algorithm (which is implemented in ForwardDynamics()) and
+ Rigid Body Algorithm (which is implemented in BDynamics::forward()) and
  follows the numbering as described in Featherstones book.
 
  Please note that body 0 is the root body and the moving bodies start at
@@ -30,11 +26,8 @@
  and tau however start at 0 such that the first entry (e.g. q[0]) always
  specifies the value for the first moving body.
 
- @note To query the number of degrees of freedom use BModel::dof_count().
-
 
 */
-
 
 #ifndef BMODEL_H
 #define BMODEL_H
@@ -50,7 +43,6 @@
 #ifndef BJOINT_H
 #include "BJoint.h"
 #endif
-
 
 
 class BModel
@@ -80,7 +72,7 @@ public:
     joint( BJointId jid ) const { return m_joint[jid]; } 
     
     size_t 
-    jointNum( void ) const { return m_joint.size(); } // $N_J$
+    jointNum( void ) const { return m_joint.size(); } /// the number of joints $N_J$
     
     BBody&
     body( BBodyId bid ) { return m_body[bid]; }
@@ -89,7 +81,7 @@ public:
     body( BBodyId bid ) const { return m_body[bid]; }
     
     size_t
-    bodyNum( void ) const { return m_body.size(); }     // $N_B$
+    bodyNum( void ) const { return m_body.size(); }   /// the number of bodies $N_B$
 
     BFixedBody&
     fixedBody( BBodyId bid ) { return m_fixed[bid - m_fbd]; }
@@ -100,22 +92,19 @@ public:
     const std::vector<BFixedBody>&
     fixedBody( void ) const { return m_fixed; }  
     
-    /** @brief Connects a given body to the model
-     *
-     * The question "where is the new body to be added?" is split up in two
-     * parts: first the parent (or successor) body to which it is added and
-     * second the transformation to the origin of the joint that connects the
-     * two bodies. With these two informations one specifies the relative
-     * positions of the bodies when the joint is in neutral position.gk
-     *
-     * The last question "by what kind of joint should the body be added?" is
-     * again simply contained in the Joint class.
-     *
-     * @param parent_id   id of the parent body
-     * @param joint_frame the transformation from the parent frame to the origin
-     *                    of the joint frame (used to set X_T in BJoint)
-     *
-     */
+    /// @brief Connects a given body to the model
+    ///
+    /// Identifies the parent (or successor) body to which the body is added and
+    /// sets the transformation to the origin of the joint that connects the
+    /// two bodies. This information specifies the relative
+    /// positions of the bodies when the joint is in a neutral position.
+    ///
+    /// @param[in] parent_id   id of the parent body
+    /// @param[in] joint_frame the transformation from the parent frame to the origin
+    ///                    of the joint frame (used to set X_T in BJoint)
+    /// @param[in] joint the BJoint object
+    /// @param[in] body the BBody object
+    /// @param[in] body_name the name of the body (internal to model)
     BBodyId 
     addBody( BBodyId parent_id,
              const BTransform &joint_frame,
@@ -124,39 +113,39 @@ public:
              const std::string &body_name = "" );    
 
     
-    // set a bodies parameters 
+    /// set a bodies parameters 
     void 
     setBody( BBodyId bid, const BInertia &inertia );
 
-    // set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()
+    /// set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()
     void 
     setJointFrame( BBodyId bid, const BTransform &transform );
     
-    // joint frame transformtion, i.e. X_T, the second argument to BModel::addBody()
+    /// joint frame transformtion, i.e. X_T, the second argument to BModel::addBody()
     BTransform 
     getJointFrame( BBodyId bid ) const;
     
-    // total mass of body $bid$ and all children bodies (subtree)
+    /// total mass of body $bid$ and all children bodies (subtree)
     BScalar
     mass( BBodyId bid ) const; 
     
-    // centre of mass of body $bid$ and all children bodies  (subtree)
+    /// centre of mass of body $bid$ and all children bodies (subtree)
     BVector3 
     com( BBodyId bid ) const; 
     
-    // inertia of body $bid$ and all children bodies  (subtree)
+    /// inertia of body $bid$ and all children bodies (subtree)
     BRBInertia 
     I( BBodyId bid ) const;
     
-    // size of the $\mathbf{q}$-vector.
+    /// size of the q vector.
     int  
     qsize( void ) const { return m_q_size; }
     
-    // size of the ($\mathbf{\dot{q}}, \mathbf{\ddot{q}}$, and $\mathbf{\tau}$-vector.
+    /// size of the qdot, qddot, and tau vectors.
     int  
     qdotsize( void ) const { return m_qdot_size; }
     
-    // total of degrees of freedom for these articulated bodies
+    /// total of degrees of freedom for these articulated bodies
     int  
     DoFCount( void ) const { return m_dof_count; }
     
@@ -177,7 +166,7 @@ public:
     BBodyId
     parentId( BBodyId bid )  const { return m_lambda[bid]; }
     
-    // returns the id of the actual non-virtual parent body.
+    /// returns the id of the actual non-virtual parent body
     BBodyId 
     getParentBodyId( BBodyId bid ) const;
     
@@ -194,7 +183,8 @@ public:
     friend std::istream& 
     operator>>( std::istream &istr, BModel &m );
     
-    static std::string ROOT(void) { return "ROOT"; } // root body name 
+    
+    static std::string ROOT(void) { return "ROOT"; } /// root body name @see URDFManager::toURDFModel()
     
 private:
 
@@ -226,25 +216,23 @@ private:
     void
     addName( BBodyId bid, std::string body_name );
     
-    // number of degrees of freedoms of the model
-    // general (joint) state (q), velocity (qdot), acceleration (qddot)
-    int m_dof_count; 
-    int m_q_size; 
-    int m_qdot_size;
+ 
+    int m_dof_count;    /// number of degrees of freedoms of the model
+    int m_q_size;       /// number of (joint) position (q) states
+    int m_qdot_size;    /// number of velocity (qdot), and acceleration (qddot) states
     
-    BBodyId m_fbd; // fixed_body_discriminator
+    BBodyId m_fbd;      /// fixed_body_discriminator
 
     std::string m_name;
     BVector3 m_gravity;
 
-    // the id of the parent body
-    std::vector<BBodyId>    m_lambda;
+    std::vector<BBodyId>    m_lambda;   /// the id of the parent body
     
     std::vector<BJoint>     m_joint;
     std::vector<BBody>      m_body;
-    std::vector<BFixedBody> m_fixed;  //  bodies attached via a fixed joint
+    std::vector<BFixedBody> m_fixed;  ///  bodies attached via a Fixed1 joint
 
-    // human readable names for the bodies
+    /// human readable names for the bodies
     std::map<std::string, BBodyId> m_bodyNameMap;
 };
 

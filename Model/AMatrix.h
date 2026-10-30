@@ -10,8 +10,7 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- AMatrix Template Class
- A simple, disposable 2D structure to hold values
+ AMatrix template class: A simple, disposable 2D structure to hold values
  
 */
 

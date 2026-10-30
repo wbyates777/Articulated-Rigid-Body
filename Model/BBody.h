@@ -28,7 +28,7 @@
 
 // auxiliary parameters not used by BModel or BDynamics
 #ifndef URDFTYPES_H
-#include "URDFTypes.h"  // definition of BBodyParams
+#include "URDFTypes.h"   /// @see BBodyParams
 #endif
 
 
@@ -76,7 +76,7 @@ public:
     }
  
 
-    // spatial interia of body at the origin $I_i$ (see RBDA, Section 7.1) 
+    /// spatial interia at body frame origin $I_i$ (see RBDA, Section 7.1) 
     const BRBInertia&
     I( void ) const { return m_I; }
     
@@ -87,8 +87,8 @@ public:
     I( const BRBInertia &si ) { m_I = si; }
     
     
-    // X is a transform from this frame to other body frame
-    // transform other body inertia into this frame and add
+    /// X is a transform from this frame to other_body frame -
+    /// transform other_body inertia into this frame and add
     void 
     join( const BTransform &X, const BBody &other_body )
     {
@@ -98,8 +98,8 @@ public:
         m_I += X.applyTranspose(other_body.I()); 
     }
 
-    // X is a transform from this frame to other body frame
-    // transform other body inertia into this frame and subtract
+    /// X is a transform from this frame to other_body frame -
+    /// transform other_body inertia into this frame and subtract
     void 
     separate( const BTransform &X, const BBody &other_body )
     {
@@ -109,7 +109,7 @@ public:
         m_I -= X.applyTranspose(other_body.I()); 
     }
     
-    // transformation from the base (world) frame to this body's coordinate frame
+    /// transformation from the base (world) frame to this body's coordinate frame
     const BTransform& 
     X_base( void ) const { return m_X_base; }
     
@@ -120,7 +120,7 @@ public:
     X_base( const BTransform &b )  { m_X_base = b; }
     
     
-    // spatial velocity $v_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.34)
+    /// spatial velocity $v_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.34)
     const BVector6&
     v( void ) const { return m_v; } 
 
@@ -131,7 +131,7 @@ public:
     v( const BVector6 &sv ) { m_v = sv; } 
     
     
-    // spatial acceleration $a_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.31)
+    /// spatial acceleration $a_i$ of body $B_i$ (see RBDA, Section 7.3, equation 7.31)
     const BVector6&
     a( void ) const { return m_a; } 
    
@@ -142,8 +142,7 @@ public:
     a( const BVector6 &sv ) { m_a = sv; } 
     
     
-    // velocity-dependent spatial acceleration term $c_i$ (see RBDA, Section 7.3, equation 7.35)
-    // $c_i = c_J + v_i \cross v_J$
+    /// velocity-dependent spatial acceleration $c_i = c_J + v_i \cross v_J$ (see RBDA, Section 7.3, equation 7.35)
     const BVector6&
     c( void ) const { return m_c; } 
    
@@ -164,6 +163,7 @@ public:
     const BBodyParams& 
     params( void ) const { return m_params; }
     
+    
     bool 
     operator==( const BBody &v ) const { return (m_id == v.m_id); }
     
@@ -179,14 +179,14 @@ public:
     
 private:
 
-    BVector6  m_v;    // spatial velocity of the body
-    BVector6  m_a;    // spatial acceleration of the body
-    BVector6  m_c;    // spatial velocity-dependent acceleration term
+    BVector6  m_v;    /// spatial velocity of the body
+    BVector6  m_a;    /// spatial acceleration of the body
+    BVector6  m_c;    /// spatial velocity-dependent acceleration term
 
-    BRBInertia m_I;       // spatial inertia at origin of the body (mass, com, rotational inertia)
-    BTransform m_X_base;  // transform from base/world coordinate frame to this body's frame 
+    BRBInertia m_I;       /// spatial inertia at origin of the body (mass, com, rotational inertia)
+    BTransform m_X_base;  /// transform from base/world coordinate frame to this body's frame 
     
-    BBodyParams m_params; // auxiliary URDF parameters not used by BModel or BDynamics
+    BBodyParams m_params; /// auxiliary URDF parameters not used by BModel or BDynamics
    
     BBodyId m_id;
     bool m_isVirtual;
