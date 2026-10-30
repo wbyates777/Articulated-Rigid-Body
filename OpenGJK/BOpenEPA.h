@@ -14,9 +14,9 @@
  
  The main changes are:
  
- i)   glm based BVector3 types which can be made differentiable,
- ii)  the structs EPAVertex and BIndex with operators that simplify the syntax
- iii) broke up the large collisions function into more managable logical chunks,
+ 1) glm based BVector3 types which can be made differentiable,
+ 2) the structs EPAVertex and BIndex with operators that simplify the syntax
+ 3) broke up the large collisions function into more managable logical chunks,
       by adding find_closest_face(), expand_simplex_to_tetrahedron(),
       tessellate_polytope(), and compute_contact()
 
@@ -66,7 +66,6 @@
 #endif
 
 
-
 class BEPAPolytope;
 class BEPAFace;
 
@@ -77,7 +76,6 @@ class BEPAFace;
 
 constexpr  int B_MAX_EPA_FACES  = 128;
 constexpr  int B_MAX_EPA_VERTICES  = (B_MAX_EPA_FACES + 4);
-
 
 
 struct BEPAVertex 
@@ -94,7 +92,7 @@ struct BEPAVertex
 };
 
 
-// Structure for horizon edge collection
+/// Structure for horizon edge collection
 struct BEPAEdge
 {
     bool 
@@ -118,20 +116,20 @@ public:
     BOpenEPA( void ): m_max_iters(25) {}
     ~BOpenEPA( void )=default;
     
-    /*! @brief Invoke the EPA algorithm to compute the collision information between two colliding
-     * polytopes.
-     *
-     * @param[in]     body1                 First body (passed by pointer, modified internally).
-     * @param[in]     body2                 Second body (passed by pointer, modified internally).
-     * @param[in,out] simplex               Simplex structure. Must be initialized. 
-     *                                      After return, contains the final
-     *                                      simplex and witness points in simplex.witnesses.
-     * @param[in]     distance              Takes in the distance computed by the GJK algorithm 
-     *                                      (0 -> collision detected, run EPA), otherwise return early.
-     * @param[out]    cnormal               The contact normal computed by the EPA algorithm.
-     * @param[out]    cpoint                The contact point computed by the EPA algorithm.
-     * @return                              Return the penetration depth; cdepth >= 0
-     * @note Witness points are automatically computed and stored in simplex.witnesses. */
+    /// @brief Invoke the EPA algorithm to compute the collision information between two colliding
+    /// polytopes.
+    ///
+    /// @param[in]     body1                 First body (passed by pointer, modified internally).
+    /// @param[in]     body2                 Second body (passed by pointer, modified internally).
+    /// @param[in,out] simplex               Simplex structure. Must be initialized. 
+    ///                                      After return, contains the final
+    ///                                      simplex and witness points in simplex.witnesses.
+    /// @param[in]     distance              Takes in the distance computed by the GJK algorithm 
+    ///                                      (0 -> collision detected, run EPA), otherwise return early.
+    /// @param[out]    cnormal               The contact normal computed by the EPA algorithm.
+    /// @param[out]    cpoint                The contact point computed by the EPA algorithm.
+    /// @return                              Return the penetration depth; cdepth >= 0
+    /// @note Witness points are automatically computed and stored in simplex.witnesses. 
     BScalar 
     collision( ABody* body1, ABody* body2, BSimplex &simplex, BScalar distance, 
                BVector3 &cnormal, BVector3 &cpoint );
@@ -172,7 +170,7 @@ private:
     void
     tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVector3 &centroid );
     
-    // this function is where derivatives are injected into the collision subsytem
+    /// @note this function is where derivatives are injected into the collision subsytem
     BVector3
     point(const ABody *body, const BIndex &idx) const;
     

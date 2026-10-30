@@ -22,11 +22,10 @@
  linearly dependent on the number of points defining the polytope.
  
  
-
  Note:
  
- i) I use float and short here (to save memory) - no spatial algebra/diffentiable types
- ii) I use the Python executable CoACD for converting meshes to sequences of polytopes/convex hulls. 
+ 1) I use float and short here (to save memory) - no spatial algebra/diffentiable types
+ 2) I use the Python executable CoACD for converting meshes to sequences of polytopes/convex hulls. 
  
  See https://github.com/SarahWeiii/CoACD
  
@@ -49,8 +48,8 @@
 
 
 #include <vector>
-#include <glm/vec3.hpp> 
 #include <glm/common.hpp>
+#include <glm/vec3.hpp> 
 
 struct BPolytope 
 {

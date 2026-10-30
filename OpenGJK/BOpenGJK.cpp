@@ -557,7 +557,7 @@ BOpenGJK::W1D(const ABody *body1, const ABody *body2, BSimplex &smp) const
 
 void 
 BOpenGJK::W2D(const ABody *body1, const ABody *body2, BSimplex &smp) const
-/**
+/*!
  *  Compute barycentric coordinates via matrix inversion
  *  Given the points $P$, $Q$, and $R$ forming a triangle
  *  we want to find the barycentric coordinates of the origin
@@ -649,7 +649,7 @@ BOpenGJK::W2D(const ABody *body1, const ABody *body2, BSimplex &smp) const
 
 void 
 BOpenGJK::W3D(const ABody *body1, const ABody *body2, BSimplex &smp) const
-/**
+/*!
  *  Compute barycentric coordinates via matrix inversion
  *  Given the points $P$, $Q$, and $R$, and $S$ forming a
  *  tetrahedron we want to find the barycentric coordinates of

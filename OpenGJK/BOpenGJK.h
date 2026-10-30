@@ -70,20 +70,19 @@ public:
     BOpenGJK(void) : m_max_iters(25) {}
     ~BOpenGJK(void)=default;
     
-    /*! @brief Invoke the GJK algorithm to compute the minimum distance between two
-     * polytopes.
-     *
-     * @param[in]     body1  First polytope (passed by value, modified internally).
-     * @param[in]     body2  Second polytope (passed by value, modified internally).
-     * @param[in,out] simplex   Simplex structure. Must be initialized (set nvrtx = 0)
-     *                          before first call. After return, contains the final
-     *                          simplex and witness points in simplex.witnesses.
-     * @return The minimum Euclidean distance between the two polytopes.
-     *         Returns 0 if the polytopes are intersecting or touching.
-     *
-     * @note The simplex has to be initialised prior the call to this function.
-     *       Witness points are automatically computed and stored in s.witnesses.
-     */
+    /// @brief Invoke the GJK algorithm to compute the minimum distance between two
+    /// polytopes.
+    ///
+    /// @param[in]     body1  First polytope (passed by value, modified internally).
+    /// @param[in]     body2  Second polytope (passed by value, modified internally).
+    /// @param[in,out] simplex   Simplex structure. Must be initialized (set nvrtx = 0)
+    ///                          before first call. After return, contains the final
+    ///                          simplex and witness points in simplex.witnesses.
+    /// @return The minimum Euclidean distance between the two polytopes.
+    ///         Returns 0 if the polytopes are intersecting or touching.
+    ///
+    /// @note The simplex has to be initialised prior the call to this function.
+    ///       Witness points are automatically computed and stored in s.witnesses.
     BScalar 
     min_distance( ABody *body1, ABody *body2, BSimplex &simplex );
   

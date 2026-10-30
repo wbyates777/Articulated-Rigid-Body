@@ -26,9 +26,9 @@
  
  Notes
 
- i)  an Orientated Bounding Box (OBB) is an Axis Aligned Bounding Box (AABB) with
+ 1)  an Orientated Bounding Box (OBB) is an Axis Aligned Bounding Box (AABB) with
      an accompanying 3D orientation matrix/quaternion.
- ii) For the special case where all the collider objects under consideration are perfect spheres
+ 2) For the special case where all the collider objects under consideration are perfect spheres
      you can replace:  
    
  iscollision = m_detector1.collision( b1, b2, c.depth, c.normal, c.pos ); // openGJHK 

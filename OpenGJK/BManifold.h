@@ -10,7 +10,6 @@
  Copyright (c) W.B. Yates. All rights reserved.
  History:
 
- 
  Assume depth > 0 implies penetration
  
  Compare bullet3 class btPersistentManifold
@@ -33,7 +32,7 @@
 class ABody;
 
 
-// a single point of contact
+/// a single point of contact
 struct BContactInfo 
 {
     BContactInfo(void): normal(0.0), pos(0.0), depth(0.0) {}
@@ -46,7 +45,7 @@ struct BContactInfo
 };
 
 
-// a single point of contact
+/// a single point of contact
 struct BContact 
 {
     BContact( void )=default;
@@ -56,16 +55,16 @@ struct BContact
                                                                  accJ(0.0), accJx(0.0), accJy(0.0) {}
     ~BContact( void )=default;
     
-    BVector3 localPos1; // position relative to body1 frame
-    BVector3 localPos2; // position relative to body2 frame
-    BVector3 pos;       // world contact position
-    BVector3 normal;    // world contact normal
-    BScalar  depth;     // penetration depth
+    BVector3 localPos1; /// position relative to body1 frame
+    BVector3 localPos2; /// position relative to body2 frame
+    BVector3 pos;       /// world contact position
+    BVector3 normal;    /// world contact normal
+    BScalar  depth;     /// penetration depth
     
-    // persistent solver state (for warm starting)
+    /// persistent solver state (for warm starting)
     BScalar accJ, accJx, accJy;
 
-    // kinematic helper properties calculated during prepare()
+    /// kinematic helper properties calculated during BContactManager::prepare()
     BScalar velBias, invK, invK_x, invK_y;
     BVector6 n_1, n_2, dv_1, dv_2;
     BVector6 nx_1, nx_2, dvx_1, dvx_2;
@@ -75,7 +74,7 @@ struct BContact
 
 
 
-// a collection of upto 4 points of contact
+/// a collection of upto 4 points of contact
 class BManifold 
 {
     
@@ -110,11 +109,11 @@ public:
     void
     warmstart( bool b )  { m_warmstart = b; }  
     
-    // updates world positions and removes stale contacts that have drifted apart
+    /// updates world positions and removes stale contacts that have drifted apart
     void 
     refresh( BScalar max_dist, BScalar max_tan_dist2 );
     
-    // add a new point and reduces the set to the 4 best points
+    /// add a new point and reduces the set to the 4 best points
     void 
     addPoint( const BContactInfo &cinfo, BScalar threshold2 );
 
@@ -123,7 +122,7 @@ private:
     BScalar 
     calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, const BVector3& p3) const;
     
-    // remove excess points from the manifold
+    /// remove excess points from the manifold
     void
     reducePoints( const BContact& pt );
     
@@ -133,7 +132,7 @@ private:
     std::vector<BContact> m_points;
     bool m_warmstart;
     
-    static constexpr int MAX_POINTS = 4; // 4 points form a stable 3D polygon
+    static constexpr int MAX_POINTS = 4; /// 4 points form a stable 3D polygon
     static const int m_index[4][3];
 };
 

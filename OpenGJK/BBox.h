@@ -162,11 +162,11 @@ public:
     
 private:
 
-    glm::dvec3 m_top;       // top (max) and bottom (min) opposite corners of box 
+    glm::dvec3 m_top;       /// top (max) and bottom (min) opposite corners of box 
     glm::dvec3 m_bot;       
-    glm::dvec3 m_pos;       // centre of box; usually relative to some object
-    glm::dvec3 m_extent;    // distance from centre to face
-    double m_radius;        // of sphere that contains box
+    glm::dvec3 m_pos;       /// centre of box; usually relative to some object
+    glm::dvec3 m_extent;    /// distance from centre to face
+    double m_radius;        /// of sphere that contains box
 
 };
 
@@ -201,7 +201,7 @@ namespace arb
     
     inline bool 
     intersect(const BBox &b1, const BBox &b2) 
-    // assumes axis aligned bounding boxes b1, b2 (AABB)
+    /// assumes axis aligned bounding boxes b1, b2 (AABB)
     { 
         return  b1.bot().x <= b2.top().x && b1.bot().y <= b2.top().y && b1.bot().z <= b2.top().z && 
         b2.bot().x <= b1.top().x && b2.bot().y <= b1.top().y && b2.bot().z <= b1.top().z;
@@ -209,7 +209,7 @@ namespace arb
     
     inline double 
     intersectArea(const BBox& b1, const BBox& b2) 
-    // assumes axis aligned bounding box (AABB)
+    /// assumes axis aligned bounding boxes b1, b2 (AABB)
     { 
         double area = 0;
         
@@ -228,6 +228,7 @@ namespace arb
     
     inline BBox 
     intersection(const BBox& b1, const BBox& b2) 
+    /// assumes axis aligned bounding boxes b1, b2 (AABB)
     {
         if (!intersect(b1, b2))
         {

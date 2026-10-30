@@ -55,13 +55,13 @@
 #include "BFunctions.h"
 #endif
 
-// namespace opengjk
 
-/** Relative tolerance for convergence (scaled machine epsilon) */
+
+/// relative tolerance for convergence (scaled machine epsilon) 
 const BScalar B_EPS_REL  = B_EPS * BScalar(1E4);
 const BScalar B_EPS_REL2 = B_EPS_REL * B_EPS_REL;
 
-/** Absolute tolerance for convergence (scaled machine epsilon) */
+/// absolute tolerance for convergence (scaled machine epsilon) 
 const BScalar B_EPS_ABS  = B_EPS * BScalar(1E2);
 const BScalar B_EPS_ABS2 = B_EPS_ABS * B_EPS_ABS;
 
@@ -107,7 +107,6 @@ operator>>( std::istream &istr, BGJKVertex &v )
 
     return istr;
 }
-
 
 
 
@@ -190,9 +189,9 @@ public:
     
 private:
     
-    std::array<BGJKVertex, 4> m_point;   /*!< Coordinates and Indices of the points of the simplex. */
-    std::array<BVector3, 2> m_witness;   /*!< Coordinates of the witness points. */
-    int m_nvrtx;                         /*!< Number of points defining the simplex.  */
+    std::array<BGJKVertex, 4> m_point;   /// coordinates and Indices of the points of the simplex
+    std::array<BVector3, 2> m_witness;   /// coordinates of the witness points
+    int m_nvrtx;                         /// number of points defining the simplex
 };
 
 

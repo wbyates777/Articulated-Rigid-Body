@@ -16,14 +16,13 @@
 
  An implemetation of: 
  
- i) the Gilbert–Johnson–Keerthi (GJK) distance algorithm, and 
- ii) the Expanding-Polytope-Algorithm (EPA). 
+ 1) the Gilbert–Johnson–Keerthi (GJK) distance algorithm, and 
+ 2) the Expanding-Polytope-Algorithm (EPA). 
 
  Computes penetration of body2 into body1. 
  
  Returns true if collision with depth of penetration, contact normal direction, and contact position. 
  Note  penetration depth is always positive.
- 
  
  see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
  
@@ -32,12 +31,12 @@
 
  Notes 
  
- i) OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used 
+ 1) OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used 
     then *all* the code in the release/product is also bound by the GPL3 license.
  
- ii) EPA returns positive depth for penetration; 
+ 2) EPA returns positive depth for penetration; 
  
- iii) GJK is not great when working with large flat surfaces or boxes 
+ 3) GJK is not great when working with large flat surfaces or boxes 
  
 */
 
@@ -105,17 +104,15 @@ public:
     ~BGJK( void )=default;
     
  
-    /*! @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point).
-     *
-     * @param[in] body1       pointer to body1
-     * @param[in] body2       pointer to body2
-     * @param[out] cinfo      contact infomation (depth, normal and point)
-     */
+    /// @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point)
+    ///
+    /// @param[in] body1       pointer to body1
+    /// @param[in] body2       pointer to body2
+    /// @param[out] cinfo      contact infomation (depth, normal and point)
     void
     collision( ABody *body1, ABody *body2, std::vector<BContactInfo> &cinfo );
     
 private:
-
 
     BBox 
     toBaseBox( const BMatrix4 &trans, const BVector3 &lo, const BVector3 &hi ) const;

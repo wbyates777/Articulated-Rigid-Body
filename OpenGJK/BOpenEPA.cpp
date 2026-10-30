@@ -653,10 +653,8 @@ BOpenEPA::tessellate_polytope( BEPAPolytope &poly, BGJKVertex &new_point, BVecto
     }
 }
 
-//*******************************************************************************************
-// Entry point to the EPA Implementation
-//*******************************************************************************************
 
+/// Entry point to the EPA Implementation
 BScalar
 BOpenEPA::collision( ABody* body1, ABody* body2, BSimplex &simplex, BScalar distance, 
                      BVector3 &cnormal, BVector3 &cpoint ) 

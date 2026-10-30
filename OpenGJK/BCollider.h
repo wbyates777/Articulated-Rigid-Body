@@ -50,9 +50,8 @@ public:
     enum CType { Linear, Adjacency, MAXCOLLIDER };
     
     BCollider( void ): m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_type(Adjacency)  {}
-    BCollider( const std::vector<BPolytope>& p ): m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(p), m_type(Adjacency) {}
-    BCollider( const BPolytope& poly ): BCollider( std::vector<BPolytope>(1, poly) ) {}
-
+    explicit BCollider( const std::vector<BPolytope>& p ): m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(p), m_type(Adjacency) {}
+    explicit BCollider( const BPolytope& poly ): BCollider( std::vector<BPolytope>(1, poly) ) {}
     ~BCollider( void )=default;
     
     CType 
@@ -61,7 +60,7 @@ public:
     void 
     setType( CType c ) { m_type = c; }
     
-    /*! The polytope index polyIdx in (vertIdx, polyIdx). */
+    /// The polytope index polyIdx in (vertIdx, polyIdx). 
     void 
     setPolyIdx( int p ) { m_polyIdx = p; } 
     
@@ -102,23 +101,23 @@ public:
     ///
     /// Support functions called by openGJK
     ///
-    
-    /*! The point in the polytope at index idx (vertIdx, polyIdx). */
+
+    /// the point in the polytope at index idx (vertIdx, polyIdx) 
     glm::dvec3
     point( const glm::ivec2& idx ) const { return m_polytope[idx[1]].m_coord[idx[0]]; }
 
-    /*! The first point returned by the support function for polytope polyIdx. */
+    /// the first point returned by the support function for polytope polyIdx 
     glm::dvec3  
     first_point( void ) const { return m_polytope[m_polyIdx].m_coord[0]; }
 
-    /*! The furthest point returned by the support function for polytope polyIdx. */
+    /// the furthest point returned by the support function for polytope polyIdx
     glm::dvec3 
     max_point( const glm::dvec3 &dir) const
     {
         return (m_type == BCollider::Adjacency) ? adjacency_max_point(dir, m_polyIdx) : linear_max_point(dir, m_polyIdx); 
     }
 
-    /*! Index of the furthest point returned by the support function for polytope polyIdx. */
+    /// index of the furthest point returned by the support function for polytope polyIdx
     glm::ivec2
     max_index( void ) const { return glm::ivec2(m_polytope[m_polyIdx].m_lastVertex, m_polyIdx); } 
     

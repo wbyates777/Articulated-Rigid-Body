@@ -44,7 +44,7 @@ public:
     // object identity, position and orientation
     //
     virtual BBodyId
-    objId( void ) const = 0;     // must be unique
+    objId( void ) const = 0;     /// must be unique
     
     virtual const BVector3&
     pos( void ) const = 0;
