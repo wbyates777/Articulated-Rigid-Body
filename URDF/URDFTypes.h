@@ -68,9 +68,9 @@ struct URDFOrigin
 
 struct URDFMaterial
 {
-    glm::dvec4 rgba = {1,1,1,1}; // optional
-    std::string name; // not optional
-    std::string texture; // optional
+    glm::dvec4 rgba = {1,1,1,1}; /// optional
+    std::string name;            /// not optional
+    std::string texture;         /// optional
 };
 
 enum  URDFGeometryType { Box, Cylinder, Sphere, Mesh, NONE };
@@ -83,9 +83,9 @@ toGeometryType(const std::string &type);
 
 struct URDFGeometry
 {
-    glm::dvec3 size = {0,0,0};  // sphere(r), box(lx,ly,lz), cylinder(r,h) 
+    glm::dvec3 size = {0,0,0};  /// sphere(r), box(lx,ly,lz), cylinder(r,h) 
     glm::dvec3 scale = {1,1,1};
-    std::string filename;       // for meshes (.stl, .obj)
+    std::string filename;       /// for meshes (.stl, .obj)
     URDFGeometryType type = URDFGeometryType::NONE;
 };
 
@@ -98,7 +98,7 @@ struct URDFInertial
 
 struct URDFVisual 
 {
-    std::string  name; // optional
+    std::string  name; /// optional
     URDFGeometry geometry;
     URDFOrigin   origin;
     URDFMaterial material;
@@ -106,7 +106,7 @@ struct URDFVisual
 
 struct URDFCollision 
 {
-    std::string  name; // optional
+    std::string  name; /// optional
     URDFGeometry geometry;
     URDFOrigin   origin;
 };
@@ -127,16 +127,16 @@ struct URDFLink
 
 struct URDFLimit 
 {
-    double lower_limit    = 0.0;   //  (optional, defaults to 0)
-    double upper_limit    = 0.0;   //  (optional, defaults to 0)
-    double effort_limit   = 1.0;   //  (requied, defaults to 1)  max force [N] or [N∙m]
-    double velocity_limit = 1.0;   //  (requied, defaults to 1)
+    double lower_limit    = 0.0;   ///  (optional, defaults to 0)
+    double upper_limit    = 0.0;   ///  (optional, defaults to 0)
+    double effort_limit   = 1.0;   ///  (requied, defaults to 1)  max force [N] or [N∙m]
+    double velocity_limit = 1.0;   ///  (requied, defaults to 1)
 };
 
 struct URDFDynamics 
 {
-    double damping  = 0.0;  // (optional, defaults to 0) [N∙s/m] or  [N∙m∙s/rad] 
-    double friction = 0.0;  // (optional, defaults to 0) static friction value  [N] or [N∙m]
+    double damping  = 0.0;  /// (optional, defaults to 0) [N∙s/m] or  [N∙m∙s/rad] 
+    double friction = 0.0;  /// (optional, defaults to 0) static friction value  [N] or [N∙m]
 };
 
 enum URDFJointType { Revolute, Continuous, Prismatic, Fixed, Floating, Planar, Helical, Spherical, UNDEFINED };
@@ -157,8 +157,8 @@ struct URDFJoint
     URDFOrigin origin;
     glm::dvec3 axis = {1,0,0};
     
-    URDFLimit limit;       // limits - only needed for prismatic and revolute
-    URDFDynamics dynamics; // optional
+    URDFLimit limit;       /// limits - only needed for prismatic and revolute
+    URDFDynamics dynamics; /// optional
 };
 
 //
