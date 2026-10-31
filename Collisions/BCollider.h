@@ -49,10 +49,10 @@ public:
     enum CType { Sphere, Box, Linear, Adjacency, MAXCOLLIDER };
     
     BCollider( void ) : m_type(Linear), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box() {}
-    BCollider( const std::vector<BPolytope>& p ) : m_type(Linear), m_lastVert(0), m_polyIdx(0), m_lastPoly(0), m_polytope(p), m_box() {}
-    BCollider( const BPolytope& p ) : BCollider(std::vector<BPolytope>(1,p)) {}
-    BCollider( const BBox& box ) : m_type(Box), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box(box)  {}
-    BCollider( double r ) : m_type(Sphere), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box() 
+    explicit BCollider( const std::vector<BPolytope>& p ) : m_type(Linear), m_lastVert(0), m_polyIdx(0), m_lastPoly(0), m_polytope(p), m_box() {}
+    explicit BCollider( const BPolytope& p ) : BCollider(std::vector<BPolytope>(1,p)) {}
+    explicit BCollider( const BBox& box ) : m_type(Box), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box(box)  {}
+    explicit BCollider( double r ) : m_type(Sphere), m_lastVert(0), m_lastPoly(0), m_polyIdx(0), m_polytope(), m_box() 
     {
         m_polytope.push_back( BPolytope( std::vector<glm::vec3>(1, glm::vec3(0.0, r, 0.0)) ) );
     }
