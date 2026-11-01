@@ -1,5 +1,9 @@
 ![](https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
 ![](https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
+![C++23](https://img.shields.io/badge/C%2B%2B-23-%230F79AA?style=for-the-badge&labelColor=%23131519&logo=c%2B%2B&logoColor=white)
+
+
+
 
 # <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" />  Articulated Rigid Body (ARB) 
 
