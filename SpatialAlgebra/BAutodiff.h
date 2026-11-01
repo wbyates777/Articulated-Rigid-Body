@@ -38,7 +38,8 @@
 #include <glm/vec4.hpp> 
 
 ///
-/// inter-operability between glm and autodiff 
+/// inter-operability between glm and autodiff  
+/// @note derivatives not preserved here
 ///
 inline glm::dvec3 
 operator+( const glm::vec<3,autodiff::real> &a, const glm::dvec3 &b ) 
@@ -82,7 +83,7 @@ namespace glm {
 }
 
 ///
-/// trigonometry operators 
+/// trigonometry functions 
 ///
 namespace glm { 
     
