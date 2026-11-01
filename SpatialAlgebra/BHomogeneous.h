@@ -37,7 +37,7 @@
 namespace arb
 {
 
-    /// converts a body-to-base spatial transform X to a body-to-base homogeneous matrix M 
+    /// converts a base-to-body spatial transform X to a body-to-base homogeneous matrix M 
     inline BMatrix4 
     toHomogeneous( const BTransform &X ) 
     {
@@ -47,7 +47,7 @@ namespace arb
     }
     
     
-    /// converts a body-to-base spatial transform directly to a base-to-body homogeneous matrix M 
+    /// converts a base-to-body spatial transform directly to a base-to-body homogeneous matrix M 
     /// avoids arb::inverse() by constructing matrix analytically 
     /// This is Featherstone's pluho - Plücker-to-homogeneous
     inline BMatrix4 
