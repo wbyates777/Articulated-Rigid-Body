@@ -123,7 +123,7 @@ BDynamics::BDynamics( int expected_dof ): m_dof1_U(),
 void  
 BDynamics::forward( BModel &m, BModelState &qstate, const BExtForce &f_ext ) // f_ext is f^x_i
 // Computes forward dynamics with the Articulated Body algorithm (ABA)
-// forward dynamics refers to the computation of the position (in our case accelerations) of 
+// forward dynamics refers to the computation of the accelerations of 
 // an end-effector, such as a jointed robotic arm, from specified values for the joint forces.
 // see RBDA, Table 7.1
 {
