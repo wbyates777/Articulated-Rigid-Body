@@ -70,18 +70,20 @@ public:
     
     const BJoint&
     joint( BJointId jid ) const { return m_joint[jid]; } 
-    
+
+    /// the number of joints $N_J$
     size_t 
-    jointNum( void ) const { return m_joint.size(); } /// the number of joints $N_J$
+    jointNum( void ) const { return m_joint.size(); } 
     
     BBody&
     body( BBodyId bid ) { return m_body[bid]; }
 
     const BBody&
     body( BBodyId bid ) const { return m_body[bid]; }
-    
+
+    /// the number of bodies $N_B$
     size_t
-    bodyNum( void ) const { return m_body.size(); }   /// the number of bodies $N_B$
+    bodyNum( void ) const { return m_body.size(); }   
 
     BFixedBody&
     fixedBody( BBodyId bid ) { return m_fixed[bid - m_fbd]; }
@@ -94,16 +96,16 @@ public:
     
     /// @brief Connects a given body to the model
     ///
-    /// Identifies the parent (or successor) body to which the body is added and
-    /// sets the transformation to the origin of the joint that connects the
+    /// Identifies the parent body to which a body is added and
+    /// set the transformation to the origin of the joint that connects the
     /// two bodies. This information specifies the relative
     /// positions of the bodies when the joint is in a neutral position.
     ///
     /// @param[in] parent_id   id of the parent body
     /// @param[in] joint_frame the transformation from the parent frame to the origin
     ///                    of the joint frame (used to set X_T in BJoint)
-    /// @param[in] joint the BJoint object
-    /// @param[in] body the BBody object
+    /// @param[in] joint the BJoint object connecting the parent to this body
+    /// @param[in] body the BBody object connected to parent
     /// @param[in] body_name the name of the body (internal to model)
     BBodyId 
     addBody( BBodyId parent_id,
@@ -113,7 +115,7 @@ public:
              const std::string &body_name = "" );    
 
     
-    /// set a bodies parameters 
+    /// set body parameters 
     void 
     setBody( BBodyId bid, const BInertia &inertia );
 
@@ -183,8 +185,8 @@ public:
     friend std::istream& 
     operator>>( std::istream &istr, BModel &m );
     
-    
-    static std::string ROOT(void) { return "ROOT"; } /// root body name @see URDFManager::toURDFModel()
+    /// root body name @see URDFManager::toURDFModel()
+    static std::string ROOT(void) { return "ROOT"; } 
     
 private:
 
