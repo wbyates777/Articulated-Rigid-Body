@@ -1,21 +1,18 @@
 /* BPolytopeLoader 17/12/2025
 
- $$$$$$$$$$$$$$$$$$$$$$$$$$$
- $   BPolytopeLoader.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$$$$$$
+         $   BPolytopeLoader.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
-
+ 
+ ---
+ 
  Load polytope for a mesh using the ASSIMP mesh loader.
  Computes the vertex edge adjancency vector used to optimise collision detection.
  Requires a triangular mesh - ASSIMP does this triangulation so you don't have to.
 
- Note 
- 
- 1) scale of mesh and scale of polytope must be identical.
+ @note scale of mesh and scale of polytope must be identical.
  
 */
 

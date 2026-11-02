@@ -1,18 +1,19 @@
 /* BCollider 01/03/2026
 
- $$$$$$$$$$$$$$$$$$$$$
- $   BCollider.cpp   $
- $$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$
+         $   BCollider.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
 
- CCD Collider
+ ---
  
- Note all points in coordinates local to model.
+ A libccd based Collider
  
- Note we use double/float and glm types here not spatial algebra types
+ This class lives in a game object or ABody class - it is the collidable shape for the object
+ 
+ @note all points in coordinates local to model.
+ @note we use double/float and glm types here not spatial algebra types
  
 */
 

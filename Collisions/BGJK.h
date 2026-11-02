@@ -1,31 +1,35 @@
-/*! 
+/* 
+
+         $$$$$$$$$$$$$$
+         $   BGJK.h   $
+         $$$$$$$$$$$$$$
+
  @file BGJK.h 
- @date 20/12/2025
-
- $$$$$$$$$$$$$$
- $   BGJK.h   $
- $$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Used for collision detection.
+ @ingroup Collisions
+ date 20/12/2025
  
- My c++ wrapper for external c library libcdd, see https://github.com/danfis/libccd
+ by W.B. Yates
+
+ ---
+
+ @brief A wrapper for the specific GJK implementation used to detect collisions.
+
+ Narrow-phase collision detection.
+ My c++ wrapper for external c library libcdd.
 
  An implemetation of: 
  
- i) the Gilbert–Johnson–Keerthi (GJK) distance algorithm, and 
- ii) the Expanding-Polytope-Algorithm (EPA). 
+ 1) the Gilbert–Johnson–Keerthi (GJK) distance algorithm, and 
+ 2) the Expanding-Polytope-Algorithm (EPA). 
 
  Computes penetration of body2 into body1. Returns distance/depth of penetration, contact normal direction, 
  and contact position. 
 
- see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
- 
  It is not the most recent implementation of GJK but it is well tested, fairly efficient and robust.
  Also it does not depend directly on Eigen.
+ 
+ @see https://github.com/danfis/libccd
+ @see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
  
 */
 

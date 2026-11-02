@@ -1,33 +1,37 @@
 /*!
+ * @defgroup Collisions Contact Manager
+ * @brief An impulse based collision detection and resolution system.
+ */
+
+/*!
+
+         $$$$$$$$$$$$$$$$$$$$$$$$$
+         $   BContactManager.h   $
+         $$$$$$$$$$$$$$$$$$$$$$$$$
+
  @file BContactManager.h 
- @date 17/12/2025
-
- $$$$$$$$$$$$$$$$$$$$$$$$$
- $   BContactManager.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 17/12/2025
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
 
- A simple impulse based collision detection and resolution system.
+ @brief A simple impulse based collision detection and resolution system.
+ 
  This code is not a full blown, production ready, collision resolution system 
  such as Jolt or Bullet. Instead it is intended as a demonstration of spatial impulse. 
  
- 
  The BContactManager detects collisions between pairs of objects and resolves any 'contacts' by employing 
  the physical concept of impulse to vary an object's velocity following a collision
- See https://en.wikipedia.org/wiki/Physics_engine
- 
+
  The BContactManager performs _broad phase_ and _narrow phase_ collison detection.
  
  Broad-phase consists of detecting intersections between axis-aligned (AABB) or orientated bounding boxes (OBB). 
  Computationally, this is relatively efficient.
 
- 
  Narrow-phase consists of detecting intersections between mesh polytopes/convex hulls 
  using the GJK and EPA algorithms. This is very precise but computationally expensive.
- See https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
 
  Collision resolution consists of varying the colliding objects velocities by calculating and applying the 
  spatial impulse resulting from the collision (see RBDA, Section 11.7 Impulsive Dynamics, 
@@ -45,44 +49,40 @@
  specific constraints (such as 'no penetration between rigid bodies') are met.
  
  
- Coefficient of Restitution
- ------------------------------
- The coefficient of restitution (COR) is denoted e and when:
- e = 0     : a perfectly inelastic collision; objects do not rebound at all and end up touching.
- 0 < e < 1 : an inelastic collision, in which some kinetic energy is dissipated. 
-             The objects rebound with a lower separation speed than the speed of approach.
- e = 1     : a perfectly elastic collision, in which no kinetic energy is dissipated. 
-             The objects rebound with the same relative speed with which they approached.
- See https://en.wikipedia.org/wiki/Coefficient_of_restitution 
+ Coefficients
  
+ The coefficient of restitution (COR) is denoted e and when:
+ - e = 0     : a perfectly inelastic collision; objects do not rebound at all and end up touching.
+ - 0 < e < 1 : an inelastic collision, in which some kinetic energy is dissipated. 
+             The objects rebound with a lower separation speed than the speed of approach.
+ - e = 1     : a perfectly elastic collision, in which no kinetic energy is dissipated. 
+             The objects rebound with the same relative speed with which they approached.
 
- Coefficient of Friction
- ------------------------------
  The coefficient of friction is denoted μ and when:
- μ ≈ 0     : near-frictionless (like ice on ice),
- μ ≈ 0.5   : typical wood or plastic contact,
- μ ≈ 1.0   : very grippy (like rubber on dry asphalt),
- μ > 1.0   : extremely high friction (like racing tires or adhesives).
- See  https://en.wikipedia.org/wiki/Friction 
+ - μ ≈ 0     : near-frictionless (like ice on ice),
+ - μ ≈ 0.5   : typical wood or plastic contact,
+ - μ ≈ 1.0   : very grippy (like rubber on dry asphalt),
+ - μ > 1.0   : extremely high friction (like racing tires or adhesives).
  
  
  Other Constants
- ------------------------------
- 1)   m_iters - PGS solver iterations - 20 is good, 25 is plenty 
- 2)  m_baumgarte - Baumgarte stabilization factor [0.15, 0.2] are reasonable values
- 3)  m_max_dist and m_max_tan_dist2 - used by BManifold::refresh() to 'drop' contact points if the contact bodies are 
+ 
+ -  m_iters - PGS solver iterations - 25 is good, 30 is plenty 
+ -  m_baumgarte - Baumgarte stabilization factor [0.15, 0.2] are reasonable values
+ -  m_max_dist and m_max_tan_dist2 - used by BManifold::refresh() to 'drop' contact points if the contact bodies are 
       separated beyond the given tolerance.
- 4) m_threshold2 - used by BManifold::addPoint() to determine if two contact points are equal
+ - m_threshold2 - used by BManifold::addPoint() to determine if two contact points are equal
 
  
- Notes: 
- 1) Consider a 3D force f applied to a rigid body at some 3D point p, then the corresponding 
-    spatial force (wrench) is $F = (p \times f, f)$, Modern Robotics, page 108, eqn 3.93 
- 2) we work in base/world coordinates (positions, velocities, inertias) as we are dealing with multiple bodies 
- 3) contacts are differentiable (AD).
- 4) see https://github.com/jslee02/awesome-collision-detection for a detailed list of useful resources 
+ @note contacts are differentiable (AD).
+ @note we use base/world coordinates (positions, velocities, inertias) as we are dealing with multiple bodies. 
 
- 
+ @see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
+ @see https://en.wikipedia.org/wiki/Physics_engine
+ @see https://en.wikipedia.org/wiki/Coefficient_of_restitution 
+ @see https://en.wikipedia.org/wiki/Friction 
+ @see https://github.com/jslee02/awesome-collision-detection for a detailed list of useful resources 
+
 */
 
 
@@ -120,7 +120,17 @@ public:
     void
     clear( void ) { m_active.clear(); m_history.clear(); }
         
-    /// return number of collisions; update velocities of bodies accordingly
+
+    /// @brief Detect and resolve collisions between bodies; update body velocities accordingly
+    ///
+    /// Broad-phase and narrow-phase collision detection.
+    /// Check dynamic and fixed objects against one another for collisions.
+    /// Update the velocities of bodies that have collided accordingly.
+    ///
+    /// @param[in] dt  time step
+    /// @param[in,out] body  vector of pointers to dynamic bodies
+    /// @param[in,out] fixed  vector of pointers to fixed bodies (optional, defaults to empty)
+    /// @return the number of collisions detected
     int
     resolve( double dt, const std::vector<ABody*> &body, const std::vector<ABody*> &fixed = std::vector<ABody*>() );
 
@@ -184,7 +194,7 @@ private:
     }
     
     void
-    narrowCheck(ABody *b1, ABody *b2, long now); /// use GJK/EPA
+    narrowCheck(ABody *b1, ABody *b2, long now); // use GJK/EPA
     
     int
     detect( const std::vector<ABody*> &body, const std::vector<ABody*> &fixed  );
@@ -199,24 +209,24 @@ private:
     cache( void );
     
 
-    uint64_t m_iters;        /// PGS solver iterations 25 is plenty - 20 is OK
+    uint64_t m_iters;        // PGS solver iterations 25 is plenty - 20 is OK
     uint64_t m_cachehits;
     
-    BScalar m_e;             /// coefficient of restitution, denoted e
-    BScalar m_mu;            /// coefficient of friction, denoted μ
-    BScalar m_baumgarte;     /// coefficient of Baumgarte stabilization 
-    BScalar m_slop;          /// Baumgarte acceptable penetration
+    BScalar m_e;             // coefficient of restitution, denoted e
+    BScalar m_mu;            // coefficient of friction, denoted μ
+    BScalar m_baumgarte;     // coefficient of Baumgarte stabilization 
+    BScalar m_slop;          // Baumgarte acceptable penetration
  
-    BScalar m_max_dist;      /// see BManifold::refresh 
-    BScalar m_max_tan_dist2; /// see BManifold::refresh
-    BScalar m_threshold2;    /// see BManifold::addPoint
+    BScalar m_max_dist;      // see BManifold::refresh 
+    BScalar m_max_tan_dist2; // see BManifold::refresh
+    BScalar m_threshold2;    // see BManifold::addPoint
     
     BGJK  m_detector; 
     
     std::vector<BManifold> m_active;
     std::unordered_map<uint64_t, BManifold> m_history; 
     
-    std::vector<BContactInfo> m_collisions; /// individual contacts detected
+    std::vector<BContactInfo> m_collisions; // individual contacts detected
     
     bool m_frictionOn;
 };

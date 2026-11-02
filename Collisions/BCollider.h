@@ -1,28 +1,25 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BCollider.h   $
+         $$$$$$$$$$$$$$$$$$$
+
  @file BCollider.h
- @date 01/03/2026
-
- $$$$$$$$$$$$$$$$$$$
- $   BCollider.h   $
- $$$$$$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 01/03/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
 
+ ---
  
- CCD Collider
+ @brief Collider object for libccd.
  
- 
- Support functions for various types/shapes of colliders
+ Support functions for various types/shapes of colliders for libccd
 
- Note all points in coordinates local to model.
+ @note all points in coordinates local to model
+ @note we use double here (see libccd build options) and not spatial algebra types
  
- See for example https://github.com/jrl-umi3218/sch-core/tree/master/src/S_Object 
-   
- 
- Note we use double here (see libccd build options) and not spatial algebra types
- 
+ @see https://github.com/jrl-umi3218/sch-core/tree/master/src/S_Object 
 */
 
 

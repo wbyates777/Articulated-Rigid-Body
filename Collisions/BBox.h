@@ -1,18 +1,19 @@
 /*! 
+
+         $$$$$$$$$$$$$$
+         $   BBox.h   $
+         $$$$$$$$$$$$$$
+
  @file BBox.h 
- @date 27/04/2018
-
- $$$$$$$$$$$$$$
- $   BBox.h   $
- $$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ @ingroup Collisions
+ date 27/04/2018
  
- This sets up an axis aligned bounding box (AABB)
-
- Note we use double here - no spatial algebra/diffentiable types
+ by W.B. Yates
+ 
+ ---
+ 
+ @brief Represents an axis aligned bounding box (AABB).
+ @note We use double here - no spatial algebra or diffentiable types
  
  */
  
@@ -76,7 +77,7 @@ public:
         m_radius = glm::length(m_extent); 
     }
     
-    // assumes BBox is axis aligned AABB
+    /// assumes BBox is axis aligned AABB
     void 
     setBox( const glm::dvec3 &top, const glm::dvec3 &bot )
     {
@@ -96,7 +97,7 @@ public:
     const glm::dvec3&
     bot( void ) const { return m_bot; }
     
-    // centre of box
+    /// centre of box
     const glm::dvec3&
     pos( void ) const { return m_pos; }
     
@@ -104,7 +105,7 @@ public:
     pos( void ) { return m_pos; }
     
     
-    // box vertex
+    /// box vertex
     glm::dvec3
     operator[](int i) const 
     {
@@ -123,7 +124,7 @@ public:
         }
     }
   
-    // radius of sphere that contains box
+    /// radius of sphere that contains box
     double
     radius( void ) const { return m_radius; }
     
@@ -144,10 +145,9 @@ public:
     width( void ) const { return (m_top.x - m_bot.x); }
 
     
-    
+    /// assumes axis aligned bounding box (AABB) 
     bool
     contains( const glm::dvec3 &p ) const
-    // assumes axis aligned bounding box (AABB) 
     {
         return (m_bot.x <= p.x && m_top.x >= p.x && m_bot.y <= p.y && m_top.y >= p.y && m_bot.z <= p.z && m_top.z >= p.z);
     }
@@ -162,11 +162,11 @@ public:
     
 private:
 
-    glm::dvec3 m_top;       /// top (max) and bottom (min) opposite corners of box 
+    glm::dvec3 m_top;       // top (max) and bottom (min) opposite corners of box 
     glm::dvec3 m_bot;       
-    glm::dvec3 m_pos;       /// centre of box; usually relative to some object
-    glm::dvec3 m_extent;    /// distance from centre to face
-    double m_radius;        /// of sphere that contains box
+    glm::dvec3 m_pos;       // centre of box; usually relative to some object
+    glm::dvec3 m_extent;    // distance from centre to face
+    double m_radius;        // of sphere that contains box
 
 };
 

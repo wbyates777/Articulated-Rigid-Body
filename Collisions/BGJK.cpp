@@ -1,12 +1,12 @@
 /* BGJK 20/12/2025
 
- $$$$$$$$$$$$$$$$$
- $   BGJK.cpp   $
- $$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$
+         $   BGJK.cpp   $
+         $$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+
+ ---
 
  My c++ wrapper for libcdd, see https://github.com/danfis/libccd
  
@@ -99,20 +99,6 @@ BGJK::support_fn( const void *obj, const ccd_vec3_t *dir, ccd_vec3_t *vec )
     setVec3(vec, v); 
 }
 
-
-
-/// Computes penetration of obj2 into obj1.
-/// Depth of penetration, direction and position is returned. It means that
-/// if obj2 is translated by distance depth in direction dir objects will
-/// have touching contact, pos should be position in global coordinates
-/// where force should take a place.
-///
-/// GJK+EPA algorithm is used.
-///
-/// Returns 0 if obj1 and obj2 intersect and depth, dir and pos are filled
-/// if given non-NULL pointers.
-/// If obj1 and obj2 don't intersect -1 is returned.
-/// If memory allocation fails -2 is returned.
 bool
 BGJK::collision( ABody* b1, ABody* b2, BScalar &cdepth, BVector3 &cnormal, BVector3 &cpoint )
 {
@@ -125,8 +111,7 @@ BGJK::collision( ABody* b1, ABody* b2, BScalar &cdepth, BVector3 &cnormal, BVect
     // perform the test
     double depth = -1.0;
     int res = ccdGJKPenetration(b1, b2, &m_ccd, &depth, &dir, &pos);
-    //
-    
+
     bool retVal = false;
     cdepth = 0.0; 
     
@@ -145,9 +130,9 @@ BGJK::collision( ABody* b1, ABody* b2, BScalar &cdepth, BVector3 &cnormal, BVect
     
         cpoint = toGLM(&pos);
         
-        /// CCD has known issue with large flat faces
-        /// this fix attempts to keep cpoint within an object's bounds
-        /// note no orientation taken into considertion
+        // ccd has known issue with large flat faces
+        // this fix attempts to keep cpoint within an object's bounds
+        // note no orientation taken into considertion
         const BVector3 top1 = b1->box().top() + b1->pos();
         const BVector3 bot1 = b1->box().bot() + b1->pos();
         
@@ -256,8 +241,6 @@ BGJK::collision( ABody *b1, ABody *b2, std::vector<BContactInfo> &cinfo )
 }
 
 
-
-//
 
 
 

@@ -1,16 +1,18 @@
 /*! 
+
+         $$$$$$$$$$$$$$$
+         $   ABody.h   $
+         $$$$$$$$$$$$$$$
+
  @file ABody.h 
- @date 25/11/2025
-
- $$$$$$$$$$$$$$$
- $   ABody.h   $
- $$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 25/11/2025
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- The abstract-base interface used by the BCollisionManager
+ 
+ ---
+ 
+ @brief The abstract-base interface used by the BCollisionManager.
  
 */
 
@@ -44,7 +46,7 @@ public:
     // object identity, position and orientation
     //
     virtual BBodyId
-    objId( void ) const = 0;     /// must be unique
+    objId( void ) const = 0;     ///< must be unique
     
     virtual const BVector3&
     pos( void ) const = 0;

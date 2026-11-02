@@ -1,14 +1,13 @@
 /* BContactManager 17/12/2025
 
- $$$$$$$$$$$$$$$$$$$$$$$$$$$
- $   BContactManager.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$$$$$$
+         $   BContactManager.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
  
+ ---
+
  Two-Body Collisions, Friction
  
  Collision resolution consists of varying the colliding objects velocities by calculating and applying the 
@@ -22,19 +21,13 @@
  expressed in the form $nλ$  where $n$ is the (spatial) contact normal from body2 to body1, 
  and λ a scalar impulse magnitude.
  
-
- 
- Notes
-
- 1)  an Orientated Bounding Box (OBB) is an Axis Aligned Bounding Box (AABB) with
-     an accompanying 3D orientation matrix/quaternion.
- 2) For the special case where all the collider objects under consideration are perfect spheres
-     you can replace:  
+ For the special case where all the collider objects under consideration are perfect spheres you can replace:  
    
- iscollision = m_detector1.collision( b1, b2, c.depth, c.normal, c.pos ); // openGJHK 
+    iscollision = m_detector1.collision( b1, b2, c.depth, c.normal, c.pos ); // openGJHK 
  
  with
  
+ @code{.cpp}
  {
     BVector3 diff = b2->pos() - b1->pos();
     BScalar dist  = arb::length(diff);
@@ -47,8 +40,13 @@
         iscollision = true;
     }
  }
-
+@endcode
+ 
  This also calculates the correct derivatives.
+ 
+@note  an Orientated Bounding Box (OBB) is an Axis Aligned Bounding Box (AABB) with
+     an accompanying 3D orientation matrix/quaternion.
+ 
 */
 
 
@@ -169,7 +167,7 @@ BContactManager::prepare( BScalar dt )
         ABody *b1 = m.body1();
         ABody *b2 = m.body2();
         
-        for (BContact &c : m.points()) 
+        for (BContactDetails &c : m.points()) 
         {
             // Two-Body Collisions, RBDA, page 232
             BVector3 rel_pos1 = c.pos - b1->pos();
@@ -267,7 +265,7 @@ BContactManager::solve( void )
             ABody *b1 = m.body1();
             ABody *b2 = m.body2();
             
-            for (BContact &c : m.points()) 
+            for (BContactDetails &c : m.points()) 
             {
                 // current relative velocity (separation velocity at contact i)
                 const BScalar relvel = arb::dot(c.n_2, b2->v()) + arb::dot(c.n_1, b1->v());
