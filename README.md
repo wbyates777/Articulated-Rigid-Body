@@ -1,7 +1,7 @@
 ![](https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
 ![](https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
 ![C++23](https://img.shields.io/badge/C%2B%2B-23-%230F79AA?style=for-the-badge&labelColor=%23131519&logo=c%2B%2B&logoColor=white)
-
+[![Documentation](https://img.shields.io/badge/docs-Doxygen-%230F79AA?style=for-the-badge&labelColor=%23131519)](https://wbyates777.github.io/Articulated-Rigid-Body/)
 
 
 
@@ -316,6 +316,11 @@ If you are not using CMake these libraries can be downloaded directly from githu
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
 If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. glm and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with std::snprintf). 
 
+## Documentation
+
+The Doxygen API reference for this library is hosted on GitHub Pages:
+
+👉 **[View API Documentation](https://wbyates777.github.io/Articulated-Rigid-Body/)**
 
 ## Background
 
