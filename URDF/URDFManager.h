@@ -4,14 +4,14 @@
  */
 
 /*! 
- @file URDFManager.h
- @ingroup URDF
- @date 11/04/2026
-
          $$$$$$$$$$$$$$$$$$$$$
          $   URDFManager.h   $
          $$$$$$$$$$$$$$$$$$$$$
 
+ @file URDFManager.h
+ @ingroup URDF
+ date 11/04/2026
+ 
  by W.B. Yates
  
  ---
