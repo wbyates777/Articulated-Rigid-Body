@@ -320,7 +320,13 @@ If you remove (some) constexpr definitions, then my code will compile under C++2
 
 The Doxygen API reference for this library is hosted on GitHub Pages:
 
-👉 **[View API Documentation](https://wbyates777.github.io/Articulated-Rigid-Body/)**
+👉 **[API Documentation](https://wbyates777.github.io/Articulated-Rigid-Body/)**
+
+or, in the directory where you have saved this project, enter:
+
+   ```doxygen Doxyfile```
+
+to generate the documentaion locally.
 
 ## Background
 
