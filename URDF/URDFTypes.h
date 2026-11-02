@@ -1,12 +1,13 @@
 /*!
- @file URDFTypes.h
- @ingroup URDF
- @date 28/03/2026
 
          $$$$$$$$$$$$$$$$$$$
          $   URDFTypes.h   $
          $$$$$$$$$$$$$$$$$$$
 
+ @file URDFTypes.h
+ @ingroup URDF
+ date 28/03/2026
+ 
  by W.B. Yates
  
  ---
