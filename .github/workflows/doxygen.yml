@@ -1,0 +1,29 @@
+name: Generate Doxygen Documentation
+
+on:
+  push:
+    branches: [ "main" ] # Change to "master" if your default branch uses that name
+
+permissions:
+  contents: write
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen
+
+      - name: Run Doxygen
+        run: doxygen Doxyfile
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./Docs/html # Ensure this matches your Doxyfile HTML_OUTPUT directory
+          publish_branch: gh-pages
+          keep_files: false
