@@ -1,14 +1,13 @@
 /* URDFManager 11/04/2026
 
- $$$$$$$$$$$$$$$$$$$$$$$
- $   URDFManager.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$$
+         $   URDFManager.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
  
+ ---
+
  URDF, Unified Robot Description Format is an XML format
  
  This class implements a subset of the URDF XML format - see  https://wiki.ros.org/urdf/XML
@@ -42,10 +41,10 @@ URDFManager::save( const std::string &path, const BModel &model, bool add_base )
 }
 
 BModel
-URDFManager::load( const std::string &path ) const
+URDFManager::load( const std::string &filename ) const
 {
     URDFModel urdfmodel;
-    m_reader.load(path, urdfmodel); 
+    m_reader.load(filename, urdfmodel); 
     
     return toBModel(urdfmodel);
 }

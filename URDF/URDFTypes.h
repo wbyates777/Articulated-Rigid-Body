@@ -1,41 +1,37 @@
 /*!
  @file URDFTypes.h
+ @ingroup URDF
  @date 28/03/2026
 
- $$$$$$$$$$$$$$$$$$$
- $   URDFTypes.h   $
- $$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$
+         $   URDFTypes.h   $
+         $$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
  
- URDF, Unified Robot Description Format is an XML format
+ ---
  
- see  https://wiki.ros.org/urdf/XML
+ @brief Data structured for URDF reading and writing.
+ 
+ URDF, Unified Robot Description Format is an XML format.
  
  Simple  intermediate layer of structs that hold URDF data for reading and writing
  uses glm::dvec3, glm::dvec4, glm::dmat3 data types - no spatial algebra stuff
  
-
- 
  Supports URDF Joint Types
- ---------------------------
- revolute   — a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
- continuous — a continuous hinge joint that rotates around the axis and has no upper and lower limits.
- prismatic  — a sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.
- fixed      — this is not really a joint because it cannot move. All degrees of freedom are locked. 
-              This type of joint does not require the <axis>, <calibration>, <dynamics>, <limits> or <safety_controller>.
- floating   — 6-dof joint allows motion for all 6 degrees of freedom. Must be first joint
- planar     - 3-dof joint allows motion x,y translation and z rotation
+ - revolute   a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
+ - continuous a continuous hinge joint that rotates around the axis and has no upper and lower limits.
+ - prismatic  a sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.
+ - fixed      this is not really a joint because it cannot move. All degrees of freedom are locked. 
+              This type of joint does not require the axis, calibration, dynamics, limits or safety_controller.
+ - floating   6-DoF joint allows motion for all 6 degrees of freedom. Must be first joint
+ - planar     3-DoF joint allows motion x,y translation and z rotation
  
  Supports non-URDF Joint Types
- ---------------------------
- spherical  - 3-dof spherical or 'ball and socket' joint
+  - spherical  - 3-DoF spherical or 'ball and socket' joint
  
  
- Notes:
+ @see  https://wiki.ros.org/urdf/XML
  
 */
 
@@ -62,15 +58,15 @@
 
 struct URDFOrigin 
 {
-    glm::dvec3 xyz = {0,0,0};
+    glm::dvec3 xyz = {1,0,0}; 
     glm::dvec3 rpy = {0,0,0}; 
 };
 
 struct URDFMaterial
 {
-    glm::dvec4 rgba = {1,1,1,1}; /// optional
-    std::string name;            /// not optional
-    std::string texture;         /// optional
+    glm::dvec4 rgba = {1,1,1,1}; ///< optional
+    std::string name;            ///< not optional
+    std::string texture;         ///< optional
 };
 
 enum  URDFGeometryType { Box, Cylinder, Sphere, Mesh, NONE };
@@ -83,9 +79,9 @@ toGeometryType(const std::string &type);
 
 struct URDFGeometry
 {
-    glm::dvec3 size = {0,0,0};  /// sphere(r), box(lx,ly,lz), cylinder(r,h) 
+    glm::dvec3 size = {0,0,0};  ///< sphere(r), box(lx,ly,lz), cylinder(r,h) 
     glm::dvec3 scale = {1,1,1};
-    std::string filename;       /// for meshes (.stl, .obj)
+    std::string filename;       ///< for meshes (.stl, .obj, etc)
     URDFGeometryType type = URDFGeometryType::NONE;
 };
 
@@ -98,7 +94,7 @@ struct URDFInertial
 
 struct URDFVisual 
 {
-    std::string  name; /// optional
+    std::string  name; ///< optional
     URDFGeometry geometry;
     URDFOrigin   origin;
     URDFMaterial material;
@@ -106,7 +102,7 @@ struct URDFVisual
 
 struct URDFCollision 
 {
-    std::string  name; /// optional
+    std::string  name; ///< optional
     URDFGeometry geometry;
     URDFOrigin   origin;
 };
@@ -127,16 +123,16 @@ struct URDFLink
 
 struct URDFLimit 
 {
-    double lower_limit    = 0.0;   ///  (optional, defaults to 0)
-    double upper_limit    = 0.0;   ///  (optional, defaults to 0)
-    double effort_limit   = 1.0;   ///  (requied, defaults to 1)  max force [N] or [N∙m]
-    double velocity_limit = 1.0;   ///  (requied, defaults to 1)
+    double lower_limit    = 0.0;   ///<  (optional, defaults to 0)
+    double upper_limit    = 0.0;   ///<  (optional, defaults to 0)
+    double effort_limit   = 1.0;   ///<  (requied, defaults to 1)  max force [N] or [N∙m]
+    double velocity_limit = 1.0;   ///<  (requied, defaults to 1)
 };
 
 struct URDFDynamics 
 {
-    double damping  = 0.0;  /// (optional, defaults to 0) [N∙s/m] or  [N∙m∙s/rad] 
-    double friction = 0.0;  /// (optional, defaults to 0) static friction value  [N] or [N∙m]
+    double damping  = 0.0;  ///< (optional, defaults to 0) [N∙s/m] or  [N∙m∙s/rad] 
+    double friction = 0.0;  ///< (optional, defaults to 0) static friction value  [N] or [N∙m]
 };
 
 enum URDFJointType { Revolute, Continuous, Prismatic, Fixed, Floating, Planar, Helical, Spherical, UNDEFINED };
@@ -157,8 +153,8 @@ struct URDFJoint
     URDFOrigin origin;
     glm::dvec3 axis = {1,0,0};
     
-    URDFLimit limit;       /// limits - only needed for prismatic and revolute
-    URDFDynamics dynamics; /// optional
+    URDFLimit limit;       ///< limits - only needed for prismatic and revolute
+    URDFDynamics dynamics; ///< optional
 };
 
 //

@@ -1,23 +1,20 @@
 /* URDFWriter 29/03/2026
 
- $$$$$$$$$$$$$$$$$$$$$$
- $   URDFWriter.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$
+         $   URDFWriter.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
 
  URDF, Unified Robot Description Format is an XML format
  
  This class implements a subset of the URDF XML format 
- Used for loading/saving articulated bodies (BMultibody).
+ Used for loading/saving articulated bodies.
  
- Depends on tinyxml2 https://github.com/leethomason/tinyxml2
- 
- see  https://wiki.ros.org/urdf/XML
- 
- 
+ Depends on tinyxml2. 
+
  For c++17 the following code:
  
     return std::format("{:.{}f} {:.{}f} {:.{}f}", v[0], m_dp, v[1], m_dp, v[2], m_dp);
@@ -28,6 +25,9 @@
      std::snprintf(buf, sizeof(buf), "%.*f %.*f %.*f", m_dp, v[0], m_dp, v[1], m_dp, v[2]);
      return buf;
  
+ @see  https://wiki.ros.org/urdf/XML
+ @see https://github.com/leethomason/tinyxml2
+
 */
 
 

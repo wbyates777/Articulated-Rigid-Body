@@ -1,23 +1,27 @@
 /*!
  @file URDFWriter.h
+ @ingroup URDF
  @date 29/03/2026
 
- $$$$$$$$$$$$$$$$$$$$
- $   URDFWriter.h   $
- $$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$
+         $   URDFWriter.h   $
+         $$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
+ 
+ ---
+ 
+ @brief Write out model to a URDF format file.
+ 
  URDF, Unified Robot Description Format is an XML format
  
  This class implements a subset of the URDF XML format 
- Used for loading/saving articulated bodies (BMultibody).
+ Used for loading/saving articulated bodies.
  
- Depends on tinyxml2 https://github.com/leethomason/tinyxml2
+ Depends on tinyxml2.
  
- see  https://wiki.ros.org/urdf/XML
+ @see  https://wiki.ros.org/urdf/XML
+ @see https://github.com/leethomason/tinyxml2
  
  TODO: improve error handling 
  

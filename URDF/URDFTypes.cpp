@@ -1,13 +1,11 @@
 /* URDFTypes 28/03/2026
 
- $$$$$$$$$$$$$$$$$$$$$
- $   URDFTypes.cpp   $
- $$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$
+         $   URDFTypes.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
+ 
 */
 
 #ifndef URDFTYPES_H

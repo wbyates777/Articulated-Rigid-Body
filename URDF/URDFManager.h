@@ -1,49 +1,52 @@
+/*!
+ * @defgroup URDF URDF Manager
+ * @brief Unified Robot Description Format (URDF) load and save.
+ */
+
 /*! 
  @file URDFManager.h
+ @ingroup URDF
  @date 11/04/2026
 
- $$$$$$$$$$$$$$$$$$$$$
- $   URDFManager.h   $
- $$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$
+         $   URDFManager.h   $
+         $$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
  
- URDF, Unified Robot Description Format is an XML format
+ ---
  
- This class implements a subset of the URDF XML format - see  https://wiki.ros.org/urdf/XML
- Used for loading/saving articulated bodies (BModel).
+ @brief Manager class for URDF reading and writing.
+ 
+ URDF, Unified Robot Description Format is an XML format.
+ 
+ This class implements a subset of the URDF XML format
+ used for loading/saving articulated body models (BModel).
  
  ARB URDF models that use FloatBase can be read directly 
  by the RBDL-URDFReader addon, and thus cross verified.
- The RDBL-URDFReader is quite strict/picky, and in general only ARB URDF models 
+ 
+ However, the RDBL-URDFReader is quite strict/picky, and in general only ARB URDF models 
  that are saved with 'add_base=true' can be read by the RBDL-URDFReader addon. 
  
- Depends on tinyxml2 https://github.com/leethomason/tinyxml2
- 
- I have included the tinyxml2 files here directly as there are only two of them.
+ This project depends on tinyxml2. I have included the tinyxml2 files here directly as there are only two of them.
  
 
- 
- 
- Supports URDF Joint Types
- ---------------------------
- revolute   — a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
- continuous — a continuous hinge joint that rotates around the axis and has no upper and lower limits.
- prismatic  — a sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.
- fixed      — this is not really a joint because it cannot move. All degrees of freedom are locked. 
-              This type of joint does not require the <axis>, <calibration>, <dynamics>, <limits> or <safety_controller>.
- floating   — this joint allows motion for all 6 degrees of freedom. Must be first joint
- planar     - 3-dof joint allows motion x,y translation and z rotation
+  Supports URDF Joint Types
+
+ - revolute    a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
+ - continuous  a continuous hinge joint that rotates around the axis and has no upper and lower limits.
+ - prismatic   a sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.
+ - fixed       this is not really a joint because it cannot move. All degrees of freedom are locked. 
+               This type of joint does not require the axis, calibration, dynamics, limits or safety_controller.
+ - floating    this joint allows motion for all 6 degrees of freedom. Must be first joint
+ - planar      3-DoF joint allows motion x,y translation and z rotation
  
  Supports non-URDF Joint Types
- ---------------------------
- spherical  - 3-dof spherical or 'ball and socket' joint
+  - spherical  3-DoF spherical or 'ball and socket' joint
  
- Notes: 
-
+ @see https://wiki.ros.org/urdf/XML
+ @see https://github.com/leethomason/tinyxml2 
  
 */
 
@@ -75,14 +78,15 @@ public:
     URDFManager( void ) : m_reader(), m_writer() {}
     ~URDFManager( void )=default;
 
-    
-    // if add_base is true generate RDBL readable XML
+    /// save to a URDF file; set add_base to true to generate RDBL readable XML
     bool
     save( const std::string &path, const BModel &model, bool add_base = false ) const;
     
+    /// load a URDF file from filename 
     BModel
-    load( const std::string &path ) const;
+    load( const std::string &filename ) const;
     
+    /// number of decimal places for save
     void
     setDP( int dp ) { m_writer.setDP(dp); }
     

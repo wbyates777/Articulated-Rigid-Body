@@ -1,21 +1,22 @@
 /* URDFReader 29/03/2026
 
- $$$$$$$$$$$$$$$$$$$$$$
- $   URDFReader.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$
+         $   URDFReader.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
+ 
+ ---
+ 
  URDF, Unified Robot Description Format is an XML format
  
  This class implements a subset of the URDF XML format 
- Used for loading/saving articulated bodies (BMultibody).
+ Used for loading/saving articulated bodies.
  
- Depends on tinyxml2 https://github.com/leethomason/tinyxml2
- 
- see  https://wiki.ros.org/urdf/XML
+ Depends on tinyxml2.
+
+ @see  https://wiki.ros.org/urdf/XML
+ @see https://github.com/leethomason/tinyxml2
  
 */
 
@@ -40,7 +41,7 @@ URDFReader::readOrigin( const XMLElement* xml, URDFOrigin &orig ) const
     const char* xyz = xml->Attribute("xyz");
     if (xyz) 
         std::sscanf(xyz, "%lf %lf %lf", &orig.xyz[0], &orig.xyz[1], &orig.xyz[2]);
-    
+
     const char* rpy = xml->Attribute("rpy");
     if (rpy) 
         std::sscanf(rpy, "%lf %lf %lf", &orig.rpy[0], &orig.rpy[1], &orig.rpy[2]);
