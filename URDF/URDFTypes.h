@@ -11,24 +11,24 @@
  
  ---
  
- @brief Data structured for URDF reading and writing.
+ @brief Data structures for URDF reading and writing.
  
  URDF, Unified Robot Description Format is an XML format.
  
  Simple  intermediate layer of structs that hold URDF data for reading and writing
- uses glm::dvec3, glm::dvec4, glm::dmat3 data types - no spatial algebra stuff
+ uses glm::dvec3, glm::dvec4, glm::dmat3 data types - no spatial algebra types
  
  Supports URDF Joint Types
  - revolute   a hinge joint that rotates along the axis and has a limited range specified by the upper and lower limits.
  - continuous a continuous hinge joint that rotates around the axis and has no upper and lower limits.
  - prismatic  a sliding joint that slides along the axis, and has a limited range specified by the upper and lower limits.
  - fixed      this is not really a joint because it cannot move. All degrees of freedom are locked. 
-              This type of joint does not require the axis, calibration, dynamics, limits or safety_controller.
- - floating   6-DoF joint allows motion for all 6 degrees of freedom. Must be first joint
- - planar     3-DoF joint allows motion x,y translation and z rotation
+              This type of joint does not require the axis, calibration, dynamics, limits or safety_controller. 
+ - floating   6-DoF joint allows motion for all 6 degrees of freedom. Must be first joint.
+ - planar     3-DoF joint allows motion x,y translation and z rotation.
  
  Supports non-URDF Joint Types
-  - spherical  - 3-DoF spherical or 'ball and socket' joint
+  - spherical  - 3-DoF spherical or 'ball and socket' joint.
  
  
  @see  https://wiki.ros.org/urdf/XML
@@ -58,8 +58,8 @@
 
 struct URDFOrigin 
 {
-    glm::dvec3 xyz = {1,0,0}; 
-    glm::dvec3 rpy = {0,0,0}; 
+    glm::dvec3 xyz = {1,0,0}; ///< axis
+    glm::dvec3 rpy = {0,0,0}; ///< roll, pitch, yaw 
 };
 
 struct URDFMaterial
