@@ -33,7 +33,7 @@
  
 */
 
-/***
+/*
  * libccd
  * ---------------------------------
  * Copyright (c)2012 Daniel Fiser <danfis@danfis.cz>
