@@ -1,14 +1,13 @@
 /* BModel 31/01/2024
 
- $$$$$$$$$$$$$$$$$$
- $   BModel.cpp   $
- $$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$
+         $   BModel.cpp   $
+         $$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
 
-*/
+ */
 
 
 #ifndef BMODEL_H

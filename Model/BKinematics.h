@@ -1,19 +1,23 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$$$
+         $   BKinematics.h   $
+         $$$$$$$$$$$$$$$$$$$$$
+
  @file BKinematics.h 
- @date 13/09/2026
-
- $$$$$$$$$$$$$$$$$$$$$
- $   BKinematics.h   $
- $$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup Model
+ date 13/09/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
+ 
+ ---
+ 
+ @brief The BKinematics class operates on the kinematic variables (position, velocity, 
+ and acceleration) of a given model.
+ 
  Kinematics is the study of the geometrical aspects of motion independent of force. 
  Kinematics differs from dynamics (also known as kinetics) which studies the effect 
- of forces on bodies. The BKinematics class operates on the kinematic variables 
- (pos, vel, and acc) of a given model.
+ of forces on bodies. 
  
  Methods taken from RBDL Kinematics.cc
  
@@ -86,10 +90,10 @@ public:
     /// first three entries and the linear velocity as the last three entries.
     ///
     /// @param[in,out] m   rigid body model
-    /// @param[in] qstate state of the internal joints (positions, velocities, accelerations)
+    /// @param[in] qstate model state; the internal joints (positions, velocities, accelerations)
     /// @param[in] bid the id of the body
-    /// @param[in] point_pos the position of the point in body-local data
-    /// @param[out] G       a matrix of dimensions 6 x qdot_size where the result will be stored in
+    /// @param[in] point_pos the position of the point in body coordinates
+    /// @param[out] G       a matrix of dimensions 6 x qdot_size where the result will be stored
     /// @param[in] update_kinematics whether UpdateKinematics() should be called or not (default: true)
     ///
     /// The result will be returned via the G argument.

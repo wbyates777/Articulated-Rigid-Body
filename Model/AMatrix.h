@@ -1,16 +1,18 @@
 /*! 
- @file AMatrix.h
- @date 01/10/26
  
- $$$$$$$$$$$$$$$$$$$$$$$$
- $   AMatrix.h - defs   $
- $$$$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$$$
+         $   AMatrix.h - defs   $
+         $$$$$$$$$$$$$$$$$$$$$$$$
 
+ @file AMatrix.h
+ @ingroup Model
+ date 01/10/26
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- AMatrix template class: A simple, disposable 2D structure to hold values
+ 
+ ---
+ 
+ @brief A simple, disposable 2D structure to hold calculated values.
  
 */
 
@@ -22,7 +24,6 @@
 #include <vector>
 
 
-
 template <typename T>
 class AMatrix
 {
@@ -30,7 +31,7 @@ class AMatrix
 public:
     AMatrix(void) : m_rows(0), m_cols(0), m_data() {}
     AMatrix(int rows, int cols)  : m_rows(rows), m_cols(cols), m_data(rows * cols) {}
-     AMatrix(int rows, int cols, const T& val) : m_rows(rows), m_cols(cols), m_data(rows * cols, val) {}
+    AMatrix(int rows, int cols, const T& val) : m_rows(rows), m_cols(cols), m_data(rows * cols, val) {}
     ~AMatrix(void)=default;
     
     void
@@ -53,29 +54,29 @@ public:
         std::fill(m_data.begin(), m_data.end(), val);
     }
 
-    class RowProxy 
+    class BRowProxy 
     {
         public:
-            RowProxy(T* ptr) : row_ptr(ptr) {}
+            BRowProxy(T* ptr) : row_ptr(ptr) {}
             T& operator[](int c) { return row_ptr[c]; }
         private:
             T* row_ptr;
     };
 
-    class ConstRowProxy 
+    class BConstRowProxy 
     {
         public:
-            ConstRowProxy(const T* ptr) : row_ptr(ptr) {}
+            BConstRowProxy(const T* ptr) : row_ptr(ptr) {}
             const T& operator[](int c) const { return row_ptr[c]; }
         private:
             const T* row_ptr;
     };
     
-    RowProxy 
-    operator[](int r)   {  return RowProxy(&m_data[r * m_cols]); }
+    BRowProxy 
+    operator[](int r)  { return BRowProxy(&m_data[r * m_cols]); }
 
-    ConstRowProxy 
-    operator[](int r) const  {  return ConstRowProxy(&m_data[r * m_cols]); }
+    BConstRowProxy 
+    operator[](int r) const { return BConstRowProxy(&m_data[r * m_cols]); }
     
     BScalar&
     operator[](int r, int c) { return &m_data[(r * m_cols) + c]; }
@@ -103,12 +104,10 @@ public:
     
 private:
    
-
     int m_rows;
     int m_cols;
     std::vector<T> m_data;
 };
-
 
 
 

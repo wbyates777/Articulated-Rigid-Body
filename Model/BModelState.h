@@ -1,29 +1,30 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$$$$$
+         $   BModelState.h   $
+         $$$$$$$$$$$$$$$$$$$$$
+
  @file BModelState.h
- @date 29/11/2025
-
- $$$$$$$$$$$$$$$$$$$$$
- $   BModelState.h   $
- $$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup Model
+ date 29/11/2025
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
+ 
+ @brief Holds the state of every joint in a model as vectors of scalars.
 
- Holds the state of every joint in a model as vectors of scalars.
-
-     std::vector<BScalar>  m_q;     // positions
-     std::vector<BScalar>  m_qdot;  // velocities
-     std::vector<BScalar>  m_qddot; // accelerations
-     std::vector<BScalar>  m_tau;   // forces
+ The model state is:
+ 
+  -   std::vector<BScalar>  m_q;     // positions
+  -   std::vector<BScalar>  m_qdot;  // velocities
+  -   std::vector<BScalar>  m_qddot; // accelerations
+  -   std::vector<BScalar>  m_tau;   // forces
 
  The q, qdot, qddot, tau notation is taken from Featherstone's RBDA.
- 
- Note when using spherical joints (i.e FloatBase):
- 
- 1)  initialising q to zero is safe because glm::mat3_cast(glm::quat(0,0,0,0)) -> B_IDENTITY_3x3
- 2)  initialising q to one is not safe as glm::mat3_cast(glm::quat(1,1,1,1)) is not 
-     normalized and therefore not a rotation
+
+@note initialising q to zero is safe because glm::mat3_cast(glm::quat(0,0,0,0)) is equal to B_IDENTITY_3x3
+@note initialising q to one is not safe as glm::mat3_cast(glm::quat(1,1,1,1)) is not normalized and therefore not a rotation
  
 */
 
@@ -44,7 +45,6 @@
 #ifndef BJOINT_H
 #include "BJoint.h"
 #endif
-
 
 
 #include <vector>
@@ -95,29 +95,28 @@ public:
     // joint state values
     //
     std::vector<BScalar>&
-    q( void )  { return m_q; }               /// position
+    q( void )  { return m_q; }               ///< position
     
     const std::vector<BScalar>&
     q( void ) const { return m_q; }         
     
     std::vector<BScalar>&
-    qdot( void ) { return m_qdot; }          /// velocity
+    qdot( void ) { return m_qdot; }          ///< velocity
     
     const std::vector<BScalar>&
     qdot( void ) const { return m_qdot; }   
     
     std::vector<BScalar>&
-    qddot( void ) { return m_qddot; }        /// acceleration
+    qddot( void ) { return m_qddot; }        ///< acceleration
     
     const std::vector<BScalar>&
     qddot( void ) const { return m_qddot; }  
     
     std::vector<BScalar>&
-    tau( void ) { return m_tau; }           /// force
+    tau( void ) { return m_tau; }           ///< force
     
     const std::vector<BScalar>&
     tau( void ) const { return m_tau; }    
-
     
     
     friend std::ostream&
@@ -129,11 +128,11 @@ public:
 private:
     
 
-    /// state parameters for all joints in a model
-    std::vector<BScalar>  m_q;     /// positions
-    std::vector<BScalar>  m_qdot;  /// velocities
-    std::vector<BScalar>  m_qddot; /// accelerations
-    std::vector<BScalar>  m_tau;   /// forces
+    // state parameters for all joints in a model
+    std::vector<BScalar>  m_q;     // positions
+    std::vector<BScalar>  m_qdot;  // velocities
+    std::vector<BScalar>  m_qddot; // accelerations
+    std::vector<BScalar>  m_tau;   // forces
 };
 
 inline std::ostream&

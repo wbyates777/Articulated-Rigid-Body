@@ -1,56 +1,48 @@
 /* BDynamics 20/02/2024
 
- $$$$$$$$$$$$$$$$$$$$$
- $   BDynamics.cpp   $
- $$$$$$$$$$$$$$$$$$$$$
+        $$$$$$$$$$$$$$$$$$$$$
+        $   BDynamics.cpp   $
+        $$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
  
-  The articulated-body algorithm (ABA) is an example of a propagation algorithm, and it is the fastest known algorithm
-  for calculating the forward dynamics of a kinematic tree with a computational complexity of $O(N_B)$,
-  where $N_B$ is the number of bodies/joints. 
-  This is the theoretical minimum for solving the forward dynamics problem (see RBDA, Section 7.3). 
-  
-  The recursive Newton-Euler algorithm (RNEA) calculate the inverse dynamics of a kinematic tree. 
-  It is the simplest, most efficient known algorithm for trees, and also has a computational complexity 
-  of $O(N_B)$ (see RBDA, Section 5.3). 
-  
-  These implementations depend solely on the GLM linear algebra library ( see https://github.com/g-truc/glm ).
-  
-  //
-  // Implementation Details
-  //
-  
-  The implementations presented here are based on those in the RBDL library ( see https://github.com/rbdl/rbdl ).
-  We use similar variable names and the same object hierarchy. This facilitates numerical comparison testing. 
-  Some variables have been moved to appropriate classes and accessor methods have been added throughout. 
-  This improves encapsulation and readability.
+ ---
 
-  RBDL depends on the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
-  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
-  This code does not depend on Eigen3, and instead relies on the lighter-weight GLM library 
-  for simple 3D-linear algebra types and operations. 
-  
-  This code depends on the 3D GLM types: glm::dvec3, glm::dmat3, glm::dquat, 
-  and functions: glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::mat3_cast(q).
-  
-  It should be relatively straightforward to convert back to Eigen3 (although see 
-  the note below on Eigen3 and GLM row-major/column-major differences), or  replace GLM with some other simple
-  linear algebra library.
+ The articulated-body algorithm (ABA) is an example of a propagation algorithm, and it is the fastest known algorithm
+ for calculating the forward dynamics of a kinematic tree with a computational complexity of $O(N_B)$,
+ where $N_B$ is the number of bodies/joints. 
+ This is the theoretical minimum for solving the forward dynamics problem (see RBDA, Section 7.3). 
 
+ The recursive Newton-Euler algorithm (RNEA) calculate the inverse dynamics of a kinematic tree. 
+ It is the simplest, most efficient known algorithm for trees, and also has a computational complexity 
+ of $O(N_B)$ (see RBDA, Section 5.3). 
 
- 
- //
- // Note the difference in syntax between GLM and Eigen3
- //
+ These implementations depend solely on the glm linear algebra library.
 
+ The implementations presented here are based on those in the RBDL library ( see https://github.com/rbdl/rbdl ).
+ We use similar variable names and the same object hierarchy. This facilitates numerical comparison testing. 
+ Some variables have been moved to appropriate classes and accessor methods have been added throughout. 
+ This improves encapsulation and readability.
+
+ RBDL depends on the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
+ fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
+ This code does not depend on Eigen3, and instead relies on the lighter-weight glm library 
+ for simple 3D-linear algebra types and operations. 
+
+ This code depends on the 3D glm types: glm::dvec3, glm::dmat3, glm::dquat, 
+ and functions: glm::cross(v1, v2), glm::dot(v1, v2), glm::length(v1), glm::inverse(m1), glm::mat3_cast(q).
+
+ It should be relatively straightforward to convert back to Eigen3 (although see 
+ the note below on Eigen3 and glm row-major/column-major differences), or  replace glm with some other simple
+ linear algebra library.
+
+ Note the difference in syntax between glm and Eigen3
+
+ @code{.cpp}
  std::cout.precision(4);
  std::cout.setf( std::ios::fixed, std::ios::floatfield );
  
- // GLM
+ // glm
  glm::dvec3 v1(1.0, 2.0, 3.0);
  glm::dmat3 m1(1.0, 2.0, 3.0,  4.0, 5.0, 6.0,  7.0, 8.0, 9.0);
  std::cout << arb::transpose(m1) * v1 << std::endl << std::endl;
@@ -59,8 +51,9 @@
  Vector3d v2(1.0, 2.0, 3.0);
  Matrix3d m2(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
  std::cout << m2 * v2  << std::endl; 
+ @endcode
  
- see https://en.wikipedia.org/wiki/Row-_and_column-major_order
+ @see https://en.wikipedia.org/wiki/Row-_and_column-major_order
  
  
  

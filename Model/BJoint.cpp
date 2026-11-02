@@ -1,12 +1,10 @@
 /* BJoint 31/01/2024
  
- $$$$$$$$$$$$$$$$$$
- $   BJoint.cpp   $
- $$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$
+         $   BJoint.cpp   $
+         $$$$$$$$$$$$$$$$$$
  
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
  
  */
 
@@ -50,7 +48,7 @@ alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_PLANAR_6x
 
 constexpr BScalar B_SMALL_VALUE = 1E-8;
 
-//
+
 // constructs a 1-DoF joint with the given motion subspaces
 BJoint::BJoint( const BVector6 &axis0 ) : m_id(0),
                                           m_qidx(0),

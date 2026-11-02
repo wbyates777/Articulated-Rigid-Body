@@ -1,35 +1,33 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BDynamics.h   $
+         $$$$$$$$$$$$$$$$$$$
+
  @file BDynamics.h
- @date 20/02/2024
-
- $$$$$$$$$$$$$$$$$$$
- $   BDynamics.h   $
- $$$$$$$$$$$$$$$$$$$
-
+ @ingroup Model
+ date 20/02/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Algorithms for calculating the forward and inverse dynamics of a kinematic tree.
+ 
+ ---
+ 
+ @brief Algorithms for calculating the forward and inverse dynamics of a kinematic tree.
  
  Trees (and chains) of kinematic equations are used in robotics, computer games, and animation.
- In robotics {\it forward kinematics} refers to the use of kinematic equations to compute the position of 
+ In robotics _forward kinematics_ refers to the use of kinematic equations to compute the position of 
  an end-effector, such as a jointed robotic arm, from specified values for the joint parameters.
- 
- https://en.wikipedia.org/wiki/Forward_kinematics
- 
+
  The reverse calculation, that computes the joint parameters that achieve a specified arm position, 
- is known as {\it inverse kinematics}.
+ is known as _inverse kinematics_.
 
- https://en.wikipedia.org/wiki/Inverse_kinematics
-
- BDynamics is an implementation of 
- 1) the articulated-body algorithm (ABA),  
- 2) the composite rigid-body algorithm (CRBA), and 
- 3) the recursive Newton-Euler algorithm (RNEA)
+ BDynamics is an implementation of: 
+ - the articulated-body algorithm (ABA),  
+ - the composite rigid-body algorithm (CRBA), and 
+ - the recursive Newton-Euler algorithm (RNEA)
 
  presented in: 
- "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008 (see https://royfeatherstone.org). 
+ "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008. 
  
  ABA is an example of a propagation algorithm, and it is the fastest known algorithm
  for calculating the forward dynamics of a kinematic tree with a computational complexity of $O(N_B)$,
@@ -43,14 +41,23 @@
  It is the simplest, most efficient known algorithm for trees, and also has a computational complexity 
  of $O(N_B)$ (see RBDA, Section 5.3). 
  
- The implementations presented here are based on those in the RBDL library (see https://github.com/rbdl/rbdl).
+ The implementations presented here are based on those in the RBDL library.
  
  The implemenations here do NOT depend on Eigen3, instead they depend soly on the 
- GLM linear algebra library (see https://github.com/g-truc/glm).
+ glm linear algebra library.
   
  It is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3 and GLM differences), or  replace GLM with some other simple
+ the note on Eigen3 and glm differences), or  replace glm with some other simple
  linear algebra library.
+ 
+ 
+ @see https://en.wikipedia.org/wiki/Forward_kinematics
+ @see https://en.wikipedia.org/wiki/Inverse_kinematics
+ @see https://royfeatherstone.org
+ @see https://github.com/rbdl/rbdl
+ @see https://github.com/g-truc/glm
+
+ 
 */
 
 
@@ -90,8 +97,7 @@ public:
     
     /// @brief Computes forward dynamics with the Articulated Body algorithm (ABA)
     ///
-    /// This function computes the generalized accelerations $a$ from given
-    /// generalized states, velocities and forces.
+    /// This function computes the generalized accelerations $qddot$ from the given model $m$ and model state $qstate$.
     /// It does this by using the recursive Articulated Body Algorithm that runs
     /// in $O(n_{dof})$ with $n_{dof}$ being the number of joints.
     ///
@@ -104,8 +110,7 @@ public:
     
     /// @brief Computes inverse dynamics with the recursive Newton-Euler algorithm (RNEA)
     ///
-    /// This function computes the generalized forces $\tau$ from given generalized
-    /// states, velocities, and accelerations.
+    /// This function computes the generalized forces $\tau$ from the given model $m$ and model state $qstate$.
     /// 
     /// @param[in,out] m      rigid body model
     /// @param[in,out] qstate  state of the internal joints (positions, velocities, accelerations)
@@ -116,8 +121,8 @@ public:
 
     /// @brief Computes the joint space inertia matrix by using the Composite Rigid Body Algorithm (CRBA)
     ///
-    /// This function computes the joint space inertia matrix from a given model and
-    /// the generalized state vector.
+    /// This function computes the joint space inertia matrix from a given model $m$ and
+    /// the model state  $qstate$.
     ///
     /// @param[in,out]  m  rigid body model
     /// @param[in] qstate  state of the internal joints (positions, velocities, accelerations)

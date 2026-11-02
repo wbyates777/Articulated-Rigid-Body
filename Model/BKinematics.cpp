@@ -1,19 +1,10 @@
 /* BKinematics 13/09/2026
 
- $$$$$$$$$$$$$$$$$$$$$$$
- $   BKinematics.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$$
+         $   BKinematics.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Kinematics is the study of the geometrical aspects of motion independent of forces. 
- Kinematics differs from dynamics (also known as kinetics) 
- which studies the effect of forces on bodies.
- 
- The BKinematics class operates on the kinematic variables: (position, 
- velocity, and acceleration) of a given model.
  
 */
 

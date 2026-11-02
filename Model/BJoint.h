@@ -1,28 +1,33 @@
 /*!
+
+         $$$$$$$$$$$$$$$$
+         $   BJoint.h   $
+         $$$$$$$$$$$$$$$$
+
  @file BJoint.h
- @date 31/01/2024
-
- $$$$$$$$$$$$$$$$
- $   BJoint.h   $
- $$$$$$$$$$$$$$$$
-
+ @ingroup Model
+ date 31/01/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
-  
- The ARB library (following RBDL) supports a multitude of joints such as
- revolute, planar, fixed, singularity-free spherical joints and joints
+ 
+ ---
+ 
+ @brief An articulation or joint between two bodies.
+ 
+ The ARB library (following RBDL) supports a number of joints such as
+ revolute, prismatic, planar, fixed, singularity-free spherical joints and joints
  with multiple degrees of freedom.
  
  Fixed1 joints do not cause any overhead as the bodies that are
- rigidly connected are merged into a moving parent body. By doing so Fixed1 joints 
+ rigidly connected to are merged into a moving parent body. By doing so Fixed1 joints 
  do not add computational costs when performing dynamics computations.
  
  Fixed2 joints are not merged into a single body and are added as distinct 
- bodies (with mass) that are fixed, that is, rigidly connected.
+ bodies (with mass etc) that are fixed, that is, rigidly connected.
  
-      
+ @warning all angles in radians.
+ @warning axis *must* be normalised.
+ 
 */
 
 #ifndef BJOINT_H
@@ -40,9 +45,8 @@
 #include "BTransform.h"
 #endif
 
-/// auxiliary parameters not used by BModel or BDynamics
 #ifndef URDFTYPES_H
-#include "URDFTypes.h"  /// @see BJointParams
+#include "URDFTypes.h"  
 #endif
 
 
@@ -66,21 +70,21 @@ public:
         // 3-DoF joint that uses Euler conventions (faster than emulated multi DoF joints).
         EulerZYX,  EulerXYZ,  EulerYXZ,   EulerZXY,  
         
-        // spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point.
-        // 3-DoF joint using quaternions for joint positional and angular velocity variables.
+        // spherical or 'ball and socket' joint - allows arbitrary rotation about a specific point
+        // 3-DoF joint using quaternions for joint positional and angular velocity variables
         Spherical, 
         
         TransXYZ, // TranslationXYZ - linear translation (XYZ) 3-DoF joint
         
         // 6-DoF joint for floating-base systems i.e a drone, or game vehicle  
-        // modeled internally by a TransXYZ and a Spherical joint. 
-        // use this joint for first body added to model (see RBDA, section 4.1, page 66).
+        // modeled internally by a TransXYZ and a Spherical joint 
+        // use this joint for first body added to model (see RBDA, section 4.1, page 66)
         FloatBase, 
         
-        Fixed1,        // Fixed1 joint which causes the inertial properties to be merged with the parent body.
-        Fixed2,        // Fixed2 joint which adds a distinct child body (with inertia etc) to parent body.
+        Fixed1,        // Fixed1 joint which causes the inertial properties to be merged with the parent body
+        Fixed2,        // Fixed2 joint which adds a distinct child body (with inertia etc) to parent body
         
-        Helical,       // A 1-DoF 'screw' joint with both rotational and translational motion.
+        Helical,       // A 1-DoF 'screw' joint with both rotational and translational motion
         
         Planar,        // Planar joint (3-DOF: x,y translation and z rotation)
 
@@ -94,7 +98,7 @@ public:
     /// only joint_type BRevolute or BPrismatic; joint_axis is axis of rotation or translation
     BJoint( JType jtype, const BVector3 &jaxis);
     
-    /// constructs a 1-6 DoF joint with the given motion subspaces.
+    /// constructs a 1-6 DoF joint with the given motion subspaces
     BJoint( const BVector6 &axis_0 );
     
     BJoint( const BVector6 &axis_0, 
@@ -142,10 +146,10 @@ public:
     /// @brief Computes all variables for a joint model
     ///
     ///  By appropriate modification of this function all types of joints can be
-    ///  modeled. Calculate $\[X_lambda, X_J, S_i, v_J, c_J\]$. See RBDA Section 4.4 for details.
+    ///  modeled. Calculate $\[X_lambda, X_J, S_i, v_J, c_J\]$ (see RBDA Section 4.4 for details)
     ///
-    /// @param[in] q        joint state (position) variables
-    /// @param[in] qdot     joint velocity variables
+    /// @param[in] q        model joint state (position) 
+    /// @param[in] qdot     model joint velocity 
     void
     jcalc( const std::vector<BScalar> &q, const std::vector<BScalar> &qdot );
     
@@ -165,19 +169,15 @@ public:
     const std::vector<BVector6>&
     axis( void ) const { return m_axis; }
     
-    /// transform from the parent body frame $\lambda(i)$ to joint $i$ 
-    /// ${i}^X_{\lambda(i)} = X_J * X_T(i)$
+    /// transform from the parent frame $\lambda(i)$ to joint frame $i$ where ${i}^X_{\lambda(i)} = X_J * X_T(i)$
     const BTransform& 
     X_lambda( void ) const { return m_X_lambda; }
    
-    /// the action of the joint - typically a function of the joint's type m_jtype and state $q$  (see RBDA, Table 4.1) 
+    /// the action of the joint, typically a function of the joint's type and state (see RBDA, Table 4.1) 
     const BTransform& 
     X_J( void ) const { return m_X_J; } 
     
-    /// transform from the parent body $\lambda(i)$ to the origin 
-    /// of the joint frame in body $i$ (see RBDA, Section 4.2, page 73). 
-    /// $X_T$ locates the joint's coordinate frame origin in body $i$ 
-    /// (position and orientation). Set by BModel::addBody(). 
+    /// transform from the parent frame $\lambda(i)$ to joint frame $i$ (see RBDA, Section 4.2, page 73) 
     const BTransform& 
     X_T( void ) const { return m_X_T; }
     
@@ -188,8 +188,7 @@ public:
     X_T( const BTransform &b )  { m_X_T = b; }
     
     
-    /// a joint's motion subspace $S$ (see RBDA, Table 4.1) - depends on type of joint 
-    /// when DoF=1 S=SpatialVector, DoF=3 S=Matrix63, DoF=6 S=SpatialMatrix
+    /// motion subspace $S$, depends on joint type, when DoF=1 S=BVector6, DoF=3 S=BMatrix63, DoF=6 S=BMatrix6 (see RBDA, Table 4.1)
     const BMotionSpace& 
     S( void ) const { return m_S; }
 
@@ -270,22 +269,21 @@ private:
     BJointId     m_id;
 
     int          m_qidx;
-    int          m_widx;    /// if joint is spherical - index of quaternion $w$ variable (at end of $q$-vector)
+    int          m_widx;    // if joint is spherical - index of quaternion $w$ variable (at end of $q$-vector)
     JType        m_jtype; 
 
   
-    BTransform m_X_lambda;  /// ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
-    BTransform m_X_J;       /// action of the joint (see RBDA Section 4.4 and Table 4.1)
-    BTransform m_X_T;       /// transform from parent to joint frame origin - the joint's position (see RBDA, Section 4.2)
+    BTransform m_X_lambda;  // ${i}^X_{\lambda(i)} = X_J X_T(i)$ (see RBDA, example 4.3) 
+    BTransform m_X_J;       // action of the joint (see RBDA Section 4.4 and Table 4.1)
+    BTransform m_X_T;       // transform from parent to joint frame origin - the joint's position (see RBDA, Section 4.2)
     
-    /// joint state variables - spatial velocity and spatial acceleration (see RBDA, Section 4.4)
-    BVector6   m_v_J;     
-    BVector6   m_c_J;       
+    BVector6   m_v_J;       // joint state variables - spatial velocity (see RBDA, Section 4.4)   
+    BVector6   m_c_J;       // joint state variables - spatial acceleration (see RBDA, Section 4.4)  
 
-    BJointParams m_params; /// auxiliary URDF parameters not used by BModel or BDynamics
+    BJointParams m_params; // auxiliary URDF parameters not used by BModel or BDynamics
    
-    BMotionSpace m_S;             /// motion subspace of joint denoted $S$ (RBDA, and Table 4.1)    
-    std::vector<BVector6> m_axis; /// spatial axes of the joint; 1 for each degree of freedom
+    BMotionSpace m_S;             // motion subspace of joint denoted $S$ (RBDA, and Table 4.1)    
+    std::vector<BVector6> m_axis; // spatial axes of the joint; 1 for each degree of freedom
 };
 
 

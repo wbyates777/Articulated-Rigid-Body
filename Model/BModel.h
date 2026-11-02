@@ -1,17 +1,23 @@
+/*!
+ * @defgroup Model Model
+ * @brief Representation of articulated rigid body model.
+ */
+
 /*! 
+
+         $$$$$$$$$$$$$$$$
+         $   BModel.h   $
+         $$$$$$$$$$$$$$$$
+
  @file BModel.h 
- @date 31/01/2024
-
- $$$$$$$$$$$$$$$$
- $   BModel.h   $
- $$$$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ @ingroup Model
+ date 31/01/2024
  
-
- Contains all information about the rigid body model
+ by W.B. Yates
+ 
+ ---
+ 
+ @brief Contains all body and joint information about an articulated rigid body model.
 
  This class contains all information required to perform the forward
  dynamics calculation. The variables in this class are also used for
@@ -96,17 +102,18 @@ public:
     
     /// @brief Connects a given body to the model
     ///
-    /// Identifies the parent body to which a body is added and
-    /// set the transformation to the origin of the joint that connects the
-    /// two bodies. This information specifies the relative
-    /// positions of the bodies when the joint is in a neutral position.
+    /// Identifies the parent body to which the body is attached and
+    /// set the transformation to the origin of the joint frame. 
+    /// This determines the relative positions of the bodies when the 
+    /// joint is in a neutral position.
     ///
     /// @param[in] parent_id   id of the parent body
     /// @param[in] joint_frame the transformation from the parent frame to the origin
     ///                    of the joint frame (used to set X_T in BJoint)
     /// @param[in] joint the BJoint object connecting the parent to this body
-    /// @param[in] body the BBody object connected to parent
+    /// @param[in] body the BBody object to be connected to parent
     /// @param[in] body_name the name of the body (internal to model)
+    /// @return the body_id of the new body.
     BBodyId 
     addBody( BBodyId parent_id,
              const BTransform &joint_frame,
@@ -115,11 +122,11 @@ public:
              const std::string &body_name = "" );    
 
     
-    /// set body parameters 
+    /// set body inertia  
     void 
     setBody( BBodyId bid, const BInertia &inertia );
 
-    /// set the joint frame transformtion, i.e. X_T, the second argument to  BModel::addBody()
+    /// set the joint frame transformtion, that is the position of the joint - second argument to BModel::addBody()
     void 
     setJointFrame( BBodyId bid, const BTransform &transform );
     
@@ -219,22 +226,22 @@ private:
     addName( BBodyId bid, std::string body_name );
     
  
-    int m_dof_count;    /// number of degrees of freedoms of the model
-    int m_q_size;       /// number of (joint) position (q) states
-    int m_qdot_size;    /// number of velocity (qdot), and acceleration (qddot) states
+    int m_dof_count;    // number of degrees of freedoms of the model
+    int m_q_size;       // number of (joint) position (q) states
+    int m_qdot_size;    // number of velocity (qdot), and acceleration (qddot) states
     
-    BBodyId m_fbd;      /// fixed_body_discriminator
+    BBodyId m_fbd;      // fixed_body_discriminator
 
     std::string m_name;
     BVector3 m_gravity;
 
-    std::vector<BBodyId>    m_lambda;   /// the id of the parent body
+    std::vector<BBodyId>    m_lambda;   // the id of the parent body
     
     std::vector<BJoint>     m_joint;
     std::vector<BBody>      m_body;
-    std::vector<BFixedBody> m_fixed;  ///  bodies attached via a Fixed1 joint
+    std::vector<BFixedBody> m_fixed;  //  bodies attached via a Fixed1 joint
 
-    /// human readable names for the bodies
+    // human readable names for the bodies
     std::map<std::string, BBodyId> m_bodyNameMap;
 };
 

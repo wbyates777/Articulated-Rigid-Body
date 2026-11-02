@@ -1,16 +1,18 @@
 /*!
+
+         $$$$$$$$$$$$$$$
+         $   BBody.h   $
+         $$$$$$$$$$$$$$$
+
  @file BBody.h
- @date 20/02/2024
-
- $$$$$$$$$$$$$$$
- $   BBody.h   $
- $$$$$$$$$$$$$$$
-
+ @ingroup Model
+ date 20/02/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Describes all properties of a single body
+ 
+ ---
+ 
+ @brief Describes all properties of a single body.
  
 */
 
@@ -26,9 +28,8 @@
 #include "BRBInertia.h"
 #endif
 
-// auxiliary parameters not used by BModel or BDynamics
 #ifndef URDFTYPES_H
-#include "URDFTypes.h"   /// @see BBodyParams
+#include "URDFTypes.h"  
 #endif
 
 
@@ -87,26 +88,24 @@ public:
     I( const BRBInertia &si ) { m_I = si; }
     
     
-    /// X is a transform from this frame to other_body frame -
-    /// transform other_body inertia into this frame and add
+    /// X transforms this frame to body frame; transform body inertia into this frame and add
     void 
-    join( const BTransform &X, const BBody &other_body )
+    join( const BTransform &X, const BBody &body )
     {
-        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_ZERO_3x3) 
+        if (body.I().mass() == 0.0 && body.I().Icom() == B_ZERO_3x3) 
             return;
         
-        m_I += X.applyTranspose(other_body.I()); 
+        m_I += X.applyTranspose(body.I()); 
     }
 
-    /// X is a transform from this frame to other_body frame -
-    /// transform other_body inertia into this frame and subtract
+    /// X transforms this frame to body frame; transform body inertia into this frame and subtract
     void 
-    separate( const BTransform &X, const BBody &other_body )
+    separate( const BTransform &X, const BBody &body )
     {
-        if (other_body.I().mass() == 0.0 && other_body.I().Icom() == B_ZERO_3x3) 
+        if (body.I().mass() == 0.0 && body.I().Icom() == B_ZERO_3x3) 
             return;
         
-        m_I -= X.applyTranspose(other_body.I()); 
+        m_I -= X.applyTranspose(body.I()); 
     }
     
     /// transformation from the base (world) frame to this body's coordinate frame
@@ -179,14 +178,14 @@ public:
     
 private:
 
-    BVector6  m_v;    /// spatial velocity of the body
-    BVector6  m_a;    /// spatial acceleration of the body
-    BVector6  m_c;    /// spatial velocity-dependent acceleration term
+    BVector6  m_v;    // spatial velocity of the body
+    BVector6  m_a;    // spatial acceleration of the body
+    BVector6  m_c;    // spatial velocity-dependent acceleration term
 
-    BRBInertia m_I;       /// spatial inertia at origin of the body (mass, com, rotational inertia)
-    BTransform m_X_base;  /// transform from base/world coordinate frame to this body's frame 
+    BRBInertia m_I;       // spatial inertia at origin of the body (mass, com, rotational inertia)
+    BTransform m_X_base;  // transform from base/world coordinate frame to this body's frame 
     
-    BBodyParams m_params; /// auxiliary URDF parameters not used by BModel or BDynamics
+    BBodyParams m_params; // auxiliary URDF parameters not used by BModel or BDynamics
    
     BBodyId m_id;
     bool m_isVirtual;

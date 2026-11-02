@@ -1,19 +1,21 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$$
+         $   BFixedBody.h   $
+         $$$$$$$$$$$$$$$$$$$$
+
  @file BFixedBody.h
- @date 16/04/2024
-
- $$$$$$$$$$$$$$$$$$$$
- $   BFixedBody.h   $
- $$$$$$$$$$$$$$$$$$$$
-
+ @ingroup Model
+ date 16/04/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Hold information about a fixed body and how it is attached its parent.
+ 
+ ---
+ 
+ @brief Hold information about a fixed body and how it is attached to its parent.
 
  When using fixed bodies, i.e. a body that is attached to another via a
- fixed joint, the attached body is merged onto its parent. By doing so
+ Fixed1 joint, the attached body is merged onto its parent. By doing so
  adding fixed joints do not have an impact on runtime.
  
 */
@@ -98,9 +100,9 @@ public:
 private: 
 
     BBodyId    m_id;
-    BBodyId    m_parentId;    /// bid of the movable body that this fixed body is attached to.
+    BBodyId    m_parentId;    // bid of the movable body that this fixed body is attached to.
     BInertia   m_inertia;
-    BTransform m_parent;      /// the transformation from the parent body frame $\lambda(i)$ to body $i$ 
+    BTransform m_parent;      // the transformation from the parent body frame $\lambda(i)$ to body $i$ 
 
 };
 
