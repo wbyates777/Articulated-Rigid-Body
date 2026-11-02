@@ -1,13 +1,11 @@
 /* BOpenEPA 17/03/2026
 
- $$$$$$$$$$$$$$$$$$$$
- $   BOpenEPA.cpp   $
- $$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$
+         $   BOpenEPA.cpp   $
+         $$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
+ 
 */
 
 /*

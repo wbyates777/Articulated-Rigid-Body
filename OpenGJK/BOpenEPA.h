@@ -1,32 +1,30 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$
+         $   BOpenEPA.h   $
+         $$$$$$$$$$$$$$$$$$
+
  @file BOpenEPA.h 
- @date 17/03/2026
-
- $$$$$$$$$$$$$$$$$$
- $   BOpenEPA.h   $
- $$$$$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 17/03/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- My c++ rewrite of the EPA in openGJK 
+ 
+ ---
+ 
+ @brief My c++ rewrite of openEPA using glm and autodiff types.
  
  The main changes are:
  
- 1) glm based BVector3 types which can be made differentiable,
- 2) the structs EPAVertex and BIndex with operators that simplify the syntax
- 3) broke up the large collisions function into more managable logical chunks,
+ - glm based BVector3 types which can be made differentiable,
+ - the structs BEPAVertex and BIndex with operators that simplify the syntax
+ - broke up the large collisions function into more managable logical chunks,
       by adding find_closest_face(), expand_simplex_to_tetrahedron(),
       tessellate_polytope(), and compute_contact()
 
+ @warning OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used then *all* the code in the release/product is also bound by the GPL3 license.
  
- see https://github.com/MattiaMontanari/openGJK 
- 
- 
- Note: OpenGJK is released under a GPL3 license. As a result if this code is used 
- then *all* the ARB code base is also bound by the GPL3 license.
- 
+ @see https://github.com/MattiaMontanari/openGJK 
  
 */
 
@@ -92,7 +90,7 @@ struct BEPAVertex
 };
 
 
-/// Structure for horizon edge collection
+/// structure for horizon edge collection
 struct BEPAEdge
 {
     bool 

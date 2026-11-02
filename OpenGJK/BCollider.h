@@ -1,25 +1,27 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BCollider.h   $
+         $$$$$$$$$$$$$$$$$$$
+
  @file BCollider.h 
- @date 01/03/2026
-
- $$$$$$$$$$$$$$$$$$$
- $   BCollider.h   $
- $$$$$$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 01/03/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
+ 
+ @brief Collider object for OpenGJK/OpenEPA.
 
- OpenGJK Collider
- 
- 
  This class lives in a game object or ABody class - it is the collidable shape for the object.
  
  Technically, these are the 'support functions' for openEPA. 
  
- Only handles (vector of) polytope colliders. Does not support some standard shapes i.e sphere
+ Only handles (vector of) polytope colliders. Does not support some standard shapes i.e sphere.
  Boxes can be represent as polytope with 8-verteces.
 
+ @note all points in coordinates local to model
  
 */
 
@@ -98,9 +100,9 @@ public:
     size( void ) const { return (int) m_polytope.size(); }
     
     
-    ///
-    /// Support functions called by openGJK
-    ///
+    //
+    // Support functions called by openGJK
+    //
 
     /// the point in the polytope at index idx (vertIdx, polyIdx) 
     glm::dvec3

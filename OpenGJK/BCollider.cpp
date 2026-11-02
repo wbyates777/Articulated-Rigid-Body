@@ -1,20 +1,19 @@
 /* BCollider 01/03/2026
 
- $$$$$$$$$$$$$$$$$$$$$
- $   BCollider.cpp   $
- $$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$
+         $   BCollider.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- OpenGJK Collider
+ 
+ ---
+ 
+ OpenGJK Collider.
  
  A body orientation and position is given (in world/base coordinates) by
  the rotation BMatrix3 m_body->orient() and the BVector3 m_body->pos()
  respectively.
 
- 
 */
 
 

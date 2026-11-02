@@ -1,26 +1,26 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$
+         $   BOpenGJK.h   $
+         $$$$$$$$$$$$$$$$$$
+
  @file BOpenGJK.h
- @date 15/12/2025
-
- $$$$$$$$$$$$$$$$$$
- $   BOpenGJK.h   $
- $$$$$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 15/12/2025
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
  
- My c++ rewrite of openGJK/openEPA so we can use glm functions and therefore autodiff
+ ---
  
- openEPA provides us with the indices into the two polytopes; libccd did not provide this.
- 
+ @brief My c++ rewrite of openGJK using glm and autodiff types.
+
+ OpenEPA provides us with the indices into the two polytopes; libccd did not provide this.
  We have added an extra level of indexing so that each body can have a number of polytopes.
  
- see https://github.com/MattiaMontanari/openGJK 
+ @warning OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used then *all* the code in the release/product is also bound by the GPL3 license.
+ 
+ @see https://github.com/MattiaMontanari/openGJK 
 
- Note: OpenGJK is released under a GPL3 license. As a result if this code is used 
- then *all* the ARB code base is also bound by the GPL3 license.
-                                                                            
 */
 
 /*
@@ -82,7 +82,7 @@ public:
     ///         Returns 0 if the polytopes are intersecting or touching.
     ///
     /// @note The simplex has to be initialised prior the call to this function.
-    ///       Witness points are automatically computed and stored in s.witnesses.
+    ///       Witness points are automatically computed and stored in simplex.witnesses.
     BScalar 
     min_distance( ABody *body1, ABody *body2, BSimplex &simplex );
   

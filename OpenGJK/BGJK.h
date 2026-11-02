@@ -1,42 +1,40 @@
 /*! 
+
+         $$$$$$$$$$$$$$
+         $   BGJK.h   $
+         $$$$$$$$$$$$$$
+
  @file BGJK.h
- @date 17/05/2026
-
- $$$$$$$$$$$$$$
- $   BGJK.h   $
- $$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Narrow-phase collision detection.
+ @ingroup Collisions
+ date 17/05/2026
  
- My c++ wrapper for external c++ class openGJK/openEPA, see https://github.com/MattiaMontanari/openGJK
+ by W.B. Yates
+ 
+ ---
+ 
+ @brief A wrapper for the specific GJK implementation used to detect collisions.
+
+ Narrow-phase collision detection. My c++ wrapper for external c++ class openGJK/openEPA. 
 
  An implemetation of: 
  
- 1) the Gilbert–Johnson–Keerthi (GJK) distance algorithm, and 
- 2) the Expanding-Polytope-Algorithm (EPA). 
+ - the Gilbert–Johnson–Keerthi (GJK) distance algorithm, and 
+ - the Expanding-Polytope-Algorithm (EPA). 
 
  Computes penetration of body2 into body1. 
- 
  Returns true if collision with depth of penetration, contact normal direction, and contact position. 
- Note  penetration depth is always positive.
- 
- see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
- 
+
  This code is differentiable. 
  
+ 
+ @note EPA returns a positive depth for a penetration. 
+ @note GJK is known to perform badly when working with large flat surfaces or boxes. 
+ 
+ @warning OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used then *all* the code in the release/product is also bound by the GPL3 license.
+ 
+ @see https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm
+ @see https://github.com/MattiaMontanari/openGJK
 
- Notes 
- 
- 1) OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used 
-    then *all* the code in the release/product is also bound by the GPL3 license.
- 
- 2) EPA returns positive depth for penetration; 
- 
- 3) GJK is not great when working with large flat surfaces or boxes 
  
 */
 
@@ -104,7 +102,7 @@ public:
     ~BGJK( void )=default;
     
  
-    /// @brief Detect if a collision has taken place and fill in the BContactInfo (depth, normal and point)
+    /// @brief detect if a collision has taken place and fill in the BContactInfo (depth, normal and point)
     ///
     /// @param[in] body1       pointer to body1
     /// @param[in] body2       pointer to body2

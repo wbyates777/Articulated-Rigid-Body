@@ -1,16 +1,19 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$$$$$$$
+         $   BPolytopeLoader.h   $
+         $$$$$$$$$$$$$$$$$$$$$$$$$
+
  @file BPolytopeLoader.h 
- @date 17/12/2025
-
- $$$$$$$$$$$$$$$$$$$$$$$$$
- $   BPolytopeLoader.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 17/12/2025
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Load polytope for a mesh using the ASSIMP mesh loader.
+ 
+ ---
+ 
+ @brief Load a polytope for a mesh using the ASSIMP mesh loader.
+ 
  Computes the vertex edge adjacency vector used to optimise collision detection.
  Requires a triangular mesh - ASSIMP does this triangulation so you don't have to.
 
@@ -18,22 +21,9 @@
  Problems can occur due to zlib - if you already have zlib installed on your system, 
  you must disable its inclusion in the build -- see ASSIMP  CMakeLists.txt
  
- https://github.com/assimp/assimp
+ @note scale of mesh and scale of polytope must be identical.
  
- 
- I use the Python executable CoACD for converting meshes to polytopes/convex hulls. 
- 
- See https://github.com/SarahWeiii/CoACD
- 
-      pip install trimesh ; pip install coacd;
- 
-      mycoacd.py -i mymesh.obj -o mypolytope.obj
- 
- 
- Note 
- 
- 1) scale of mesh and scale of polytope must be identical.
-
+ @see https://github.com/assimp/assimp
  
 */
 

@@ -1,14 +1,11 @@
 /* BOpenGJK 15/12/2025
 
- $$$$$$$$$$$$$$$$$$$$
- $   BOpenGJK.cpp   $
- $$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$
+         $   BOpenGJK.cpp   $
+         $$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
-
+ 
 */
 
 /*

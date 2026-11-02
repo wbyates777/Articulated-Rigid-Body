@@ -1,12 +1,12 @@
 /* BManifold 23/07/2026
 
- $$$$$$$$$$$$$$$$$$$$$
- $   BManifold.cpp   $
- $$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$
+         $   BManifold.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
 
  Assume depth > 0 implies penetration
  
@@ -50,7 +50,7 @@ BManifold::refresh( BScalar max_dist, BScalar max_tan_dist2 )
 {
     for (int i = 0; i < m_points.size(); ) 
     {
-        BContact &c = m_points[i];
+        BContactDetails &c = m_points[i];
 
         // convert body to world coords - note you must use X_base transform
         const BVector3 w1 = m_body1->X_base().applyTranspose(c.localPos1);
@@ -105,7 +105,7 @@ BManifold::addPoint(const BContactInfo &cinfo, BScalar threshold2 )
     const BVector3 local2 = m_body2->X_base().apply(cpoint);
     
     // check for matching existing point (within say ~5mm)
-    for (BContact &c : m_points) 
+    for (BContactDetails &c : m_points) 
     {
         BScalar d1 = glm::distance2(c.localPos1, local1);
         if (d1 < threshold2) 
@@ -132,7 +132,7 @@ BManifold::addPoint(const BContactInfo &cinfo, BScalar threshold2 )
     } 
     else 
     {
-        reducePoints(BContact(local1, local2, cpoint, cnormal, cdepth));
+        reducePoints(BContactDetails(local1, local2, cpoint, cnormal, cdepth));
     }
 }
 
@@ -161,7 +161,7 @@ BManifold::calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, 
 }
 
 void
-BManifold::reducePoints( const BContact& pt ) 
+BManifold::reducePoints( const BContactDetails& pt ) 
 {
     // find and keep the point i0 with 'deepest' penetration 
     int maxDepthIdx = 0; 
@@ -198,7 +198,7 @@ BManifold::reducePoints( const BContact& pt )
     assert(maxAreaIdx != -1);
     
     // keep only the 4 chosen points (preserves impulse cache)
-    std::vector<BContact> keptPoints(4);
+    std::vector<BContactDetails> keptPoints(4);
     
     keptPoints[0] = m_points[m_index[maxAreaIdx][0]];
     keptPoints[1] = m_points[m_index[maxAreaIdx][1]];

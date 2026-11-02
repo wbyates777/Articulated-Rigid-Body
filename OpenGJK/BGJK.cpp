@@ -1,13 +1,11 @@
-
 /* BGJK 17/05/2026
 
- $$$$$$$$$$$$$$$$
- $   BGJK.cpp   $
- $$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$
+         $   BGJK.cpp   $
+         $$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+
 */
 
 

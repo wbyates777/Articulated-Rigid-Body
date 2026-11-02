@@ -1,25 +1,29 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$
+         $   BSimplex.h   $
+         $$$$$$$$$$$$$$$$$$
+
  @file BSimplex.h
- @date 17/12/2025
-
- $$$$$$$$$$$$$$$$$$
- $   BSimplex.h   $
- $$$$$$$$$$$$$$$$$$
-
+ @ingroup Collisions
+ date 17/12/2025
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- A generalization of the notion of a triangle or tetrahedron to  
- arbitrary dimensions (see https://en.wikipedia.org/wiki/Simplex).
+ 
+ ---
+ 
+ @brief A generalization of the notion of a triangle or tetrahedron to arbitrary dimensions.
   
  After calling BOpenGJK::min_distance():
  
     - witnesses(0) contains the closest point on body1
     - witnesses(1) contains the closest point on body2
  
- These are computed using barycentric coordinates
- from the final simplex vertices.
+ These are computed using barycentric coordinates from the final simplex vertices.
+ 
+ @warning OpenGJK is released under a GPL3 license. As a result if OpenGJK code is used then *all* the code in the release/product is also bound by the GPL3 license.
+ 
+ @see https://en.wikipedia.org/wiki/Simplex
  
 */
 
@@ -84,7 +88,7 @@ struct BGJKVertex
     
     BVector3 vertex;// = BVector3(0.0);
     
-    // (vertIdx, polyIdx) for body1, (vertIdx, polyIdx) for body2,
+    /// (vertIdx, polyIdx) for body1, (vertIdx, polyIdx) for body2,
     std::array<BIndex, 2> index;// = {BIndex(-1),BIndex(-1)};   
 };
 
@@ -189,9 +193,9 @@ public:
     
 private:
     
-    std::array<BGJKVertex, 4> m_point;   /// coordinates and Indices of the points of the simplex
-    std::array<BVector3, 2> m_witness;   /// coordinates of the witness points
-    int m_nvrtx;                         /// number of points defining the simplex
+    std::array<BGJKVertex, 4> m_point;   // coordinates and Indices of the points of the simplex
+    std::array<BVector3, 2> m_witness;   // coordinates of the witness points
+    int m_nvrtx;                         // number of points defining the simplex
 };
 
 

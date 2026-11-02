@@ -1,39 +1,35 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BPolytope.h   $
+         $$$$$$$$$$$$$$$$$$$
+
  @file BPolytope.h 
- @date 01/03/2026
-
- $$$$$$$$$$$$$$$$$$$
- $   BPolytope.h   $
- $$$$$$$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
-
- A polytope is a geometric object with flat sides (faces). 
+ @ingroup Collisions
+ date 01/03/2026
  
- Used for collision detection.
+ by W.B. Yates
+ 
+ ---
+
+ @brief A polytope is a geometric object with flat sides (faces) which is used for collision detection.
  
  Polytopes are the generalization of three-dimensional polyhedra to any number of dimensions. 
- (see https://en.wikipedia.org/wiki/Polytope). The GJK algorithm works directly
- on their convex-hull. However the convex-hull is never computed explicitly,
- instead each GJK-iteration employs a support function that has a cost
+ The GJK algorithm works directly on their convex-hull. However the convex-hull is never 
+ computed explicitly, instead each GJK-iteration employs a support function that has a cost
  linearly dependent on the number of points defining the polytope.
  
- 
  Note:
+ - use float and short here to save memory - no spatial algebra or diffentiable types.
+ - use the Python executable CoACD for converting meshes to sequences of polytopes/convex hulls. 
  
- 1) I use float and short here (to save memory) - no spatial algebra/diffentiable types
- 2) I use the Python executable CoACD for converting meshes to sequences of polytopes/convex hulls. 
- 
- See https://github.com/SarahWeiii/CoACD
- 
+ @code{.py}
       pip install trimesh ; pip install coacd;
- 
-      mycoacd.py -i mymesh.obj -o mypolytope.obj
- 
- i.e. mycoacd.py -mi 1000 -md 5 -mn 30  -i ncc1701A.obj -o ncc1701A_convexhull.obj
+      mycoacd.py -mi 1000 -md 5 -mn 30  -i ncc1701A.obj -o ncc1701A_convexhull.obj
+ @endcode
+
+ @see https://en.wikipedia.org/wiki/Polytope
+ @see https://github.com/SarahWeiii/CoACD
  
 */
 
@@ -76,7 +72,7 @@ struct BPolytope
     glm::vec3 m_min;
     glm::vec3 m_max;
     
-    // NB polytope verteces and indexes are float and short respectively
+    // polytope verteces and indexes are float and short respectively
     std::vector<glm::vec3> m_coord;  
     std::vector<std::vector<short>> m_adjacency;  
 

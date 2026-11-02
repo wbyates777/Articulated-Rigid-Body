@@ -1,19 +1,26 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BManifold.h   $
+         $$$$$$$$$$$$$$$$$$$
+
  @file BManifold.h 
- @date 23/07/2026
-
- $$$$$$$$$$$$$$$$$$$
- $   BManifold.h   $
- $$$$$$$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Assume depth > 0 implies penetration
+ @ingroup Collisions
+ date 23/07/2026
  
- Compare bullet3 class btPersistentManifold
- see https://github.com/bulletphysics/bullet3 
+ by W.B. Yates
+ 
+ ---
+ 
+ @brief A data structure used to store and manage the precise geometric details of a contact between two colliding bodies.
+ 
+ A collection of upto 4 points of contact between 2 colliding bodies. We use 4 points as they form stable 3D polygon.
+ Compare with the bullet3 class btPersistentManifold.
+ 
+ 
+ @note a depth > 0 implies penetration.
+ 
+ @see https://github.com/bulletphysics/bullet3 
  
 */
 
@@ -22,17 +29,16 @@
 #define BMANIFOLD_H
 
 
+#include <vector>
+
 #ifndef BVECTOR6_H
 #include "BVector6.h"
 #endif
 
-#include <vector>
-
-
 class ABody;
 
 
-/// a single point of contact
+/// a single point of contact - basic information
 struct BContactInfo 
 {
     BContactInfo(void): normal(0.0), pos(0.0), depth(0.0) {}
@@ -45,21 +51,22 @@ struct BContactInfo
 };
 
 
-/// a single point of contact
-struct BContact 
+/// a single point of contact - basic information plus details
+struct BContactDetails 
 {
-    BContact( void )=default;
-    BContact( const BVector3 &lp1, const BVector3 &lp2,
-              const BVector3 &p, const BVector3 &n, BScalar d) : localPos1(lp1), localPos2(lp2), 
-                                                                 pos(p), normal(n), depth(d), 
-                                                                 accJ(0.0), accJx(0.0), accJy(0.0) {}
-    ~BContact( void )=default;
+    BContactDetails( void )=default;
+    BContactDetails( const BVector3 &lp1, const BVector3 &lp2,
+                     const BVector3 &p, const BVector3 &n, BScalar d) : localPos1(lp1), localPos2(lp2), 
+                                                                        normal(n), pos(p), depth(d), 
+                                                                        accJ(0.0), accJx(0.0), accJy(0.0) {}
+    ~BContactDetails( void )=default;
     
-    BVector3 localPos1; /// position relative to body1 frame
-    BVector3 localPos2; /// position relative to body2 frame
-    BVector3 pos;       /// world contact position
-    BVector3 normal;    /// world contact normal
-    BScalar  depth;     /// penetration depth
+    BVector3 localPos1; ///< position relative to body1 frame
+    BVector3 localPos2; ///< position relative to body2 frame
+
+    BVector3 normal;    ///< world contact normal
+    BVector3 pos;       ///< world contact position
+    BScalar  depth;     ///< penetration depth
     
     /// persistent solver state (for warm starting)
     BScalar accJ, accJx, accJy;
@@ -97,10 +104,10 @@ public:
     ABody*
     body2( void ) { return m_body2; }
     
-    const std::vector<BContact>&
+    const std::vector<BContactDetails>&
     points( void ) const { return m_points; }
     
-    std::vector<BContact>&
+    std::vector<BContactDetails>&
     points( void )  { return m_points; }
     
     bool
@@ -122,17 +129,17 @@ private:
     BScalar 
     calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, const BVector3& p3) const;
     
-    /// remove excess points from the manifold
+    // remove excess points from the manifold
     void
-    reducePoints( const BContact& pt );
+    reducePoints( const BContactDetails& pt );
     
     ABody* m_body1;
     ABody* m_body2;
     uint64_t m_manifoldId;
-    std::vector<BContact> m_points;
+    std::vector<BContactDetails> m_points;
     bool m_warmstart;
     
-    static constexpr int MAX_POINTS = 4; /// 4 points form a stable 3D polygon
+    static constexpr int MAX_POINTS = 4; // 4 points form a stable 3D polygon
     static const int m_index[4][3];
 };
 
