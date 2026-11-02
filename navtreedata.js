@@ -37,30 +37,31 @@ var NAVTREE =
           ] ]
         ] ],
         [ "Build Instructions", "d0/d30/md_README.html#autotoc_md29", null ],
-        [ "Background", "d0/d30/md_README.html#autotoc_md30", [
-          [ "Forward and Inverse Dynamics of Kinematic Trees", "d0/d30/md_README.html#autotoc_md31", null ],
-          [ "Spatial Algebra", "d0/d30/md_README.html#autotoc_md32", null ],
-          [ "Automatic Differentiation", "d0/d30/md_README.html#autotoc_md33", null ],
-          [ "Collision Detection and Impulse Based Resolution", "d0/d30/md_README.html#autotoc_md34", null ],
-          [ "Unified Robot Description Format (URDF)", "d0/d30/md_README.html#autotoc_md35", null ]
+        [ "Documentation", "d0/d30/md_README.html#autotoc_md30", null ],
+        [ "Background", "d0/d30/md_README.html#autotoc_md31", [
+          [ "Forward and Inverse Dynamics of Kinematic Trees", "d0/d30/md_README.html#autotoc_md32", null ],
+          [ "Spatial Algebra", "d0/d30/md_README.html#autotoc_md33", null ],
+          [ "Automatic Differentiation", "d0/d30/md_README.html#autotoc_md34", null ],
+          [ "Collision Detection and Impulse Based Resolution", "d0/d30/md_README.html#autotoc_md35", null ],
+          [ "Unified Robot Description Format (URDF)", "d0/d30/md_README.html#autotoc_md36", null ]
         ] ],
-        [ "Libraries", "d0/d30/md_README.html#autotoc_md36", [
-          [ "Dependencies", "d0/d30/md_README.html#autotoc_md37", null ],
-          [ "External", "d0/d30/md_README.html#autotoc_md38", null ]
+        [ "Libraries", "d0/d30/md_README.html#autotoc_md37", [
+          [ "Dependencies", "d0/d30/md_README.html#autotoc_md38", null ],
+          [ "External", "d0/d30/md_README.html#autotoc_md39", null ]
         ] ],
-        [ "Notes", "d0/d30/md_README.html#autotoc_md39", null ]
+        [ "Notes", "d0/d30/md_README.html#autotoc_md40", null ]
       ] ]
     ] ],
     [ "Notes for Automated / LLM Code Reviewers", "da/d56/md_REVIEWER__NOTES.html", [
-      [ "1. Include Guards vs <tt>#pragma once</tt>", "da/d56/md_REVIEWER__NOTES.html#autotoc_md41", null ],
-      [ "2. The <tt>B</tt> Prefix Naming Convention", "da/d56/md_REVIEWER__NOTES.html#autotoc_md42", null ],
-      [ "3. Explicit <tt>(void)</tt> in Parameter Lists", "da/d56/md_REVIEWER__NOTES.html#autotoc_md43", null ],
-      [ "4. Decorative / ASCII-Art File Headers", "da/d56/md_REVIEWER__NOTES.html#autotoc_md44", null ],
-      [ "5. <tt>CBody</tt> and Related Files", "da/d56/md_REVIEWER__NOTES.html#autotoc_md45", null ],
-      [ "6. Use of <tt>m_</tt> Member Prefixes", "da/d56/md_REVIEWER__NOTES.html#autotoc_md46", null ],
-      [ "7. Macro-Based Configuration (<tt>ARB_USE_AUTODIFF</tt>, etc.)", "da/d56/md_REVIEWER__NOTES.html#autotoc_md47", null ],
-      [ "8. “Older” or “Academic” Coding Style", "da/d56/md_REVIEWER__NOTES.html#autotoc_md48", [
-        [ "Summary", "da/d56/md_REVIEWER__NOTES.html#autotoc_md50", null ]
+      [ "1. Include Guards vs <tt>#pragma once</tt>", "da/d56/md_REVIEWER__NOTES.html#autotoc_md42", null ],
+      [ "2. The <tt>B</tt> Prefix Naming Convention", "da/d56/md_REVIEWER__NOTES.html#autotoc_md43", null ],
+      [ "3. Explicit <tt>(void)</tt> in Parameter Lists", "da/d56/md_REVIEWER__NOTES.html#autotoc_md44", null ],
+      [ "4. Decorative / ASCII-Art File Headers", "da/d56/md_REVIEWER__NOTES.html#autotoc_md45", null ],
+      [ "5. <tt>CBody</tt> and Related Files", "da/d56/md_REVIEWER__NOTES.html#autotoc_md46", null ],
+      [ "6. Use of <tt>m_</tt> Member Prefixes", "da/d56/md_REVIEWER__NOTES.html#autotoc_md47", null ],
+      [ "7. Macro-Based Configuration (<tt>ARB_USE_AUTODIFF</tt>, etc.)", "da/d56/md_REVIEWER__NOTES.html#autotoc_md48", null ],
+      [ "8. “Older” or “Academic” Coding Style", "da/d56/md_REVIEWER__NOTES.html#autotoc_md49", [
+        [ "Summary", "da/d56/md_REVIEWER__NOTES.html#autotoc_md51", null ]
       ] ]
     ] ],
     [ "README", "d4/df1/md_URDF_2Examples_2README.html", null ],
@@ -107,14 +108,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"d3/d63/classtinyxml2_1_1XMLDocument.html#a386df0befd06aadb5e0cd21381aa955a",
+"d3/d63/classtinyxml2_1_1XMLDocument.html#a34e6318e182e40e3cc4f4ba5d59ed9ed",
 "d5/d83/classtinyxml2_1_1XMLElement.html#a0fa5bea0a4daf3ddd503dcabb823eba6",
 "d5/da2/classtinyxml2_1_1XMLPrinter.html#af4caefa48ea6436898fb1807de8d14c0",
-"d6/de3/classtinyxml2_1_1XMLNode.html#aa20c91e4213dc930c5bdf420322ca342",
-"d8/db9/classBModelState.html#a7d99039d51ef9572a8f85570ed787c5c",
-"db/d39/classBInertia.html#a84325c0a956c9a0b34539b84423418cf",
-"dc/dc7/classBJoint.html#a1520ce4f01f60fef8a114ccc6cb98514",
-"df/d6a/namespacearb.html#a6c47d68c5fd6762b37b4d6f3715118f4"
+"d6/de3/classtinyxml2_1_1XMLNode.html#a9b5fc636646fda761d342c72e91cb286",
+"d8/db9/classBModelState.html#a5dee2f0e65891dbf5189604b2f2e821a",
+"db/d39/classBInertia.html#a76830acc70c0867c38730a7787f5bcb1",
+"dc/dc7/classBJoint.html#a15088ca8d668ce29c1453eefeced4e05",
+"df/d6a/namespacearb.html#a6b565b67baeb6e3b133374b4f1945166"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

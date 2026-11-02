@@ -1,9 +1,9 @@
 var searchData=
 [
   ['failedtests_0',['failedTests',['../d3/d94/classBSpatialChecks.html#a42554bddc854176591415cbba2794b88',1,'BSpatialChecks']]],
-  ['file_20headers_1',['4. Decorative / ASCII-Art File Headers',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md44',1,'']]],
+  ['file_20headers_1',['4. Decorative / ASCII-Art File Headers',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md45',1,'']]],
   ['filename_2',['filename',['../d2/de4/structURDFGeometry.html#a4f1e266ccca84875089f8c4e0cec1eb5',1,'URDFGeometry']]],
-  ['files_3',['5. &lt;tt&gt;CBody&lt;/tt&gt; and Related Files',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md45',1,'']]],
+  ['files_3',['5. &lt;tt&gt;CBody&lt;/tt&gt; and Related Files',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md46',1,'']]],
   ['findattribute_4',['FindAttribute',['../d5/d83/classtinyxml2_1_1XMLElement.html#a157750dac8037a316fd1af1a973dfa2c',1,'tinyxml2::XMLElement']]],
   ['first_5fpoint_5',['first_point',['../de/da7/classBCollider.html#a12bc8cf0bb36f25dd56e4f362544f5e7',1,'BCollider']]],
   ['firstattribute_6',['FirstAttribute',['../d5/d83/classtinyxml2_1_1XMLElement.html#a4a7c4392658833bb8138c474d15a805a',1,'tinyxml2::XMLElement']]],
@@ -20,9 +20,9 @@ var searchData=
   ['floatvalue_17',['FloatValue',['../db/d8e/classtinyxml2_1_1XMLAttribute.html#a27797b45d21c981257720db94f5f8801',1,'tinyxml2::XMLAttribute']]],
   ['for_20automated_20llm_20code_20reviewers_18',['Notes for Automated / LLM Code Reviewers',['../da/d56/md_REVIEWER__NOTES.html',1,'']]],
   ['force_19',['force',['../da/d53/classCBody.html#aebc152145f64871b0c44d7978f36e2cc',1,'CBody::force(void) const'],['../da/d53/classCBody.html#adc167176e36002a0cf0239e2b40fac1f',1,'CBody::force(int i) const'],['../da/d53/classCBody.html#a1ffb33adfd25a0f1ac26eb2bcbae51f1',1,'CBody::force(int i)'],['../da/d53/classCBody.html#a7ba61f2027c73a5dc39398364fa34136',1,'CBody::force(const BVector6 &amp;f)'],['../da/d53/classCBody.html#a0e3c8f405ec710fccf4659758194df70',1,'CBody::force(void)']]],
-  ['format_20urdf_20',['Unified Robot Description Format (URDF)',['../d0/d30/md_README.html#autotoc_md35',1,'']]],
+  ['format_20urdf_20',['Unified Robot Description Format (URDF)',['../d0/d30/md_README.html#autotoc_md36',1,'']]],
   ['forward_21',['forward',['../de/d7f/classBDynamics.html#a2d3d5475909e97a76b7b32f6b14a13fc',1,'BDynamics::forward()'],['../df/d0a/main_8cpp.html#ae9c20f0d05090c0b921981867c25129d',1,'forward():&#160;main.cpp']]],
-  ['forward_20and_20inverse_20dynamics_20of_20kinematic_20trees_22',['Forward and Inverse Dynamics of Kinematic Trees',['../d0/d30/md_README.html#autotoc_md31',1,'']]],
+  ['forward_20and_20inverse_20dynamics_20of_20kinematic_20trees_22',['Forward and Inverse Dynamics of Kinematic Trees',['../d0/d30/md_README.html#autotoc_md32',1,'']]],
   ['free_23',['free',['../db/d69/classtinyxml2_1_1MemPool.html#a49e3bfac2cba2ebd6776b31e571f64f7',1,'tinyxml2::MemPool::Free()'],['../d1/d5d/classtinyxml2_1_1MemPoolT.html#a598f0d299d8deda1f0c5012ab12e956a',1,'tinyxml2::MemPoolT::Free()']]],
   ['friction_24',['friction',['../d4/dfb/structURDFDynamics.html#a6acbe0f7e979a7ed746daf202e5fae75',1,'URDFDynamics']]],
   ['frictionon_25',['frictionon',['../d9/dfa/classBContactManager.html#a66843390eeb935ccbe6f20fde4f56c0d',1,'BContactManager::frictionOn(bool b)'],['../d9/dfa/classBContactManager.html#aed6b54ba556405c9693e72330a9ee64f',1,'BContactManager::frictionOn(void) const']]],

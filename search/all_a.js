@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['b_20tt_20prefix_20naming_20convention_0',['2. The &lt;tt&gt;B&lt;/tt&gt; Prefix Naming Convention',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md42',1,'']]],
+  ['b_20tt_20prefix_20naming_20convention_0',['2. The &lt;tt&gt;B&lt;/tt&gt; Prefix Naming Convention',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md43',1,'']]],
   ['b_5falignment_1',['B_ALIGNMENT',['../d4/df1/BSpatialTypes_8h.html#ac63b46caf7a262196c91886cd9882573',1,'BSpatialTypes.h']]],
   ['b_5feps_2',['B_EPS',['../d4/df1/BSpatialTypes_8h.html#a2ba73ef1854a5f721191db516c610bde',1,'BSpatialTypes.h']]],
   ['b_5feps2_3',['B_EPS2',['../d4/df1/BSpatialTypes_8h.html#a27d8ceb12c06dbab4d1b0df8aa090268',1,'BSpatialTypes.h']]],
@@ -39,10 +39,10 @@ var searchData=
   ['b_5fzero_5frbi_36',['B_ZERO_RBI',['../d2/d74/BRBInertia_8h.html#a4626b9a57627fc3f69866204358f0568',1,'BRBInertia.h']]],
   ['babinertia_37',['babinertia',['../d6/d19/classBABInertia.html#a202c5ac1dae0a2d7043223bd1b3177e5',1,'BABInertia::BABInertia(const BMatrix63 &amp;U, const BMatrix3 &amp;Dinv)'],['../d6/d19/classBABInertia.html#a2a662041cac42f0751571ba2d91eaf46',1,'BABInertia::BABInertia(const BVector6 &amp;a, const BVector6 &amp;b)'],['../d6/d19/classBABInertia.html',1,'BABInertia'],['../d6/d19/classBABInertia.html#a5b077095eba42853791e76082c63f159',1,'BABInertia::BABInertia(const BMatrix6 &amp;I)'],['../d6/d19/classBABInertia.html#a2d3007db4553d9c680d4538a8db992f5',1,'BABInertia::BABInertia(const BInertia &amp;I)'],['../d6/d19/classBABInertia.html#a4844fb4dc620482c19b0854ef04947d6',1,'BABInertia::BABInertia(const BMatrix3 &amp;M, const BMatrix3 &amp;H, const BMatrix3 &amp;I_o)'],['../d6/d19/classBABInertia.html#a260cf38cc7258dda49d853563f2f2c60',1,'BABInertia::BABInertia(void)=default'],['../d6/d19/classBABInertia.html#aa96d482fe93c5da8d6272d1e240581e3',1,'BABInertia::BABInertia(const BRBInertia &amp;I)']]],
   ['babinertia_2eh_38',['BABInertia.h',['../d2/d6d/BABInertia_8h.html',1,'']]],
-  ['background_39',['Background',['../d0/d30/md_README.html#autotoc_md30',1,'']]],
+  ['background_39',['Background',['../d0/d30/md_README.html#autotoc_md31',1,'']]],
   ['badjoint_2eh_40',['BAdjoint.h',['../d9/d44/BAdjoint_8h.html',1,'']]],
-  ['based_20configuration_20tt_20arb_5fuse_5fautodiff_20tt_20etc_41',['7. Macro-Based Configuration (&lt;tt&gt;ARB_USE_AUTODIFF&lt;/tt&gt;, etc.)',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md47',1,'']]],
-  ['based_20resolution_42',['Collision Detection and Impulse Based Resolution',['../d0/d30/md_README.html#autotoc_md34',1,'']]],
+  ['based_20configuration_20tt_20arb_5fuse_5fautodiff_20tt_20etc_41',['7. Macro-Based Configuration (&lt;tt&gt;ARB_USE_AUTODIFF&lt;/tt&gt;, etc.)',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md48',1,'']]],
+  ['based_20resolution_42',['Collision Detection and Impulse Based Resolution',['../d0/d30/md_README.html#autotoc_md35',1,'']]],
   ['bautodiff_2eh_43',['BAutodiff.h',['../d7/d11/BAutodiff_8h.html',1,'']]],
   ['bbody_44',['bbody',['../d4/dae/classBBody.html#a543b8b999084f5effcb254b4f39f8ead',1,'BBody::BBody(void)=default'],['../d4/dae/classBBody.html#a88b51b0fd063850f0487bfb6b9f6329d',1,'BBody::BBody(const BRBInertia &amp;I, bool isVirtual=false)'],['../d4/dae/classBBody.html',1,'BBody']]],
   ['bbody_2eh_45',['BBody.h',['../d4/dca/BBody_8h.html',1,'']]],

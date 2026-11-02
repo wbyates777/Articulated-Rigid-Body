@@ -29,5 +29,5 @@ var searchData=
   ['glm_5fforce_5funrestricted_5fgentype_26',['GLM_FORCE_UNRESTRICTED_GENTYPE',['../d7/d11/BAutodiff_8h.html#aa292f08a7924354d354488f84c4750ab',1,'BAutodiff.h']]],
   ['global_5fran_27',['global_ran',['../df/d6a/namespacearb.html#a40d6a3b0ace547758757444d50340cb0',1,'arb']]],
   ['gravity_28',['gravity',['../d8/d38/classBModel.html#a76c28af1b47a0a74df29d3a292338e98',1,'BModel::gravity(const BVector3 &amp;g)'],['../d8/d38/classBModel.html#a3c544999e83cc9ff5c3f6907ed326b1c',1,'BModel::gravity(void) const']]],
-  ['guards_20vs_20tt_20pragma_20once_20tt_29',['1. Include Guards vs &lt;tt&gt;#pragma once&lt;/tt&gt;',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md41',1,'']]]
+  ['guards_20vs_20tt_20pragma_20once_20tt_29',['1. Include Guards vs &lt;tt&gt;#pragma once&lt;/tt&gt;',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md42',1,'']]]
 ];

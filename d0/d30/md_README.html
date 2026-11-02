@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('d0/d30/md_README.html','../../'); init
   <div class="headertitle"><div class="title">README</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><img src="https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&amp;labelColor=%23131519&amp;color=%230F79AA" alt="" class="inline"/> <img src="https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&amp;labelColor=%23131519&amp;color=%230F79AA" alt="" class="inline"/> <img src="https://img.shields.io/badge/C%2B%2B-23-%230F79AA?style=for-the-badge&amp;labelColor=%23131519&amp;logo=c%2B%2B&amp;logoColor=white" alt="C++23" class="inline"/></p>
+<div class="textblock"><p><img src="https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&amp;labelColor=%23131519&amp;color=%230F79AA" alt="" class="inline"/> <img src="https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&amp;labelColor=%23131519&amp;color=%230F79AA" alt="" class="inline"/> <img src="https://img.shields.io/badge/C%2B%2B-23-%230F79AA?style=for-the-badge&amp;labelColor=%23131519&amp;logo=c%2B%2B&amp;logoColor=white" alt="C++23" class="inline"/> <a href="https://wbyates777.github.io/Articulated-Rigid-Body/"><img src="https://img.shields.io/badge/docs-Doxygen-%230F79AA?style=for-the-badge&amp;labelColor=%23131519" alt="Documentation" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md18"></a>
 &lt;img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" /&gt;  Articulated Rigid Body (ARB)</h1>
 <p><b>Compact C++ articulated rigid body simulation library implementing:</b></p>
@@ -334,8 +334,12 @@ Build Instructions</h2>
 </div><!-- fragment --><p>CMake will take care of installing the glm, autodiff, and libccd libraries, and building the executable 'dynamics_test'. If you are not using CMake these libraries can be downloaded directly from github (see links below).</p>
 <p>The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20. If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. glm and autodiff are both C++17 compliant. See the source for details on the remaining minor C++17 changes (i.e replace std::format with std::snprintf).</p>
 <h2><a class="anchor" id="autotoc_md30"></a>
+Documentation</h2>
+<p>The Doxygen API reference for this library is hosted on GitHub Pages:</p>
+<p>👉 <b><a href="https://wbyates777.github.io/Articulated-Rigid-Body/">View API Documentation</a></b></p>
+<h2><a class="anchor" id="autotoc_md31"></a>
 Background</h2>
-<h3><a class="anchor" id="autotoc_md31"></a>
+<h3><a class="anchor" id="autotoc_md32"></a>
 Forward and Inverse Dynamics of Kinematic Trees</h3>
 <p>Trees (and chains) of kinematic equations are used in robotics, computer graphics, and animation. In robotics <a href="https://en.wikipedia.org/wiki/Forward_kinematics">forward kinematics</a> refers to the use of kinematic equations to compute the position of an end-effector, such as a jointed robotic arm, from specified values for the joint parameters (see figure 1). The reverse calculation, that computes the joint parameters that achieve a specified arm position, is known as <a href="https://en.wikipedia.org/wiki/Inverse_kinematics">inverse kinematics</a>.</p>
 <p><img src="https://github.com/user-attachments/assets/a51a097e-1480-4c3b-a724-2e5de4086daa" alt="robot_arm" width="255" height="250" class="inline"/> </p>
@@ -380,7 +384,7 @@ Table: ARB - Supported Joint Types </summary>
 </table>
 <p></p>
 </details>
-<h3><a class="anchor" id="autotoc_md32"></a>
+<h3><a class="anchor" id="autotoc_md33"></a>
 Spatial Algebra</h3>
 <p>The algorithms described above are formulated and implemented using <em>spatial algebra</em> (see RBDA, Chapter 2). Spatial algebra employs 6D vectors that combine the 3D linear and 3D angular aspects of rigid-body motion. Linear and angular velocities (or accelerations) are combined to form <em>spatial</em> <em>motion</em> vectors, while linear forces and torques are combined to form <em>spatial</em> <em>force</em> vectors. By convention, spatial velocity vectors are called <em>twists</em>, while spatial force vectors are called <em>wrenches</em>.</p>
 <p>Spatial algebra significantly reduces the "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). It also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics. For example, the following 'hello world' program performs <a href="https://en.wikipedia.org/wiki/Newton–Euler_equations">Newton-Euler</a> integration: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="../../d7/d43/BSpatialAlgebra_8h.html">BSpatialAlgebra.h</a>&quot;</span></div>
@@ -426,11 +430,11 @@ Spatial Algebra</h3>
 </div><!-- fragment --><p> This produces the output:</p>
 <p>0.0 position is 0.00000000 0.00000000 0.00000000 20.00000000 50.00000000 3.00000000 5.0 position is 0.00000000 1.25250000 0.00000000 15.23282410 50.00000000 13.89482750</p>
 <p>The acceleration due to an actual, physical force is calculated by the term <code>acc = invI * force</code>. The extra term <code>arb::crossf(vel, I * vel)</code> is called the bias force. The bias force represents an <a href="https://en.wikipedia.org/wiki/Fictitious_force">inertial force</a>; a so called fictitious force such as centrifugal, Coriolis, or Euler force. The inertial force is necessary for describing motion correctly.</p>
-<h3><a class="anchor" id="autotoc_md33"></a>
+<h3><a class="anchor" id="autotoc_md34"></a>
 Automatic Differentiation</h3>
 <p>This library also supports [Automatic Differentiation] (AD). Adding automatic differentiation to the spatial algebra library means that the algebra, ABA, CRBA, RNEA, and collision resolution are fully differentiable. Unlike <em>numerical</em> differentiation (finite differences), which is computationally expensive and prone to truncation errors, AD uses the <a href="https://en.wikipedia.org/wiki/Chain_rule">chain rule</a> to propagate <em>analytical</em> derivatives through the code at the machine level. This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques such as real-time [Model Predictive Control] (MPC), gradient-based trajectory optimisation, or analytical [System Identification] (SI).</p>
 <p>For example, consider <em>System Identification</em> (SI). System Identification is the process of constructing a mathematical model of a dynamic system, using analytical methods, based on observed input and output data. While forward dynamics (ABA/CRBA) predicts how a system moves given its physical parameters, SI reverses this process: it can recover the underlying physical parameters (mass, centre-of-mass, inertia tensor) of each body by observing the system's motion (see ARB example 6 in <a class="el" href="../../df/d0a/main_8cpp.html">main.cpp</a>). SI allows researchers to synchronise a simulation with the real world. Additionally, SI can be used for the estimation of non-conservative forces such as joint friction and damping, which are traditionally difficult to calibrate manually.</p>
-<h3><a class="anchor" id="autotoc_md34"></a>
+<h3><a class="anchor" id="autotoc_md35"></a>
 Collision Detection and Impulse Based Resolution</h3>
 <p>The task of detecting collisions between rigid bodies is non-trivial. It is typically subdivided into two phases: <em>broad phase</em> and <em>narrow phase</em>. Broad-phase consists of detecting intersections between oriented bounding boxes (OBB) and axis aligned boxes (AABB). Computationally, this is relatively efficient. The narrow-phase detects intersections between mesh colliders represented by <em>polytopes</em> (convex hulls) using the <a href="https://en.wikipedia.org/wiki/Gilbert–Johnson–Keerthi_distance_algorithm">GJK algorithm</a>. This is very precise but computationally more expensive.</p>
 <p>ARB provides two options for narrow-phase collision detection:</p><ul>
@@ -442,25 +446,25 @@ Collision Detection and Impulse Based Resolution</h3>
 <p>Collisions are resolved by calculating the <em>spatial impulses</em> resulting from a contact and using these impulses to update the object's velocities so that they separate appropriately (see RBDA, Section 11.7).</p>
 <p>The <a class="el" href="../../d9/dfa/classBContactManager.html">BContactManager</a> class utilises an iterative Projected Gauss-Seidel (PGS) solver to resolve multiple contact constraints simultaneously. It combines Baumgarte Stabilisation for overlap recovery with a circular friction cone (Coulomb friction) model, providing more realistic sliding and sticking behaviour than a box-friction approximation. It also uses impulse caching (<em>warm starting</em>) across frames to ensure stability and eliminate <em>jitter</em> in resting or stacked objects.</p>
 <p><a href="https://youtu.be/gKXwwdfl8QE">https://youtu.be/gKXwwdfl8QE</a></p>
-<h3><a class="anchor" id="autotoc_md35"></a>
+<h3><a class="anchor" id="autotoc_md36"></a>
 Unified Robot Description Format (URDF)</h3>
 <p>The Unified Robot Description Format (URDF) is an XML-based industry standard used to define the physical configuration of a robot, acting as the universal language for the [Robot Operating System] (ROS) ecosystem. It specifies a robot’s kinematic tree, including the hierarchy of links, the types of joints connecting them, and their respective physical properties such as mass, centre of mass, and inertia tensors.</p>
 <p>By supporting URDF, ARB can load real-world robot models, such as the <a href="https://www.youtube.com/watch?v=35KhfiAmE4o">ur5</a> or tiago, directly from standard industry files. The library parses these XML descriptions to automatically construct the internal spatial inertia matrices and joint transforms required for the ABA, CRBA and RNEA algorithms. These models can also be exported to other URDF compliant systems for cross-validation.</p>
-<h2><a class="anchor" id="autotoc_md36"></a>
+<h2><a class="anchor" id="autotoc_md37"></a>
 Libraries</h2>
-<h3><a class="anchor" id="autotoc_md37"></a>
+<h3><a class="anchor" id="autotoc_md38"></a>
 Dependencies</h3>
 <p>glm - <a href="https://github.com/g-truc/glm">https://github.com/g-truc/glm</a></p>
 <p>autodiff - <a href="https://github.com/autodiff/autodiff">https://github.com/autodiff/autodiff</a></p>
 <p>libccd - <a href="https://github.com/danfis/libccd">https://github.com/danfis/libccd</a></p>
 <p>openGJK - <a href="https://github.com/MattiaMontanari/openGJK">https://github.com/MattiaMontanari/openGJK</a></p>
 <p>TinyXML2 - <a href="https://github.com/leethomason/tinyxml2">https://github.com/leethomason/tinyxml2</a></p>
-<h3><a class="anchor" id="autotoc_md38"></a>
+<h3><a class="anchor" id="autotoc_md39"></a>
 External</h3>
 <p>RBDL - <a href="https://github.com/rbdl/rbdl">https://github.com/rbdl/rbdl</a></p>
 <p>RBDyn - <a href="https://github.com/jrl-umi3218/RBDyn">https://github.com/jrl-umi3218/RBDyn</a></p>
 <p>Pinocchio - <a href="https://stack-of-tasks.github.io/pinocchio/">https://stack-of-tasks.github.io/pinocchio/</a></p>
-<h2><a class="anchor" id="autotoc_md39"></a>
+<h2><a class="anchor" id="autotoc_md40"></a>
 Notes</h2>
 <p>This project is licensed under the MIT License.</p>
 <p>The codebase is documented using Doxygen-compliant comments. </p>
