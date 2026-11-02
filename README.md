@@ -20,7 +20,7 @@
   
 **End-to-end automatic differentiation** enables derivatives  to propagate through the physics pipeline supporting  system identification, gradient based optimisation, and machine learning applications.
 
-Minimal dependencies: STL, GLM, (autodiff, openGJK, and libccd optional).
+Minimal dependencies: STL, glm, (autodiff, openGJK, and libccd optional).
 
 
 ---
@@ -101,7 +101,7 @@ Automatic differentiation is provided by the header-only autodiff library. The s
  by employing the physical concept of spatial impulse.  
 
  
-This code is written in C++23 and depends primarily on STL and the header-only GLM. 
+This code is written in C++23 and depends primarily on STL and the header-only glm. 
 Additionally, the header-only autodiff library is required for automatic differentiability, and 
  the openGJK or libccd library for collision detection.
 
@@ -122,23 +122,23 @@ Additionally, the header-only autodiff library is required for automatic differe
 
  RBDL, RBDyn, and Pinocchio employ the Eigen3 linear algebra library. Eigen3 supports all matrix sizes, from small 
  fixed-size matrices to arbitrarily large dense matrices, and even sparse matrices.
- This code does not depend on Eigen3, and instead relies on the light-weight, header-only GLM library. 
- GLM (OpenGL Mathematics) is  based on the OpenGL Shading Language (GLSL) specifications, and
+ This code does not depend on Eigen3, and instead relies on the light-weight, header-only glm library. 
+ glm (OpenGL Mathematics) is  based on the OpenGL Shading Language (GLSL) specifications, and
  provides a highly optimised implementation of 3D linear algebra primitives. 
  
- The spatial algebra implementation (though not the algorithms) is also header-only, and depends solely on STL and the 3D GLM types: 
+ The spatial algebra implementation (though not the algorithms) is also header-only, and depends solely on STL and the 3D glm types: 
  ```
  glm::vec3, glm::mat3, glm::quat,
  ``` 
- and the GLM functions:
+ and the glm functions:
  ```
  glm::cross(u,v), glm::dot(u,v), glm::outerProduct(u,v), glm::transpose(m), glm::inverse(m), glm::mat3_cast(q).
  ```
 
  Given the small number of 3D functions and types employed, it is straightforward to convert back to Eigen3 (although see 
- the note on Eigen3's and GLM's row-major, column-major differences), or 
- replace GLM with a high(er)-performance alternative, such as a custom std::simd 
- linear algebra library. The design goal here is to appropriate GLM's clean and intuitive  syntax,
+ the note on Eigen3's and glm's row-major, column-major differences), or 
+ replace glm with a high(er)-performance alternative, such as a custom std::simd 
+ linear algebra library. The design goal here is to appropriate glm's clean and intuitive  syntax,
  while remaining (mostly) agnostic about the underlying implementation.
 
  In order to implement automatic differentiation it is sufficient to #include "BAutodiff.h" in the BSpatialTypes.h file.
@@ -150,7 +150,7 @@ Additionally, the header-only autodiff library is required for automatic differe
 The collision detection component depends on two external libraries _libccd_ and _openGJK_ (see below).
 Libccd is a C library that implements a variant 
 of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm (EPA). OpenGJK is a more modern and efficient C++ implementation of GJK/EPA. 
-The OpenGJK used here has been rewritten to use GLM types in order to 
+The OpenGJK used here has been rewritten to use glm types in order to 
 support  autodiff types, and  automatic  differentiation.
 
  The URDFManager class depends on [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simplicity these are included in this codebase.
@@ -310,11 +310,11 @@ On a platform that supports CMake you can use the CMakeLists.txt file included i
 
   ```mkdir build ; cd build ; cmake .. ; make -j6 ```
  
-CMake will take care of installing the GLM, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
+CMake will take care of installing the glm, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
 If you are not using CMake these libraries can be downloaded directly from github (see links below).
 
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
-If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. GLM and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with std::snprintf). 
+If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. glm and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with std::snprintf). 
 
 
 ## Background
@@ -464,8 +464,8 @@ which are traditionally difficult to calibrate manually.
 ### Collision Detection and Impulse Based Resolution
 
  The task of detecting collisions between rigid bodies is non-trivial. It is typically subdivided into two phases:  _broad phase_ and  _narrow phase_.
- Broad-phase consists of detecting intersections between oriented bounding boxes (OBB) using 
- the [Separating Axis Theorem] (SAT). Computationally, this is relatively efficient.
+ Broad-phase consists of detecting intersections between oriented bounding boxes (OBB) and axis aligned boxes (AABB). 
+ Computationally, this is relatively efficient.
  The narrow-phase detects intersections between mesh colliders represented by _polytopes_ (convex hulls) 
  using the [GJK algorithm]. This is very precise but computationally more expensive.
  
@@ -507,11 +507,11 @@ https://youtu.be/gKXwwdfl8QE
  
    ### Dependencies
    
- GLM       - https://github.com/g-truc/glm
+ glm       - https://github.com/g-truc/glm
  
  autodiff  - https://github.com/autodiff/autodiff
  
- CCD       - https://github.com/danfis/libccd
+ libccd    - https://github.com/danfis/libccd
  
  openGJK   - https://github.com/MattiaMontanari/openGJK
 
