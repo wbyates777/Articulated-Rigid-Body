@@ -22,12 +22,11 @@ var searchData=
   ['gettext_19',['GetText',['../d5/d83/classtinyxml2_1_1XMLElement.html#a0fa5bea0a4daf3ddd503dcabb823eba6',1,'tinyxml2::XMLElement']]],
   ['gettype_20',['getType',['../de/da7/classBCollider.html#ab66f2f932b9ab5b35a2e05f2807a26ed',1,'BCollider']]],
   ['getuserdata_21',['GetUserData',['../d6/de3/classtinyxml2_1_1XMLNode.html#a18cc02ebd0b06f6bf5db7ef87653e00e',1,'tinyxml2::XMLNode']]],
-  ['github_20com_20user_20attachments_20assets_207e7f598c_20a0b1_2047de_20a18c_206572527ed229_20articulated_20rigid_20body_20arb_22',['&lt;img width=&quot;80&quot; height=&quot;80&quot; alt=&quot;icon&quot; src=&quot;https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229&quot; /&gt;  Articulated Rigid Body (ARB)',['../d0/d30/md_README.html#autotoc_md18',1,'']]],
-  ['glm_23',['glm',['../d4/dff/namespaceglm.html',1,'']]],
-  ['glm_5fenable_5fexperimental_24',['glm_enable_experimental',['../da/dca/BSpatialRandom_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BSpatialRandom.cpp'],['../d8/dff/BManifold_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BManifold.cpp'],['../d3/da3/BGJK_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BGJK.cpp'],['../d3/d72/BContactManager_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BContactManager.cpp'],['../dc/d1b/BCollider_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BCollider.cpp']]],
-  ['glm_5fforce_5fctor_5finit_25',['GLM_FORCE_CTOR_INIT',['../d7/d11/BAutodiff_8h.html#ac627c73454e4c96daef4a3fa6b2408fc',1,'BAutodiff.h']]],
-  ['glm_5fforce_5funrestricted_5fgentype_26',['GLM_FORCE_UNRESTRICTED_GENTYPE',['../d7/d11/BAutodiff_8h.html#aa292f08a7924354d354488f84c4750ab',1,'BAutodiff.h']]],
-  ['global_5fran_27',['global_ran',['../df/d6a/namespacearb.html#a40d6a3b0ace547758757444d50340cb0',1,'arb']]],
-  ['gravity_28',['gravity',['../d8/d38/classBModel.html#a76c28af1b47a0a74df29d3a292338e98',1,'BModel::gravity(const BVector3 &amp;g)'],['../d8/d38/classBModel.html#a3c544999e83cc9ff5c3f6907ed326b1c',1,'BModel::gravity(void) const']]],
-  ['guards_20vs_20tt_20pragma_20once_20tt_29',['1. Include Guards vs &lt;tt&gt;#pragma once&lt;/tt&gt;',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md42',1,'']]]
+  ['glm_22',['glm',['../d4/dff/namespaceglm.html',1,'']]],
+  ['glm_5fenable_5fexperimental_23',['glm_enable_experimental',['../da/dca/BSpatialRandom_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BSpatialRandom.cpp'],['../dc/d1b/BCollider_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BCollider.cpp'],['../d3/d72/BContactManager_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BContactManager.cpp'],['../d3/da3/BGJK_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BGJK.cpp'],['../d8/dff/BManifold_8cpp.html#abd75661fe7969e19439052a5f69ba5d1',1,'GLM_ENABLE_EXPERIMENTAL:&#160;BManifold.cpp']]],
+  ['glm_5fforce_5fctor_5finit_24',['GLM_FORCE_CTOR_INIT',['../d7/d11/BAutodiff_8h.html#ac627c73454e4c96daef4a3fa6b2408fc',1,'BAutodiff.h']]],
+  ['glm_5fforce_5funrestricted_5fgentype_25',['GLM_FORCE_UNRESTRICTED_GENTYPE',['../d7/d11/BAutodiff_8h.html#aa292f08a7924354d354488f84c4750ab',1,'BAutodiff.h']]],
+  ['global_5fran_26',['global_ran',['../df/d6a/namespacearb.html#a40d6a3b0ace547758757444d50340cb0',1,'arb']]],
+  ['gravity_27',['gravity',['../d8/d38/classBModel.html#a3c544999e83cc9ff5c3f6907ed326b1c',1,'BModel::gravity(void) const'],['../d8/d38/classBModel.html#a76c28af1b47a0a74df29d3a292338e98',1,'BModel::gravity(const BVector3 &amp;g)']]],
+  ['guards_20vs_20tt_20pragma_20once_20tt_28',['1. Include Guards vs &lt;tt&gt;#pragma once&lt;/tt&gt;',['../da/d56/md_REVIEWER__NOTES.html#autotoc_md19',1,'']]]
 ];
