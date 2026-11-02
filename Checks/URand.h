@@ -1,18 +1,19 @@
 /*!
- @file URand.h 
- @date 09/02/06
 
                 $$$$$$$$$$$$$$$$$$$$$$$
                 $   URand.h - header  $ 
                 $$$$$$$$$$$$$$$$$$$$$$$
 
-   by W.B. Yates
-   Copyright (c) W.B. Yates. All rights reserved.
-   History:
+ @file URand.h 
+ @ingroup Checks
+ date 09/02/06
  
-   Header file for uniform random number generator 
-   Uniform Distribution (0,1)
-   Wrapper class for STL random
+ by W.B. Yates
+   
+ ---
+ 
+ @brief Random number generator with a uniform distribution.
+
 */
 
 #ifndef URAND_H
@@ -46,7 +47,7 @@ public:
     rndFloat(double min, double max) { ++m_count; return  ((max - min) * m_rd(m_reng)) + min; } // return (min,...,max)
 
     
-    // set the seed and reinitialise the sequence
+    /// set the seed and reinitialise the sequence
     void
     seed( unsigned int s )
     {   
@@ -55,14 +56,14 @@ public:
         m_reng.seed( m_seed );
     }
 
-    // what seed is being used
+    /// what seed is being used
     unsigned int seed( void ) const { return m_seed; }
 
-    // at what position in random sequence seeded by s
+    /// at what position in random sequence seeded by s
     unsigned long int count( void ) const { return m_count; }
     
-    // return me to the point p in the sequence seeded by s 
-    // reset(s,0) == seed(s)
+    /// return me to the point p in the sequence seeded by s 
+    /// reset(s,0) == seed(s)
     void
     reset( unsigned int s, unsigned long p )
     {
@@ -71,6 +72,7 @@ public:
             rndFloat();
     }
     
+    /// access the undelying engine
     std::default_random_engine&
     engine( void ) { return m_reng;  }
 	

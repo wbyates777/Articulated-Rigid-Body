@@ -1,13 +1,13 @@
 /* BSpatialRandom 07/04/2026
 
- $$$$$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialRandom.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$$$$$
+         $   BSpatialRandom.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
+ 
+ ---
+ 
 */
 
 

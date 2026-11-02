@@ -1,15 +1,24 @@
-/*! 
- @file BSpatialChecks.h 
- @date 07/04/2026
+/*!
+ * @defgroup Checks Spatial Checks
+ * @brief A set of consistency checks, tested on random examples, that verify basic analytical relationships and identities.
+ */
 
- $$$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialChecks.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$
+/*! 
+
+         $$$$$$$$$$$$$$$$$$$$$$$$
+         $   BSpatialChecks.h   $
+         $$$$$$$$$$$$$$$$$$$$$$$$
+
+ @file BSpatialChecks.h
+ @ingroup Checks
+ date 07/04/2026
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
+ 
+ ---
+ 
+ @brief A test framework; a set of consistency checks.
+ 
 */
 
 

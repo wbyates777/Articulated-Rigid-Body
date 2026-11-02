@@ -1,15 +1,14 @@
-
 /* BSpatialChecks 07/04/2026
 
- $$$$$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialChecks.cpp   $
- $$$$$$$$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$$$$$$$
+         $   BSpatialChecks.cpp   $
+         $$$$$$$$$$$$$$$$$$$$$$$$$$
 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
  
- add test index number i.e 1,2,...
+ ---
+ 
+ TODO: Add test index number i.e 1,2,...
 
 */
 

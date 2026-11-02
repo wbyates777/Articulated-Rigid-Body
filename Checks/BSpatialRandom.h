@@ -1,16 +1,18 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$$$$$$
+         $   BSpatialRandom.h   $
+         $$$$$$$$$$$$$$$$$$$$$$$$
+
  @file BSpatialRandom.h
- @date 07/04/2026
-
- $$$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialRandom.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup Checks
+ date 07/04/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Take care of generating random numbers and random geometric types for testing
+ 
+ ---
+ 
+ @brief Generate random numbers and random geometric types for testing.
  
 */
 
