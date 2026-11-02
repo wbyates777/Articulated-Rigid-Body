@@ -136,7 +136,8 @@ public:
     
     BJointId
     getId( void ) const { return m_id; }
-    
+
+    /// number of degrees of freedom
     int
     DoFCount( void ) const { return (int) m_axis.size(); }
     
