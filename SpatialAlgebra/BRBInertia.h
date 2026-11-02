@@ -1,24 +1,25 @@
 /*!
- @file BRBInertia.h 
- @date 20/02/2024
 
- $$$$$$$$$$$$$$$$$$$$
- $   BRBInertia.h   $
- $$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$
+         $   BRBInertia.h   $
+         $$$$$$$$$$$$$$$$$$$$
+ 
+ @file BRBInertia.h 
+ @ingroup SpatialAlgebra
+ date 20/02/2024
  
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
  
+ ---
  
- Rigid Body Spatial Inertia (see Featherstone, RBDA, Section 2.13, page 32).
+ @brief A compact representation of spatial rigid body inertia (see Featherstone, RBDA, Section 2.13, page 32).
  
  A compact represention of the distribution of mass in a rigid body 
  Consists of three moments of mass:
  
- 0) the zeroth moment - total mass m,
- 1) the first moment  - h = com * mass (where com is centre of mass), and
- 2) the second moment - 3D rotational inertia I_o at body coordinate frame origin.
+ - the zeroth moment - total mass m,
+ - the first moment  - h = com * mass (where com is centre of mass), and
+ - the second moment - 3D rotational inertia I_o at body coordinate frame origin.
 
  $h$ is the magnitude and direction of the body’s linear momentum (see RBDA, Section 2.12, page 31).
  
@@ -27,29 +28,26 @@
  I_com == I_o. If com is non-zero I_com can be translated to the coordinate frame origin, and I_o.
  
  Spatial Inertia can also be represented as a 6D spatial matrix defined by
- 
- |  I_o    hx  |
- |  -hx     M  |
- 
+
+         |  I_o    hx  |
+         |  -hx     M  |
+
  where
  
      I_o is the rotational inertia at body frame origin
      hx = arb::cross(h) is the generalised inertia matrix
      M = m * B_IDENTITY_3x3 is the generalised mass 
  
- Note:
  
- 1) when com = B_ZERO_3, I_o and I_com are identical as 
-    arb::cross(m_com) and arb::cross(-m_com) are zero.
- 2) BMatrix3(m_mass) == (B_IDENTITY_3x3 * m_mass)
- 3) arb::cross(-m_h) == arb::transpose(arb::cross(m_h)) - see table 2.1, page 22,
- 4) arb::cross(m_h) ==  m_mass * arb::cross(m_com)
- 5) arb::cross(m_h) * arb::cross(-m_h) != m_mass * arb::cross(m_com) * arb::cross(-m_com)
+ @note when com = B_ZERO_3, I_o and I_com are identical as arb::cross(m_com) and arb::cross(-m_com) are zero.
+ @note BMatrix3(m_mass) == (B_IDENTITY_3x3 * m_mass)
+ @note arb::cross(-m_h) == arb::transpose(arb::cross(m_h)) (see RBDA, table 2.1, page 22),
+ @note arb::cross(m_h) ==  m_mass * arb::cross(m_com)
+ @note arb::cross(m_h) * arb::cross(-m_h) != m_mass * arb::cross(m_com) * arb::cross(-m_com)
 
- 
- https://en.wikipedia.org/wiki/Moment_(physics) 
- https://en.wikipedia.org/wiki/Moment_of_inertia
- https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+ @see https://en.wikipedia.org/wiki/Moment_(physics) 
+ @see https://en.wikipedia.org/wiki/Moment_of_inertia
+ @see https://en.wikipedia.org/wiki/List_of_moments_of_inertia
 
  
 */
@@ -220,9 +218,9 @@ public:
     
 private:
 
-    BScalar  m_mass; /// total mass (kg) - zeroth moment of mass 
-    BVector3 m_h;    /// linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
-    BMatrix3 m_I;    /// rotational inertia $I$ at body frame origin; second moment of mass 
+    BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
+    BVector3 m_h;    // linear momentum h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
+    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin; second moment of mass 
 };
 
 #ifndef GLM_FORCE_INTRINSICS
@@ -237,11 +235,11 @@ operator*( BScalar s, const BRBInertia &m ) { return m * s; }
 
 namespace arb
 {
-    inline constexpr BMatrix6 
-    inverse( const BRBInertia &I ) 
     /// Schur complement - analytical inverse, (see RBDA, Section 2.15, eqn 2.74,  page 36) 
     /// @see https://en.wikipedia.org/wiki/Schur_complement
-    /// @warning ensure arb::inverse(m) exist i.e. arb::isinvertible(m) 
+    /// @warning ensure arb::inverse(m) exists i.e. arb::isinvertible(m) 
+    inline constexpr BMatrix6 
+    inverse( const BRBInertia &I ) 
     {  
         assert(I.mass() != 0.0);
         const BMatrix3 invI(arb::inverse(I.Icom()));

@@ -1,24 +1,23 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$$
+         $   BVector6.h   $
+         $$$$$$$$$$$$$$$$$$
+
  @file BVector6.h
- @date 31/01/2024
-
- $$$$$$$$$$$$$$$$$$
- $   BVector6.h   $
- $$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 31/01/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Spatial Vector (see Featherstone, RBDA).
  
- Represents a 6D spatial vector, Could be a motion vector $m \in M^6$ 
- or a force vector $f \in F^6$.
+ ---
  
- By convention, spatial velocity vectors are called twists, 
- and spatial force vectors are called wrenches.
+ @brief Spatial 6-vector (see Featherstone, RBDA).
  
- @note Following Featherstone and RBDL, we employ an (ang, lin) spatial vector representation.
+ Represents a 6D spatial vector. 
+ By convention, spatial velocity vectors are called _twists_, while spatial force vectors are called _wrenches_.
+ 
+ @note Following Featherstone and RBDL, we employ an (angular, linear) spatial vector representation.
  
 */
 
@@ -41,7 +40,6 @@ class BVector6
 public:
     
     BVector6( void )=default;
-    
     constexpr BVector6( const std::array<BScalar, 6> &d ): m_data(d) {}
     constexpr explicit BVector6( BScalar s ): m_data{s, s, s, s, s, s} {}
     constexpr explicit BVector6( BScalar s0, BScalar s1 ): m_data{s0, s0, s0, s1, s1, s1} {}
@@ -51,7 +49,6 @@ public:
     constexpr BVector6( const BVector3 &h, const BVector3 &t ): m_data{h[0], h[1], h[2], t[0], t[1], t[2]} {}
     BVector6( const BVector3 &h, BScalar s3, BScalar s4, BScalar s5 ): m_data{h[0], h[1], h[2], s3, s4, s5} {}
     BVector6( const BScalar s0, BScalar s1, BScalar s2, const BVector3 &t ): m_data{s0, s1, s2, t[0], t[1], t[2]} {}
-    
     ~BVector6( void )=default;
     
     void
@@ -80,7 +77,7 @@ public:
     }
     
     ///
-    /// angular
+    /// angular component
     ///
     void
     ang( BScalar s ) { m_data[0] = s; m_data[1] = s; m_data[2] = s; }
@@ -95,7 +92,7 @@ public:
     ang( void ) const { return BVector3(m_data[0], m_data[1], m_data[2]); }
 
     ///    
-    /// linear
+    /// linear component
     ///
     void
     lin( BScalar s ) { m_data[3] = s; m_data[4] = s; m_data[5] = s; }
@@ -267,7 +264,6 @@ operator>>( std::istream &istr, BVector6 &v )
     istr >> v[0] >> v[1] >> v[2] >> v[3] >> v[4] >> v[5];
     return istr;
 }
-
 
 
 #endif

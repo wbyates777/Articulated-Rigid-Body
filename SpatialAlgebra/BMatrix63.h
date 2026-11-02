@@ -1,16 +1,20 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BMatrix63.h   $
+         $$$$$$$$$$$$$$$$$$$
+
  @file BMatrix63.h 
- @date 20/02/2024
-
- $$$$$$$$$$$$$$$$$$$
- $   BMatrix63.h   $
- $$$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 20/02/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Key type for simulating 3-dof joints
+ 
+ ---
+ 
+ @brief Spatial 6x3 and 3x6 matrix.
+ 
+ Key type for simulating 3-DoF joints
  
 */
 

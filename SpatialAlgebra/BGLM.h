@@ -1,21 +1,23 @@
 /*!
+
+         $$$$$$$$$$$$$$
+         $   BGLM.h   $
+         $$$$$$$$$$$$$$
+
  @file BGLM.h
- @date 30/05/2026
-
- $$$$$$$$$$$$$$
- $   BGLM.h   $
- $$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 30/05/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
+ 
+ @brief This include file ensures that glm is using the same setup and configuration everywhere.
 
- Use this include to ensure that glm is using the same 'setup/config' everywhere
  Otherwise we can get mysterious build/runtime errors if SIMD or alignment
  is activated in some code units and not others.
  
- A better/safer alternatively is to pass these defines to the compiler 
-  i.e -DGLM_FORCE_PURE 
+ A better/safer alternatively is to pass these defines to the compiler i.e -DGLM_FORCE_PURE 
  
 */
 
@@ -24,7 +26,7 @@
 #define BGLM_H
 
 //
-// GLM flags - see GLM documentation for details.
+// glm flags - see glm documentation for details.
 //
 // Best to experiment and see which combination suits you best
 // Note some combinations won't compile. 

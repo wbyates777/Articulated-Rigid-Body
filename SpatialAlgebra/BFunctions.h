@@ -1,17 +1,20 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$$
+         $   BFunctions.h   $
+         $$$$$$$$$$$$$$$$$$$$
+
  @file BFunctions.h
- @date 21/02/2026
-
- $$$$$$$$$$$$$$$$$$$$
- $   BFunctions.h   $
- $$$$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 21/02/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
-
- 3D functions - mostly from GLM.
+ 
+ ---
+ 
+ @brief Underlying 3D functions taken mostly from glm.
+ 
+ @see https://github.com/g-truc/glm
 
 */
 
@@ -57,18 +60,21 @@ namespace arb {
     inline constexpr BMatrix3 
     transpose( const BMatrix3 &m )  { return glm::transpose(m); }
 
-    ///
-    /// 3D rotations - all angles in radians
-    /// 
+    //
+    // 3D rotations - all angles in radians
+    //
+     
+    /// @warning  angle in radians, axis *must* be normalised
     inline constexpr BMatrix3 
     rot( BScalar theta, const BVector3 &axis ) 
-    /// @warning axis *must* be normalized
+
     {
         using std::abs;
         assert(abs(arb::length(axis) - 1.0) < 1E-8);
         return glm::mat3_cast(glm::angleAxis(theta, axis));
     }   
 
+    /// @warning angle in radians
     inline constexpr BMatrix3 
     rotx( BScalar theta ) 
     {
@@ -82,6 +88,7 @@ namespace arb {
                          0.0,  -s,   c );
     }
     
+    /// @warning angle in radians
     inline constexpr BMatrix3 
     roty( BScalar theta ) 
     {
@@ -95,6 +102,7 @@ namespace arb {
                            s, 0.0,   c ); 
     }
     
+    /// @warning angle in radians
     inline constexpr BMatrix3 
     rotz( BScalar theta ) 
     {

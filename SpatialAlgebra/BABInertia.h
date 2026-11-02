@@ -1,41 +1,44 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$$$$
+         $   BABInertia.h   $
+         $$$$$$$$$$$$$$$$$$$$
+
  @file BABInertia.h 
- @date 09/08/2025
+ @ingroup SpatialAlgebra
+ date  09/08/2025
  
- $$$$$$$$$$$$$$$$$$$$
- $   BABInertia.h   $
- $$$$$$$$$$$$$$$$$$$$
-
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Spatial Articulated Body Inertia - compact representation.
- See Featherstone, RBDA, page 245, 247.
+ 
+ ---
+ 
+ @brief A compact representation of spatial articulated body inertia (see Featherstone, RBDA, page 245, 247).
  
  Articulated body inertia is a generalisation of spatial inertia 
  and is defined as a 6x6 matrix 
  
- | I_o  H |
- | H^T  M |
- 
+         | I_o  H |
+         | H^T  M |
+
  where 
-     I_o is the rotational inertia at body frame origin
-     H is the generalised inertia matrix, initially H = |h|\times, 
-     M is generalised mass, initially M = m * B_IDENTITY_3x3 
+ 
+         I_o is the rotational inertia at body frame origin,
+         H is the generalised inertia matrix, initially H = arb::cross(h), 
+         M is generalised mass, initially M = m * B_IDENTITY_3x3, 
+ 
  and
-     m is mass
-     com is centre of mass
-     h = m * com is linear momentum
+ 
+         m is mass,
+         com is centre of mass, 
+         h = m * com is linear momentum.
 
  ABInertia is only used (at the moment) inside BDynamics::forward() for holding 
  interim 'articulated inertias' that are linked together in a kinematic chain/tree of bodies. 
  In order to represent the (spatial) inertia of a single body use BRBInertia 
 
- https://github.com/jrl-umi3218/SpaceVecAlg/blob/master/src/SpaceVecAlg/ABInertia.h
- https://drake.mit.edu/doxygen_cxx/classdrake_1_1multibody_1_1_articulated_body_inertia.html
+ @see https://github.com/jrl-umi3218/SpaceVecAlg/blob/master/src/SpaceVecAlg/ABInertia.h
+ @see https://drake.mit.edu/doxygen_cxx/classdrake_1_1multibody_1_1_articulated_body_inertia.html
 
- 
 */
 
 
@@ -177,7 +180,7 @@ public:
     
     BVector6 
     operator*( const BVector6 &v ) const
-    // return Ia * v - multiply motion vector v return a force vector
+    // return Ia * v 
     {
         const BVector3 v_lin = v.lin();
         const BVector3 v_ang = v.ang();
@@ -262,9 +265,9 @@ public:
     
 private:
     
-    BMatrix3 m_M; /// mass matrix, initially (m * B_IDENTITY_3x3)
-    BMatrix3 m_H; /// generalised inertia coupling 
-    BMatrix3 m_I; /// rotational inertia at body frame origin @see BRBInertia
+    BMatrix3 m_M; // mass matrix, initially (m * B_IDENTITY_3x3)
+    BMatrix3 m_H; // generalised inertia coupling 
+    BMatrix3 m_I; // rotational inertia at body frame origin @see BRBInertia
     
 };
 
@@ -283,11 +286,12 @@ const BABInertia B_ZERO_ABI(B_ZERO_3x3, B_ZERO_3x3, B_ZERO_3x3);
 
 namespace arb
 {
-    inline constexpr BMatrix6 
-    inverse( const BABInertia &abi ) 
+
     /// Schur complement - analytical inverse 
     /// @see https://en.wikipedia.org/wiki/Schur_complement
     /// @warning ensure arb::inverse(m) exists i.e. arb::isinvertible(m)
+    inline constexpr BMatrix6 
+    inverse( const BABInertia &abi ) 
     {  
         const BMatrix3 invM = arb::inverse(abi.M());
         const BMatrix3 T = abi.I() - arb::transpose(abi.H()) * invM * abi.H();

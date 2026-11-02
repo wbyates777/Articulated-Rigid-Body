@@ -1,20 +1,22 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$$$$$$
+         $   BExponential.h   $
+         $$$$$$$$$$$$$$$$$$$$$$
+
  @file BExponential.h
- @date 04/04/2026
-
- $$$$$$$$$$$$$$$$$$$$$$
- $   BExponential.h   $
- $$$$$$$$$$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History: 
+ @ingroup SpatialAlgebra
+ date 04/04/2026
  
- Spatial exponential and logarithmic maps for motion vectors.
-
+ by W.B. Yates
+ 
+ ---
+ 
+ @brief Spatial exponential and logarithmic maps for motion vectors.
 
  Given an arbitrary twist, the spatial transform $X = exp(v)$ represents 
  the integrated displacement over a unit time step Δt. 
+ 
  If $v$ is expressed in the base/world coordinate frame we have:
  
     X(t + Δt) = X(t) exp(vΔt)  
@@ -28,19 +30,21 @@
     log( exp(v) ) = v
  
 
- see:
+ Lie group terminology: 
+    - transforms $X$ are elements of a Lie group, 
+    - velocity vectors $v$ are elements of a Lie algebra, 
+    - exp:LieAlg --> LieGrp,
+    - SE(3) - Lie group of rigid body transforms, 
+    - se(3) - tangent space at identity (Lie Algebra).
  
- "Modern Robotics", Lynch and Park, 2017.
- "Lie Groups for 2D and 3D Transformations", Ethan Earle, 2017.
  
- Note
- 
- 1) we use the Featherstone convention on transforms, i.e X(E,r) as opposed to the homogenous convention X = (R,p),
+ @note we use the Featherstone convention on transforms, i.e X(E,r) as opposed to the homogenous convention X = (R,p),
     where E = R^T and r = -R^Tp
- 2) arb::cross(w) * arb::cross(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
- 3) velocity vectors v are elements of a Lie algebra, transforms X are elements of a Lie group, exp:LieAlg --> LieGrp,
-    SE(3) lie group of rigid body transforms, se(3) tangent space at identity
+ @note arb::cross(w) * arb::cross(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
+ @note SO(3) is the Lie group of Matrix3 rotations, while so(3) is the associated tangent space.
  
+ @see "Modern Robotics", Lynch and Park, 2017.
+ @see "Lie Groups for 2D and 3D Transformations", Ethan Earle, 2017.
 */
 
 
@@ -59,13 +63,13 @@
 
 namespace arb {
     
-    ///
-    /// exp
-    ///
+    //
+    // exp
+    //
     
+    /// best to keep angular variables in range [-M_PI_2, M_PI_2]
     inline BMatrix3 
     exp( const BVector3 &w )
-    /// best to keep angular variables in range [-M_PI_2, M_PI_2]
     {
         using std::sin;
         using std::cos;
@@ -107,9 +111,9 @@ namespace arb {
         return I + A * W + B * (W * W);
     }
 
+    ///  vec must be motion vector or twist
     inline BTransform 
     exp( const BVector6 &vec ) 
-    ///  vec must be motion vector or twist
     {
         const BVector3 w = vec.ang();
         const BVector3 v = vec.lin();
@@ -127,9 +131,9 @@ namespace arb {
         return BTransform(E, r);
     }
     
-    ///
-    /// log
-    ///
+    //
+    // log
+    //
     
     inline BVector3 
     log( const BMatrix3 &R )
@@ -195,9 +199,9 @@ namespace arb {
         return I - BScalar(0.5) * W + (A * B) * (W * W);
     }
     
+    /// return the spatial twist (motion vector) whose exponential produces the given X
     inline BVector6 
     log( const BTransform &X )
-    /// return the spatial twist (motion vector) whose exponential produces the given X
     {
         const BMatrix3 &R = X.E();
         const BVector3  p =  -X.r(); 

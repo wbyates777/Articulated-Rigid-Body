@@ -1,27 +1,36 @@
 /*! 
- @file BTransform.h 
- @date 20/02/2024
 
- $$$$$$$$$$$$$$$$$$$$
- $   BTransform.h   $
- $$$$$$$$$$$$$$$$$$$$
+         $$$$$$$$$$$$$$$$$$$$
+         $   BTransform.h   $
+         $$$$$$$$$$$$$$$$$$$$
 
+ @file BTransform.h
+ @ingroup SpatialAlgebra
+ date 20/02/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
 
- Spatial or Plücker Transforms (see Featherstone, RBDA, Section 2.8, page 20, and Appendix A3, page 245).
+ @brief A compact representation of spatial or Plücker Transforms (see Featherstone, RBDA, Section 2.8, page 20, and Appendix A3, page 245).
  
  Consider a tranform $X$ that maps points from a coordinate frame $A$ to a coordinate frame $B$ 
+ 
  $$ B^X_A : A \rightarrow B. $$
+ 
  The inverse $X^{-1}$ is defined by
+ 
  $$ B^{X^{-1}}_A = A^X_B. $$ 
 
  We require diﬀerent coordinate transformation matrices for motions and forces. 
  For motion vectors $v \in M^6$, 
+ 
  $$ B^{X}_A : A \rightarrow B $$
+ 
  For force vectors $v \in F^6$, the dual or 'star' version of the transform must be used 
+ 
  $$ B^{X^*}_A : A \rightarrow B $$
+ 
  If the matrix $X$ performs a coordinate transformation on motion vectors, and $X^*$ performs the same
  transformation on force vectors, then the two are related by $X^* = X^{-T}$ 
  (see Featherstone, RBDA, Section 2.6, eqn 2.13, page 18).
@@ -33,8 +42,7 @@
  and transformation of spatial vectors.
  
  
- The BTransform class presented here has been tested against and matches
- the Eigen3 RBDL function:
+ The BTransform presented here has been tested against and matches the Eigen3 RBDL function:
  
  @code{.cpp}
  SpatialMatrix toMatrix () const {
@@ -53,45 +61,41 @@
    return result;
  }
  @endcode
+
+A spatial transform $X$ as a block 6x6 matrix has the form:
+
+         |     E      0  |
+         | -rx * E    E  |
+
+where rx = arb::cross(r).
  
- Notes:
+The remaining transforms have analytic block definitions (which differ from 
+the usual matrix definitions) for inverse and transpose:
+
+         X^{-1}  =  |    E^T      0  |
+                    | E^T * rx   E^T |
+         
+         X^T     =  | E^T    E^T * rx |
+                    |  0         E^T  |
+         
+         X^*  =     | E  -rx * E |
+                    | 0      E   |
+         
+ where  X^* = X^{-T} (see RBDA, page 22). 
  
- 1) All angles in radians
- 2) BMatrix3 E is a rotation  - the transpose of a rotation E^T is also its inverse E^{-1}
- 3) BVector3 r is a translation - inverse translation is -r
- 4) Note X^* = X^{-T} (RBDA, eqn 2.13)
- 5) X(E,r) in block 6x6 matrix form:
+ When transforming a spatial inertia $I$ by a spatial transform $X$ (see RBDA, eqn 2.66, page 34)
  
- |     E      0  |
- | -rx * E    E  |
+            X.apply(I) returns I' = X^* I X^{-1} 
+            X.applyTranspose(I) returns I' = X^T I X  
  
- where rx = arb::cross(r)
+
+ @note BMatrix3 E is a rotation; the transpose of a rotation E^T is also its inverse E^{-1}
+ @note BVector3 r is a translation; inverse translation is -r
+ @note As $(A * B)^T == (B^T * A^T)$ and $rx^T == -rx$ then $(-E * rx)^T == rx * E^T$
+     where the two negatives cancel out
  
- 6) The remaining transforms have analytic block definitions (which differ from 
-   the usual matrix definitions) of inverse and transpose (see RBDA, page 22).
- 
- X^{-1}  =  |    E^T      0  |
-            | E^T * rx   E^T |
- 
- X^T     =  | E^T    E^T * rx |
-            |  0         E^T  |
- 
- X^*  =     | E  -rx * E |
-            | 0      E   |
- 
- Note  X^* = X^{-T} 
- 
- 7) Transform of inertia see RBDA, eqn 2.66, page 34.
-    When when transforming a spatial inertia I by a spatial transform X note:
-    X.apply(I) returns I' = X^* I X^{-1} 
-    X.applyTranspose(I) returns I' = X^T I X  
- 8) As (A * B)^T == (B^T * A^T) and rx^T == -rx then (-E * rx)^T == rx * E^T
-    where the two negatives cancel out
-    
- See also:
- 
- https://en.wikipedia.org/wiki/Rotation_matrix
- https://en.wikipedia.org/wiki/Frame_of_reference
+ @see https://en.wikipedia.org/wiki/Rotation_matrix
+ @see https://en.wikipedia.org/wiki/Frame_of_reference
  
 */
 
@@ -299,8 +303,8 @@ public:
     
 private:
     
-    BMatrix3 m_E; /// rotation - note the transpose of a rotation is also its inverse
-    BVector3 m_r; /// translation - inverse translation is -m_r
+    BMatrix3 m_E; // rotation - note the transpose of a rotation is also its inverse
+    BVector3 m_r; // translation - inverse translation is -m_r
 };
 
  
@@ -317,23 +321,29 @@ namespace arb
 
     inline constexpr BTransform 
     inverse( const BTransform &X )  
-    /// return  X^{-1}
+    // return  X^{-1}
     { 
         const BMatrix3 ET = arb::transpose(X.E()); 
         return BTransform(ET, -ET * X.r()); 
     }
     
-    /// rotations, see RBDA, Section 2.8, table, 2.2, page 23
-    /// @warning all angles in radians, axis *must* be normalised
+    //
+    // rotations, see RBDA, Section 2.8, table, 2.2, page 23
+    //
+    
+    /// @warning angle in radians, axis *must* be normalised
     inline constexpr BTransform 
     Xrot( BScalar theta, const BVector3 &axis ) { return BTransform(rot(theta, axis)); }
     
+    /// @warning  angle in radians
     inline constexpr BTransform 
     Xrotx( BScalar theta ) { return BTransform(rotx(theta)); }
 
+    /// @warning  angle in radians
     inline constexpr BTransform 
     Xroty( BScalar theta ) { return BTransform(roty(theta)); }
 
+    /// @warning  angle in radians
     inline constexpr BTransform 
     Xrotz( BScalar theta ) { return BTransform(rotz(theta)); }
 

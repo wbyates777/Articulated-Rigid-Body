@@ -1,18 +1,19 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$
+         $   BStream.h   $
+         $$$$$$$$$$$$$$$$$
+
  @file BStream.h 
- @date 11/05/2026
-
- $$$$$$$$$$$$$$$$$
- $   BStream.h   $
- $$$$$$$$$$$$$$$$$
-
- by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Underlying stream operator templates for glm and stdlib. 
-
+ @ingroup SpatialAlgebra
+ date 11/05/2026
  
+ by W.B. Yates
+
+ ---
+
+ @brief Underlying stream operator templates for glm and stdlib. 
+
 */
 
 

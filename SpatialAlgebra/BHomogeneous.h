@@ -1,16 +1,18 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$$$$$$
+         $   BHomogeneous.h   $
+         $$$$$$$$$$$$$$$$$$$$$$
+
  @file BHomogeneous.h 
- @date 13/10/2026
-
- $$$$$$$$$$$$$$$$$$$$$$
- $   BHomogeneous.h   $
- $$$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 13/10/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Conversion functions between spatial transforms X and 4x4-homogeneous matricies M
+ 
+ ---
+ 
+ @brief Conversion functions between spatial transforms X and 4x4-homogeneous matricies M
 
  Given a spatial transform BTransform X and any BVector3 p then
  
@@ -20,9 +22,8 @@
  
        X.apply(p) == arb::toHomogeneousInverse(X) * BVector4(p, 1.0);
 
- Note:
- 
- 1) M must be a rigid transform (orthonormal rotation, no scale or shear)
+
+ @note M must be a rigid transform (orthonormal rotation, no scale or shear)
  
 */
 
@@ -48,8 +49,6 @@ namespace arb
     
     
     /// converts a base-to-body spatial transform directly to a base-to-body homogeneous matrix M 
-    /// avoids arb::inverse() by constructing matrix analytically 
-    /// This is Featherstone's pluho - Plücker-to-homogeneous
     inline BMatrix4 
     toHomogeneousInverse( const BTransform &X ) 
     {
@@ -69,7 +68,6 @@ namespace arb
     }
 
     /// converts a base-to-body homogeneous matrix M back into a spatial transform X(E, r)
-    /// avoids arb::inverse() by constructing matrix analytically
     inline BTransform 
     fromHomogeneousInverse( const BMatrix4 &M ) 
     {

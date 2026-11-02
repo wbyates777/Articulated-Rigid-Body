@@ -1,25 +1,26 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BAutodiff.h   $
+         $$$$$$$$$$$$$$$$$$$
+
  @file BAutodiff.h
- @date 20/02/2026
-
- $$$$$$$$$$$$$$$$$$$
- $   BAutodiff.h   $
- $$$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 20/02/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
+ 
+ @brief This file contains the function defs needed for autodiff to work with glm.
  
  autodiff is a c++17 library that facilitates automatic differentiation (AD).
- This file contains the function defs needed for autodiff to work with GLM
  
  To enable AD ensure that glm and the autodiff header-only lib is present, 
  and that this file is included in BSpatialTypes.h 
  
- https://en.wikipedia.org/wiki/Automatic_differentiation
-
- see https://autodiff.github.io
- see https://github.com/autodiff/autodiff
+ @see https://en.wikipedia.org/wiki/Automatic_differentiation
+ @see https://github.com/autodiff/autodiff
 
 */
 
@@ -66,25 +67,27 @@ operator+( const glm::dvec4 &a, const glm::vec<4,autodiff::real> &b )
 }
 
 
-///
-/// stream operators 
-///
+//
+// stream operators 
+//
+
+/// my stream operators need operator>>() for autodiff::real
 inline std::istream& 
 operator>>(std::istream& istr, autodiff::real& val) 
-/// my stream operators need operator>>()
 {
     istr >> val.val();
     return istr;
 }
 
 namespace glm { 
-    /// glm stream operators also need operator>>() 
+    
+    /// glm stream operators also need operator>>() for autodiff::real
     using ::operator>>; 
 }
 
-///
-/// trigonometry functions 
-///
+//
+// trigonometry functions 
+//
 namespace glm { 
     
     inline autodiff::real 

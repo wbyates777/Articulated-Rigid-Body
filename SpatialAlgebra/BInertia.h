@@ -1,29 +1,23 @@
 /*!
+
+         $$$$$$$$$$$$$$$$$$
+         $   BInertia.h   $
+         $$$$$$$$$$$$$$$$$$
+
  @file BInertia.h
- @date 06/01/2026
-
- $$$$$$$$$$$$$$$$$$
- $   BInertia.h   $
- $$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 06/01/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Standard 3D rotational inertia at com (centre of mass)
+ 
+ ---
+ 
+ @brief Standard 3D rotational inertia. Supports inertia at com (centre of mass) and inertia at origin.
+ 
  Interface class to help with setup of BBody, BRBInertia and BABInertia
+
  
- Note
- 
- 1) mass m can be zero
- 
- See
- 
- https://en.wikipedia.org/wiki/Moment_of_inertia
- https://en.wikipedia.org/wiki/Parallel_axis_theorem
- https://en.wikipedia.org/wiki/List_of_moments_of_inertia
- 
- 
+ @code{.cpp}
  BInertia 
  sphere( BScalar mass, BScalar radius )
  {
@@ -37,6 +31,7 @@
      diag[0] = (1.0/12.0) * mass * (depth * depth + height * height); // x-width
      diag[1] = (1.0/12.0) * mass * (depth * depth + width * width);   // y-height
      diag[2] = (1.0/12.0) * mass * (width * width + height * height); // z-depth
+ 
      return BInertia(mass, diag);
  }
  
@@ -50,6 +45,14 @@
      
      return BInertia(mass, diag);
  }
+ @endcode
+ 
+ 
+ @note mass m can be zero
+ 
+ @see https://en.wikipedia.org/wiki/Moment_of_inertia
+ @see https://en.wikipedia.org/wiki/Parallel_axis_theorem
+ @see https://en.wikipedia.org/wiki/List_of_moments_of_inertia
  
 */
 
@@ -103,7 +106,7 @@ public:
     }
     
     
-    operator const BMatrix3&( void ) const { return m_I; } /// inertia at body frame origin
+    operator const BMatrix3&( void ) const { return m_I; } ///< inertia at body frame origin
  
     BScalar 
     mass( void ) const { return m_mass; } 
@@ -112,10 +115,10 @@ public:
     h( void ) const { return m_h; } 
     
     const BMatrix3& 
-    I( void ) const { return m_I; }  /// inertia at body frame origin
+    I( void ) const { return m_I; }  ///< inertia at body frame origin
 
     BMatrix3 
-    Icom( void ) const { return (m_mass < B_EPS) ? m_I : m_I - (arb::crosst(m_h) / m_mass); }  /// inertia at com
+    Icom( void ) const { return (m_mass < B_EPS) ? m_I : m_I - (arb::crosst(m_h) / m_mass); }  ///< inertia at com
     
     BVector3
     com( void ) const { return (m_mass < B_EPS) ? B_ZERO_3 : m_h / m_mass; }  
@@ -128,8 +131,9 @@ public:
         m_I = R * m_I * arb::transpose(R);
     }
     
+    /// parallel axis theorem
     void 
-    shift( const BVector3 &p ) // parallel axis theorem 
+    shift( const BVector3 &p )  
     {
         const BVector3 h_new = m_h + (m_mass * -p);
         const BMatrix3 px = arb::cross(-p); 
@@ -140,10 +144,10 @@ public:
         m_h = h_new;
     }
     
+    /// matches spatial transform X(E,r)
     void 
     transform( const BMatrix3& E, const BVector3 &r ) 
     {
-        /// matches spatial transform X(E,r)
         shift(r);
         rotate(arb::transpose(E));
     }
@@ -267,9 +271,9 @@ public:
     
 private:
     
-    BScalar  m_mass; /// total mass (kg) - zeroth moment of mass 
-    BVector3 m_h;    /// h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
-    BMatrix3 m_I;    /// rotational inertia $I$ at body frame origin; second moment of mass 
+    BScalar  m_mass; // total mass (kg) - zeroth moment of mass 
+    BVector3 m_h;    // h = m_com * m_mass - first moment of mass (see RBDA, Section 2.12, page 31)
+    BMatrix3 m_I;    // rotational inertia $I$ at body frame origin; second moment of mass 
  
 };
 

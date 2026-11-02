@@ -1,42 +1,44 @@
 /*! 
+
+         $$$$$$$$$$$$$$$$$$
+         $   BMatrix6.h   $
+         $$$$$$$$$$$$$$$$$$
+
  @file BMatrix6.h  
- @date 20/02/2024
-
- $$$$$$$$$$$$$$$$$$
- $   BMatrix6.h   $
- $$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 20/02/2024
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
-
- Spatial Matrix (see Featherstone, RBDA).
+ 
+ ---
+ 
+ @brief Spatial 6x6 matrix (see Featherstone, RBDA).
  
  Represents 6D spatial matrix. 
  Can be used to represent spatial transform or spatial inertia.
 
-
-    M = | A B |
-        | C D |
-
-    N = | E F |
-        | G H |
-
-    M * N = | (AE + BG)  (AF + BH) |
-            | (CE + DG)  (CF + DH) |
-     
-     
-    V = | X |
-        | Y |
-      
-    M * V =  | AX + BY |
-             | CX + DY |
+ The following block matric formulae may prove useful:
  
-    M^T = | A^T C^T |
-          | B^T D^T |
-  
+        M = | A B |
+            | C D |
 
-   (M N)^T = N^T M^T
+        N = | E F |
+            | G H |
+
+        M * N = | (AE + BG)  (AF + BH) |
+                | (CE + DG)  (CF + DH) |
+         
+        V = | X |
+            | Y |
+          
+        M * V =  | AX + BY |
+                 | CX + DY |
+
+        M^T = | A^T C^T |
+              | B^T D^T |
+
+        (M N)^T = N^T M^T
+
 */
 
 
@@ -54,7 +56,6 @@ class BMatrix6
 public:
 
     BMatrix6( void )=default;
-    
     constexpr BMatrix6( const std::array<std::array<BScalar, 6>, 6>& d ): m_data(d) {}
     explicit BMatrix6( const std::vector<std::vector<BScalar>> &d )  { set(d); }
     explicit BMatrix6( const std::vector<BScalar> &d ) { set(d); }

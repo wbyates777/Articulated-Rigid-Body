@@ -1,16 +1,18 @@
-/*!
+/*! 
+
+         $$$$$$$$$$$$$$$$$$$$$$$
+         $   BSpatialTypes.h   $
+         $$$$$$$$$$$$$$$$$$$$$$$
+
  @file BSpatialTypes.h 
- @date 19/02/2026
-
- $$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialTypes.h   $
- $$$$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 19/02/2026
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
+ 
+ ---
 
- Essential typedefs, constant definitions, and template stream operators
+ @brief Essential typedefs, constant definitions, and template stream operators.
 
 */
 
@@ -29,12 +31,12 @@
 #include "BGLM.h"
 #endif
 
-// select basic underlying type
+/// select basic underlying type
 #define ARB_USE_AUTODIFF
 
-///
-/// Basic Underlying Type BScalar
-///
+//
+// Basic Underlying Type BScalar
+//
 #if defined(ARB_USE_AUTODIFF)
 
     #ifndef BAUTODIFF_H
@@ -49,7 +51,7 @@
 
 #elif defined(ARB_USE_FLOAT)
 
-    /// @warning can cause internal checks to fails due to prec - use B_NEAR_ZERO=1E-1
+    /// @warning can cause internal checks to fails due to precision - use B_NEAR_ZERO = 1E-1
     typedef float BScalar; 
 
 #endif
@@ -59,9 +61,9 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-///
-/// vector and matrix types -- these are potentially differentiable
-///
+//
+// vector and matrix types -- these are potentially differentiable
+//
 
 typedef unsigned int          BJointId;
 typedef unsigned int          BBodyId;
@@ -86,9 +88,9 @@ constexpr  BScalar B_SCALAR_MIN     = -std::numeric_limits<BScalar>::max();
 constexpr  BScalar B_EPS            =  std::numeric_limits<BScalar>::epsilon();
 constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() * std::numeric_limits<BScalar>::epsilon();
 
-///
-/// vector and matrix constants
-///
+//
+// vector and matrix constants
+//
 #ifdef GLM_FORCE_INTRINSICS
     const BVector3 B_XAXIS(1.0, 0.0, 0.0);
     const BVector3 B_YAXIS(0.0, 1.0, 0.0);
@@ -124,9 +126,9 @@ constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() *
 #endif
 
 #if defined(ARB_USE_FLOAT)
-///
-/// inter-operability between glm float and glm double 
-///
+//
+// inter-operability between glm float and glm double 
+//
 inline glm::dvec3 
 operator+( const glm::vec3 &a, const glm::dvec3 &b ) 
 {
@@ -154,9 +156,9 @@ constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
 /// if BScalar is float alignmet is 32 else 64
 constexpr std::size_t B_ALIGNMENT = (sizeof(BScalar) == 4) ? 32 : 64;
 
-alignas(B_ALIGNMENT) constexpr std::array<BScalar, 6> B_ZERO_6{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // BVector6
+alignas(B_ALIGNMENT) constexpr std::array<BScalar, 6> B_ZERO_6{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; 
 
-alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  // BMatrix6
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_6x6  
 {
     1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
@@ -166,7 +168,7 @@ alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_IDENTITY_
     0.0, 0.0, 0.0, 0.0, 0.0, 1.0
 };
 
-alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6     // BMatrix6
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6    
 {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -176,14 +178,14 @@ alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 6> B_ZERO_6x6 
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
 
-alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 3> B_ZERO_3x6
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 6>, 3> B_ZERO_3x6  
 {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
 
-alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3
+alignas(B_ALIGNMENT) constexpr std::array<std::array<BScalar, 3>, 6> B_ZERO_6x3 
 {
     0.0, 0.0, 0.0, 
     0.0, 0.0, 0.0,

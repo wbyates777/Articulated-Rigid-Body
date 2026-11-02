@@ -1,43 +1,56 @@
+/*!
+ * @defgroup SpatialAlgebra Spatial Algebra
+ * @brief Mathematical classes and utilities for a differentiable spatial algebra.
+ * 
+ * ARB is a compact (header-only) implementation of a differentiable spatial algebra, designed for use in computer graphics, simulation, and robotics
+ * @see "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008. 
+ * @see "Modern Robotics: Mechanics, Planning, and Control", Lynch K. M., Park F. C., 2017.
+ */
+
 /*! 
+
+         $$$$$$$$$$$$$$$$$$$$$$$$$
+         $   BSpatialAlgebra.h   $
+         $$$$$$$$$$$$$$$$$$$$$$$$$
+
  @file BSpatialAlgebra.h
- @date 15/08/2025
-
- $$$$$$$$$$$$$$$$$$$$$$$$$
- $   BSpatialAlgebra.h   $
- $$$$$$$$$$$$$$$$$$$$$$$$$
-
+ @ingroup SpatialAlgebra
+ date 15/08/2025
+ 
  by W.B. Yates
- Copyright (c) W.B. Yates. All rights reserved.
- History:
  
- A compact, light-weight, header only impmemenation of spatial algebra as presented in:
-
- "Rigid Body Dynamics Algorithms" (RBDA), R. Featherstone, Springer, 2008 (see https://royfeatherstone.org). 
-
- See also
+ ---
  
- Modern Robotics: Mechanics, Planning, and Control, Lynch K. M., Park F. C., 2017.
+ @brief A compact, light-weight, header only impmemenation of differentiable spatial algebra.
  
- Depends on the 3D GLM library (see https://github.com/g-truc/glm).
 
  ARB ALGEBRA CONVENTIONS
-
- Underlying 3D matrix library: GLM
+ ------------------------
+ Underlying 3D matrix library: glm
 
  Conventions:
- - Matrices are stored/accessed in GLM column-major form.
+ - Matrices are stored/accessed in glm column-major form.
  - Vectors are treated as column vectors.
  - Matrix-vector multiplication A * x represents standard linear action on a column vector.
  - Printed mathematical formulas in comments follow standard textbook block-matrix notation.
  - Therefore, explicit arb::transpose() calls may be required in code to match textbook formulas.
 
- IMPORTANT:
+ IMPORTANT
+ ------------------------
  Do not validate matrix expressions by visual inspection alone.
  Always validate using:
-     1) explicit block-matrix equivalence,
-     2) round-trip tests,
-     3) numerical regression tests.
-     
+ - explicit block-matrix equivalence,
+ - round-trip tests,
+ - numerical regression tests.
+ 
+ Depends on glm, tinyxml2, aurodiff and libccd libraries.
+ 
+ @see https://royfeatherstone.org
+ @see https://github.com/g-truc/glm
+ @see https://github.com/autodiff/autodiff
+ @see https://github.com/danfis/libccd
+ @see https://github.com/leethomason/tinyxml2
+ 
 */
 
 #ifndef BSPATIALALGEBRA_H
