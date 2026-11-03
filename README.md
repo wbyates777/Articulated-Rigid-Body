@@ -1,8 +1,10 @@
-![](https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
-![](https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
-![C++23](https://img.shields.io/badge/C%2B%2B-23-%230F79AA?style=for-the-badge&labelColor=%23131519&logo=c%2B%2B&logoColor=white)
-[![Documentation](https://img.shields.io/badge/docs-Doxygen-%230F79AA?style=for-the-badge&labelColor=%23131519)](https://wbyates777.github.io/Articulated-Rigid-Body/)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/wbyates777/Articulated-Rigid-Body/ci.yml?branch=main&style=for-the-badge&labelColor=%23131519&label=CI)](https://github.com/wbyates777/Articulated-Rigid-Body/actions)
+[![Documentation](https://img.shields.io/badge/docs-Doxygen-%230F79AA?style=for-the-badge&labelColor=%23131519)](https://wbyates777.github.io/Articulated-Rigid-Body/)
+![](https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
+![](https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
+![C++23](https://img.shields.io/badge/C%2B%2B-23-%230F79AA?style=for-the-badge&labelColor=%23131519&logo=c%2B%2B&logoColor=white)
+
+
 
 
 
@@ -209,6 +211,11 @@ ARB has been tested against standard industrial robot models including:
  | wheel_left_link (RevoluteZ) | 0.00000000 | 0.00000000 | 0.00000000 |  
  | wheel_right_link (RevoluteZ) | 0.00000000  | 0.00000000 | 0.00000000 |
 
+ #### Notes
+  * Some of the observed numerical differences are due to floating-point rounding errors which are caused by reading floating-point numbers from text URDF files.
+  This loss of precision can cause problems. For example, axis vectors can lose mathematical normality, that is  `arb::length(axis) != 1.0`.
+
+  
 </details>
 
 The file BSpatialChecks.cpp includes **72** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
@@ -523,11 +530,11 @@ https://youtu.be/gKXwwdfl8QE
  
  autodiff  - https://github.com/autodiff/autodiff
  
- libccd    - https://github.com/danfis/libccd
+ libccd    - https://github.com/danfis/libccd (embedded locally `CCD`)
  
- openGJK   - https://github.com/MattiaMontanari/openGJK
+ openGJK   - https://github.com/MattiaMontanari/openGJK (embedded locally `OpenGJK`)
 
- TinyXML2  - https://github.com/leethomason/tinyxml2
+ TinyXML2  - https://github.com/leethomason/tinyxml2 (embedded locally `URDF`)
  
   ### External 
   
