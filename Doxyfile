@@ -1131,6 +1131,7 @@ RECURSIVE              = YES
 # run.
 
 EXCLUDE                = ./OpenGJK \
+                         ./CCD \
                          ./README.md \
                          ./REVIEWER_NOTES.md \
                          ./URDF/Examples \
