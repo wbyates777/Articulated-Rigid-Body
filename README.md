@@ -212,8 +212,8 @@ ARB has been tested against standard industrial robot models including:
  | wheel_right_link (RevoluteZ) | 0.00000000  | 0.00000000 | 0.00000000 |
 
  #### Notes
-  * Some of the observed numerical differences are due to floating-point rounding errors which are caused by reading floating-point numbers from text URDF files.
-  This loss of precision can cause problems. For example, axis vectors can lose mathematical normality, that is  `arb::length(axis) != 1.0`.
+  * Some of the observed numerical differences are due to floating-point rounding errors which occur when reading floating-point numbers from text URDF files.
+  The loss of precision can cause problems. For example, axis vectors can lose mathematical normality, that is  `arb::length(axis) != 1.0`.
 
   
 </details>
@@ -330,11 +330,11 @@ The Doxygen API reference for this library is hosted on GitHub Pages:
 
 👉 **[API Documentation](https://wbyates777.github.io/Articulated-Rigid-Body/)**
 
-or, in the directory where you have saved this project, enter:
+or, if you have doxygen installed on your platform, in the directory where you have saved this project, enter:
 
    ```doxygen Doxyfile```
 
-to generate the documentaion locally.
+to generate the HTML documentaion locally in ./Docs.
 
 ## Background
 
