@@ -34,23 +34,22 @@
      }
  @endcode
  
- 
  The remaining matricies are constructed from this basic definition.
  
  The matricies are: 
-                  
-                          
-         X : A -> B        toMotion(X)         =  |    E      0 |
-                                                  | -rx * E   E |
-                                             
-         X^{-1} : B -> A   toMotionInverse(X)  =  |    E^T      0  |
+
+              X : A -> B     toMotion(X)        = |    E     0 |
+                                                  | -rx * E    E |
+
+         X^{-1} : B -> A     toMotionInverse(X) = |    E^T     0 |
                                                   | E^T * rx   E^T |
-                                    
-         X^{-T} : A -> B   toForce(X)          =  | E   -rx * E |
+
+         X^{-T} : A -> B     toForce(X)         = | E   -rx * E |
                                                   | 0       E   |
-                               
-         X^{T} : B -> A     toForceInverse(X)   =  | E^T   E^T * rx |
-                                                   | 0        E^T   |
+
+         X^{T}  : B -> A     toForceInverse(X)  = | E^T   E^T * rx |
+                                                  | 0       E^T    |
+
  
  where rx = arb::cross(r)
 
