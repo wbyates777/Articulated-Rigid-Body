@@ -11,4 +11,4 @@ Embedding `libccd` directly into the repository solves these issues. In addition
 * `src/`: Contains the core C source files alongside a lowercase `ccd/` public header subfolder, ensuring strict compatibility with existing internal include paths (`#include <ccd/ccd.h>`).
 
 ## License
-This embedded copy retains its original licensing terms (BSD-3-Clause). Please refer to the upstream [libccd repository](https://github.com/danfis/libccd) for full license details..
+This embedded copy retains its original licensing terms (BSD-3-Clause) included here. Please refer to the upstream [libccd repository](https://github.com/danfis/libccd) for further details.
