@@ -85,8 +85,8 @@ the usual matrix definitions) for inverse and transpose:
  
  When transforming a spatial inertia $I$ by a spatial transform $X$ (see RBDA, eqn 2.66, page 34)
  
-            X.apply(I) returns I' = X^* I X^{-1} 
-            X.applyTranspose(I) returns I' = X^T I X  
+            X.apply(I)           = X^* I X^{-1} 
+            X.applyTranspose(I)  = X^T I X  
  
 
  @note BMatrix3 E is a rotation; the transpose of a rotation E^T is also its inverse E^{-1}
