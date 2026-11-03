@@ -14,9 +14,18 @@
  
  @brief An articulation or joint between two bodies.
  
- The ARB library (following RBDL) supports a number of joints such as
- revolute, prismatic, planar, fixed, singularity-free spherical joints and joints
- with multiple degrees of freedom.
+ The ARB library (following RBDL) supports a number of joints :
+
+  | Joint Type | DoF  | Description | Representation | 
+| :---       | ---: | :---        | :---           |
+| Fixed1     |  0   |  Compressible rigid connection between links.  |  Identity Transform |
+| Fixed2     |  0   |  Incompressible rigid connection between links.  |  Identity Transform |
+| Revolute   |  1   |  Rotation about a specified axis.  |  Scalar Angle  |
+| Prismatic  |  1   |  Translation along a specified axis.  |  Scalar Displacement  |
+| Helical    |  1   |  A 'screw' joint with both rotational and translational motion |  Scalar Pitch  |
+| Spherical  |  3   |  Full 3D rotation (ball-and-socket).  |  Quaternion  |
+| Planar     |  3   |  Translation in the x,y plane and rotation about z-axis  |  Vector3  |
+| Floating Base  |  6  | Unconstrained 3D motion of the root.  |  Vector3 + Quaternion |
  
  Fixed1 joints do not cause any overhead as the bodies that are
  rigidly connected to are merged into a moving parent body. By doing so Fixed1 joints 
