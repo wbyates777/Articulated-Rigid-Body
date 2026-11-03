@@ -1,0 +1,3 @@
+# Custom Embedded libccd fork
+
+Details to follow...
