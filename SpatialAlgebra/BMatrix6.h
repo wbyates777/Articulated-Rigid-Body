@@ -37,7 +37,7 @@
         M^T = | A^T C^T |
               | B^T D^T |
 
-        (M N)^T = N^T M^T
+        (M * N)^T = N^T * M^T
 
 */
 
