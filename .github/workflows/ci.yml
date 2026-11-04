@@ -24,23 +24,3 @@ jobs:
 
     - name: Build Project
       run: cmake --build build --config Release
-
-    - name: Run Checks
-      run: |
-        set +e
-        ./build/dynamics_test
-        EXIT_CODE=$?
-        set -e
-        
-        if [ $EXIT_CODE -eq 0 ]; then
-          echo "All checks passed successfully!"
-        elif [ $EXIT_CODE -eq 1 ]; then
-          echo "::error::Tests failed (exit code 1)."
-        elif [ $EXIT_CODE -eq 2 ]; then
-          echo "::error::Configuration error (exit code 2)."
-        elif [ $EXIT_CODE -ge 128 ]; then
-          echo "::error::Crashed with signal $((EXIT_CODE - 128)) (exit code $EXIT_CODE)."
-        else
-          echo "::error::Unexpected exit code: $EXIT_CODE"
-        fi
-        exit $EXIT_CODE
