@@ -304,7 +304,7 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 * **Overall** score is mean of per-robot totals.
 </details>
 
-The results show that ARB consistently outperforms RBDL for ABA across all tested degrees of freedom (DoF). However 
+The results show that ARB consistently outperforms RBDL for ABA across all tested degrees of freedom (DoF). This improvement in performance is attributable to the compact articulated inertia class BABInertia (which currently RDBL lacks). However 
 for CRBA and RNEA the results are mixed;  for CRBA and RNEA, ARB  can be slower (see for example ur5 and kuka_iiwa14 or a1 and BarrettHand).
 
 Despite ARB's lightweight footprint, when intrinsics (SIMD) is enabled, it achieves *near-parity* (within single-digit percentage variations) or better against a heavily vectorized (Eigen3) and highly optimised industry standard - RBDL. 
