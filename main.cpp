@@ -710,6 +710,8 @@ main( void )
         
         double_pendulum_system_id();
 
+        return EXIT_SUCCESS;
     }
-
+    // checks failed!
+    return EXIT_FAILURE;
 }
