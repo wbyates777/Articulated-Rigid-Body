@@ -1,4 +1,4 @@
-# Embedded libccd (ARB Integration)
+# Articulated-Rigid-Body and libccd
 
 This subdirectory contains a local copy of **[libccd](https://github.com/danfis/libccd)**, integrated directly into **ARB**.
 
