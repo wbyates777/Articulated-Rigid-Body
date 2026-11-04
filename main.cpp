@@ -17,7 +17,7 @@
 #include <sstream>
 #include <fstream>
 #include <numeric>
-
+#include <cstdlib>
 
 #ifndef BSPATIALALGEBRA_H
 #include "BSpatialAlgebra.h"
