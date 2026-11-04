@@ -12,18 +12,18 @@
 
 **Compact C++ articulated rigid body simulation library implementing:**
 
-* Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees,
+* Articulated-body algorithm (ABA) - $O(N_B)$ forward dynamics for kinematic trees.
 * Composite Rigid-Body Algorithm (CRBA) - $O(N_B^2)$ joint-space inertia matrix $M(q)$ for kinematic trees.
-* Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees,
-* Spatial algebra implementation (header-only),
-* End-to-end automatic differentiability using autodiff (header-only),
-* Collision Resolution –  spatial impulses, GJK/EPA, and 4-point persistent contact manifolds,
+* Recursive Newton-Euler algorithm (RNEA) - $O(N_B)$ inverse dynamics for kinematic trees.
+* Spatial algebra implementation (header-only).
+* End-to-end automatic differentiability using autodiff (header-only).
+* Collision Resolution –  spatial impulses, GJK/EPA, and 4-point persistent contact manifolds.
 * Unified Robot Description Format (URDF) import and export.
   
   
 **End-to-end automatic differentiation** enables derivatives  to propagate through the physics pipeline supporting  system identification, gradient based optimisation, and machine learning applications.
 
-Minimal dependencies: STL, glm, (autodiff, openGJK, and libccd optional).
+Minimal dependencies: STL, glm, TinyXML2, (autodiff, openGJK, and libccd optional).
 
 
 ---
@@ -75,7 +75,7 @@ It combines:
 - Automatic differentiation (AD) across the full simulation pipeline (including contacts),    
 - Efficient rigid body dynamics algorithms (ABA, CRBA, RNEA), 
 - Collision detection (GJK/EPA), impulse based resolution (PGS solver, 4-point persistent manifolds), and
-- URDF file parser for model import and export.
+- URDF text file parser for model import and export.
 
 This allows simulation of articulated systems ranging from simple mechanisms to fully-jointed characters, with support for advanced applications such as system identification and model-based control.
 
@@ -105,8 +105,8 @@ Automatic differentiation is provided by the header-only autodiff library. The s
 
  
 This code is written in C++23 and depends primarily on STL and the header-only glm. 
-Additionally, the header-only autodiff library is required for automatic differentiability, and 
- the openGJK or libccd library for collision detection.
+The header-only autodiff library is required for automatic differentiability, and 
+ the openGJK or libccd library for collision detection. The TinyXML2 library is also included to handle URDF files.
 
 
 
@@ -156,7 +156,7 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
 The OpenGJK used here has been rewritten to use glm types in order to 
 support  autodiff types, and  automatic  differentiation.
 
- The URDFManager class depends on [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simplicity these are included in this codebase.
+ The URDFManager class embeds [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simplicity these are included in this codebase.
 
  
  ## Validation
@@ -213,7 +213,7 @@ ARB has been tested against standard industrial robot models including:
 
  #### Notes
   * Some of the observed numerical differences are due to floating-point rounding errors which occur when reading floating-point numbers from text URDF files.
-  The loss of precision can cause problems. For example, axis vectors can lose mathematical normality, that is  `arb::length(axis) != 1.0`.
+  The loss of precision can cause problems. For example, joint axis vectors can lose mathematical normality, that is  `arb::length(axis) != 1.0`.
 
   
 </details>
@@ -321,7 +321,7 @@ On a platform that supports CMake you can use the CMakeLists.txt file included i
 CMake will take care of installing the glm, autodiff, and libccd libraries, and building the executable 'dynamics_test'. 
 If you are not using CMake these libraries can be downloaded directly from github (see links below).
 
-The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
+The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23 which improve performance. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
 If you remove (some) constexpr definitions, then my code will compile under C++20, and 'almost' compile under C++17. glm and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with std::snprintf). 
 
 ## Documentation
@@ -383,7 +383,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
 
 <summary>Table: ARB - Supported Joint Types </summary>
 
- ARB supports the following joints:
+ ARB supports all of the following joints:
 
  | Joint Type | DoF  | Description | Representation | 
 | :---       | ---: | :---        | :---           |
@@ -414,7 +414,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
  It also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
- For example, the following 'hello world' program performs [Newton-Euler] integration:
+ For example, the following simple 'hello world' program demonstrates [Newton-Euler] integration:
  ```cpp
     #include "BSpatialAlgebra.h"
      
