@@ -24,3 +24,22 @@ jobs:
 
     - name: Build Project
       run: cmake --build build --config Release
+
+    - name: Run Checks
+      run: |
+          # Point to where CMake actually places the built binary
+          ./build/dynamics_test
+          EXIT_CODE=$?
+
+          if [ $EXIT_CODE -eq 1 ]; then
+            echo "::error::Tests failed specifically with code 1 (EXIT_FAILURE)."
+            exit 1
+          elif [ $EXIT_CODE -eq 2 ]; then
+            echo "::error::A configuration error occurred (exit code 2)."
+            exit 2
+          elif [ $EXIT_CODE -ne 0 ]; then
+            echo "::error::Unexpected exit code: $EXIT_CODE"
+            exit $EXIT_CODE
+          else
+            echo "All checks passed successfully!"
+          fi
