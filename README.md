@@ -324,6 +324,28 @@ If you are not using CMake these libraries can be downloaded directly from githu
 The minimum compiler requirement is now C++23. This is due to the improved constexpr handling in C++23 which improve performance. If you do not use GLM_FORCE_INTRINSICS you can use C++20.
 If you remove (some) constexpr definitions, then the code will compile with GLM_FORCE_INTRINSICS under C++20, and 'almost' compile under C++17. glm and autodiff are both C++17 compliant.  See the source for details on the remaining minor C++17 changes (i.e replace std::format with std::snprintf). 
 
+### Integrating via CMake
+
+You can easily include Articulated Rigid Body (ARB) in your own CMake project without manual installation by using CMake's built-in FetchContent module.
+Add the following snippet to your CMakeLists.txt:
+
+```
+include(FetchContent)
+
+FetchContent_Declare(
+    ArticulatedRigidBody
+    GIT_REPOSITORY https://github.com/wbyates777/Articulated-Rigid-Body.git
+    GIT_TAG        main
+)
+FetchContent_MakeAvailable(ArticulatedRigidBody)
+
+# Add your executable or library
+add_executable(my_app main.cpp)
+
+# Link against ARB targets as needed
+target_link_libraries(my_app PRIVATE URDF Model Collisions Checks)
+```
+
 ## Documentation
 
 The Doxygen API reference for this library is hosted on GitHub Pages:
