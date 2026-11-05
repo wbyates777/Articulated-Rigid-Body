@@ -23,7 +23,7 @@
   
 **End-to-end automatic differentiation** enables derivatives  to propagate through the physics pipeline supporting  system identification, gradient based optimisation, and machine learning applications.
 
-Minimal dependencies: STL, glm, TinyXML2, (autodiff, openGJK, and libccd optional).
+Dependencies: STL, glm, libccd, TinyXML2, autodiff (openGJK optional).
 
 
 ---
