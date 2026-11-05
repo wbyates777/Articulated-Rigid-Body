@@ -12,7 +12,7 @@
  
  ---
  
- @brief This file contains the function defs needed for autodiff to work with glm.
+ @brief This header file contains the function definitions needed for autodiff to work with glm.
  
  autodiff is a c++17 library that facilitates automatic differentiation (AD).
  
@@ -22,6 +22,7 @@
  @see https://en.wikipedia.org/wiki/Automatic_differentiation
  @see https://github.com/autodiff/autodiff
 
+ @warning always check that any new glm function you wish to use preserves gradients.
 */
 
 
