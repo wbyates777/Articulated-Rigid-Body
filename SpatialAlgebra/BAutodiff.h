@@ -16,10 +16,8 @@
  
  autodiff is a c++17 library that facilitates automatic differentiation (AD).
 
- Unlike numerical differentiation (finite differences), which is computationally expensive 
- and prone to truncation errors, AD uses the chain rule to propagate analytical derivatives 
- through the code.  This end-to-end differentiability facilitates the application of more advanced 
- optimisation and machine learning techniques. 
+ AD uses the chain rule to propagate analytical derivatives through the code. 
+ This end-to-end differentiability facilitates the application of more advanced optimisation and machine learning techniques. 
  
  To enable AD ensure that glm and the autodiff header-only lib is present, 
  and that this file is included in BSpatialTypes.h 
