@@ -15,14 +15,20 @@
  @brief This header file contains the function definitions needed for autodiff to work with glm.
  
  autodiff is a c++17 library that facilitates automatic differentiation (AD).
+
+ Unlike numerical differentiation (finite differences), which is computationally expensive 
+ and prone to truncation errors, AD uses the chain rule to propagate analytical derivatives 
+ through the code.  This end-to-end differentiability facilitates the application of more advanced 
+ optimisation and machine learning techniques. 
  
  To enable AD ensure that glm and the autodiff header-only lib is present, 
  and that this file is included in BSpatialTypes.h 
  
  @see https://en.wikipedia.org/wiki/Automatic_differentiation
  @see https://github.com/autodiff/autodiff
+ @see https://en.wikipedia.org/wiki/Chain_rule
 
- @warning always check that any new glm function you wish to use preserves gradients.
+ @warning Always check that any new glm function you wish to use preserves gradients.
 */
 
 
