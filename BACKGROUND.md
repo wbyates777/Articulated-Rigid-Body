@@ -196,11 +196,11 @@ https://youtu.be/gKXwwdfl8QE
  
  autodiff  - https://github.com/autodiff/autodiff
  
- libccd    - https://github.com/danfis/libccd
+ libccd    - https://github.com/danfis/libccd (embedded locally `CCD`)
  
- openGJK   - https://github.com/MattiaMontanari/openGJK
+ openGJK   - https://github.com/MattiaMontanari/openGJK (embedded locally `OpenGJK`)
 
- TinyXML2  - https://github.com/leethomason/tinyxml2
+ TinyXML2  - https://github.com/leethomason/tinyxml2 (embedded locally `URDF`)
  
   ### External 
   
