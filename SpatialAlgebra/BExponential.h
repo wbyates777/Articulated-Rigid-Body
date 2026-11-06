@@ -45,6 +45,8 @@
  
  @see "Modern Robotics", Lynch and Park, 2017.
  @see "Lie Groups for 2D and 3D Transformations", Ethan Earle, 2017.
+ @see https://en.wikipedia.org/wiki/3D_rotation_group
+
 */
 
 
