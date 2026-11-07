@@ -540,7 +540,7 @@ BOpenGJK::W1D(const ABody *body1, const ABody *body2, BSimplex &smp) const
     }
     
     const BScalar a1 = arb::dot(pq, po) / det;
-    const BScalar a0 = BScalar(1.0) - a1;
+    const BScalar a0 = B_ONE - a1;
 
     // Compute witness points
     const BVector3 w00 = point(body1, smp[0][B1]);
@@ -600,7 +600,7 @@ BOpenGJK::W2D(const ABody *body1, const ABody *body2, BSimplex &smp) const
         return;
     }
 
-    const BScalar invDet = BScalar(1.0) / det;
+    const BScalar invDet = B_ONE / det;
     const BScalar b0 = arb::dot(pq, po);
     const BScalar b1 = arb::dot(pr, po);
     const BScalar I00 = T11 * invDet;
@@ -608,7 +608,7 @@ BOpenGJK::W2D(const ABody *body1, const ABody *body2, BSimplex &smp) const
     const BScalar I11 = T00 * invDet;
     const BScalar a1 = I00 * b0 + I01 * b1;
     const BScalar a2 = I01 * b0 + I11 * b1;
-    const BScalar a0 = BScalar(1.0) - a1 - a2;
+    const BScalar a0 = B_ONE - a1 - a2;
 
     // Check if the origin is very close to one of the edges of the
     // simplex. In this case, a 1D projection will be more accurate.
@@ -719,7 +719,7 @@ BOpenGJK::W3D(const ABody *body1, const ABody *body2, BSimplex &smp) const
     
     // inverse matrix
     // (the matrix is symmetric, so we can use the cofactor matrix)
-    const BScalar invDet = BScalar(1.0) / det;
+    const BScalar invDet = B_ONE / det;
     const BScalar det11 = T00 * T22 - T02 * T02;
     const BScalar det12 = T00 * T12 - T01 * T02;
     const BScalar det22 = T00 * T11 - T01 * T01;
@@ -733,7 +733,7 @@ BOpenGJK::W3D(const ABody *body1, const ABody *body2, BSimplex &smp) const
     const BScalar a1 = I00 * b0 + I01 * b1 + I02 * b2;
     const BScalar a2 = I01 * b0 + I11 * b1 + I12 * b2;
     const BScalar a3 = I02 * b0 + I12 * b1 + I22 * b2;
-    const BScalar a0 = BScalar(1.0) - a1 - a2 - a3;
+    const BScalar a0 = B_ONE - a1 - a2 - a3;
     
     // check if the origin is very close to one of the faces of the
     // simplex. In this case, a 2D projection will be more accurate.
