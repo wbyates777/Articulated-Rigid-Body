@@ -251,11 +251,11 @@ BOpenEPA::barycentric_origin(const BVector3 &v0, const BVector3 &v1, const BVect
     if (abs(denom) < B_EPS) 
     {
         // Degenerate
-        a[0] = a[1] = a[2] = BScalar(1.0) / BScalar(3.0);
+        a[0] = a[1] = a[2] = B_ONE / BScalar(3.0);
         return;
     }
     
-    const BScalar inv_denom = BScalar(1.0) / denom;
+    const BScalar inv_denom = B_ONE / denom;
     const BScalar u = (d11 * d20 - d01 * d21) * inv_denom;
     const BScalar v = (d00 * d21 - d01 * d20) * inv_denom;
     const BScalar w = 1.0 - u - v;
@@ -268,22 +268,22 @@ BOpenEPA::barycentric_origin(const BVector3 &v0, const BVector3 &v1, const BVect
         BVector3 e12 = v2 - v1;
         
         BScalar t = -arb::dot(v1, e12) / arb::dot(e12, e12);
-        t = clamp(t, BScalar(0.0), BScalar(1.0));
-        a = {0.0, BScalar(1.0) - t, t};
+        t = clamp(t, B_ZERO, B_ONE);
+        a = {0.0, B_ONE - t, t};
     }
     else if (u < 0.0) 
     {
         // Origin projects outside edge v0-v2
         BScalar t = -arb::dot(v0, e1) / arb::dot(e1, e1);
-        t = clamp(t, BScalar(0.0), BScalar(1.0));
-        a = {BScalar(1.0) - t, 0.0, t};
+        t = clamp(t, B_ZERO, B_ONE);
+        a = {B_ONE - t, 0.0, t};
     }
     else if (v < 0) 
     {
         // Origin projects outside edge v0-v1
         BScalar t = -arb::dot(v0, e0) / arb::dot(e0, e0);
-        t = clamp(t, BScalar(0.0), BScalar(1.0));
-        a = {BScalar(1.0) - t, t, 0.0};
+        t = clamp(t, B_ZERO, B_ONE);
+        a = {B_ONE - t, t, 0.0};
     }
     else 
     {
