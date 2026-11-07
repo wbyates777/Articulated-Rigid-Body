@@ -92,6 +92,9 @@ constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() *
 // vector and matrix constants
 //
 #ifdef GLM_FORCE_INTRINSICS
+    const BScalar B_ONE(static_cast<BScalar>(1.0));
+    const BScalar B_ZERO(static_cast<BScalar>(0.0));
+
     const BVector3 B_XAXIS(1.0, 0.0, 0.0);
     const BVector3 B_YAXIS(0.0, 1.0, 0.0);
     const BVector3 B_ZAXIS(0.0, 0.0, 1.0); 
@@ -108,6 +111,9 @@ constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() *
 
     const BQuat    B_IDENTITY_QUAT(glm::identity<BQuat>());
 #else
+    constexpr BScalar B_ONE(static_cast<BScalar>(1.0));
+    constexpr BScalar B_ZERO(static_cast<BScalar>(0.0));
+
     constexpr BVector3 B_XAXIS(1.0, 0.0, 0.0);
     constexpr BVector3 B_YAXIS(0.0, 1.0, 0.0);
     constexpr BVector3 B_ZAXIS(0.0, 0.0, 1.0); 
