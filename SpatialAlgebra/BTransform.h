@@ -128,7 +128,7 @@ public:
     void
     clear( void ) {  m_E = B_IDENTITY_3x3; m_r = B_ZERO_3; }
 
-    /// to motion transform matrix
+    /// convert to a 6x6 motion transform (equivalent to arb::toMotion() in BAdjoint.h)
     operator BMatrix6( void ) const 
     {
         return BMatrix6( m_E, B_ZERO_3x3, arb::cross(-m_r) * m_E, m_E );
