@@ -38,17 +38,17 @@
  
  The matricies are: 
 
-         toMotion : A -> B         where    X   = [     E        0 ] 
-                                                  [  -rx * E     E ]
+         toMotion : A -> B         where    X =     |     E        0 | 
+                                                    |  -rx * E     E |
       
-         toMotionInverse : B -> A  where  X^-1  = [    E^T       0 ]
-                                                  [  E^T * rx   E^T ]
+         toMotionInverse : B -> A  where  X^{-1} =  |    E^T       0  |
+                                                    |  E^T * rx   E^T |
       
-         toForce : A -> B          where  X^-T  = [    E     -rx * E ]
-                                                  [    0        E    ]
+         toForce : A -> B          where  X^{-T} =  |    E     -rx * E |
+                                                    |    0        E    |
       
-         toForceInverse : B -> A   where  X^T   = [   E^T    E^T * rx ]
-                                                  [    0       E^T   ]
+         toForceInverse : B -> A   where  X^T =     |   E^T    E^T * rx |
+                                                    |    0       E^T    |
 
  where rx = arb::cross(r)
 
