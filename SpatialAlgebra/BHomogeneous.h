@@ -14,15 +14,16 @@
  
  @brief Conversion functions between spatial transforms X and 4x4-homogeneous matricies M
 
- Given a spatial transform BTransform X and any BVector3 p then
+ These functions provide conversion utilities between spatial rigid-body transforms 
+ BTransforms $X$ and standard 4x4 homogeneous transformation matrices BMatrix4 $M$.
  
-       X.applyTranspose(p) == arb::toHomogeneous(X) * BVector4(p, 1.0);
+ Given a spatial transform BTransform X and any BVector3 p then:
  
- and
+ @code
+   X.applyTranspose(p) == arb::toHomogeneous(X) * BVector4(p, 1.0);
+   X.apply(p)          == arb::toHomogeneousInverse(X) * BVector4(p, 1.0);
+ @endcode
  
-       X.apply(p) == arb::toHomogeneousInverse(X) * BVector4(p, 1.0);
-
-
  @note M must be a rigid transform (orthonormal rotation, no scale or shear)
  
 */
@@ -38,7 +39,7 @@
 namespace arb
 {
 
-    /// converts a base-to-body spatial transform X to a body-to-base homogeneous matrix M 
+    /// Converts the base-to-body spatial transform $X$ to a body-to-base homogeneous matrix.
     inline BMatrix4 
     toHomogeneous( const BTransform &X ) 
     {
@@ -48,7 +49,7 @@ namespace arb
     }
     
     
-    /// converts a base-to-body spatial transform directly to a base-to-body homogeneous matrix M 
+    /// Converts the base-to-body spatial transform $X$ to a base-to-body homogeneous matrix. 
     inline BMatrix4 
     toHomogeneousInverse( const BTransform &X ) 
     {
@@ -57,7 +58,8 @@ namespace arb
         return res;
     }
     
-    /// converts a body-to-base homogeneous matrix M back into a spatial transform X(E, r) 
+
+    /// Converts a body-to-base homogeneous matrix $M$ to a spatial transform $X$.
     inline BTransform
     fromHomogeneous( const BMatrix4 &M ) 
     {
@@ -67,7 +69,7 @@ namespace arb
         return BTransform(E, r);
     }
 
-    /// converts a base-to-body homogeneous matrix M back into a spatial transform X(E, r)
+    /// Converts a base-to-body homogeneous matrix $M$ to a spatial transform $X$.
     inline BTransform 
     fromHomogeneousInverse( const BMatrix4 &M ) 
     {
