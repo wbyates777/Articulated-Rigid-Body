@@ -158,7 +158,6 @@ BContactManager::prepare( BScalar dt )
 // employs Baumgarte Stabilization Technique (BST) 
 {
     const BScalar beta = (m_baumgarte / dt);
-    const BScalar one  = BScalar(1.0);
     
     for (BManifold &m : m_active)
     {
@@ -182,7 +181,7 @@ BContactManager::prepare( BScalar dt )
             c.dv_2 = (b2->invI_base() * c.n_2); 
             
             // effective mass - how 'heavy' the collision 'feels' (denominator of eqn 11.65)
-            c.invK = one / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
+            c.invK = B_ONE / (arb::dot( c.n_1, c.dv_1) + arb::dot(c.n_2, c.dv_2));
             
             // zeta ζ initial relative or separation velocity at contact c (eqn 11.62)
             // however unlike eqn 11.62 here n_1 != -n_2
@@ -223,8 +222,8 @@ BContactManager::prepare( BScalar dt )
                 c.dvy_2 = b2->invI_base() * c.ny_2;                 
                 
                 // compute effective mass for x-y axis (K_x and K_y)
-                c.invK_x = one / (arb::dot(c.nx_1, c.dvx_1) + arb::dot(c.nx_2, c.dvx_2));
-                c.invK_y = one / (arb::dot(c.ny_1, c.dvy_1) + arb::dot(c.ny_2, c.dvy_2)); 
+                c.invK_x = B_ONE / (arb::dot(c.nx_1, c.dvx_1) + arb::dot(c.nx_2, c.dvx_2));
+                c.invK_y = B_ONE / (arb::dot(c.ny_1, c.dvy_1) + arb::dot(c.ny_2, c.dvy_2)); 
             }
 
             //
