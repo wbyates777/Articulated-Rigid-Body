@@ -37,7 +37,13 @@ namespace arb {
     
     inline BScalar
     length2( const BVector3 &v ) { return glm::dot(v,v); } 
+
+    inline BScalar
+    distance( const BVector3 &u, const BVector3 &v ) { return glm::distance(u, v); } 
     
+    inline BScalar
+    distance2( const BVector3 &u, const BVector3 &v ) { return arb::length2(v - u); } 
+
     inline BVector3
     normalize( const BVector3 &v ) { return v / arb::length(v); } 
     
