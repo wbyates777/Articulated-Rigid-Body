@@ -16,8 +16,10 @@
 
  All cross product operators in one handy file. 
 
- The operator arb::cross (denoted $v\times$ and pronounced ‘v-cross’) is implemented in 
- RDBL as VectorCrossMatrix in SpatialAlgebraOperators.h
+ The skew-symetric matrix operator (denoted $v\times$ and pronounced ‘v-cross’) is implemented here as arb::cross(). 
+ In the RBDL codebase is is implemented as VectorCrossMatrix in SpatialAlgebraOperators.h
+
+ @see https://en.wikipedia.org/wiki/Skew-symmetric_matrix
  
 */
 
@@ -34,14 +36,14 @@
 namespace arb
 {
     
-    /// Euclidian dot or inner product a·b 
+    /// Euclidian dot or inner product a·b. 
     inline BScalar 
     dot( const BVector3 &v1, const BVector3 &v2 ) 
     {
          return glm::dot(v1, v2);
     }
     
-    /// spatial dot or inner product a·b
+    /// Spatial dot or inner product a·b.
     inline BScalar 
     dot( const BVector6 &v1, const BVector6 &v2 )
     {
@@ -49,14 +51,14 @@ namespace arb
     }
 
     
-    /// Euclidian cross product a⨉b
+    /// Euclidian cross product a⨉b.
     inline constexpr BVector3   
     cross( const BVector3 &x, const BVector3 &y )
     {
         return glm::cross(x, y);
     }
     
-    /// Euclidian skew-symmetric operator v⨉, (see RBDA, Section 2.8, eqn 2.23, page 21 and table 2.1, page 22) 
+    /// Euclidian skew-symmetric operator v⨉, (see RBDA, Section 2.8, eqn 2.23, page 21 and table 2.1, page 22). 
     inline constexpr BMatrix3 
     cross( const BVector3 &v ) 
     {
@@ -65,21 +67,21 @@ namespace arb
                         -v[1],  v[0],   0.0 );
     }
 
-    /// extracts the 3D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra
+    /// Extracts the 3D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra.
     inline constexpr BVector3 
     uncross( const BMatrix3 &m ) 
     { 
         return BVector3(m[2][1], m[0][2], m[1][0]);
     }
     
-    /// extracts the 6D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra
+    /// Extracts the 6D vector from a skew-symmetric matrix; the 'vee' operator in Lie algebra.
     inline BVector6 
     uncross( const BMatrix6 &m ) 
     {
         return BVector6(uncross(m.topLeft()), uncross(m.botLeft()));
     }
 
-    /// return arb::cross(v) * arb::cross(-v)
+    /// Return arb::cross(v) * arb::cross(-v).
     inline  BMatrix3 
     crosst( const BVector3 &v ) 
     {
@@ -93,17 +95,16 @@ namespace arb
         return BMatrix3( yy + zz,    -xy,      -xz,
                            -xy,    xx + zz,    -yz,
                            -xz,      -yz,    xx + yy );
-
     }
     
-    /// Euclidian outer product a⨂b
+    /// Euclidian outer product a⨂b.
     inline constexpr BMatrix3  
     outer( const BVector3 &a, const BVector3 &b )
     { 
         return glm::outerProduct(b,a);
     }
 
-    /// spatial outer product a⨂b
+    /// spatial outer product a⨂b.
     inline constexpr BMatrix6
     outer( const BVector6 &a, const BVector6 &b )
     { 
@@ -112,10 +113,9 @@ namespace arb
     }
 
 
-    /// spatial motion cross product, (see RBDA, Section 2.9, eqn 2.29, page 23)
+    /// Spatial motion cross product, (see RBDA, Section 2.9, eqn 2.29, page 23).
     inline constexpr BVector6 
     crossm( const BVector6 &v, const BVector6 &m ) 
-
     {
         const BVector3 v_ang = v.ang(); 
         const BVector3 v_lin = v.lin(); 
@@ -125,7 +125,7 @@ namespace arb
         return BVector6(arb::cross(v_ang, m_ang), arb::cross(v_ang, m_lin) + arb::cross(v_lin, m_ang));
     }
 
-    /// spatial force cross product, (see RBDA, Section 2.9, eqn 2.30, page 23)
+    /// Spatial force cross product, (see RBDA, Section 2.9, eqn 2.30, page 23).
     inline constexpr BVector6 
     crossf( const BVector6 &v, const BVector6 &f ) 
     {
@@ -137,14 +137,14 @@ namespace arb
          return BVector6(arb::cross(v_ang, f_ang) + arb::cross(v_lin, f_lin), arb::cross(v_ang, f_lin));
     }
 
-    /// spatial motion vector operator $v\times$, (see RBDA, Section 2.9, eqn 2.31, page 25)
+    /// Spatial motion vector operator $v\times$, (see RBDA, Section 2.9, eqn 2.31, page 25).
     inline constexpr BMatrix6 
     crossm( const BVector6 &v ) 
     {
          return BMatrix6(arb::cross(v.ang()), B_ZERO_3x3, arb::cross(v.lin()), arb::cross(v.ang()));
     }
 
-    /// spatial force vector operator $v\times^*$, (see RBDA, Section 2.9, eqn 2.32, page 25)
+    /// Spatial force vector operator $v\times^*$, (see RBDA, Section 2.9, eqn 2.32, page 25).
     inline constexpr BMatrix6 
     crossf( const BVector6 &v ) 
     {
