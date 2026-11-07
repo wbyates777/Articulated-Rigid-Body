@@ -24,6 +24,8 @@
 #include <vector>
 #include <array>
 #include <cassert>
+#include <limits>
+#include <cstddef>
 
 
 // basic glm defines
@@ -84,7 +86,7 @@ constexpr  int B_Y = 1;
 constexpr  int B_Z = 2;
 
 constexpr  BScalar B_SCALAR_MAX     =  std::numeric_limits<BScalar>::max();
-constexpr  BScalar B_SCALAR_MIN     = -std::numeric_limits<BScalar>::max();
+constexpr  BScalar B_SCALAR_MIN     =  std::numeric_limits<BScalar>::lowest();
 constexpr  BScalar B_EPS            =  std::numeric_limits<BScalar>::epsilon();
 constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() * std::numeric_limits<BScalar>::epsilon();
 
