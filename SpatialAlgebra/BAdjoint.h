@@ -38,19 +38,18 @@
  
  The matricies are: 
 
-              X : A -> B     toMotion(X)        = |    E     0 |
-                                                  | -rx * E    E |
+         toMotion : A -> B         where    X   = [     E        0 ] 
+                                                  [  -rx * E     E ]
+      
+         toMotionInverse : B -> A  where  X^-1  = [    E^T       0 ]
+                                                  [  E^T * rx   E^T ]
+      
+         toForce : A -> B          where  X^-T  = [    E     -rx * E ]
+                                                  [    0        E    ]
+      
+         toForceInverse : B -> A   where  X^T   = [   E^T    E^T * rx ]
+                                                  [    0       E^T   ]
 
-         X^{-1} : B -> A     toMotionInverse(X) = |    E^T     0 |
-                                                  | E^T * rx   E^T |
-
-         X^{-T} : A -> B     toForce(X)         = | E   -rx * E |
-                                                  | 0       E   |
-
-         X^{T}  : B -> A     toForceInverse(X)  = | E^T   E^T * rx |
-                                                  | 0       E^T    |
-
- 
  where rx = arb::cross(r)
 
 */
@@ -67,14 +66,15 @@
 
 namespace arb
 {
-    
-    /// convert $X$ to a 6x6 motion transformation matrix, mapping twists from parent to child frame
+
+    /// Converts the transform $X$ to a 6x6 motion transformation matrix mapping twists from the parent to the child frame.
     inline BMatrix6 
     toMotion( const BTransform &X )  
     {
         return BMatrix6( X.E(), B_ZERO_3x3,  arb::cross(-X.r()) * X.E(), X.E() );
     }
 
+    /// Applies the motion transformation to map a twist from the parent to the child frame.
     inline BVector6 
     applyMotion( const BTransform &X, const BVector6 &v )  
     {
@@ -84,7 +84,7 @@ namespace arb
         return BVector6(ang, lin);
     }
 
-    /// convert $X$ to an inverse 6x6 motion transformation matrix $X^{-1}$, mapping twists from child to parent frame
+    /// Convert the transform $X$ to an 6x6 inverse motion transformation matrix $X^{-1}$, mapping twists from the child to the parent frame.
     inline BMatrix6 
     toMotionInverse( const BTransform &X )  
     {
@@ -92,6 +92,7 @@ namespace arb
         return BMatrix6( ET, B_ZERO_3x3,  ET * arb::cross(X.r()), ET );
     }
 
+    /// Applies the inverse motion transformation to map a twist from the child to parent frame.
     inline BVector6 
     applyMotionInverse( const BTransform &X, const BVector6 &v ) 
     {
@@ -104,7 +105,7 @@ namespace arb
     //
     //
     
-    /// convert $X$ to a 6x6 force transformation matrix $X^{-T}$, mapping wrenches from parent to child frame
+    /// Convert the transform $X$ to a 6x6 force transformation matrix $X^{-T}$, mapping wrenches from the parent to the child frame.
     inline BMatrix6 
     toForce( const BTransform &X )  
     {
@@ -112,6 +113,7 @@ namespace arb
         return BMatrix6( X.E(), Erx, B_ZERO_3x3, X.E() );
     }
 
+    /// Applies the force transformation to map a twist from the parent to the child frame.
     inline BVector6
     applyForce(const BTransform &X, const BVector6 &v)   
     {
@@ -121,7 +123,7 @@ namespace arb
         return BVector6(ang,  lin);
     }
 
-    /// convert $X$ to an inverse 6x6 force transformation matrix $X^{T}$, mapping wrenches from child to parent frame
+    /// Convert the transform $X$ to an 6x6 inverse force transformation matrix $X^{T}$, mapping wrenches from the child to the parent frame.
     inline BMatrix6 
     toForceInverse( const BTransform &X )  
     {
@@ -129,6 +131,7 @@ namespace arb
         return BMatrix6( ET, ET * arb::cross(X.r()), B_ZERO_3x3, ET );
     }
 
+    /// Applies the inverse force transformation to map a wrench from the child to the parent frame.
     inline BVector6 
     applyForceInverse( const BTransform &X, const BVector6 &v ) 
     {
