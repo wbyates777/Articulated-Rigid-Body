@@ -49,14 +49,14 @@
 
 struct BPolytope 
 {
-    BPolytope( void ) : m_min(-std::numeric_limits<float>::max()), 
-                        m_max(std::numeric_limits<float>::max()), 
+    BPolytope( void ) : m_min(std::numeric_limits<float>::lowest()),
+                        m_max(std::numeric_limits<float>::max()),
                         m_coord(), 
                         m_adjacency(), 
                         m_lastVertex(0)   {}
     
-    explicit BPolytope( const std::vector<glm::vec3> &points ): m_min(-std::numeric_limits<float>::max()), 
-                                                                m_max(std::numeric_limits<float>::max()), 
+    explicit BPolytope( const std::vector<glm::vec3> &points ): m_min(std::numeric_limits<float>::lowest()),
+                                                                m_max(std::numeric_limits<float>::max()),
                                                                 m_coord(points), 
                                                                 m_adjacency(), 
                                                                 m_lastVertex(0)

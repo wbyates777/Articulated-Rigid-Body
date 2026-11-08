@@ -24,7 +24,7 @@
 
 constexpr  double B_SMALL_NUM = 1E-12;
 constexpr  double B_LARGE_NUM = 1E12;
-constexpr  double B_MIN = -std::numeric_limits<double>::max();
+constexpr  double B_MIN = std::numeric_limits<double>::lowest();
 
 
 

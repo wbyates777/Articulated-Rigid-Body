@@ -308,8 +308,8 @@ BOpenEPA::support_epa( const ABody *body1, const ABody *body2, const BVector3 &d
     const glm::dvec3 localDir1 = glm::transpose(body1->orient()) * dir;
     
     // search body1
-    double local_max1 = -std::numeric_limits<double>::max();;
-    BIndex local_best1(-1,-1); 
+    double local_max1 = std::numeric_limits<double>::lowest();
+    BIndex local_best1(-1,-1);
 
 
     for (int j = 0; j < body1->collider().polytope().m_coord.size(); ++j) 
@@ -328,7 +328,7 @@ BOpenEPA::support_epa( const ABody *body1, const ABody *body2, const BVector3 &d
     const glm::dvec3 localDir2 = glm::transpose(body2->orient()) * dir;
     
     // search body2 in opposite direction
-    double local_max2 = -std::numeric_limits<double>::max();;
+    double local_max2 = std::numeric_limits<double>::lowest();
     BIndex local_best2(-1,-1);
 
     for (int j = 0; j < body2->collider().polytope().m_coord.size(); ++j) 
