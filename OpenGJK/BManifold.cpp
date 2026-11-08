@@ -30,9 +30,6 @@
 #endif
 
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/norm.hpp>  // for glm::distance2/glm::length2
-
 constexpr int BManifold::m_index[4][3] = 
 {
     {1, 2, 3}, // miss out 0
@@ -107,10 +104,10 @@ BManifold::addPoint(const BContactInfo &cinfo, BScalar threshold2 )
     // check for matching existing point (within say ~5mm)
     for (BContactDetails &c : m_points) 
     {
-        BScalar d1 = glm::distance2(c.localPos1, local1);
+        BScalar d1 = arb::distance2(c.localPos1, local1);
         if (d1 < threshold2) 
         {
-            BScalar d2 = glm::distance2(c.localPos2, local2);
+            BScalar d2 = arb::distance2(c.localPos2, local2);
             if (d2 < threshold2)
             {
                 // update geometric data while keeping accumulated impulses (accJ, accJx, accJy)
