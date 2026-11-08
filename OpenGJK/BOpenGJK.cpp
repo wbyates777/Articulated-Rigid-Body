@@ -47,10 +47,6 @@
 #include <glm/vec3.hpp>
 #include <glm/mat3x3.hpp> 
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/norm.hpp>
-
-
 
 void 
 BOpenGJK::S1D( BSimplex &smp, BVector3 &v ) const
