@@ -63,11 +63,6 @@
 #include "BProducts.h"
 #endif
 
-#define GLM_ENABLE_EXPERIMENTAL
-
-#include <glm/gtx/norm.hpp>          // for glm::distance2/glm::length2
-#include <glm/gtc/matrix_access.hpp> // for glm::column
-#include <glm/gtx/transform.hpp>
 #include <algorithm> // std::sort
 
 // All params have been set assuming 1 = 1m 
@@ -390,7 +385,7 @@ BContactManager::detect( const std::vector<ABody*> &body, const std::vector<ABod
         {
             ABody *b2 = body[j];
             BScalar radius2 = b2->box().radius(); 
-            BScalar d2 = glm::distance2(b1->pos(), b2->pos());
+            BScalar d2 = arb::distance2(b1->pos(), b2->pos());
             
             // proximity check
             // if (d2 < range1_sq)  b1->addMsg(BMsg(BMsg::NEAR, b2));
@@ -424,7 +419,7 @@ BContactManager::detect( const std::vector<ABody*> &body, const std::vector<ABod
         {
             ABody* b2 = fixed[j];
             BScalar radius2 = b2->box().radius(); 
-            BScalar d2 = glm::distance2(b1->pos(), b2->pos());
+            BScalar d2 = arb::distance2(b1->pos(), b2->pos());
             
             // proximity check
             // if (d2 < range1_sq)  b1->addMsg(BMsg(BMsg::NEAR, b2));
