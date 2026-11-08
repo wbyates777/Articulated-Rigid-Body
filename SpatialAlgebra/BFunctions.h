@@ -33,9 +33,6 @@ namespace arb {
     length( const BVector3 &v )  { return glm::length(v); } 
     
     inline BScalar
-    length( const BQuat &q )  { using std::sqrt; return sqrt(glm::dot(q,q)); } 
-    
-    inline BScalar
     length2( const BVector3 &v ) { return glm::dot(v,v); } 
 
     inline BScalar
@@ -47,6 +44,10 @@ namespace arb {
     inline BVector3
     normalize( const BVector3 &v ) { return v / arb::length(v); } 
     
+
+    inline BScalar
+    length( const BQuat &q )  { using std::sqrt; return sqrt(glm::dot(q,q)); }
+
     inline BQuat
     normalize( const BQuat &q ) { return q / arb::length(q); }
 
@@ -72,8 +73,7 @@ namespace arb {
      
     /// @warning  angle in radians, axis *must* be normalised
     inline constexpr BMatrix3 
-    rot( BScalar theta, const BVector3 &axis ) 
-
+    rot( BScalar theta, const BVector3 &axis )
     {
         using std::abs;
         assert(abs(arb::length(axis) - 1.0) < 1E-8);

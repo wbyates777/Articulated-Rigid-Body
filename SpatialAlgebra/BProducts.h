@@ -104,7 +104,7 @@ namespace arb
         return glm::outerProduct(b,a);
     }
 
-    /// spatial outer product a⨂b.
+    /// Spatial outer product a⨂b.
     inline constexpr BMatrix6
     outer( const BVector6 &a, const BVector6 &b )
     { 

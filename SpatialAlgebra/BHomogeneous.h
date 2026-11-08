@@ -12,7 +12,7 @@
  
  ---
  
- @brief Conversion functions between spatial transforms X and 4x4-homogeneous matricies M
+ @brief Conversion functions between spatial transforms X and 4x4-homogeneous matricies M.
 
  These functions provide conversion utilities between spatial rigid-body transforms 
  BTransforms $X$ and standard 4x4 homogeneous transformation matrices BMatrix4 $M$.
@@ -24,7 +24,7 @@
    X.apply(p)          == arb::toHomogeneousInverse(X) * BVector4(p, 1.0);
  @endcode
  
- @note M must be a rigid transform (orthonormal rotation, no scale or shear)
+ @note M must be a rigid body transform (orthonormal rotation, no scale or shear)
  
 */
 
