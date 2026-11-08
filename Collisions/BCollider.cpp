@@ -28,7 +28,7 @@
 
 
 constexpr  double B_SMALL_NUM = 1E-12;
-constexpr  double B_MIN_NUM =  -std::numeric_limits<double>::max();
+constexpr  double B_MIN_NUM =  std::numeric_limits<double>::lowest();
 
 
 glm::dvec3  
