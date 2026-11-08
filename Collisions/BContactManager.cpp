@@ -101,7 +101,7 @@ BBox
 BContactManager::toBaseBox(const ABody *b) const 
 // // the resulting box is 'generous' - it contains the orientated bounding box
 {
-    const BMatrix4 trans = glm::translate(b->pos()) * BMatrix4(b->orient());
+    const BMatrix4 trans = glm::translate(B_IDENTITY_4x4, b->pos()) * BMatrix4(b->orient());
 
     const BVector3 &hi = b->box().top();
     const BVector3 &lo = b->box().bot();
