@@ -16,12 +16,12 @@
 
  For a motion vector $v = (w, v_lin)$, the spatial transform $X = exp(v)$ has the form
 
-    E = exp(w)              (Rodrigues' formula)
-    r = -J(w) v_lin         (J is the left Jacobian of SO(3))
+                  E = exp(w)              (Rodrigues' formula)
+                  r = -J(w) v_lin         (J is the left Jacobian of SO(3))
 
  in the BTransform convention (see BTransform.h). The log mapping is the inverse of exp:
 
-    log( exp(v) ) = v       whenever the rotation angle |w| < pi
+                  log( exp(v) ) = v       whenever the rotation angle |w| < pi
 
  For larger angles the rotation wraps, and log returns the equivalent vector with |w| <= pi.
  
