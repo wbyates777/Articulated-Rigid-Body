@@ -81,7 +81,7 @@ BManifold::refresh( BScalar max_dist, BScalar max_tan_dist2 )
             else
             {
                 // NB we can get positive and negative separations here
-                c.pos = (w1 + w2) * BScalar(0.5);
+                c.pos = (w1 + w2) * B_HALF;
                 c.depth = separation;
                 ++i;
             }
