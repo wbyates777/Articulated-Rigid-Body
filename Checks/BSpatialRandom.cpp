@@ -205,7 +205,45 @@ namespace arb
         return abi;
     }
 
-}  
+
+    // Reference implementation of the STANDARD SE(3) exponential (Modern Robotics, Lynch and Park).
+    // Sums the series  sum_k T^k / k!  for T = [[ [w]x, v ], [0, 0]], where [w]x is the usual
+    // skew-symmetric matrix (so [w]x u == w x u). Returns the 4x4 homogeneous matrix [R p; 0 1].
+    //
+    // Intended for testing only: it is deliberately independent of arb::cross, arb::exp and
+    // leftJacobian. Note that arb::cross(w) == -[w]x, hence
+    //     toHomogeneous(arb::exp(v)) == exp_std(-v.ang(), -v.lin())
+    //     toHomogeneous(arb::exp(-v)) == exp_std( v.ang(),  v.lin())
+    BMatrix4
+    exp_std( const BVector3 &w, const BVector3 &v, int terms )
+    {
+        // T = [[ [w]x, v ], [0, 0]]  (column j of [w]x is w x e_j)
+        BMatrix4 T(BScalar(0));
+        for (int j = 0; j < 3; ++j)
+        {
+            BVector3 e(B_ZERO_3);
+            e[j] = 1;
+            const BVector3 c = glm::cross(w, e);
+            T[j] = BVector4(c, B_ZERO);
+        }
+        T[3] = BVector4(v, B_ZERO);
+
+        BMatrix4 result = B_IDENTITY_4x4;   // sum_k T^k / k!
+        BMatrix4 term   = B_IDENTITY_4x4;
+        for (int k = 1; k <= terms; ++k)
+        {
+            term = (term * T) * (B_ONE / BScalar(k));
+            result += term;
+        }
+        return result;
+    }
+
+    BMatrix4
+    exp_std( const BVector6 &v, int terms )
+    {
+        return exp_std(v.ang(), v.lin(), terms);
+    }
+}
 
 
 

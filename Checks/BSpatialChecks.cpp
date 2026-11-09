@@ -188,7 +188,10 @@ run_rbinertia_tests(BSpatialChecks &st)
     BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::toForce(X); // inverse inertia in word coords
     
     bool T = arb::nearZero((I_w * invI_w) - B_IDENTITY_6x6);
-    
+    if (!T)
+    {
+        std::cout << I_w * invI_w << std::endl;
+    }
     st.expect(T, "BRBInertia", "I_w * I_w^-1 == Id");
     
     
@@ -301,137 +304,194 @@ run_abinertia_tests(BSpatialChecks &st)
     st.expect(test2, "BABInertia", "I * m63 == BMatrix6(I) * m63");
 }
 
-void 
+
+void
 run_transform_tests(BSpatialChecks &st) 
 {
     st.section("Transform Test");
     
     BRBInertia I = arb::rndRBInertia();
-    BTransform X_wb = arb::rndTransform(); 
+    BTransform X_w = arb::rndTransform(); 
 
     // BTransform Identities 1,2,3
-    BMatrix6 A = X_wb * arb::inverse(X_wb); 
-    BMatrix6 B = arb::inverse(X_wb) * X_wb;
-    BMatrix6 C = arb::transpose(X_wb) * arb::toForce(X_wb);
+    BMatrix6 A = X_w * arb::inverse(X_w); 
+    BMatrix6 B = arb::inverse(X_w) * X_w;
+    BMatrix6 C = arb::transpose(X_w) * arb::toForce(X_w);
         
     st.expect(arb::nearZero(A - B_IDENTITY_6x6), "Transform", "inverse - X * X^{-1} == Identity");
     st.expect(arb::nearZero(B - B_IDENTITY_6x6), "Transform", "inverse - X^{-1} * X == Identity");
     st.expect(arb::nearZero(C - B_IDENTITY_6x6), "Transform", "dual identity - X^T * X^*) == Identity");
     
-    BVector6 h_w = arb::rndVec6();  // momentum is a force vector
+    BVector6 h_w = arb::rndVec6();  // recall momentum is a force vector
     
     // body coords momentum and velocity
-    BVector6 h_b = arb::toForce(X_wb) * h_w; 
+    BVector6 h_b = arb::toForce(X_w) * h_w; 
     BVector6 v_b = arb::inverse(I) * h_b;  // RBDA, eqn 2.61, page 32.
     
     // world coords velocity
-    BVector6 v_w    = arb::inverse(X_wb) * v_b;
-    BMatrix6 invI_w = arb::inverse(X_wb) * arb::inverse(I) * arb::toForce(X_wb);  // RBDA, Table 2.5, page 34
+    BVector6 v_w    = arb::inverse(X_w) * v_b;
+    BMatrix6 invI_w = arb::inverse(X_w) * arb::inverse(I) * arb::toForce(X_w);  // RBDA, Table 2.5, page 34
     BVector6 my_v_w = invI_w * h_w;  
-    BMatrix6 invI_b = (X_wb * invI_w * arb::transpose(X_wb));  
-    st.expect(arb::nearZero(my_v_w - v_w), "Transform", "world/base coords and velocity");
+    BMatrix6 invI_b = (X_w * invI_w * arb::transpose(X_w));  
+    st.expect(arb::nearZero(my_v_w - v_w), "Transform", "world coords and velocity");
     
-    // If a force f acts on a rigid body having a velocity v, then
+    // if a force f acts on a rigid body having a velocity v, then
     // the power delivered by the force is f \dot v (RDBA, Scalar Products, page 19).
     bool power_test = arb::nearZero(arb::dot(h_w, v_w) - arb::dot(h_b, v_b));
     st.expect(power_test, "Transform", "Power Identity - arb::dot(h_w, v_w) == arb::dot(h_b, v_b)");
     
     st.expect(arb::nearZero(invI_b - arb::inverse(I)), "Transform", "inverse inertia transform");
 
-    BTransform X1 = arb::rndTransform();
+    BTransform X = arb::rndTransform();
+    BTransform Y = arb::rndTransform();
+
     
     // transform BVector6
     BVector6 v = arb::rndVec6();
-    BVector6 res1 =  X1.apply(v);
-    BVector6 res2 =  BMatrix6(X1) * v;
+    BVector6 res1 =  X.apply(v);
+    BVector6 res2 =  BMatrix6(X) * v;
     st.expect(arb::nearZero(res2 - res1), "Transform", "X.apply(v6) == BMatrix6(X) * v6");
     
-    BVector6 res3 =  X1.applyTranspose(v);
-    BVector6 res4 =  arb::transpose(X1) * v;
+    BVector6 res3 =  X.applyTranspose(v);
+    BVector6 res4 =  arb::transpose(X) * v;
     st.expect(arb::nearZero(res4 - res3), "Transform", "X.applyTranspose(v6) == arb::transpose(X) * v6");
     
     // transform BMatrix63 
     BMatrix63 m = arb::rndMat63();
-    BMatrix63 res5 =  X1.apply(m);
-    BMatrix63 res6 =  BMatrix6(X1) * m;
+    BMatrix63 res5 =  X.apply(m);
+    BMatrix63 res6 =  BMatrix6(X) * m;
     st.expect(arb::nearZero(res6 - res5), "Transform", "X.apply(m63) == BMatrix6(X) * m63");
  
-    BMatrix63 res7 =  X1.applyTranspose(m);
-    BMatrix63 res8 =  arb::toForceInverse(X1) * m;
+    BMatrix63 res7 =  X.applyTranspose(m);
+    BMatrix63 res8 =  arb::toForceInverse(X) * m;
     st.expect(arb::nearZero(res7 - res8), "Transform", "X.applyTranspose(m63) == arb::toForceInverse(X) * m63");
     
-    BMatrix63 res9 =  arb::transpose(X1) * m;
+    BMatrix63 res9 =  arb::transpose(X) * m;
     st.expect(arb::nearZero(res7 - res9), "Transform", "X.applyTranspose(m63) == arb::transpose(X) * m63");
     
-    BTransform X2 = arb::rndTransform();
+    BMatrix6 res10 = BMatrix6(X) * BMatrix6(Y);
+    BTransform res11 = (X * Y);
+    st.expect(arb::nearZero(res10 - res11), "Transform", "BMatrix6(X * Y) == BMatrix6(X) * BMatrix6(Y) ");
     
-    BMatrix6 res10 = BMatrix6(X1) * BMatrix6(X2);
-    BTransform res11 = (X1 * X2);
-    st.expect(arb::nearZero(res10 - res11), "Transform", "BMatrix6(X1 * X2) == BMatrix6(X1) * BMatrix6(X2) ");
+    // transform Vector3 - 3D points
+    BVector3 p = arb::rndVec3();
+    bool test12 = arb::nearZero(arb::inverse(Y).apply(Y.apply(p)) - p);
+    st.expect(test12, "Transform", "point round trip within BTransform (1)");
+    
+    bool test13 = arb::nearZero(arb::inverse(Y).applyTranspose(Y.applyTranspose(p)) - p);
+    st.expect(test13, "Transform", "point round trip within BTransform (2)");
+    
+    bool test14 = arb::nearZero(Y.apply(Y.applyTranspose(p)) - p);
+    st.expect(test14, "Transform", "point round trip within BTransform (3)");
+    
+    bool test15 = arb::nearZero(Y.applyTranspose(Y.apply(p)) - p);
+    st.expect(test15, "Transform", "point round trip within BTransform (4)");
+    
+    // point composition: (X*Y) body->base is Y's map applied after X's
+    bool test16 = arb::nearZero((X * Y).applyTranspose(p) - Y.applyTranspose(X.applyTranspose(p)));
+    st.expect(test16, "Transform", "(X*Y).applyTranspose(p) == Y.applyTranspose(X.applyTranspose(p))");
+    
+    // and the base->body direction, in the opposite order
+    bool test17 = arb::nearZero((X * Y).apply(p) - X.apply(Y.apply(p)));
+    st.expect(test17, "Transform", "(X*Y).apply(p) == X.apply(Y.apply(p))");
+
 }
 
-void 
+void
 run_lie_group_tests(BSpatialChecks &st) 
 {
-    // take care here as the commented out tests 'exp(log(x)) == x' can fail on large test 
-    // runs due to poor precision. If you print out the occasional errors you will see that 
-    // the answers are actually close, although not to 3dp. Mostly they pass the test.
-    
     st.section("Lie Theory (exp/log)");
+    // note Euler vector wv - where
+    // length |wv| < pi is angle of rotation, and
+    // direction axis = arb::normalize(wv) is the axis of rotation.
     
+    
+    // 3D log/exp identity
     BVector3 axis = arb::rndVec3();
     if (axis == B_ZERO_3)
         axis = arb::rndAxis();
     BVector3 w = glm::normalize(axis);
     
     // log(exp(v)) == v identity
-    BScalar theta = arb::rndFloat();
+    BScalar theta = arb::rndFloat(0, M_PI - 0.05);
     BVector3 x = w * theta;
     BMatrix3 R = arb::exp( x );
     BVector3 y = arb::log(R);
-    st.expect(arb::nearZero(x - y), "Lie", "3D - log(exp(v)) == v"); // || arb::nearZero(v1 + v2)
-
-   // BMatrix3 T = arb::rndRot();
-   // y = arb::log(T);
-   // BMatrix3 S = arb::exp(y);
-   // st.expect(arb::nearZero(T - S), "Lie", "3D - exp(log(X)) == X"); // || arb::nearZero(v1 + v2)
+    st.expect(arb::nearZero(x - y), "Lie", "3D - log(exp(v)) == v");
+    
+    BMatrix3 T = arb::rndRot();
+    y = arb::log(T);
+    BMatrix3 S = arb::exp(y);
+    st.expect(arb::nearZero(T - S), "Lie", "3D - exp(log(X)) == X");
+    
+    
+    // Jacobian test
+    // NB log is the inverse of exp only for rotation angle |w| < pi (larger angles wrap)
+    BVector6 v;
+    BVector3 wv = arb::rndVec3(-1.0, 1.0);
+    if (arb::length(wv) < 1E-8)
+        wv = arb::rndAxis();
+    wv *= arb::rndFloat() * (M_PI - 0.05) / glm::length(wv);   // |w| in [0, pi - 0.05)
+    v.ang(wv);
+    v.lin(arb::rndVec3());
+    bool testA = arb::nearZero(arb::leftJacobian(wv) * arb::leftJacobianInverse(wv) - B_IDENTITY_3x3);
+    st.expect(testA, "Lie", "Jacobian test : J_l(v) * inv_J_l(v) == I");
 
     
-    BVector6 v = arb::rndVec6();
-    v.ang( arb::rndVec3(-M_PI_2, M_PI_2));  // keep rotation small to avoid wrap-around issues in Log
-    v.lin( arb::rndVec3());
+    // Angles near to pi
+    BVector3 npAxis = arb::rndVec3(-1.0, 1.0);
+    if (arb::length(npAxis) < 1E-8)
+        npAxis = arb::rndAxis();
+    npAxis = glm::normalize(npAxis);
+    BScalar npTheta = arb::rndFloat(M_PI - 0.01, M_PI);
+    BMatrix3 Rnp = arb::exp(npAxis * npTheta);
+    BVector3 wnp = arb::log(Rnp);
     
+    bool testB = arb::nearZero(Rnp - arb::exp(wnp));
+    st.expect(testB, "Lie", "3D - near pi, exp(log(R)) == R");
+    using std::abs;
+    bool testC = abs(arb::length(wnp) - npTheta) < 1E-6;
+    st.expect(testC, "Lie", "3D - near pi, |log(R)| == theta");
+    
+    BVector6 vnp;
+    vnp.ang(npAxis * npTheta);
+    vnp.lin(arb::rndVec3());
+    
+    BTransform Xnp = arb::exp(vnp);
+    BTransform Ynp = arb::exp(arb::log(Xnp));
+    st.expect(arb::nearZero(BMatrix6(Ynp) - BMatrix6(Xnp)), "Lie", "6D Transform - near pi, exp(log(X)) == X");
+    
+    
+    // 6D log/exp identity
     // log(exp(v)) == v identity
     BTransform X = arb::exp(v);
     BVector6 v_recovered = arb::log(X);
     st.expect(arb::nearZero(v - v_recovered), "Lie", "6D Transform - log(exp(v)) == v");
     
-    // exp(log(v)) == v identity 
-    // BTransform W = arb::rndTransform();
-    // BVector6 h = arb::log(W);
-    // BTransform Y = arb::exp(h);
-    // st.expect(arb::nearZero(BMatrix6(Y) - BMatrix6(W)), "Lie", "6D Transform - exp(log(v)) == v");
-
-        
+    // exp(log(X)) == X identity
+    BTransform W = arb::rndTransform();
+    BVector6 h = arb::log(W);
+    BTransform Y = arb::exp(h);
+    st.expect(arb::nearZero(BMatrix6(Y) - BMatrix6(W)), "Lie", "6D Transform - exp(log(X)) == X");
+    
     BMatrix6 M_alg = arb::crossm(v); // This is the Generator (Algebra)
     BMatrix6 rhs = arb::logm(arb::expm(M_alg));
-    // logm(expm(v)) == v identity
-    st.expect(arb::nearZero(rhs - M_alg), "Lie", "6D Matrix - logm(expm(v)) == v");
+    // logm(expm(m)) == v identity
+    st.expect(arb::nearZero(rhs - M_alg), "Lie", "6D Matrix - logm(expm(M)) == M");
     
-    // BMatrix6 m = BMatrix6(X);
-    // BMatrix6 lhs = arb::expm(arb::logm(X));
-    // exp(log(v)) == v identity
-    // st.expect(arb::nearZero(lhs - m), "Lie", "6D Matrix - expm(logm(v)) == v");
-
-    // exp(-v) == inv(exp(v))
-    st.expect(arb::nearZero(BMatrix6(arb::exp(-v)) - arb::inverse((arb::exp(v)))), "Lie", "exp mapping inverse");
+    BMatrix6 m = BMatrix6(X);
+    BMatrix6 lhs = arb::expm(arb::logm(X));
+    // exp(log(X)) == X identity
+    st.expect(arb::nearZero(lhs - m), "Lie", "6D Matrix - expm(logm(X)) == X");
+    
+    // exp(-v) == inverse(exp(v))
+    st.expect(arb::nearZero(BMatrix6(arb::exp(-v)) - BMatrix6(arb::inverse((arb::exp(v))))), "Lie", "exp mapping inverse exp(-v) == inverse(exp(v))");
     
     
     // The Adjoint Identity is a fundamental properties of Lie theory
-    // In Lie group theory, the identity 
-    //     exp(Ad_X * u) == X * exp(u) * X^{-1} 
-    // is defined for motion vectors (twists). 
-    
+    // In Lie group theory, the identity
+    //     exp(Ad_X * u) == X * exp(u) * X^{-1}
+    // is defined for motion vectors (twists).
     BVector6 v1 = arb::log(X);
     BMatrix6 x1 = BMatrix6(arb::exp(X * v1)) - X * arb::exp(v1) * arb::inverse(X);
     
@@ -439,22 +499,87 @@ run_lie_group_tests(BSpatialChecks &st)
     
     BTransform Z = arb::rndTransform();
     BVector6 u   = arb::rndVec6();
-
-    // Note RBDL methods follow Featherstone's definitions, 
-    // The arb::totoMotion() and BTransform classes match  
+    
+    // Note RBDL methods follow Featherstone's definitions,
+    // The arb::toMotion() and BTransform classes match
     // toMatrixAdjoint() and SpatialTransform (from RBDL) numerically.
-
     BMatrix6 AdZ = arb::toMotion(Z);
     BTransform lhs1 = arb::exp(AdZ * u);
     BTransform rhs1 = Z * arb::exp(u) * arb::inverse(Z);
     bool match = arb::nearZero(BMatrix6(lhs1) - BMatrix6(rhs1));
     
     st.expect(match, "Lie", "Adjoint Identity (b)");
+    
+    // toHomogeneous(exp(v)) vs the standard SE(3) exponential, summed as a 4x4 series.
+    // Reference uses the standard skew matrix [w]x (column j = w x e_j), built from glm::cross.
+    // toHomogeneous(exp(v)) is the standard SE(3) exponential of (-w, -v_lin)
+    bool test21 = arb::nearZero(arb::toHomogeneous(arb::exp(v)) - arb::exp_std(-v.ang(), -v.lin()));
+    st.expect(test21, "Lie", "toHomogeneous(exp(v)) == exp_std(-w, -v_lin)");
+    
+    // equivalently, with the sign flipped on the argument
+    bool test22 = arb::nearZero(arb::toHomogeneous(arb::exp(-v)) -arb::exp_std(v));
+    st.expect(test22, "Lie", "toHomogeneous(exp(-v)) == exp_std(w, v_lin)");
+ 
+}
+
+void
+run_homogeneous_tests(BSpatialChecks &st)
+{
+    st.section("Homogeneous Conversions");
+    
+    BTransform X = arb::rndTransform();
+    BTransform Y = arb::rndTransform();
+    BMatrix4 M = arb::toHomogeneous(X);
+    BVector3 p = arb::rndVec3();
+    
+    bool test1 = arb::nearZero(arb::toHomogeneous(X) * arb::toHomogeneousInverse(X) - B_IDENTITY_4x4);
+    st.expect(test1, "Homogeneous", "Homogeneous inverse");
+
+    bool test2 = arb::nearZero(arb::toHomogeneousInverse(X) - glm::inverse(arb::toHomogeneous(X)));
+    st.expect(test2, "Homogeneous", "Homogeneous inverse (a)");
+    
+    BTransform X_recovered = arb::fromHomogeneous(M);
+    bool test3 = arb::nearZero(X_recovered.E() - X.E());
+    bool test4 = arb::nearZero(X_recovered.r() - X.r());
+    st.expect(test3 && test4, "Homogeneous", "Homogeneous round trip X -> M -> X");
+    
+    BVector3 out1 = X.applyTranspose(p);
+    BVector3 out2 = arb::toHomogeneous(X) * BVector4(p,1.0);
+    bool test5 = arb::nearZero(out1 - out2);
+    st.expect(test5, "Homogeneous", "X.applyTranspose() * p ==  toHomogeneous(X) * p");
+                               
+    BVector3 out3 = X.apply(p);
+    BVector3 out4 = arb::toHomogeneousInverse(X) * BVector4(p,1.0);
+    bool test6 = arb::nearZero(out3-out4);
+    st.expect(test6, "Homogeneous", "X.apply() * p ==  toHomogeneousInverse(X) * p");
+    
+    bool test7 = arb::nearZero(arb::fromHomogeneousInverse(arb::toHomogeneousInverse(X)).E() - X.E());
+    bool test8 = arb::nearZero(arb::fromHomogeneousInverse(arb::toHomogeneousInverse(X)).r() - X.r());
+    st.expect(test7 && test8, "Homogeneous", "fromHomogeneousInverse(toHomogeneousInverse(X)) == X");
+    
+    bool test9 = arb::nearZero(arb::toHomogeneous(arb::fromHomogeneous(M)) - M);
+    st.expect(test9, "Homogeneous", "toHomogeneous(fromHomogeneous(M)) == M");
+    
+    BMatrix4 invM = arb::toHomogeneousInverse(X);
+    bool test10 = arb::nearZero(arb::toHomogeneousInverse(arb::fromHomogeneousInverse(invM)) - invM);
+    st.expect(test10, "Homogeneous", "toHomogeneousInverse(fromHomogeneousInverse(X)) == X");
+    
+    // composition (this operand order; it follows from operator* giving (Ey Ex, ry + Ey rx))
+    bool test11 = arb::nearZero(arb::toHomogeneous(X * Y) - arb::toHomogeneous(Y) * arb::toHomogeneous(X));
+    st.expect(test11, "Homogeneous", "Composition: toHomogeneous(X * Y) == toHomogeneous(Y) * toHomogeneous(X)");
+    
+    // round trips
+    bool test12 = arb::fromHomogeneous(arb::toHomogeneous(X)) == X;
+    st.expect(test12, "Homogeneous", "fromHomogeneous(toHomogeneous(X)) == X (exact)");
+   
+    bool test13 = arb::nearZero(BMatrix6(arb::fromHomogeneousInverse(arb::toHomogeneousInverse(X))) - BMatrix6(X));
+    st.expect(test13, "Homogeneous", "fromHomogeneousInverse(toHomogeneousInverse(X)) == X (via BMatrix6)");
+
 }
 
 
-void 
-run_cross_tests(BSpatialChecks &st) 
+void
+run_cross_tests(BSpatialChecks &st)
 {
     st.section("Cross Products");
     
@@ -463,7 +588,7 @@ run_cross_tests(BSpatialChecks &st)
     BVector6 w = arb::rndVec6();
     
     // (v \cross v) == 0 (use [u \cross v = - v \cross u] - Table 2.3, page 25, RBDA)
-    st.expect(arb::nearZero(arb::crossm(v, v)), "Cross", "crossm(v, v) == 0"); 
+    st.expect(arb::nearZero(arb::crossm(v, v)), "Cross", "crossm(v, v) == 0");
     
     // vx* == -vx^T (Table 2.3, page 25, RBDA)
     BMatrix6 vx = BMatrix6(arb::crossm(v));
@@ -472,63 +597,18 @@ run_cross_tests(BSpatialChecks &st)
     
     // scalar product derivative identity: d/dt(dot(f, v))
     // arb::dot(vxf * f, v) + dot(f, vx * v) == 0 (since vx * v is 0)
-    st.expect(arb::nearZero(arb::dot(arb::crossf(v, w), v)), "Cross", "derivative identity"); 
+    st.expect(arb::nearZero(arb::dot(arb::crossf(v, w), v)), "Cross", "derivative identity");
 
     // spatial triple product (the Jacobi identity)
     // test u×(v×w) + v×(w×u) + w×(u×v) == 0
     // https://en.wikipedia.org/wiki/Jacobi_identity
-    BVector6 res = arb::crossm(u, arb::crossm(v, w)) + 
-                   arb::crossm(v, arb::crossm(w, u)) + 
+    BVector6 res = arb::crossm(u, arb::crossm(v, w)) +
+                   arb::crossm(v, arb::crossm(w, u)) +
                    arb::crossm(w, arb::crossm(u, v));
                    
-    st.expect(arb::nearZero(res), "Cross", "spatial triple product (the Jacobi identity)");    
+    st.expect(arb::nearZero(res), "Cross", "spatial triple product (the Jacobi identity)");
 }
 
-
-void
-run_homogeneous_tests(BSpatialChecks &st)
-{
-    st.section("Homogeneous Conversions");
-    
-    BTransform X = arb::rndTransform();
-    
-    bool test1 = arb::nearZero(arb::toHomogeneous(X) * arb::toHomogeneousInverse(X) - B_IDENTITY_4x4);
-    st.expect(test1, "Homogeneous", "Homogeneous inverse");
-
-    bool test2 = arb::nearZero(arb::toHomogeneousInverse(X) - glm::inverse(arb::toHomogeneous(X)));
-    st.expect(test2, "Homogeneous", "Homogeneous inverse (a)");
-    
-    BMatrix4 M = arb::toHomogeneous(X);
-    BTransform X_recovered = arb::fromHomogeneous(M);
-    bool test3 = arb::nearZero(X_recovered.E() - X.E()); // All zeros
-    bool test4 = arb::nearZero(X_recovered.r() - X.r()); // All zeros
-    st.expect(test3 && test4, "Homogeneous", "Homogeneous round trip X -> M -> X");
-    
-    BVector3 posN = arb::rndVec3();
-    BVector3 out1 = BTransform(X).applyTranspose(posN);
-    BVector3 out2 = arb::toHomogeneous(X) * BVector4(posN,1.0);
-    bool test5 = arb::nearZero(out1 - out2);
-    st.expect(test5, "Homogeneous", "X.applyTranspose() * p ==  toHomogeneous(X) * p");
-                               
-    BVector3 out3 = BTransform(X).apply(posN);
-    BVector3 out4 = arb::toHomogeneousInverse(X) * BVector4(posN,1.0);
-    bool test6 = arb::nearZero(out3-out4);
-    st.expect(test6, "Homogeneous", "X.apply() * p ==  toHomogeneousInverse(X) * p");
-    
-    bool test7 = arb::nearZero(arb::fromHomogeneous(arb::toHomogeneous(X)).E() - X.E());
-    bool test8 = arb::nearZero(arb::fromHomogeneous(arb::toHomogeneous(X)).r() - X.r());
-    st.expect(test7 && test8, "Homogeneous", "fromHomogeneous(toHomogeneous(X)) == X");
-    
-    bool test9 = arb::nearZero(arb::fromHomogeneousInverse(arb::toHomogeneousInverse(X)).E() - X.E());
-    bool test10 = arb::nearZero(arb::fromHomogeneousInverse(arb::toHomogeneousInverse(X)).r() - X.r());
-    st.expect(test9 && test10, "Homogeneous", "fromHomogeneousInverse(toHomogeneousInverse(X)) == X");
-    
-    bool test11 = arb::nearZero(arb::toHomogeneous(arb::fromHomogeneous(M)) - M);
-    st.expect(test11, "Homogeneous", "toHomogeneous(fromHomogeneous(M)) == M");
-    
-    bool test12 = arb::nearZero(arb::toHomogeneousInverse(arb::fromHomogeneousInverse(M)) - M);
-    st.expect(test12, "Homogeneous", "toHomogeneousInverse(fromHomogeneousInverse(X)) == X");
-}
 
 //
 //

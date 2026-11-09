@@ -97,6 +97,13 @@ namespace arb
     BABInertia 
     rndABInertia( void );
     
+    /// Reference implementation of the STANDARD SE(3) exponential (Modern Robotics, Lynch and Park).
+    BMatrix4
+    exp_std( const BVector3 &w, const BVector3 &v, int terms = 40 );
+
+    BMatrix4
+    exp_std( const BVector6 &v, int terms = 40 );
+    
 }
 
 
