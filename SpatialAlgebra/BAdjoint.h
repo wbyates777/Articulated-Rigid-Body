@@ -34,9 +34,9 @@
      }
  @endcode
  
- The remaining matricies are constructed from this basic definition.
+ The remaining  are constructed from this basic definition.
  
- The matricies are: 
+ The matrices are: 
 
          toMotion : A -> B         where    X =     |     E        0 | 
                                                     |  -rx * E     E |

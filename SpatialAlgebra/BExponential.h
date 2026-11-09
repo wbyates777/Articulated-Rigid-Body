@@ -12,36 +12,30 @@
  
  ---
  
- @brief Spatial exponential and logarithmic maps for motion vectors.
+ @brief Exponential and logarithmic maps between motion vectors (twists) and spatial transforms.
 
- Given an arbitrary twist, the spatial transform $X = exp(v)$ represents 
- the integrated displacement over a unit time step Δt. 
- 
- If $v$ is expressed in the base/world coordinate frame we have:
- 
-    X(t + Δt) = X(t) exp(vΔt)  
- 
- or if $v$ is expressed in body frame coordinates.
- 
-    X(t + Δt) = exp(vΔt) X(t) 
- 
- The log mapping is the inverse of exp. In symbols:
- 
-    log( exp(v) ) = v
+ For a motion vector $v = (w, v_lin)$, the spatial transform $X = exp(v)$ has the form
+
+    E = exp(w)              (Rodrigues' formula)
+    r = -J(w) v_lin         (J is the left Jacobian of SO(3))
+
+ in the BTransform convention (see BTransform.h). The log mapping is the inverse of exp:
+
+    log( exp(v) ) = v       whenever the rotation angle |w| < pi
+
+ For larger angles the rotation wraps, and log returns the equivalent vector with |w| <= pi.
  
 
- Lie group terminology: 
-    - transforms $X$ are elements of a Lie group, 
-    - velocity vectors $v$ are elements of a Lie algebra, 
-    - exp:LieAlg --> LieGrp,
-    - SE(3) - Lie group of rigid body transforms, 
-    - se(3) - tangent space at identity (Lie Algebra).
+ Lie group terminology:
+    - SE(3): Lie group of rigid body transforms (BTransform),
+    - se(3): its Lie algebra, the tangent space at the identity (motion vectors or twists),
+    - SO(3): Lie group of rotations (BMatrix3), and so(3) its Lie algebra,
+    - exp: se(3) --> SE(3)
+    - log: SE(3) --> se(3).
  
- 
- @note we use the Featherstone convention on transforms, i.e X(E,r) as opposed to the homogenous convention X = (R,p),
-    where E = R^T and r = -R^Tp
- @note arb::cross(w) * arb::cross(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3);
- @note SO(3) is the Lie group of Matrix3 rotations, while so(3) is the associated tangent space.
+
+ @note $arb::cross(w) * arb::cross(w) == arb::outer(w,w) - (arb::dot(w,w) * B_IDENTITY_3x3)$;
+ @note Euler vector w - where length |w| < pi is angle of rotation, and direction axis = arb::normalize(w) is the axis of rotation.
  
  @see "Modern Robotics", Lynch and Park, 2017.
  @see "Lie Groups for 2D and 3D Transformations", Ethan Earle, 2017.
@@ -69,8 +63,8 @@ namespace arb {
     // exp
     //
     
-    /// best to keep angular variables in range [-M_PI_2, M_PI_2]
-    inline BMatrix3 
+    /// Rotation exponential so(3) -> SO(3) via Rodrigues' formula.
+    inline BMatrix3
     exp( const BVector3 &w )
     {
         using std::sin;
@@ -82,8 +76,8 @@ namespace arb {
         
         if (theta < 1E-8)
         {
-            // Rodrigues series near zero: $exp(cross(ω)) ≈ I + cross(ω) + 1/2 cross(ω)^2$
-            return I + W + BScalar(0.5) * (W * W);
+            // second-order Taylor series: exp([w]x) ~ I + [w]x + 1/2 [w]x^2
+            return I + W + B_HALF * (W * W);
         }
         
         const BScalar A = sin(theta) / theta;
@@ -92,7 +86,8 @@ namespace arb {
         return I + A * W + B * (W * W);
     }
     
-    inline BMatrix3 
+    /// Left Jacobian of SO(3)
+    inline BMatrix3
     leftJacobian( const BVector3 &w )
     {
         using std::sin;
@@ -102,9 +97,10 @@ namespace arb {
         const BMatrix3 I(B_IDENTITY_3x3);
         const BMatrix3 W = arb::cross(w);
         
+        // Taylor series: I + 1/2 [w]x + 1/6 [w]x^2
         if (theta < 1E-8)
         {
-            return I + BScalar(0.5) * W + BScalar(1.0 / 6.0) * (W * W);
+            return I + B_HALF * W + BScalar(1.0 / 6.0) * (W * W);
         }
         
         const BScalar A = (1.0 - cos(theta)) / (theta * theta);
@@ -113,22 +109,18 @@ namespace arb {
         return I + A * W + B * (W * W);
     }
 
-    ///  vec must be motion vector or twist
-    inline BTransform 
-    exp( const BVector6 &vec ) 
+    /// Exponential map exp : se(3) -> SE(3) where v is a motion vector (twist)
+    inline BTransform
+    exp( const BVector6 &v )
     {
-        const BVector3 w = vec.ang();
-        const BVector3 v = vec.lin();
+        const BVector3 w = v.ang();
+        const BVector3 l = v.lin();
         
         // rotation
         const BMatrix3 E = exp(w);
         
-        // standard homogeneous translation
         const BMatrix3 J = leftJacobian(w);
-        const BVector3 p = -(J * v); 
-        
-        // convert homogeneous translation p into Featherstone r
-        const BVector3 r =  p;
+        const BVector3 r = -(J * l);
         
         return BTransform(E, r);
     }
@@ -137,48 +129,54 @@ namespace arb {
     // log
     //
     
-    inline BVector3 
+
+    /// Logarithm log : SO(3) -> so(3). Returns the rotation vector with |w| in [0, pi].
+    inline BVector3
     log( const BMatrix3 &R )
     {
-        using std::acos;
-        using std::sin;
+        using std::atan2;
         
-        const BScalar cos_theta = arb::clamp(0.5 * (arb::trace(R) - 1.0), -1.0, 1.0);
-        const BScalar theta = acos(cos_theta);
-        //assert(!arb::isnan(theta));
+        const BVector3 a = arb::uncross(R - arb::transpose(R)) * B_HALF;   // sin θ * axis
+        const BScalar  s = arb::length(a);                                       // sin θ
+        const BScalar  c = B_HALF * (arb::trace(R) - B_ONE);               // cos θ
+        const BScalar theta = atan2(s, c);                                       // accurate everywhere
         
-        // near identity, use first-order approximation
-        if (theta < 1E-10)
+        if (theta < 1E-8)
+            return a * (B_ONE + theta * theta / BScalar(6));   // θ / sin θ ≈ 1 + θ²/6
+        
+        if (theta < BScalar(M_PI - 1E-3))
+            return a * (theta / s);
+        
+        // Near pi, sin(theta) is too small to give the axis reliably. Recover the
+        // axis from the symmetric part, S = cos(t) I + (1 - cos t) a a^T, take the
+        // column with the largest diagonal entry for stability, and use the
+        // antisymmetric part to choose the sign.
+        const BMatrix3 S = B_HALF * (R + arb::transpose(R));
+        const BMatrix3 N = (S - c * B_IDENTITY_3x3) * (B_ONE / (B_ONE - c)); // = a aᵀ
+       
+        BVector3 u;
+        if (N[0][0] >= N[1][1] && N[0][0] >= N[2][2])
         {
-            return arb::uncross(R - arb::transpose(R)) * BScalar(0.5);
+            u = BVector3(N[0][0], N[1][0], N[2][0]);
+        }
+        else if (N[1][1] >= N[2][2])
+        {
+            u = BVector3(N[0][1], N[1][1], N[2][1]);
+        }
+        else
+        {
+            u = BVector3(N[0][2], N[1][2], N[2][2]);
         }
         
-        // when theta near M_PI handle rotation singularity
-        if (theta > BScalar(M_PI - 1E-3))
-        {
-            // use the column with the largest diagonal element to ensure numerical stability
-            BVector3 u;
-            if (R[0][0] >= R[1][1] && R[0][0] >= R[2][2]) 
-            {
-                u = BVector3(R[0][0] + BScalar(1.0), R[1][0], R[2][0]);
-            } 
-            else if (R[1][1] >= R[2][2]) 
-            {
-                u = BVector3(R[0][1], R[1][1] + BScalar(1.0), R[2][1]);
-            } 
-            else 
-            {
-                u = BVector3(R[0][2], R[1][2], R[2][2] + BScalar(1.0));
-            }
-            
-            return arb::normalize(u) * theta;
-        }
-         
-        const BMatrix3 W = (R - arb::transpose(R)) * (BScalar(0.5) * theta / sin(theta));
-        return arb::uncross(W);
+        u = arb::normalize(u);
+        if (arb::dot(u, a) < 0)
+            u = -u;    // use the antisymmetric part to fix the sign
+        
+        return u * theta;
     }
 
-    inline BMatrix3 
+    /// Inverse of leftJacobian(w), using the closed form with cot(theta/2).
+    inline BMatrix3
     leftJacobianInverse( const BVector3 &w )
     {
         using std::tan;
@@ -189,20 +187,20 @@ namespace arb {
         
         if (theta < 1E-8)
         {
-            return I - BScalar(0.5) * W + BScalar(1.0 / 12.0) * (W * W);
+            return I - B_HALF * W + BScalar(1.0 / 12.0) * (W * W);
         }
         
-        const BScalar half_theta = 0.5 * theta;
-        const BScalar cot_half_theta = 1.0 / tan(half_theta);
+        const BScalar half_theta = B_HALF * theta;
+        const BScalar cot_half_theta = B_ONE / tan(half_theta);
         
         const BScalar A = (1.0 - half_theta * cot_half_theta);
-        const BScalar B = BScalar(1.0) / (theta * theta);
+        const BScalar B = B_ONE / (theta * theta);
         
-        return I - BScalar(0.5) * W + (A * B) * (W * W);
+        return I - B_HALF * W + (A * B) * (W * W);
     }
     
-    /// return the spatial twist (motion vector) whose exponential produces the given X
-    inline BVector6 
+    /// Logarithm map log : SE(3) -> se(3): returns the motion vector v with exp(v) == X.
+    inline BVector6
     log( const BTransform &X )
     {
         const BMatrix3 &R = X.E();
@@ -218,15 +216,16 @@ namespace arb {
         return BVector6(w, v);
     }
    
-
-    inline BMatrix6 
+    /// Matrix exponential of a 6x6 motion generator m = crossm(v).
+    inline BMatrix6
     expm( const BMatrix6 &m )  { return arb::toMotion(exp(uncross(m))); }
 
-    inline BMatrix6 
+    /// Matrix logarithm of a transform X. Returns the 6x6 motion generator crossm(log(X)).
+    inline BMatrix6
     logm( const BTransform &X )  { return arb::crossm(log(X)); }
     
-
-    inline BMatrix6 
+    /// Matrix logarithm of a 6x6 motion transform matrix X (as returned by BMatrix6(BTransform).
+    inline BMatrix6
     logm( const BMatrix6 &X ) 
     {
         const BMatrix3 E = X.topLeft();

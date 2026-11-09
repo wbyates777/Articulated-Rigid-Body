@@ -12,37 +12,29 @@
  
  ---
 
- @brief A compact representation of spatial or Plücker Transforms (see Featherstone, RBDA, Section 2.8, page 20, and Appendix A3, page 245).
+ @brief A compact representation of spatial (Plücker) Transforms (see Featherstone, RBDA, Section 2.8, page 20, and Appendix A3, page 245).
  
- Consider a tranform $X$ that maps points from a coordinate frame $A$ to a coordinate frame $B$ 
- 
- $$ B^X_A : A \rightarrow B. $$
- 
- The inverse $X^{-1}$ is defined by
- 
- $$ B^{X^{-1}}_A = A^X_B. $$ 
+ Convention: A spatial transform $X(E,r)$ maps base-frame coordinates to body-frame coordinates.
+    - $E$ is the body-to-base rotation (its columns are the body axes in base coordinates).
+    - $r$ is the position of the body-frame origin, expressed in base coordinates.
+    - The inverse is $(E^T, -E^T r)$.
 
- We require diﬀerent coordinate transformation matrices for motions and forces. 
- For motion vectors $v \in M^6$, 
+ Points (consistent with spatial methods and BHomogeneous.h):
  
- $$ B^{X}_A : A \rightarrow B $$
+        X.apply(p)           =  E^T (p - r)    base coordinates -> body coordinates
+        X.applyTranspose(p)  =  r + E p        body coordinates -> base coordinates
  
- For force vectors $v \in F^6$, the dual or 'star' version of the transform must be used 
- 
- $$ B^{X^*}_A : A \rightarrow B $$
- 
- If the matrix $X$ performs a coordinate transformation on motion vectors, and $X^*$ performs the same
- transformation on force vectors, then the two are related by $X^* = X^{-T}$ 
- (see Featherstone, RBDA, Section 2.6, eqn 2.13, page 18).
 
+ Motion vectors are transformed by $X$ while force vectors are transformed by the dual $X^{*} = X^{-T}$ (see Featherstone, RBDA, Section 2.6, eqn 2.13, page 18).
+ 
+ 
  This class employs a compact representation of spatial transformations.
  Instead of using a full 6x6 matrix, the class only stores a 3x3  rotation matrix $E$
  and a 3D translation vector $r$ to represent a spatial transformation. 
- It also provides some efficient matrix operations such as matrix concatenation 
+ It also provides some efficient matrix operations such as composition
  and transformation of spatial vectors.
  
- 
- The BTransform presented here has been tested against and matches the Eigen3 RBDL function:
+ The spatial methods of BTransform have been tested against and match numerically the Eigen3 RBDL function:
  
  @code{.cpp}
  SpatialMatrix toMatrix () const {
@@ -62,15 +54,24 @@
  }
  @endcode
 
-A spatial transform $X$ as a block 6x6 matrix has the form:
+ Relationship to RBDL:
+ 
+ ARB matrices are glm matrices. glm constructors fill column by column, whereas
+ Eigen/RBDL initialisers fill row by row. The RBDL code for Xrotz(t) therefore becomes,
+ when the argument list is transcribed unchanged, the transposed matrix: arb::rotz(t) is the active rotation,
+ while the $E$ stored by RBDL's Xrotz(t) is rotz(-t). Hence $E_ARB = (E_RBDL)^T$, and the
+ spatial methods apply $E^T$ where RBDL applies $E$.
+ Both ARB and RBDL give the same result when a transform is applied to a spatial vector.
+ 
+ A spatial transform $X$ as a block 6x6 matrix in this implementation has the form:
 
          |     E      0  |
          | -rx * E    E  |
 
-where rx = arb::cross(r).
+ where rx = arb::cross(r) (see BTransform::operator BMatrix6()).
  
-The remaining transforms have analytic block definitions (which differ from 
-the usual matrix definitions) for inverse and transpose:
+ The remaining transforms have analytic block definitions (which differ from
+ the usual matrix definitions) for inverse and transpose:
 
          X^{-1}  =  |    E^T      0  |
                     | E^T * rx   E^T |
@@ -81,7 +82,7 @@ the usual matrix definitions) for inverse and transpose:
          X^*  =     | E  -rx * E |
                     | 0      E   |
          
- where  X^* = X^{-T} (see RBDA, page 22). 
+ where  $X^* = X^{-T}$ (see RBDA, page 22). 
  
  When transforming a spatial inertia $I$ by a spatial transform $X$ (see RBDA, eqn 2.66, page 34)
  
@@ -89,11 +90,9 @@ the usual matrix definitions) for inverse and transpose:
             X.applyTranspose(I)  = X^T I X  
  
 
- @note BMatrix3 E is a rotation; the transpose of a rotation E^T is also its inverse E^{-1}
- @note BVector3 r is a translation; inverse translation is -r
- @note As $(A * B)^T == (B^T * A^T)$ and $rx^T == -rx$ then $(-E * rx)^T == rx * E^T$
-     where the two negatives cancel out
- 
+ @note BMatrix3 $E$ is a rotation; the transpose of a rotation $E^T$ is also its inverse $E^{-1}$
+ @note As $(A * B)^T == B^T * A^T$ and $rx^T == -rx$, then $(-rx * E)^T == E^T * rx$
+       where the two negatives cancel out
  @see https://en.wikipedia.org/wiki/Rotation_matrix
  @see https://en.wikipedia.org/wiki/Frame_of_reference
  
@@ -226,15 +225,16 @@ public:
     }
 
 
-    /// transform 3D point p to/from coordinate frame @see toHomogeneous()
-    BVector3 
-    apply( const BVector3 &p ) const { return m_E * (p - m_r); }
+    /// base coordinates -> body coordinates: E^T (p - r)
+    BVector3
+    apply( const BVector3 &p ) const { return arb::transpose(m_E) * (p - m_r); }
     
-    BVector3 
-    applyTranspose( const BVector3 &p ) const { return m_r + (arb::transpose(m_E) * p); }
+    /// body coordinates -> base coordinates: r + E p
+    BVector3
+    applyTranspose( const BVector3 &p ) const { return m_r + (m_E * p); }
 
-    
-    BRBInertia 
+ 
+    BRBInertia
     apply( const BRBInertia &rbi ) const
     // return X^* I X^{-1}
     {
