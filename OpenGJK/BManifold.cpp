@@ -142,8 +142,8 @@ BManifold::calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, 
     const BMatrix3 A(p0 - p1, p0 - p2, p0 - p3);
     const BMatrix3 B(p2 - p3, p1 - p3, p1 - p2);
 
-    const BMatrix3 AT = glm::transpose(A);
-    const BMatrix3 BT = glm::transpose(B);
+    const BMatrix3 AT = arb::transpose(A);
+    const BMatrix3 BT = arb::transpose(B);
 
     // compute the cross products for all 3 configurations simultaneously
     const BVector3 crossX = AT[1] * BT[2] - AT[2] * BT[1];
