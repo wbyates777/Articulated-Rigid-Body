@@ -156,7 +156,7 @@ of the Gilbert–Johnson–Keerthi algorithm and the Expanded Polytope Algorithm
 The OpenGJK used here has been rewritten to use glm types in order to 
 support  autodiff types, and  automatic  differentiation.
 
- The URDFManager class embeds [TinyXML2]. TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simplicity these are included in this codebase.
+ The URDFManager class embeds TinyXML2 (see below). TinyXML2 is a simple, small, and efficient open-source C++ XML parser that can be easily integrated into other programs. It is a rewrite of the original TinyXML, designed to be more memory-efficient, use fewer allocations, and run faster. As TinyXML2 consists of only two files, for simplicity these are included in this codebase.
 
  
  ## Validation
@@ -218,7 +218,7 @@ ARB has been tested against standard industrial robot models including:
   
 </details>
 
-The file BSpatialChecks.cpp includes **72** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
+The file BSpatialChecks.cpp includes **89** consistency checks, tested on random examples, that verify basic analytical relationships and identities. These checks cover spatial transforms, cross products and inertia operations, ensuring algebraic self-consistency.
  For example, in Lie group theory, for any given transform $X$ and twist $u$, the _Adjoint Identity_
  
          exp(Adjoint(X) * u) == X * exp(u) * X^{-1}  
@@ -297,7 +297,7 @@ The  table below shows a comparison of the execution times in milliseconds betwe
 |  	| RNEA 	|	208.53	|	5.57	|	205.60	|	6.02	|	**-1.41** | 
 |  |  |  |  |  |  |  |
 |  |  |  |  |  |  |  |
-|	**Total** |	All	|	441.86	|	399.97	|	**-9.48**	|
+|	**Overall** |	All	|	441.86	| |	399.97	| |	**-9.48**	|
 
 
 #### Notes
