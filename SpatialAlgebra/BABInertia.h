@@ -12,7 +12,7 @@
  
  ---
  
- @brief A compact representation of spatial articulated body inertia (see Featherstone, RBDA, page 245, 247).
+ @brief A compact representation of spatial articulated body inertia (see Featherstone, RBDA, Section 7.1, page 119, and pages 245, 247).
  
  Articulated body inertia is a generalisation of spatial inertia 
  and is defined as a 6x6 matrix 
