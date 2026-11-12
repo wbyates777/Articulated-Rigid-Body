@@ -47,7 +47,8 @@
  
  @see https://wiki.ros.org/urdf/XML
  @see https://github.com/leethomason/tinyxml2 
- 
+
+@warning when loading or saving a model make sure that the model only contains joint types supported in the URDF standard.
 */
 
 
