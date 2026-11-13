@@ -70,6 +70,20 @@ std::string path = "../URDF/Examples/";
 //
 //
 
+BModel
+loadModel( const std::string &name )
+{
+    URDFManager urdf;
+    
+    std::string urdf_file = path + name;
+
+    BModel model = urdf.load(urdf_file);
+    
+    int dof = model.DoFCount();
+    std::cout << "Successfully loaded model: " << urdf_file << " with " << dof << " DOFs.\n";
+    
+    return model;
+}
 
 BModel 
 rdbl_model(void)
@@ -421,48 +435,6 @@ collisions( void )
 //
 //
 
-BModel
-example5_model()
-{
-    BModel model(15);
-    
-    double massA = 150;
-    std::vector<double> com_a = { 0.0, 0.0, 0.0 };
-    std::vector<double> trans_a = { 0.0, 20.0, 0.0 };
-
-    double massC = 100.0;
-    std::vector<double> com_c = { 0.0, 0.0, 0.0 };
-    std::vector<double> trans_c = { 0.0, 10.0, 0.0 };
-    
-    //  BJoint joint_a = BJoint( BJoint::FloatBase);
-    BJoint joint_a = BJoint( BJoint::Fixed1);
-    BBody body_a = BBody(BInertia(massA, glm::dvec3(com_a[0], com_a[1], com_a[2]), BVector3(10.0, 10.0, 10.0)));
-   // body_a.params().visual.geometry.type = URDFGeometryType::Mesh;
-  //  body_a.params().visual.geometry.filename = "base.obj";
-  //  body_a.params().visual.material.texture = "red.jpg";
-  //  body_a.params().visual.material.name = "fred";
-    
-    int body_a_id = model.addBody(0, arb::Xtrans(BVector3(trans_a[0],trans_a[1],trans_a[2])), joint_a, body_a);
-
-    BJoint joint_b = BJoint( BJoint::Prismatic, BVector3(0.0, 1.0, 0.0) );
-    BBody body_b = BBody(BInertia(5.0, glm::dvec3(0.0, 0.75, 0.0), BVector3(2.0, 2.0, 2.0)));
-   // body_b.params().visual.geometry.type = URDFGeometryType::Mesh;
-  //  body_b.params().visual.geometry.filename = "body_b.obj";
-    
-    int body_b_id = model.addBody(body_a_id, arb::Xtrans(BVector3(1.0, 0.0, 0.0)), joint_b, body_b);
-    
-    BJoint joint_c = BJoint( BJoint::Prismatic, BVector3(0.0, 1.0, 0.0) ); 
-    BBody body_c  = BBody(BInertia(massC, BVector3(com_c[0], com_c[1], com_c[2]), BVector3(2.0, 2.0, 2.0)));
-    int body_c_id = model.addBody(body_b_id, arb::Xtrans(BVector3(trans_c[0], trans_c[1], trans_c[2])), joint_c, body_c);
-    
-    BJoint joint_d = BJoint( BJoint::Revolute, BVector3(0.0, 0.0, 1.0));
-    BBody body_d = BBody(BInertia(10.0, BVector3 (0.5, 0.0, 0.0), BVector3(2.0, 2.0, 2.0)));
-    int   body_d_id = model.addBody(body_c_id, arb::Xtrans(BVector3(1.0, 1.0, 0.0)), joint_d, body_d);
-    
-
-    return model;
-}
-
 bool 
 dynamics_test(void) 
 // This test demonstrates the numerical equivalence of the Recursive Newton-Euler Algorithm (RNEA) 
@@ -476,24 +448,13 @@ dynamics_test(void)
     
     std::cout << "\nARB Example 5 - Dynamics Matching\n" << std::endl;
     
-    
     BDynamics dynamics;
-    BModel m = example5_model();
+    BModel m = loadModel("tiago_dual-test.urdf");
     
     // set up random initial state for model, and choose a target acceleration 
-    BModelState qstate(m);
-    int dof = m.DoFCount();
-    std::vector<BScalar> qddot_target(dof);
-    for (int i = 0; i < dof; ++i) 
-    {
-        qstate.q()[i]    = arb::rndFloat(-M_PI, M_PI);
-        qstate.qdot()[i] = arb::rndFloat(-10.0, 10.0);
-        
-        qddot_target[i] = arb::rndFloat(-20.0, 20.0);
-    }
-    
-    qstate.qddot() = qddot_target;
-    
+    BModelState qstate = arb::rndModelState(m);
+    std::vector<BScalar> qddot_target = qstate.qddot();
+
     // inverse dynamics (RNEA) - calculate torques 'tau' 
     dynamics.inverse( m, qstate ); 
     
@@ -513,10 +474,11 @@ dynamics_test(void)
     // compare state.m_qddot with qddot_target
     bool match = true;
     BScalar max_err = 0;
-    for (int i = 0; i < dof; ++i) 
+    for (int i = 0; i < qstate.qddot().size(); ++i)
     {
         BScalar err = abs(qstate.qddot()[i] - qddot_target[i]);
-        if (err > 1E-1) match = false;
+        if (err > 1E-6)
+            match = false;
         max_err = std::max(max_err, err);
     }
     
