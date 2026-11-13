@@ -15,8 +15,6 @@
 add_library(Collisions 
     OBJECT 
         BCollider.cpp        
-        BManifold.cpp    
-        BContactManager.cpp    
         BOpenGJK.cpp        
         BOpenEPA.cpp   
         BGJK.cpp     
@@ -24,12 +22,13 @@ add_library(Collisions
 
 
 # Crucial: Allow other targets to see these headers
-target_include_directories(Collisions PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Collisions PUBLIC 
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      ${CMAKE_CURRENT_SOURCE_DIR}/../Solver
+)
 
-# Link internal math AND external collision ccd
+# Link internal math AND external collision 
 target_link_libraries(Collisions 
     PUBLIC 
         SpatialAlgebra 
-    PUBLIC
-        ccd            # This target was created in the root
 )
