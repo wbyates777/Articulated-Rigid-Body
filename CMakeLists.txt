@@ -52,29 +52,6 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}")
 
 FetchContent_MakeAvailable(glm autodiff)
 
-# ==============================================================================
-# EMBEDDED DEPENDENCY: libccd
-# Compiles locally as a C99 static library to bypass old CMake policies & CI blocks.
-# ==============================================================================
-file(GLOB CCD_SOURCES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/CCD/src/*.c"
-)
-
-add_library(ccd STATIC ${CCD_SOURCES})
-
-target_include_directories(ccd PUBLIC 
-    "${CMAKE_CURRENT_SOURCE_DIR}/CCD/src"
-)
-
-# Enable double-precision for physics simulations (matches libccd's dDOUBLE flag)
-target_compile_definitions(ccd PUBLIC dDOUBLE)
-
-set_target_properties(ccd PROPERTIES 
-    C_STANDARD 99
-    C_STANDARD_REQUIRED ON
-    POSITION_INDEPENDENT_CODE ON
-)
-# ==============================================================================
 
 # Create a 'virtual' target to hold includes
 add_library(model_headers INTERFACE)
@@ -90,8 +67,9 @@ add_subdirectory(SpatialAlgebra)
 add_subdirectory(Model)
 add_subdirectory(URDF)
 add_subdirectory(Collisions)
+add_subdirectory(Solver)
 add_subdirectory(Checks)
 
 # --- Main Executable ---
 add_executable(dynamics_test CBody.cpp main.cpp)
-target_link_libraries(dynamics_test PRIVATE URDF Model Collisions Checks)
+target_link_libraries(dynamics_test PRIVATE URDF Model Collisions Solver Checks)
