@@ -110,21 +110,21 @@ namespace arb
     
 
     //
-    // Random models and model states.
+    // Random model and model state.
     //
-
 
     /// @brief Generate a random tree-structured model of bodyNum bodies and joints.
     ///
     /// Returns a model consisting of numBody randomly generated bodies (with mass and inertial characteristics)
     /// connected using joints randomly selected from a set of 16 BJoint::jtype types.
     /// Random models should be validated.
-    /// @param[in] numBody  construct a random model of numBody bodies and joints
+    /// @param[in] bodyNum  construct a random model of numBody bodies and joints
     /// @return a random tree-structured model
     /// @warning Random models cannot generally be saved or loaded via the URDFManager because they contain joint types not
     /// supported by the URDF format (see URDFManager.h).
     BModel
-    rndModel( int numBody );
+    rndModel( int bodyNum );
+
 
     /// @brief Test the validity of model.
     /// A models can be validated by testing it against the identity
@@ -149,7 +149,7 @@ namespace arb
     isvalid( BModel &model, int Ntrials = 40, double tol = 1E-3 );
 
 
-    /// Generate a non-zero random initial state for model m, use any limits set in joint params
+    /// Generate a non-zero random initial state for model m using any limits set in joint params
     BModelState
     rndModelState( const BModel &m );
 
