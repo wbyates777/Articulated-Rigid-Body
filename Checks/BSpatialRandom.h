@@ -115,7 +115,7 @@ namespace arb
 
     /// @brief Generate a random tree-structured model of bodyNum bodies and joints.
     ///
-    /// Returns a model consisting of numBody randomly generated bodies (with mass and inertial characteristics)
+    /// Returns a model consisting of bodyNum randomly generated bodies (with mass and inertial characteristics)
     /// connected using joints randomly selected from a set of 16 BJoint::jtype types.
     /// Random models should be validated.
     /// @param[in] bodyNum  construct a random model of numBody bodies and joints
