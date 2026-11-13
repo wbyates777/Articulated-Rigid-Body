@@ -1,0 +1,150 @@
+/*! 
+
+         $$$$$$$$$$$$$$$$$$$
+         $   BManifold.h   $
+         $$$$$$$$$$$$$$$$$$$
+
+ @file BManifold.h 
+ @ingroup Collisions
+ date 23/07/2026
+ 
+ by W.B. Yates
+ 
+ ---
+ 
+ @brief A data structure used to store and manage the precise geometric details of a contact between two colliding bodies.
+ 
+ A collection of upto 4 points of contact between 2 colliding bodies. We use 4 points as they form stable 3D polygon.
+ Compare with the bullet3 class btPersistentManifold.
+ 
+ 
+ @note a depth > 0 implies penetration.
+ 
+ @see https://github.com/bulletphysics/bullet3 
+ 
+*/
+
+
+#ifndef BMANIFOLD_H
+#define BMANIFOLD_H
+
+
+#include <vector>
+
+#ifndef BVECTOR6_H
+#include "BVector6.h"
+#endif
+
+class ABody;
+
+
+/// a single point of contact - basic information
+struct BContactInfo 
+{
+    BContactInfo(void): normal(0.0), pos(0.0), depth(0.0) {}
+    BContactInfo(const BScalar &d, const BVector3 &n, const BVector3 &p): normal(n), pos(p), depth(d) {}
+    ~BContactInfo(void)=default;
+
+    BVector3 normal;
+    BVector3 pos;
+    BScalar  depth;
+};
+
+
+/// a single point of contact - basic information plus details
+struct BContactDetails 
+{
+    BContactDetails( void )=default;
+    BContactDetails( const BVector3 &lp1, const BVector3 &lp2,
+                     const BVector3 &p, const BVector3 &n, BScalar d) : localPos1(lp1), localPos2(lp2), 
+                                                                        normal(n), pos(p), depth(d), 
+                                                                        accJ(0.0), accJx(0.0), accJy(0.0) {}
+    ~BContactDetails( void )=default;
+    
+    BVector3 localPos1; ///< position relative to body1 frame
+    BVector3 localPos2; ///< position relative to body2 frame
+
+    BVector3 normal;    ///< world contact normal
+    BVector3 pos;       ///< world contact position
+    BScalar  depth;     ///< penetration depth
+    
+    /// persistent solver state (for warm starting)
+    BScalar accJ, accJx, accJy;
+
+    /// kinematic helper properties calculated during BContactManager::prepare()
+    BScalar velBias, invK, invK_x, invK_y;
+    BVector6 n_1, n_2, dv_1, dv_2;
+    BVector6 nx_1, nx_2, dvx_1, dvx_2;
+    BVector6 ny_1, ny_2, dvy_1, dvy_2;
+};
+
+
+
+
+/// a collection of upto 4 points of contact
+class BManifold 
+{
+    
+public:
+    
+    BManifold( void )=default;
+    BManifold( ABody *a, ABody *b, uint64_t idx ): m_body1(a), m_body2(b), m_manifoldId(idx), m_warmstart(false)
+    {
+        m_points.reserve(MAX_POINTS+1);
+    }
+    ~BManifold( void )=default;
+
+    
+    uint64_t
+    manifoldId( void ) const { return  m_manifoldId; }
+    
+    ABody*
+    body1( void ) { return m_body1; }
+
+    ABody*
+    body2( void ) { return m_body2; }
+    
+    const std::vector<BContactDetails>&
+    points( void ) const { return m_points; }
+    
+    std::vector<BContactDetails>&
+    points( void )  { return m_points; }
+    
+    bool
+    warmstart( void ) const { return m_warmstart; }
+    
+    void
+    warmstart( bool b )  { m_warmstart = b; }  
+    
+    /// updates world positions and removes stale contacts that have drifted apart
+    void 
+    refresh( BScalar max_dist, BScalar max_tan_dist2 );
+    
+    /// add a new point and reduces the set to the 4 best points
+    void 
+    addPoint( const BContactInfo &cinfo, BScalar threshold2 );
+
+private:
+    
+    BScalar 
+    calcArea(const BVector3& p0, const BVector3& p1, const BVector3& p2, const BVector3& p3) const;
+    
+    // remove excess points from the manifold
+    void
+    reducePoints( const BContactDetails& pt );
+    
+    ABody* m_body1;
+    ABody* m_body2;
+    uint64_t m_manifoldId;
+    std::vector<BContactDetails> m_points;
+    bool m_warmstart;
+    
+    static constexpr int MAX_POINTS = 4; // 4 points form a stable 3D polygon
+    static const int m_index[4][3];
+};
+
+
+
+#endif
+
+
