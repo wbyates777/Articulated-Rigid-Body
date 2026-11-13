@@ -25,8 +25,15 @@
 #include "BSpatialAlgebra.h"
 #endif
 
+#ifndef BMODEL_H
+#include "BModel.h"
+#endif
 
-namespace arb 
+#ifndef BMODELSTATE_H
+#include "BModelState.h"
+#endif
+
+namespace arb
 {
     
     // set the seed and reinitialise the sequence
@@ -40,13 +47,13 @@ namespace arb
     rndInt( int N ); // [0,N]
     
     int
-    rndInt( int min, int max ); // [min,max]
+    rndInt( int min, int max ); // [min, max]
     
     double 
     rndFloat( void ); // (0,1)
     
     double 
-    rndFloat(double min, double max);  // (min,max)
+    rndFloat(double min, double max);  // (min, max)
 
 
     //
@@ -62,7 +69,11 @@ namespace arb
     BVector3 
     rndAxis( void ); // X, Y, or Z
 
-    BMatrix3 
+    BVector3
+    rndNormal3( void ); // random, non-zero, normalized 3-Vector
+
+
+    BMatrix3
     rndMat3( void );
 
     BMatrix3 
@@ -97,13 +108,51 @@ namespace arb
     BABInertia 
     rndABInertia( void );
     
-    /// Reference implementation of the STANDARD SE(3) exponential (Modern Robotics, Lynch and Park).
-    BMatrix4
-    exp_std( const BVector3 &w, const BVector3 &v, int terms = 40 );
 
-    BMatrix4
-    exp_std( const BVector6 &v, int terms = 40 );
-    
+    //
+    // Random models and model states.
+    //
+
+
+    /// @brief Generate a random tree-structured model of bodyNum bodies and joints.
+    ///
+    /// Returns a model consisting of numBody randomly generated bodies (with mass and inertial characteristics)
+    /// connected using joints randomly selected from a set of 16 BJoint::jtype types.
+    /// Random models should be validated.
+    /// @param[in] numBody  construct a random model of numBody bodies and joints
+    /// @return a random tree-structured model
+    /// @warning Random models cannot generally be saved or loaded via the URDFManager because they contain joint types not
+    /// supported by the URDF format (see URDFManager.h).
+    BModel
+    rndModel( int numBody );
+
+    /// @brief Test the validity of model.
+    /// A models can be validated by testing it against the identity
+    ///
+    ///             ABA(q, qdot, RNEA(q, qdot, acc)) ≈ acc
+    ///
+    /// for some given accelerations acc.
+    ///
+    /// Models can fail this test for a number of physical or mathematical reasons.
+    ///
+    /// - Physical issues: Models with large mass ratios or inertias whose
+    ///    centers of mass (COMs) are far from the body's frame origin can exhibit
+    ///    instability when gravity is enabled.
+    /// - Mathematical issues: Euler angle singularities can cause failures (gimbal lock),
+    ///    i.e when EulerXYZ hits ±M_PI_2 on the middle axis.
+    ///
+    /// @param[in] model an articulated ridgid body model
+    /// @param[in] Ntrials the number of random model states to test
+    /// @param[in] tol the maximum error tolerance
+    /// @return true if the model passes the test; false otherwise.
+    bool
+    isvalid( BModel &model, int Ntrials = 40, double tol = 1E-3 );
+
+
+    /// Generate a non-zero random initial state for model m, use any limits set in joint params
+    BModelState
+    rndModelState( const BModel &m );
+
 }
 
 

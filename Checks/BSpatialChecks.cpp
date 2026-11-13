@@ -21,6 +21,10 @@
 #include "BSpatialRandom.h"
 #endif
 
+#ifndef BSTDEXP_H
+#include "BStdExp.h"
+#endif
+
 #include <string>
 #include <vector>
 #include <map>
@@ -183,7 +187,6 @@ run_rbinertia_tests(BSpatialChecks &st)
     st.expect(S, "BRBInertia", "I^-1 * I == Id");
     
     // world inverse
-
     BMatrix6 I_w  = arb::transpose(X) * I * X; // inertia in word coords
     BMatrix6 invI_w = arb::inverse(X) * arb::inverse(I) * arb::toForce(X); // inverse inertia in word coords
     
@@ -311,40 +314,17 @@ run_transform_tests(BSpatialChecks &st)
     st.section("Transform Test");
     
     BRBInertia I = arb::rndRBInertia();
-    BTransform X_w = arb::rndTransform(); 
-
+    BTransform X = arb::rndTransform();
+    BTransform Y = arb::rndTransform();
+    
     // BTransform Identities 1,2,3
-    BMatrix6 A = X_w * arb::inverse(X_w); 
-    BMatrix6 B = arb::inverse(X_w) * X_w;
-    BMatrix6 C = arb::transpose(X_w) * arb::toForce(X_w);
+    BMatrix6 A = X * arb::inverse(X);
+    BMatrix6 B = arb::inverse(X) * X;
+    BMatrix6 C = arb::transpose(X) * arb::toForce(X);
         
     st.expect(arb::nearZero(A - B_IDENTITY_6x6), "Transform", "inverse - X * X^{-1} == Identity");
     st.expect(arb::nearZero(B - B_IDENTITY_6x6), "Transform", "inverse - X^{-1} * X == Identity");
     st.expect(arb::nearZero(C - B_IDENTITY_6x6), "Transform", "dual identity - X^T * X^*) == Identity");
-    
-    BVector6 h_w = arb::rndVec6();  // recall momentum is a force vector
-    
-    // body coords momentum and velocity
-    BVector6 h_b = arb::toForce(X_w) * h_w; 
-    BVector6 v_b = arb::inverse(I) * h_b;  // RBDA, eqn 2.61, page 32.
-    
-    // world coords velocity
-    BVector6 v_w    = arb::inverse(X_w) * v_b;
-    BMatrix6 invI_w = arb::inverse(X_w) * arb::inverse(I) * arb::toForce(X_w);  // RBDA, Table 2.5, page 34
-    BVector6 my_v_w = invI_w * h_w;  
-    BMatrix6 invI_b = (X_w * invI_w * arb::transpose(X_w));  
-    st.expect(arb::nearZero(my_v_w - v_w), "Transform", "world coords and velocity");
-    
-    // if a force f acts on a rigid body having a velocity v, then
-    // the power delivered by the force is f \dot v (RDBA, Scalar Products, page 19).
-    bool power_test = arb::nearZero(arb::dot(h_w, v_w) - arb::dot(h_b, v_b));
-    st.expect(power_test, "Transform", "Power Identity - arb::dot(h_w, v_w) == arb::dot(h_b, v_b)");
-    
-    st.expect(arb::nearZero(invI_b - arb::inverse(I)), "Transform", "inverse inertia transform");
-
-    BTransform X = arb::rndTransform();
-    BTransform Y = arb::rndTransform();
-
     
     // transform BVector6
     BVector6 v = arb::rndVec6();
@@ -395,74 +375,114 @@ run_transform_tests(BSpatialChecks &st)
     bool test17 = arb::nearZero((X * Y).apply(p) - X.apply(Y.apply(p)));
     st.expect(test17, "Transform", "(X*Y).apply(p) == X.apply(Y.apply(p))");
 
+
+    // Physics Tests
+    BTransform X_w = arb::rndTransform();
+    BVector6 h_w = arb::rndVec6();  // recall momentum is a force vector
+    
+    // body coords momentum and velocity
+    BVector6 h_b = arb::toForce(X_w) * h_w;
+    BVector6 v_b = arb::inverse(I) * h_b;  // RBDA, eqn 2.61, page 32.
+    
+    // world coords velocity
+    BVector6 v_w    = arb::inverse(X_w) * v_b;
+    BMatrix6 invI_w = arb::inverse(X_w) * arb::inverse(I) * arb::toForce(X_w);  // RBDA, Table 2.5, page 34
+    BVector6 my_v_w = invI_w * h_w;
+    BMatrix6 invI_b = (X_w * invI_w * arb::transpose(X_w));
+    
+    st.expect(arb::nearZero(my_v_w - v_w), "Transform", "world coords and velocity");
+    
+    // if a force f acts on a rigid body having a velocity v, then
+    // the power delivered by the force is f \dot v (RDBA, Scalar Products, page 19).
+    bool power_test = arb::nearZero(arb::dot(h_w, v_w) - arb::dot(h_b, v_b));
+    st.expect(power_test, "Transform", "Power Identity - arb::dot(h_w, v_w) == arb::dot(h_b, v_b)");
+    
+    st.expect(arb::nearZero(invI_b - arb::inverse(I)), "Transform", "inverse inertia transform");
+    
+    // generate a new random body velocity and a valid spatial rigid-body inertia
+    v_b = arb::rndVec6();
+    BRBInertia I_b = arb::rndInertia();
+
+    // transform velocity to world coordinates: v_w = X_w * v_b (where X_w is body-to-world transform)
+    v_w = X_w * v_b;
+
+    // transform spatial inertia to world coordinates using the contravariant congruence rule:
+    // I_w = X_w^{-T} * I_b * X_w^{-1}  (or using library transform utilities)
+    BMatrix6 X_inv = arb::inverse(X_w);
+    BMatrix6 I_w   = arb::transpose(X_inv) * I_b * X_inv;
+
+    // compute momentum in both frames: h = I * v
+    h_b = I_b * v_b;
+    h_w = I_w * v_w;
+
+    // compute kinetic energy: K = 0.5 * v^T * h  (since h = I*v, this is 0.5 * v^T * I * v)
+    BScalar K_b = B_HALF * arb::dot(v_b, h_b);
+    BScalar K_w = B_HALF * arb::dot(v_w, h_w);
+
+    // assert that kinetic energy is invariant across coordinate frames
+    bool kinetic_energy_test = arb::nearZero(K_w - K_b);
+    st.expect(kinetic_energy_test, "Transform", "Kinetic Energy Invariance - 0.5 * v_w^T * I_w * v_w == 0.5 * v_b^T * I_b * v_b");
 }
 
 void
 run_lie_group_tests(BSpatialChecks &st) 
 {
     st.section("Lie Theory (exp/log)");
-    // note Euler vector wv - where
-    // length |wv| < pi is angle of rotation, and
-    // direction axis = arb::normalize(wv) is the axis of rotation.
     
     
+    //
     // 3D log/exp identity
-    BVector3 axis = arb::rndVec3();
-    if (axis == B_ZERO_3)
-        axis = arb::rndAxis();
-    BVector3 w = glm::normalize(axis);
+    //
+    
+    BVector3 w = arb::rndNormal3();
     
     // log(exp(v)) == v identity
-    BScalar theta = arb::rndFloat(0, M_PI - 0.05);
+    BScalar theta = arb::rndFloat(0, M_PI - 0.01);
     BVector3 x = w * theta;
     BMatrix3 R = arb::exp( x );
     BVector3 y = arb::log(R);
     st.expect(arb::nearZero(x - y), "Lie", "3D - log(exp(v)) == v");
     
+    // exp(log(T)) == T identity
     BMatrix3 T = arb::rndRot();
     y = arb::log(T);
     BMatrix3 S = arb::exp(y);
     st.expect(arb::nearZero(T - S), "Lie", "3D - exp(log(X)) == X");
     
-    
     // Jacobian test
-    // NB log is the inverse of exp only for rotation angle |w| < pi (larger angles wrap)
-    BVector6 v;
-    BVector3 wv = arb::rndVec3(-1.0, 1.0);
-    if (arb::length(wv) < 1E-8)
-        wv = arb::rndAxis();
-    wv *= arb::rndFloat() * (M_PI - 0.05) / glm::length(wv);   // |w| in [0, pi - 0.05)
-    v.ang(wv);
-    v.lin(arb::rndVec3());
+    // note Euler vector wv - where length |wv| < pi is angle of rotation,
+    // and direction axis = arb::normalize(wv) is the axis of rotation.
+    // log is the inverse of exp only for rotation angle |wv| < pi (larger angles wrap)
+    BVector3 wv = arb::rndFloat() * BScalar(M_PI - 0.01) * arb::rndNormal3();   // |wv| in [0, pi - 0.05)
+    BVector6 v(wv, arb::rndVec3());
+
     bool testA = arb::nearZero(arb::leftJacobian(wv) * arb::leftJacobianInverse(wv) - B_IDENTITY_3x3);
     st.expect(testA, "Lie", "Jacobian test : J_l(v) * inv_J_l(v) == I");
 
-    
     // Angles near to pi
-    BVector3 npAxis = arb::rndVec3(-1.0, 1.0);
-    if (arb::length(npAxis) < 1E-8)
-        npAxis = arb::rndAxis();
-    npAxis = glm::normalize(npAxis);
-    BScalar npTheta = arb::rndFloat(M_PI - 0.01, M_PI);
+    BVector3 npAxis = arb::rndNormal3();
+    BScalar  npTheta = arb::rndFloat(M_PI - 0.01, M_PI);
     BMatrix3 Rnp = arb::exp(npAxis * npTheta);
     BVector3 wnp = arb::log(Rnp);
     
     bool testB = arb::nearZero(Rnp - arb::exp(wnp));
     st.expect(testB, "Lie", "3D - near pi, exp(log(R)) == R");
-    using std::abs;
-    bool testC = abs(arb::length(wnp) - npTheta) < 1E-6;
+  
+    bool testC = arb::nearZero(arb::length(wnp) - npTheta, 1E-8);
     st.expect(testC, "Lie", "3D - near pi, |log(R)| == theta");
     
     BVector6 vnp;
-    vnp.ang(npAxis * npTheta);
+    vnp.ang(npTheta * npAxis);
     vnp.lin(arb::rndVec3());
     
     BTransform Xnp = arb::exp(vnp);
     BTransform Ynp = arb::exp(arb::log(Xnp));
     st.expect(arb::nearZero(BMatrix6(Ynp) - BMatrix6(Xnp)), "Lie", "6D Transform - near pi, exp(log(X)) == X");
     
-    
+    //
     // 6D log/exp identity
+    //
+    
     // log(exp(v)) == v identity
     BTransform X = arb::exp(v);
     BVector6 v_recovered = arb::log(X);
@@ -485,7 +505,7 @@ run_lie_group_tests(BSpatialChecks &st)
     st.expect(arb::nearZero(lhs - m), "Lie", "6D Matrix - expm(logm(X)) == X");
     
     // exp(-v) == inverse(exp(v))
-    st.expect(arb::nearZero(BMatrix6(arb::exp(-v)) - BMatrix6(arb::inverse((arb::exp(v))))), "Lie", "exp mapping inverse exp(-v) == inverse(exp(v))");
+    st.expect(arb::nearZero(BMatrix6(arb::exp(-v)) - BMatrix6(arb::inverse((arb::exp(v))))), "Lie", "exp mapping: exp(-v) == inverse(exp(v))");
     
     
     // The Adjoint Identity is a fundamental properties of Lie theory
@@ -513,13 +533,14 @@ run_lie_group_tests(BSpatialChecks &st)
     // toHomogeneous(exp(v)) vs the standard SE(3) exponential, summed as a 4x4 series.
     // Reference uses the standard skew matrix [w]x (column j = w x e_j), built from glm::cross.
     // toHomogeneous(exp(v)) is the standard SE(3) exponential of (-w, -v_lin)
-    bool test21 = arb::nearZero(arb::toHomogeneous(arb::exp(v)) - arb::exp_std(-v.ang(), -v.lin()));
-    st.expect(test21, "Lie", "toHomogeneous(exp(v)) == exp_std(-w, -v_lin)");
+    bool test21 = arb::nearZero(arb::toHomogeneous(arb::exp(v)) - arb::std_exp(-v));
+    st.expect(test21, "Lie", "toHomogeneous(exp(v)) == std_exp(-w, -v_lin)");
     
     // equivalently, with the sign flipped on the argument
-    bool test22 = arb::nearZero(arb::toHomogeneous(arb::exp(-v)) -arb::exp_std(v));
-    st.expect(test22, "Lie", "toHomogeneous(exp(-v)) == exp_std(w, v_lin)");
- 
+    bool test22 = arb::nearZero(arb::toHomogeneous(arb::exp(-v)) -arb::std_exp(v));
+    st.expect(test22, "Lie", "toHomogeneous(exp(-v)) == std_exp(w, v_lin)");
+    
+
 }
 
 void
@@ -645,3 +666,4 @@ check(int count, int seed)
     }
     return 0;
 }
+
