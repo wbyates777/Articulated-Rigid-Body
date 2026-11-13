@@ -346,7 +346,7 @@ FetchContent_MakeAvailable(ArticulatedRigidBody)
 add_executable(my_app main.cpp)
 
 # Link against ARB targets as needed
-target_link_libraries(my_app PRIVATE URDF Model Collisions Checks)
+target_link_libraries(my_app PRIVATE URDF Model Collisions Solver Checks)
 ```
 
 ## Documentation
