@@ -110,19 +110,22 @@ private:
 };
 
 
+namespace arb {
 
-template <class T>
-AMatrix<T> transpose( const AMatrix<T>& m ) 
-{
-    AMatrix<T> retVal(m.cols(), m.rows());
-    for (int i = 0; i < m.rows(); ++i)
-    {
-        for (int j = 0; j < m.cols(); ++j)
-        {
-            retVal[j][i] = m[i][j];
-        }
-    }
-    return retVal;
+  template <class T>
+  AMatrix<T> transpose( const AMatrix<T>& m ) 
+  {
+      AMatrix<T> retVal(m.cols(), m.rows());
+      for (int i = 0; i < m.rows(); ++i)
+      {
+          for (int j = 0; j < m.cols(); ++j)
+          {
+              retVal[j][i] = m[i][j];
+          }
+      }
+      return retVal;
+  }
+
 }
 
 template <class T>
