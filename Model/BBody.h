@@ -151,6 +151,14 @@ public:
     void
     c( const BVector6 &sv ) { m_c = sv; } 
     
+    /// Kinetic energy (see RBDA, eqn 2.67, page 35)
+    BScalar
+    kinetic_energy( void ) const
+    {
+        return B_HALF * arb::dot(m_v, m_I * m_v);
+    }
+    
+    
     
     bool
     isVirtual( void ) const { return m_isVirtual; }

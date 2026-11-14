@@ -165,8 +165,11 @@ public:
     void 
     gravity( const BVector3& g ) { m_gravity = g; }
     
-
-    bool 
+    /// Kinetic energy (see RBDA, eqn 2.67, page 35)
+    BScalar
+    kinetic_energy( void ) const;
+    
+    bool
     isBodyId( BBodyId bid ) const;
     
     bool 

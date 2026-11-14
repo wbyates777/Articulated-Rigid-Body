@@ -253,6 +253,18 @@ BModel::I( BBodyId bid ) const
     return I; 
 }
 
+BScalar
+BModel::kinetic_energy( void ) const
+{
+    BScalar KE = 0.0;
+    
+    // sum over N_B bodies see eqn 6.5, page 104
+    for (int i = 1; i < m_body.size(); ++i)
+        KE += m_body[i].kinetic_energy();
+    
+    return KE;
+}
+
 void
 BModel::addName( BBodyId bid, std::string body_name )
 {
