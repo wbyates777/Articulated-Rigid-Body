@@ -129,6 +129,20 @@ namespace arb {
 }
 
 template <class T>
+std::vector<T>
+operator*( const AMatrix<T> &m, const std::vector<T> &v )
+{
+    assert(m.cols() == v.size());
+
+    std::vector<T> retVal(v.size(), T());
+    for ( int i = 0; i < v.size(); ++i )
+        for ( int j = 0; j < v.size(); ++j )
+            retVal[i] += m[i][j] * v[j];
+    return retVal;
+}
+
+
+template <class T>
 std::ostream&
 operator<<( std::ostream& ostr, const AMatrix<T>& m ) 
 {
