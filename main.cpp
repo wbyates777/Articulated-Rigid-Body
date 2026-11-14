@@ -625,6 +625,213 @@ double_pendulum_system_id(void)
     
 }
 
+//
+//
+//
+
+
+
+bool
+is_positive_definite(const BMatrix &H, int Ntrials = 40)
+// return true if  H is positive definite; false otherwise
+{
+    // H contains the joint-space mass matrix computed by BDynamics::crba for some configuration q
+
+    // test symmetry (H == H^T)
+    int dof = H.rows();
+    BMatrix H_transpose = arb::transpose(H);
+    bool is_symmetric = true;
+    for (int i = 0; i < dof; ++i)
+    {
+        for (int j = 0; j < dof; ++j)
+        {
+            if (!arb::nearZero(H[i][j] - H_transpose[i][j]))
+            {
+                is_symmetric = false;
+                break;
+            }
+        }
+        if (!is_symmetric)
+            break;
+    }
+
+    if (!is_symmetric)
+        return false;
+    
+    // matrix H is_symmetric is true
+    
+    // test positive-definiteness via quadratic form $(v^T * H * v > 0)$
+    // for a physical system, kinetic energy $K = 0.5 * v^T * H * v$ must be strictly positive
+    // for any non-zero joint velocity vector v.
+    bool is_positive_definite = true;
+   
+    // test across a few random velocity vectors
+    for (int trial = 0; trial < Ntrials; ++trial)
+    {
+        // generate a random non-zero velocity vector
+        std::vector<BScalar> v(dof);
+        BScalar v_norm_sq = 0.0;
+        for (int i = 0; i < dof; ++i)
+        {
+            v[i] = arb::rndFloat();
+            v_norm_sq += v[i] * v[i];
+        }
+        
+        // skip if we accidentally generated a near-zero vector
+        if (v_norm_sq < 1E-6)
+            continue;
+        
+        // compute quadratic form: scalar = v^T * H * v
+        BScalar quadratic_form = 0.0;
+        for (int i = 0; i < dof; ++i)
+        {
+            BScalar row_dot_v = 0.0;
+            for (int j = 0; j < dof; ++j)
+                row_dot_v += H[i][j] * v[j];
+    
+            quadratic_form += v[i] * row_dot_v;
+        }
+        
+        // kinetic energy must be strictly positive for non-zero velocity
+        if (quadratic_form <= B_EPS)
+        {
+            is_positive_definite = false;
+            break;
+        }
+    }
+    // matrix H is positive-definite $(v^T * H * v > 0)$"
+    return is_positive_definite;
+}
+
+bool
+kinetic_energy(BModel &model, double tol = 1E-7)
+{
+    std::cout << "\nARB Example 7 - Kinetic Energy\n" << std::endl;
+    
+    BModelState Q = arb::rndModelState(model);
+    
+    int dof = model.DoFCount();
+    BMatrix H(dof, dof, 0.0);
+
+    BDynamics dyn;
+    bool update_kinematics = true;
+    dyn.crba(model, Q, H, update_kinematics);
+
+   // std::cout << H << std::endl;
+    if (is_positive_definite(H))
+        std::cout << "H is positive definite as expected" << std::endl;
+    else std::cout << "Error: H is not positive definite" << std::endl;
+
+    BScalar KE = 0.0;
+    const std::vector<BScalar> &qdot = Q.qdot();
+    for (int i = 0; i < dof; ++i)
+    {
+        BScalar row_dot_v = 0.0;
+        for (int j = 0; j < dof; ++j)
+            row_dot_v += H[i][j] * qdot[j];
+     
+        KE += B_HALF * qdot[i] * row_dot_v;
+    }
+    std::cout << "kinetic energy1 is "  << KE << " J" << std::endl;
+    //std::cout << "generalized momentum: p = H * qdot" << H * Q.qdot() << std::endl;
+    
+    // alternative calculation
+    dyn.forward(model, Q);
+    std::cout << "kinetic energy2 is "  << model.kinetic_energy() << " J" << std::endl;
+
+    bool test = arb::nearZero(model.kinetic_energy() - KE, tol);
+
+    return test;
+}
+
+bool
+rnea_crba_consistency_test(BModel &model, double tol = 1E-7)
+// The fundamental equation of motion for a rigid-body system can be written in the following canonical form:
+// $$\tau_{full} = H(q)\ddot{q} + C(q,\dot(q})\dot{q} + g(q)$$
+// where $C(q,\dot(q})\dot{q}) + g(q)$ is the bias term (see RBDA, Section 1.1. eqn 1.1, page 2).
+// This test computes:
+// Full Torques : the total joint torques calculated using RNEA $(q,\dot{q}, \ddot{q}, \tau)$
+// Inertial Torques : the joint-space mass matrix $H(q)$ calculated by CRBA and multiplied  by the joint acceleration vector $\ddot(q)$.
+// Bias Torques:  Coriolis, centrifugal, and gravity terms calculated by zeroing out the joint acceleration $\ddot{q} = 0$ and running RNEA.
+// Test consistency: tau_full == tau_inertial + tau_bias
+{
+    using std::abs;
+    
+    BDynamics dyn;
+    int dof = model.DoFCount();
+
+    BModelState Q = arb::rndModelState(model);
+
+    // compute full inverse dynamics torque using RNEA: tau_full = H*qddot + bias
+    dyn.inverse(model, Q);
+    std::vector<BScalar> tau_full = Q.tau();
+    
+    // compute inertial torque component: H * qddot
+    BMatrix H(dof, dof, 0.0);
+    dyn.crba(model, Q, H, /*update_kinematics=*/true);
+    std::vector<BScalar> tau_inertial(dof, 0.0);
+    for (int i = 0; i < dof; ++i)
+    {
+        BScalar sum = 0.0;
+        for (int j = 0; j < dof; ++j)
+            sum += H[i][j] * Q.qddot()[j];
+        tau_inertial[i] = sum;
+    }
+
+    // compute bias forces (Coriolis + centrifugal + gravity) using RNEA
+    // by zeroing out accelerations (qddot = 0)
+    BModelState Q_zero_accel = Q;
+    Q_zero_accel.qddot().assign(Q_zero_accel.qddot().size(), 0.0);
+    dyn.inverse(model, Q_zero_accel);
+    std::vector<BScalar> tau_bias = Q_zero_accel.tau();
+    
+    // test consistency: tau_full == tau_inertial + tau_bias
+    bool passed = true;
+    BScalar max_error = 0.0;
+    
+    for (int i = 0; i < dof; ++i)
+    {
+        BScalar expected = tau_inertial[i] + tau_bias[i];
+        BScalar error = abs(tau_full[i] - expected);
+        max_error =  arb::max(max_error, error);
+
+        if (error > tol)
+        {
+            passed = false;
+            break;
+        }
+    }
+
+   // if (passed)
+   //      std::cout << "RNEA-CRBA Consistency Check: " << (passed ? "PASSED" : "FAILED")
+   //         << " (Max Error: " << max_error << ")\n";
+
+    return passed;
+}
+
+void
+crba_rnea_test(void)
+{
+    std::cout << "\nARB Example 8 - CRBA-RNEA Test\n" << std::endl;
+    int correct = 0;
+    int bad = 0;
+    int N = 50;
+    for (int i = 0; i < N; ++i)
+    {
+        BModel model = arb::rndModel( 12 );
+        bool test = arb::isvalid(model);
+        
+        if (test)
+            correct += rnea_crba_consistency_test(model, 1E-6);
+        else bad++;
+    }
+    std::cout << "correct " <<  correct << " out of " << N - bad << std::endl;
+    
+    if (correct == N - bad)
+        std::cout << "RNEA-CRBA Consistency Check: PASSED" << std::endl;
+    else std::cout << "RNEA-CRBA Consistency Check:  FAILED" << std::endl;
+}
+
 
 int 
 main( void )
@@ -672,6 +879,11 @@ main( void )
         
         double_pendulum_system_id();
 
+        BModel m = arb::rndModel( 22 );
+        kinetic_energy(m);
+       
+        crba_rnea_test();
+     
         return EXIT_SUCCESS;
     }
     // checks failed!
