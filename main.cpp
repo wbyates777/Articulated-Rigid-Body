@@ -769,14 +769,7 @@ rnea_crba_consistency_test(BModel &model, double tol = 1E-7)
     // compute inertial torque component: H * qddot
     BMatrix H(dof, dof, 0.0);
     dyn.crba(model, Q, H, /*update_kinematics=*/true);
-    std::vector<BScalar> tau_inertial(dof, 0.0);
-    for (int i = 0; i < dof; ++i)
-    {
-        BScalar sum = 0.0;
-        for (int j = 0; j < dof; ++j)
-            sum += H[i][j] * Q.qddot()[j];
-        tau_inertial[i] = sum;
-    }
+    std::vector<BScalar> tau_inertial = H * Q.qddot();
 
     // compute bias forces (Coriolis + centrifugal + gravity) using RNEA
     // by zeroing out accelerations (qddot = 0)
