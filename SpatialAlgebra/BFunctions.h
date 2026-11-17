@@ -26,6 +26,8 @@
 #include "BSpatialTypes.h"
 #endif
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace arb {
 
