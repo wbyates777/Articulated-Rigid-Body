@@ -42,14 +42,14 @@ namespace arb {
     distance2( const BVector3 &u, const BVector3 &v ) { return arb::length2(v - u); } 
 
     inline BVector3
-    normalize( const BVector3 &v ) { return v / arb::length(v); } 
+    normalize( const BVector3 &v ) { return glm::normalize(v); } 
     
 
     inline BScalar
     length( const BQuat &q )  { using std::sqrt; return sqrt(glm::dot(q,q)); }
 
     inline BQuat
-    normalize( const BQuat &q ) { return q / arb::length(q); }
+    normalize( const BQuat &q ) { return glm::normalize(q); }
 
 
     inline constexpr BMatrix3 
