@@ -51,7 +51,7 @@ namespace arb {
     length( const BQuat &q )  { using std::sqrt; return sqrt(glm::dot(q,q)); }
 
     inline BQuat
-    normalize( const BQuat &q ) { return q / arb::length(q); }
+    normalize( const BQuat &q ) { BScalar l = arb::length(q); return (l < B_EPS) ? B_IDENTITY_QUAT : q / l; }
 
 
     inline constexpr BMatrix3 
