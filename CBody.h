@@ -196,9 +196,6 @@ private:
 
     void 
     updateBaseInertia( void );
-
-    void 
-    updateOrient(double dt, glm::dquat &q, const glm::dvec3 &w) const;
     
     BBodyId     m_id; 
     BBox        m_box;
