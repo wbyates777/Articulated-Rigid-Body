@@ -24,17 +24,17 @@ jobs:
 
     - name: Build Project
       run: cmake --build build --config Release
-
- windows-msvc:
+      
+  windows-msvc:
     name: Windows (MSVC)
     runs-on: windows-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v7
+    - name: Checkout Repository
+      uses: actions/checkout@v7
 
-      - name: Configure CMake
-        run: cmake -S . -B build -A x64
+    - name: Configure CMake
+      run: cmake -S . -B build -A x64
 
-      - name: Build Release
-        run: cmake --build build --config Release --parallel
+    - name: Build Release
+      run: cmake --build build --config Release --parallel
