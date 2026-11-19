@@ -48,6 +48,8 @@
 #ifndef BEXPONENTIAL_H
 #define BEXPONENTIAL_H
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #ifndef BTRANSFORM_H
 #include "BTransform.h"
