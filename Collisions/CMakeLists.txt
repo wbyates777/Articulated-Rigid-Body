@@ -22,7 +22,7 @@ target_include_directories(ccd PUBLIC
 )
 
 # Enable double-precision for physics simulations (matches libccd's dDOUBLE flag)
-target_compile_definitions(ccd PUBLIC dDOUBLE)
+target_compile_definitions(ccd PUBLIC dDOUBLE CCD_STATIC_DEFINE)
 
 set_target_properties(ccd PROPERTIES 
     C_STANDARD 99
