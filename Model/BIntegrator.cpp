@@ -36,14 +36,14 @@
 //
 
 void
-BIntegrator::updateVel( BBody &body, double dt )
+BIntegrator::updateVel( BBody &body, double dt ) const
 // single body update velocity in *world/base coords*
 {
     body.v() += body.a() * dt;
 }
 
 void
-BIntegrator::updatePos( BBody &body, double dt )
+BIntegrator::updatePos( BBody &body, double dt ) const
 // single body update position (X_base) in *world/base coords*
 {
     const BVector3 w_dt = body.v().ang() * BScalar(dt);
@@ -56,7 +56,7 @@ BIntegrator::updatePos( BBody &body, double dt )
 //
 
 void
-BIntegrator::updateVel( BModel &model, BModelState &qstate, double dt )
+BIntegrator::updateVel( BModel &model, BModelState &qstate, double dt ) const
 // multibody update velocity in *local/body coords*
 {
     const int N = (int) model.DoFCount();
@@ -78,7 +78,7 @@ BIntegrator::updateVel( BModel &model, BModelState &qstate, double dt )
 }
 
 void
-BIntegrator::updatePos( BModel &model, BModelState &qstate, double dt )
+BIntegrator::updatePos( BModel &model, BModelState &qstate, double dt ) const
 // multibody update position  in *local/body coords*
 {
     for (int i = 1; i < model.jointNum(); ++i)
@@ -88,7 +88,7 @@ BIntegrator::updatePos( BModel &model, BModelState &qstate, double dt )
 }
 
 void
-BIntegrator::updatePos( BJoint &joint, BModelState &qstate, double dt )
+BIntegrator::updatePos( BJoint &joint, BModelState &qstate, double dt ) const
 // integrate variables and update qstate.q() for a multibody model in *local/body coords*
 {
     using std::atan2;
