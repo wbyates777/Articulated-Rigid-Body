@@ -90,6 +90,8 @@ constexpr  BScalar B_SCALAR_MIN     =  std::numeric_limits<BScalar>::lowest();
 constexpr  BScalar B_EPS            =  std::numeric_limits<BScalar>::epsilon();
 constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() * std::numeric_limits<BScalar>::epsilon();
 
+constexpr BScalar B_SMALL_THETA = BScalar(1E-4); // angle theta is near zero
+
 constexpr BScalar B_ONE(static_cast<BScalar>(1.0));
 constexpr BScalar B_HALF(static_cast<BScalar>(0.5));
 constexpr BScalar B_ZERO(static_cast<BScalar>(0.0));

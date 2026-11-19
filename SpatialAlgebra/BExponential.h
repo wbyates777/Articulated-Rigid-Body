@@ -16,12 +16,12 @@
 
  For a motion vector $v = (w, v_lin)$, the spatial transform $X = exp(v)$ has the form
 
-                  E = exp(w)              (Rodrigues' formula)
-                  r = -J(w) v_lin         (J is the left Jacobian of SO(3))
+    E = exp(w)              (Rodrigues' formula)
+    r = -J(w) v_lin         (J is the left Jacobian of SO(3))
 
  in the BTransform convention (see BTransform.h). The log mapping is the inverse of exp:
 
-                  log( exp(v) ) = v       whenever the rotation angle |w| < pi
+    log( exp(v) ) = v       whenever the rotation angle |w| < pi
 
  For larger angles the rotation wraps, and log returns the equivalent vector with |w| <= pi.
  
@@ -74,7 +74,7 @@ namespace arb {
         const BMatrix3 I(B_IDENTITY_3x3);
         const BMatrix3 W = arb::cross(w);
         
-        if (theta < 1E-8)
+        if (theta < B_SMALL_THETA)
         {
             // second-order Taylor series: exp([w]x) ~ I + [w]x + 1/2 [w]x^2
             return I + W + B_HALF * (W * W);
@@ -98,7 +98,7 @@ namespace arb {
         const BMatrix3 W = arb::cross(w);
         
         // Taylor series: I + 1/2 [w]x + 1/6 [w]x^2
-        if (theta < 1E-8)
+        if (theta < B_SMALL_THETA)
         {
             return I + B_HALF * W + BScalar(1.0 / 6.0) * (W * W);
         }
@@ -137,11 +137,11 @@ namespace arb {
         using std::atan2;
         
         const BVector3 a = arb::uncross(R - arb::transpose(R)) * B_HALF;   // sin θ * axis
-        const BScalar  s = arb::length(a);                                       // sin θ
+        const BScalar  s = arb::length(a);                                 // sin θ
         const BScalar  c = B_HALF * (arb::trace(R) - B_ONE);               // cos θ
-        const BScalar theta = atan2(s, c);                                       // accurate everywhere
+        const BScalar theta = atan2(s, c);                                 // accurate everywhere
         
-        if (theta < 1E-8)
+        if (theta < B_SMALL_THETA)
             return a * (B_ONE + theta * theta / BScalar(6));   // θ / sin θ ≈ 1 + θ²/6
         
         if (theta < BScalar(M_PI - 1E-3))
@@ -185,7 +185,7 @@ namespace arb {
         const BMatrix3 I = B_IDENTITY_3x3;
         const BMatrix3 W = arb::cross(w);
         
-        if (theta < 1E-8)
+        if (theta < B_SMALL_THETA)
         {
             return I - B_HALF * W + BScalar(1.0 / 12.0) * (W * W);
         }
