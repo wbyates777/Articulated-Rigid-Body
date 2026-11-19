@@ -26,7 +26,7 @@
 #include <cassert>
 #include <limits>
 #include <cstddef>
-
+#include <numbers>
 
 // basic glm defines
 #ifndef BGLM_H
@@ -81,26 +81,39 @@ typedef glm::qua<BScalar>     BQuat;
 typedef std::vector<BScalar>  BMotionSpace;
 
 
+//
+// scalar constants
+//
+
 constexpr  int B_X = 0;
 constexpr  int B_Y = 1;
 constexpr  int B_Z = 2;
 
-constexpr  BScalar B_SCALAR_MAX     =  std::numeric_limits<BScalar>::max();
-constexpr  BScalar B_SCALAR_MIN     =  std::numeric_limits<BScalar>::lowest();
-constexpr  BScalar B_EPS            =  std::numeric_limits<BScalar>::epsilon();
-constexpr  BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() * std::numeric_limits<BScalar>::epsilon();
+constexpr double B_PI   = std::numbers::pi;  // M_PI is not portable
+constexpr double B_PI_2 = std::numbers::pi * 0.5;
 
-constexpr BScalar B_SMALL_THETA = BScalar(1E-4); // angle theta is near zero
+constexpr BScalar B_SCALAR_MAX     =  std::numeric_limits<BScalar>::max();
+constexpr BScalar B_SCALAR_MIN     =  std::numeric_limits<BScalar>::lowest();
+constexpr BScalar B_EPS            =  std::numeric_limits<BScalar>::epsilon();
+constexpr BScalar B_EPS2           =  std::numeric_limits<BScalar>::epsilon() * std::numeric_limits<BScalar>::epsilon();
+
+constexpr BScalar B_SMALL_THETA = BScalar(1E-4); // angle theta is near zero (see BExponetial.h)
 
 constexpr BScalar B_ONE(static_cast<BScalar>(1.0));
 constexpr BScalar B_HALF(static_cast<BScalar>(0.5));
 constexpr BScalar B_ZERO(static_cast<BScalar>(0.0));
+
+constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
+
+
 
 
 //
 // vector and matrix constants
 //
 #ifdef GLM_FORCE_INTRINSICS
+
+
     const BVector3 B_XAXIS(1.0, 0.0, 0.0);
     const BVector3 B_YAXIS(0.0, 1.0, 0.0);
     const BVector3 B_ZAXIS(0.0, 0.0, 1.0); 
@@ -160,7 +173,7 @@ operator+( const glm::dvec4 &a, const glm::vec4 &b )
 }
 #endif
 
-constexpr BScalar B_NEAR_ZERO = static_cast<BScalar>(1E-3);
+
 
 /// if BScalar is float alignmet is 32 else 64
 constexpr std::size_t B_ALIGNMENT = (sizeof(BScalar) == 4) ? 32 : 64;

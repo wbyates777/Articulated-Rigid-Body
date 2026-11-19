@@ -144,7 +144,7 @@ namespace arb {
         if (theta < B_SMALL_THETA)
             return a * (B_ONE + theta * theta / BScalar(6));   // θ / sin θ ≈ 1 + θ²/6
         
-        if (theta < BScalar(M_PI - 1E-3))
+        if (theta < BScalar(B_PI - 1E-3))
             return a * (theta / s);
         
         // Near pi, sin(theta) is too small to give the axis reliably. Recover the
