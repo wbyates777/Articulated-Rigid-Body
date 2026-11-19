@@ -75,7 +75,7 @@ namespace arb {
     }
 
     // precision log function: SE(3) -> Twist (w, v)
-    // code errors at rotations close to M_PI_2 - method could be improved. 
+    // code errors at rotations close to B_PI_2 - method could be improved. 
     void
     std_log(const BMatrix4 &T, BVector3 &w_out, BVector3 &v_out)
     {
@@ -105,7 +105,7 @@ namespace arb {
             BMatrix3 V_inv = B_IDENTITY_3x3 - B_HALF * skew_w;
             v_out = V_inv * t;
         }
-        else if (abs(theta - M_PI) < EPSILON_PI)
+        else if (abs(theta - B_PI) < EPSILON_PI)
         {
             // half-turn rotation (theta ≈ π) — prevents division by zero in sin(theta)
             

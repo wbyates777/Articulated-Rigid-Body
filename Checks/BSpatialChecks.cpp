@@ -437,7 +437,7 @@ run_lie_group_tests(BSpatialChecks &st)
     BVector3 w = arb::rndNormal3();
     
     // log(exp(v)) == v identity
-    BScalar theta = arb::rndFloat(0, M_PI - 0.01);
+    BScalar theta = arb::rndFloat(0, B_PI - 0.01);
     BVector3 x = w * theta;
     BMatrix3 R = arb::exp( x );
     BVector3 y = arb::log(R);
@@ -453,7 +453,8 @@ run_lie_group_tests(BSpatialChecks &st)
     // note Euler vector wv - where length |wv| < pi is angle of rotation,
     // and direction axis = arb::normalize(wv) is the axis of rotation.
     // log is the inverse of exp only for rotation angle |wv| < pi (larger angles wrap)
-    BVector3 wv = arb::rndFloat() * BScalar(M_PI - 0.01) * arb::rndNormal3();   // |wv| in [0, pi - 0.05)
+    BScalar angle = arb::rndFloat();
+    BVector3 wv = angle * BScalar(B_PI - 0.01) * arb::rndNormal3();   // |wv| in [0, pi - 0.05)
     BVector6 v(wv, arb::rndVec3());
 
     bool testA = arb::nearZero(arb::leftJacobian(wv) * arb::leftJacobianInverse(wv) - B_IDENTITY_3x3);
@@ -461,7 +462,7 @@ run_lie_group_tests(BSpatialChecks &st)
 
     // Angles near to pi
     BVector3 npAxis = arb::rndNormal3();
-    BScalar  npTheta = arb::rndFloat(M_PI - 0.01, M_PI);
+    BScalar  npTheta = arb::rndFloat(B_PI - 0.01, B_PI);
     BMatrix3 Rnp = arb::exp(npAxis * npTheta);
     BVector3 wnp = arb::log(Rnp);
     

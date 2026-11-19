@@ -139,7 +139,7 @@ namespace arb
     ///    centers of mass (COMs) are far from the body's frame origin can exhibit
     ///    instability when gravity is enabled.
     /// - Mathematical issues: Euler angle singularities can cause failures (gimbal lock),
-    ///    i.e when EulerXYZ hits ±M_PI_2 on the middle axis.
+    ///    i.e when EulerXYZ hits ±B_PI_2 on the middle axis.
     ///
     /// @param[in] model an articulated ridgid body model
     /// @param[in] Ntrials the number of random model states to test

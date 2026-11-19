@@ -54,7 +54,7 @@
   @see "Modern Robotics", Lynch and Park, 2017.
   @see "Lie Groups for 2D and 3D Transformations", Ethan Earle, 2017.
  
-  @warning std_log produces errors at rotations close to M_PI_2.
+  @warning std_log produces errors at rotations close to B_PI_2.
  
 */
 

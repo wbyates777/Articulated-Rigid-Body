@@ -152,7 +152,7 @@ namespace arb
     BMatrix3 
     rndRot( void ) 
     {
-        BScalar theta = rndFloat(-M_PI, M_PI);
+        BScalar theta = rndFloat(-B_PI, B_PI);
         BVector3 axis = rndNormal3();
         return glm::mat3_cast(glm::angleAxis(theta, axis));
     }
@@ -277,7 +277,7 @@ namespace arb
                 {
                     qstate.q()[idx]      = arb::rndFloat(lo_p, hi_p);  // x
                     qstate.q()[idx+1]    = arb::rndFloat(lo_p, hi_p);  // y
-                    qstate.q()[idx+2]    = arb::rndFloat(-M_PI, M_PI); // theta
+                    qstate.q()[idx+2]    = arb::rndFloat(-B_PI, B_PI); // theta
                     
                     qstate.qdot()[idx]   = arb::rndFloat(lo_v, hi_v);
                     qstate.qdot()[idx+1] = arb::rndFloat(lo_v, hi_v);
@@ -297,17 +297,17 @@ namespace arb
                 case BJoint::EulerZXY:
                 case BJoint::EulerYXZ:
                 {
-                    qstate.q()[idx]   = arb::rndFloat(-M_PI, M_PI);
-                    qstate.q()[idx+1] = arb::rndFloat(-M_PI, M_PI);
-                    qstate.q()[idx+2] = arb::rndFloat(-M_PI, M_PI);
+                    qstate.q()[idx]   = arb::rndFloat(-B_PI, B_PI);
+                    qstate.q()[idx+1] = arb::rndFloat(-B_PI, B_PI);
+                    qstate.q()[idx+2] = arb::rndFloat(-B_PI, B_PI);
                     
-                    qstate.qdot()[idx]   = arb::rndFloat(-M_PI, M_PI);
-                    qstate.qdot()[idx+1] = arb::rndFloat(-M_PI, M_PI);
-                    qstate.qdot()[idx+2] = arb::rndFloat(-M_PI, M_PI);
+                    qstate.qdot()[idx]   = arb::rndFloat(-B_PI, B_PI);
+                    qstate.qdot()[idx+1] = arb::rndFloat(-B_PI, B_PI);
+                    qstate.qdot()[idx+2] = arb::rndFloat(-B_PI, B_PI);
                     
-                    qstate.qddot()[idx]   = arb::rndFloat(-M_PI, M_PI);
-                    qstate.qddot()[idx+1] = arb::rndFloat(-M_PI, M_PI);
-                    qstate.qddot()[idx+2] = arb::rndFloat(-M_PI, M_PI);
+                    qstate.qddot()[idx]   = arb::rndFloat(-B_PI, B_PI);
+                    qstate.qddot()[idx+1] = arb::rndFloat(-B_PI, B_PI);
+                    qstate.qddot()[idx+2] = arb::rndFloat(-B_PI, B_PI);
                     
                     qstate.tau()[idx]     = arb::rndFloat(lo_t, hi_t);
                     qstate.tau()[idx+1]   = arb::rndFloat(lo_t, hi_t);
