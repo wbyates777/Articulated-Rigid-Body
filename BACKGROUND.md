@@ -80,7 +80,7 @@ exceed the speed of the $O(N_B)$ ABA on trees with only a few bodies, or that ar
  Spatial algebra significantly reduces the
 "volume of algebra by at least a factor of 4 compared with standard 3D vector notation" (see RBDA, Section 1.2). 
  It also significantly reduces the complexity of the implementation of rigid body and articulated rigid body physics.
- For example, the following simple 'hello world' program demonstrates [Newton-Euler] integration:
+ For example, the following simple 'hello world' program demonstrates [semi-implicit integration] of the [Newton-Euler] equations:
  ```cpp
     #include "BSpatialAlgebra.h"
      
@@ -217,6 +217,7 @@ https://youtu.be/gKXwwdfl8QE
  [R. Featherstone]:  https://royfeatherstone.org
  [Robot Operating System]: https://en.wikipedia.org/wiki/Robot_Operating_System
  [Newton-Euler]: https://en.wikipedia.org/wiki/Newton–Euler_equations
+ [semi-implicit integration]: https://en.wikipedia.org/wiki/Semi-implicit_Euler_method
  [inertial force]:  https://en.wikipedia.org/wiki/Fictitious_force
  [Automatic Differentiation]: https://en.wikipedia.org/wiki/Automatic_differentiation 
  [chain rule]: https://en.wikipedia.org/wiki/Chain_rule
