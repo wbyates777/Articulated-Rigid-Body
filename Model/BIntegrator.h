@@ -50,26 +50,26 @@ public:
     
     /// Single body position.
     void
-    updatePos( BBody &body, double dt );
+    updatePos( BBody &body, double dt ) const;
     
     /// Single body velocity.
     void
-    updateVel( BBody &body, double dt );
+    updateVel( BBody &body, double dt ) const;
     
 
     /// Multibody model positions.
     void
-    updatePos( BModel &model, BModelState &qstate, double dt );
+    updatePos( BModel &model, BModelState &qstate, double dt ) const;
 
     /// Multibody model velocities.
     void
-    updateVel( BModel &model, BModelState &qstate, double dt );
+    updateVel( BModel &model, BModelState &qstate, double dt ) const;
   
 
 private:
 
     void 
-    updatePos( BJoint &joint, BModelState &qstate, double dt );
+    updatePos( BJoint &joint, BModelState &qstate, double dt ) const;
     
     bool m_limits;
 
