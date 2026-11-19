@@ -1,5 +1,4 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/wbyates777/Articulated-Rigid-Body/ci.yml?branch=main&style=for-the-badge&labelColor=%23131519&label=CI)](https://github.com/wbyates777/Articulated-Rigid-Body/actions)
-![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-%230F79AA?style=for-the-badge&labelColor=%23131519)
 [![Documentation](https://img.shields.io/badge/docs-Doxygen-%230F79AA?style=for-the-badge&labelColor=%23131519)](https://wbyates777.github.io/Articulated-Rigid-Body/)
 ![](https://img.shields.io/github/v/release/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
 ![](https://img.shields.io/github/license/wbyates777/Articulated-Rigid-Body?style=for-the-badge&labelColor=%23131519&color=%230F79AA)
@@ -7,9 +6,8 @@
 
 
 
-
-
 # <img width="80" height="80" alt="icon" src="https://github.com/user-attachments/assets/7e7f598c-a0b1-47de-a18c-6572527ed229" />  Articulated Rigid Body (ARB) 
+
 
 **Compact C++ articulated rigid body simulation library implementing:**
 
