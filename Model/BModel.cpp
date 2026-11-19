@@ -24,6 +24,7 @@ BModel::BModel( int expected_dof ):  m_dof_count(0),
                                      m_name("myrobot"),
                                      m_gravity(B_ZERO_3),
                                      m_lambda(),
+                                     m_qindex(),
                                      m_joint(),
                                      m_body(),
                                      m_fixed(), 
@@ -32,6 +33,7 @@ BModel::BModel( int expected_dof ):  m_dof_count(0),
     m_fbd = std::numeric_limits<BBodyId>::max() / 2;
     
     m_lambda.reserve(expected_dof);
+    m_qindex.reserve(expected_dof);
     m_joint.reserve(expected_dof);
     m_body.reserve(expected_dof);
     m_fixed.reserve(expected_dof);
@@ -46,6 +48,7 @@ BModel::clear( void )
     m_gravity = B_ZERO_3;
     
     m_lambda.clear();
+    m_qindex.clear();
     m_joint.clear();
     m_body.clear();
     m_fixed.clear(); 
@@ -60,6 +63,7 @@ BModel::init( void )
 // setup and initialise
 {
     m_lambda.push_back(0);
+    // qindex[0] starts at joint[1]
     
     m_body.resize(1);
     m_body[0].clear();
@@ -489,6 +493,18 @@ BModel::calcDoF( void )
     }
     m_q_size    = m_dof_count + multdof3;
     m_qdot_size = m_dof_count;
+    
+    int qidx = 0;
+    m_qindex.resize(m_dof_count  + multdof3);
+    for (int i = 1; i < m_joint.size(); ++i)
+    {
+        for (int j = 0; j < m_joint[i].DoFCount(); ++j)
+            m_qindex[qidx++] = i;
+        
+        if (m_joint[i].windex() != 0)
+            m_qindex[m_joint[i].windex()] = i;
+
+    }
 }
 
 

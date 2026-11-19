@@ -77,6 +77,9 @@ public:
     const BJoint&
     joint( BJointId jid ) const { return m_joint[jid]; } 
 
+    const std::vector<BJoint>&
+    joint( void ) const { return m_joint; }
+    
     /// the number of joints $N_J$
     size_t 
     jointNum( void ) const { return m_joint.size(); } 
@@ -87,6 +90,9 @@ public:
     const BBody&
     body( BBodyId bid ) const { return m_body[bid]; }
 
+    const std::vector<BBody>&
+    body( void ) const { return m_body; }
+    
     /// the number of bodies $N_B$
     size_t
     bodyNum( void ) const { return m_body.size(); }   
@@ -158,6 +164,9 @@ public:
     int  
     DoFCount( void ) const { return m_dof_count; }
     
+    /// return thr joint id for this q-index
+    BJointId
+    getJointId( int qidx ) const { return m_qindex[qidx]; }
     
     const BVector3& 
     gravity( void ) const { return m_gravity; }
@@ -239,6 +248,7 @@ private:
     BVector3 m_gravity;
 
     std::vector<BBodyId>    m_lambda;   // the id of the parent body
+    std::vector<BJointId>   m_qindex;   // given a qidx what joint does it correspond to
     
     std::vector<BJoint>     m_joint;
     std::vector<BBody>      m_body;
@@ -261,6 +271,7 @@ operator<<( std::ostream &ostr, const BModel &m )
     
     ostr << m.m_gravity << '\n';
     ostr << m.m_lambda << '\n';
+    ostr << m.m_qindex << '\n';
     
     ostr << m.m_joint << '\n';
     ostr << m.m_body << '\n';
@@ -282,6 +293,7 @@ operator>>( std::istream &istr, BModel &m )
     
     istr >> m.m_gravity;
     istr >> m.m_lambda;
+    istr >> m.m_qindex;
     
     istr >> m.m_joint;
     istr >> m.m_body;
