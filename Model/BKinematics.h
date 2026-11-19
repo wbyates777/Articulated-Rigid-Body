@@ -54,11 +54,11 @@ public:
 
     /// update model kinematics - calculates positions (X_base, pos, orient)
     void 
-    update_X_base( BModel &m, const BModelState &qstate );
+    updatePos( BModel &m, const BModelState &qstate );
 
     /// update model kinematics - calculates velocities (v and c)
     void 
-    update_velocity( BModel &m, const BModelState &qstate );
+    updateVel( BModel &m, const BModelState &qstate );
     
     
     /// velocity at point

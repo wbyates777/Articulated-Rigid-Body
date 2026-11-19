@@ -15,8 +15,8 @@
 
 
 void 
-BKinematics::update_X_base( BModel &m, const BModelState &qstate ) 
-// update kinematics - calculates positions 
+BKinematics::updatePos( BModel &m, const BModelState &qstate )
+// update kinematics - calculates position X_base
 // based on Kinematics::UpdateKinematicsCustom in RBDL
 {
     m_qdot_zero.resize(qstate.qdot().size(), 0.0);
@@ -38,7 +38,7 @@ BKinematics::update_X_base( BModel &m, const BModelState &qstate )
 }
 
 void 
-BKinematics::update_velocity( BModel &m, const BModelState &qstate ) 
+BKinematics::updateVel( BModel &m, const BModelState &qstate )
 // update kinematics - calculates velocities
 // based on Kinematics::UpdateKinematicsCustom in RBDL
 {
@@ -194,7 +194,7 @@ BKinematics::calcPointJacobian(  BModel &m,
     
     if (update_kinematics) // update the kinematics if necessary
     {
-        update_X_base(m, qstate);
+        updatePos(m, qstate);
     }
     
     // deal with Fixed1 joints
