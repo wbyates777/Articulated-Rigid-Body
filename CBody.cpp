@@ -45,7 +45,8 @@ CBody::CBody( void )  : ABody(),
                         m_orient(B_IDENTITY_QUAT),     
                         m_force(B_ZERO_6),
                         m_delta(0.25),
-                        m_collider() {}
+                        m_collider(),
+                        m_integrate() {}
 
 
 CBody::CBody( BBodyId bid, const BBody &body, const BBox &box ) : ABody(), 
@@ -58,7 +59,8 @@ CBody::CBody( BBodyId bid, const BBody &body, const BBox &box ) : ABody(),
                                                                   m_orient(B_IDENTITY_QUAT),     
                                                                   m_force(B_ZERO_6),
                                                                   m_delta(0.25),
-                                                                  m_collider()
+                                                                  m_collider(),
+                                                                  m_integrate()
 {
     m_orient = glm::quat_cast(m_body.X_base().E()); // sync m_orient and X_base
     m_invI   = arb::inverse(m_body.I()); 
@@ -78,46 +80,18 @@ CBody::updateBaseInertia( void )
     m_invI_base = arb::inverse(X) * m_invI * arb::toForce(X);
 }
 
-void 
-CBody::updateOrient(double dt, glm::dquat &q, const glm::dvec3 &w) const
-// integrate angular velocity ω over Δt to update the orientation quaternion q 
-// quat exponential map more accurate than the usual linear integration (Solà, 2017)
-// employs Taylor expansion for small angles to maintain numerical stability
-{
-    // w - angular velocity
-    const glm::dvec3 v   = w * dt;
-    const double theta_sq = glm::dot(v, v);
-
-    glm::dquat dq;
-
-    if (theta_sq < 1.0E-8) 
-    {
-        // if theta -> 0, then sin(theta*0.5)/theta -> 0.5 (Taylor expansion)
-        dq = glm::dquat(1.0, v * 0.5);
-    }
-    else 
-    {
-        // dq = exp(v/2)
-        const double theta = std::sqrt(theta_sq);
-        const double half_theta = theta * 0.5;
-        const double s = std::sin(half_theta) / theta;
-        dq = glm::dquat(std::cos(half_theta), v * s);
-    }
-
-    // normalize just to be sure
-    //q = glm::normalize(q * dq); // in body coords
-    q = glm::normalize(dq * q);   // in base/world coords
-}
 
 void
 CBody::updateVelocity(double dt) 
-// convert user input force (in base coords) to body coordinate frame
-// trasform direction of *each* component separately 
+// convert user input force (in body coords) to world coordinate frame
+// trasform direction of *each* component separately
 // X(E) transforms both together which produces torques we do not want.
 {
+    // forward - calculate accelerations in world/base coordinates
     const BVector6 force( m_body.X_base().E() *  m_force.ang(), m_body.X_base().E() * m_force.lin());
     m_body.a() = m_invI_base * ((force * (m_delta + 1.0)) - arb::crossf(m_body.v(), m_I_base * m_body.v()));
-    m_body.v() += m_body.a() * dt;
+   
+    m_integrate.updateVel(m_body, dt);
 }
 
 void 
@@ -129,9 +103,8 @@ CBody::updatePosition(double dt)
     // m_v.ang( m_v.ang() * std::pow(0.95, dt) ); 
     // m_v.lin( m_v.lin() * std::pow(0.99, dt) );
     
-    m_body.X_base().r() += m_body.v().lin() * BScalar(dt);
-    updateOrient( dt, m_orient, m_body.v().ang() );
-    m_body.X_base().E( glm::mat3_cast(m_orient) );  // sync m_orient and X_base
+    m_integrate.updatePos(m_body, dt);
+    
     updateBaseInertia(); // ensure m_X_base set first
     m_force = B_ZERO_6;
 }

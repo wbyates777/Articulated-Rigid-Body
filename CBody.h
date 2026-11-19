@@ -33,6 +33,9 @@ of the code.
 #include "BBox.h"
 #endif
 
+#ifndef BINTEGRATOR_H
+#include "BIntegrator.h"
+#endif
 
 #ifndef BCOLLIDER_H
 #include "BCollider.h"
@@ -48,8 +51,6 @@ public:
  
     virtual ~CBody( void )=default;
 
-
-    
     BBodyId
     objId( void ) const override { return m_id; }
     
@@ -118,6 +119,13 @@ public:
     const BMatrix6&
     invI_base( void) const override  { return m_invI_base; }  
 
+    BScalar
+    kinetic_energy( void ) const
+    {
+        // assume m_body.v() in world coordinates
+        return B_HALF * arb::dot(m_body.v(), m_I_base * m_body.v());  // eqn 2.67, page 35
+    }
+    
     //
     // update state
     //
@@ -205,7 +213,8 @@ private:
     BVector6    m_force;
     BScalar     m_delta;
     
-    BCollider  m_collider; 
+    BCollider  m_collider;
+    BIntegrator m_integrate;
 
 };
 
