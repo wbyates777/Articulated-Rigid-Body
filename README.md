@@ -24,7 +24,7 @@
 
 Dependencies: STL, glm, libccd, TinyXML2, autodiff (openGJK optional).
 
-
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-%230F79AA?style=for-the-badge&labelColor=%23131519)
 ---
 
 ### Visual Demos
