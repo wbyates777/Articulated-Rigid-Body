@@ -20,8 +20,7 @@
 #ifndef BSPATIALTYPES_H
 #define BSPATIALTYPES_H
 
-#define _USE_MATH_DEFINES
-#include <cmath>
+
 #include <vector>
 #include <array>
 #include <cassert>
