@@ -1132,6 +1132,7 @@ RECURSIVE              = YES
 
 EXCLUDE                = ./OpenGJK \
                          ./CCD \
+                         ./BACKGROUND.md \
                          ./README.md \
                          ./REVIEWER_NOTES.md \
                          ./URDF/Examples \
