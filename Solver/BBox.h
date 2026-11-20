@@ -28,7 +28,6 @@
 #include "BStream.h"
 #endif
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <glm/vec3.hpp>
 #include <glm/geometric.hpp> // for glm::length
