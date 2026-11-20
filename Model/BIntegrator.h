@@ -59,17 +59,17 @@ public:
 
     /// Multibody model positions.
     void
-    updatePos( BModel &model, BModelState &qstate, double dt ) const;
+    updatePos( const BModel &model, BModelState &qstate, double dt ) const;
 
     /// Multibody model velocities.
     void
-    updateVel( BModel &model, BModelState &qstate, double dt ) const;
+    updateVel( const BModel &model, BModelState &qstate, double dt ) const;
   
 
 private:
 
     void 
-    updatePos( BJoint &joint, BModelState &qstate, double dt ) const;
+    updatePos( const BJoint &joint, BModelState &qstate, double dt ) const;
     
     bool m_limits;
 
